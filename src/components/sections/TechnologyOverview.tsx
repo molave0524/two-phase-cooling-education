@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { BeakerIcon, LeafIcon, FireIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
+import { BeakerIcon, FireIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 
 export const TechnologyOverview: React.FC = () => {
   const features = [
@@ -12,7 +12,7 @@ export const TechnologyOverview: React.FC = () => {
       highlight: 'Superior thermal performance'
     },
     {
-      icon: <LeafIcon className="w-8 h-8" />,
+      icon: <BeakerIcon className="w-8 h-8" />,
       title: 'Environmental Responsibility',
       description: 'Our cooling fluid has a GWP rating of 20 (equivalent to gasoline) and zero ODP, making it an environmentally conscious choice.',
       highlight: 'GWP 20, Zero ODP'

@@ -274,7 +274,7 @@ const DropdownMenu: React.FC<{ item: NavigationItem }> = ({ item }) => {
 export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const cartItemCount = useCartStore(state => state.getItemCount())
+  const cartItemCount = useCartStore(state => state.itemCount)
 
   // Handle scroll effect
   useEffect(() => {

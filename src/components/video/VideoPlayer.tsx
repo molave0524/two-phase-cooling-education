@@ -2,8 +2,21 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { useProgress } from '@/app/providers'
-import { updateUserProgress } from '@/lib/services/progress-service'
-import { Video } from '@prisma/client'
+// import { updateUserProgress } from '@/lib/services/progress-service'
+// import { Video } from '@prisma/client'
+
+// Mock types for demo mode
+interface Video {
+  id: string
+  title: string
+  slug: string
+  description: string
+  duration_seconds: number
+  file_url: string
+  thumbnail_url: string
+  difficulty_level?: string
+  topic_category?: string
+}
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'
 
@@ -254,16 +267,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!userId) return
 
     try {
-      const savedProgress = await progressStore.getUserProgress(userId, video.id)
-      if (savedProgress && videoRef.current) {
-        videoRef.current.currentTime = savedProgress.last_position_seconds
-        setProgressData(prev => ({
-          ...prev,
-          currentPosition: savedProgress.last_position_seconds,
-          percentage: Number(savedProgress.completion_percentage),
-          watchTime: savedProgress.watch_time_seconds,
-        }))
-      }
+      // Demo mode - no saved progress to load
     } catch (error) {
       console.error('Failed to load saved progress:', error)
     }
@@ -273,17 +277,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!userId) return
 
     try {
-      await updateUserProgress({
-        userId,
-        videoId: video.id,
-        completionPercentage: progressData.percentage,
-        watchTimeSeconds: Math.floor(totalWatchTime),
-        lastPositionSeconds: Math.floor(progressData.currentPosition),
-        interactionCount: Object.values(progressData.interactions).reduce((a, b) => a + b, 0),
-        pauseCount: progressData.interactions.pauseCount,
-        seekCount: progressData.interactions.seekCount,
-        replayCount: progressData.interactions.replayCount,
-      })
+      // Demo mode - use simplified progress update
+      progressStore.updateProgress()
     } catch (error) {
       console.error('Failed to save progress:', error)
       toast.error('Failed to save progress')
@@ -633,11 +628,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <div className="absolute top-4 left-4 text-white">
         <h3 className="text-lg font-semibold mb-1">{video.title}</h3>
         <div className="flex items-center gap-4 text-sm text-white/80">
-          <span className={`status-${video.difficulty_level}`}>
-            {video.difficulty_level.charAt(0).toUpperCase() + video.difficulty_level.slice(1)}
-          </span>
+          {video.difficulty_level && (
+            <span className={`status-${video.difficulty_level}`}>
+              {video.difficulty_level.charAt(0).toUpperCase() + video.difficulty_level.slice(1)}
+            </span>
+          )}
           <span>{formatTime(video.duration_seconds)}</span>
-          <span>{video.topic_category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+          {video.topic_category && (
+            <span>{video.topic_category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+          )}
         </div>
       </div>
     </div>

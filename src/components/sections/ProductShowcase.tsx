@@ -2,7 +2,43 @@
 
 import React, { useState, useEffect } from 'react'
 import { ProductCard } from '@/components/product/ProductCard'
-import { Products } from '@prisma/client'
+// Mock type for demo mode - reusing the same interface as ProductCard
+interface Products {
+  id: string
+  name: string
+  description: string
+  price: number
+  price_cents: number
+  currency?: string
+  compare_at_price?: number
+  stock_quantity: number
+  image: string
+  images: string[]
+  category: string
+  slug: string
+  sku?: string
+  is_featured?: boolean
+  is_digital?: boolean
+  is_active?: boolean
+  sort_order?: number
+  meta_title?: string
+  meta_description?: string
+  created_at?: Date
+  updated_at?: Date
+  specifications?: {
+    cooling?: {
+      gwpRating?: string
+      type?: string
+    }
+    formFactor?: string
+    compatibility?: {
+      motherboard?: string[]
+    }
+    contents?: string[]
+    educational?: boolean
+  }
+  features?: string[]
+}
 import {
   SparklesIcon,
   AdjustmentsHorizontalIcon,
@@ -44,13 +80,15 @@ const SAMPLE_PRODUCTS: Products[] = [
     name: 'Two-Phase Cooling Case Pro',
     slug: 'two-phase-cooling-case-pro',
     description: 'Our flagship computer case featuring integrated two-phase cooling system with transparent panels for visual monitoring.',
+    price: 899,
     price_cents: 89900,
+    image: '/images/products/case-pro.jpg',
     compare_at_price: 119900,
     currency: 'USD',
     category: 'Computer Cases',
     specifications: {
       formFactor: 'Mid-Tower ATX',
-      cooling: { gwpRating: 20, type: 'Two-Phase Immersion' },
+      cooling: { gwpRating: '20', type: 'Two-Phase Immersion' },
       compatibility: { motherboard: ['ATX', 'Micro-ATX', 'Mini-ITX'] }
     },
     features: [
@@ -80,13 +118,15 @@ const SAMPLE_PRODUCTS: Products[] = [
     name: 'Two-Phase Cooling Case Essential',
     slug: 'two-phase-cooling-case-essential',
     description: 'Entry-level two-phase cooling case perfect for enthusiasts wanting to experience revolutionary cooling technology.',
+    price: 599,
     price_cents: 59900,
+    image: '/images/products/case-essential.jpg',
     compare_at_price: 79900,
     currency: 'USD',
     category: 'Computer Cases',
     specifications: {
       formFactor: 'Micro-ATX',
-      cooling: { gwpRating: 20, type: 'Two-Phase Immersion' },
+      cooling: { gwpRating: '20', type: 'Two-Phase Immersion' },
       compatibility: { motherboard: ['Micro-ATX', 'Mini-ITX'] }
     },
     features: [
@@ -115,8 +155,10 @@ const SAMPLE_PRODUCTS: Products[] = [
     name: 'Educational Kit - Thermal Dynamics',
     slug: 'educational-kit-thermal-dynamics',
     description: 'Comprehensive educational kit for understanding thermal dynamics principles in two-phase cooling systems.',
+    price: 199,
     price_cents: 19900,
-    compare_at_price: null,
+    image: '/images/products/educational-kit.jpg',
+    compare_at_price: undefined,
     currency: 'USD',
     category: 'Educational Materials',
     specifications: {
@@ -217,9 +259,9 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         case 'featured':
           if (a.is_featured && !b.is_featured) return -1
           if (!a.is_featured && b.is_featured) return 1
-          return a.sort_order - b.sort_order
+          return (a.sort_order || 0) - (b.sort_order || 0)
         case 'newest':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
         default:
           return 0
       }

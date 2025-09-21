@@ -3,7 +3,34 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Products } from '@prisma/client'
+// Mock type for demo mode
+interface Products {
+  id: string
+  name: string
+  description: string
+  price: number
+  price_cents: number
+  currency?: string
+  compare_at_price?: number
+  stock_quantity: number
+  image: string
+  images: string[]
+  category: string
+  slug: string
+  sku?: string
+  is_featured?: boolean
+  specifications?: {
+    cooling?: {
+      gwpRating?: string
+      type?: string
+    }
+    formFactor?: string
+    compatibility?: {
+      motherboard?: string[]
+    }
+  }
+  features?: string[]
+}
 import {
   ShoppingCartIcon,
   HeartIcon,

@@ -5,10 +5,8 @@ import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
-  TemperatureIcon,
   ClockIcon,
-  BeakerIcon,
-  ThermometerIcon
+  BeakerIcon
 } from '@heroicons/react/24/outline'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
@@ -358,7 +356,7 @@ export const PerformanceMetrics: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <ThermometerIcon className="w-4 h-4 text-danger-600" />
+                    <BeakerIcon className="w-4 h-4 text-danger-600" />
                     <span className="text-sm font-medium text-secondary-700">Max Temperature</span>
                   </div>
                   <div className="text-lg font-bold text-danger-600">
@@ -367,7 +365,7 @@ export const PerformanceMetrics: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <TemperatureIcon className="w-4 h-4 text-accent-600" />
+                    <BeakerIcon className="w-4 h-4 text-accent-600" />
                     <span className="text-sm font-medium text-secondary-700">Avg Temperature</span>
                   </div>
                   <div className="text-lg font-bold text-accent-600">

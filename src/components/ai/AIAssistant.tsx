@@ -5,7 +5,19 @@ import { useAI } from '@/app/providers'
 import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { SparklesIcon, LightBulbIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'
-import { AIConversations, AIMessages } from '@prisma/client'
+// import { AIConversations, AIMessages } from '@prisma/client'
+// Mock types for demo mode
+interface AIConversations {
+  id: string
+  title: string
+  created_at: Date
+}
+interface AIMessages {
+  id: string
+  content: string
+  role: string
+  created_at: Date
+}
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -108,8 +120,10 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
   onConversationStart,
   onConversationEnd,
 }) => {
-  // AI service from context
-  const { aiService, isAvailable, fallbackMode } = useAI()
+  // AI service from context (demo mode)
+  const { sendMessage: aiSendMessage, isLoading: aiIsLoading } = useAI()
+  const isAvailable = true // Demo mode always available
+  const fallbackMode = false // Demo mode
 
   // Component state
   const [isOpen, setIsOpen] = useState(false)
@@ -143,7 +157,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
   // ============================================================================
 
   const startConversation = useCallback(async () => {
-    if (!aiService) return
+    // Demo mode - always start conversation
 
     try {
       const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -177,7 +191,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       console.error('Failed to start conversation:', error)
       toast.error('Failed to start AI assistant')
     }
-  }, [aiService, conversation.context.type, fallbackMode, onConversationStart])
+  }, [conversation.context.type, fallbackMode, onConversationStart])
 
   const endConversation = useCallback(async (satisfaction?: number) => {
     if (!conversation.id) return
@@ -208,7 +222,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
   // ============================================================================
 
   const sendMessage = useCallback(async (content: string) => {
-    if (!aiService || !content.trim()) return
+    if (!content.trim()) return
 
     const userMessage: Message = {
       id: `msg_${Date.now()}`,
@@ -246,39 +260,9 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     setIsTyping(true)
 
     try {
-      let response: string
+      // Demo mode - use simplified AI response
+      const response = await aiSendMessage(content)
       let isFallback = false
-      let confidence: number | undefined
-
-      if (conversation.context.type === 'video_specific' && conversation.context.data?.videoId) {
-        // Video-specific question
-        response = await aiService.getVideoSpecificAdvice(
-          content,
-          conversation.context.data.videoId,
-          conversation.messages.map(m => ({ role: m.role, content: m.content }))
-        )
-      } else if (conversation.context.type === 'product_inquiry') {
-        // Product inquiry
-        response = await aiService.getProductAdvice(
-          content,
-          conversation.messages.map(m => ({ role: m.role, content: m.content }))
-        )
-      } else {
-        // General cooling advice
-        response = await aiService.getCoolingAdvice(
-          content,
-          conversation.messages.map(m => ({ role: m.role, content: m.content }))
-        )
-      }
-
-      // Check if response came from fallback
-      if (aiService.circuitBreaker && aiService.circuitBreaker.getState() === 'OPEN') {
-        isFallback = true
-        setConversation(prev => ({
-          ...prev,
-          fallbackCount: prev.fallbackCount + 1,
-        }))
-      }
 
       // Calculate response time
       const responseTime = responseStartTime ? Date.now() - responseStartTime : 0
@@ -302,7 +286,6 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
                 content: response,
                 isLoading: false,
                 isFallback,
-                confidence,
                 timestamp: new Date(),
               }
             : msg
@@ -334,7 +317,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       setIsTyping(false)
       setResponseStartTime(null)
     }
-  }, [aiService, conversation.context, conversation.messages, responseStartTime, responseTimes])
+  }, [aiSendMessage, conversation.context, conversation.messages, responseStartTime, responseTimes])
 
   const handleSuggestedQuestion = useCallback((question: SuggestedQuestion) => {
     sendMessage(question.text)

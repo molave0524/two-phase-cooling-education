@@ -2,7 +2,31 @@
 
 import React, { useState, useEffect } from 'react'
 import { VideoPlayer } from '@/components/video/VideoPlayer'
-import { Video } from '@prisma/client'
+// Mock type for demo mode
+interface Video {
+  id: string
+  title: string
+  slug: string
+  description: string
+  youtube_id: string
+  duration: number
+  duration_seconds: number
+  category: string
+  topic_category: string
+  thumbnail_url: string
+  is_featured?: boolean
+  difficulty_level: string
+  learning_objectives: string[]
+  view_count: number
+  prerequisites: string[]
+  file_url: string
+  completion_count: number
+  average_completion_percentage: number
+  average_watch_time: number
+  published_at: Date
+  created_at?: Date
+  updated_at?: Date
+}
 import { PlayIcon, ClockIcon, StarIcon } from '@heroicons/react/24/outline'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
@@ -18,9 +42,12 @@ export const VideoShowcase: React.FC = () => {
       title: 'Introduction to Two-Phase Cooling',
       slug: 'intro-two-phase-cooling',
       description: 'Discover the fundamentals of two-phase cooling technology and how it revolutionizes thermal management.',
+      youtube_id: 'demo123456',
+      duration: 8,
       duration_seconds: 480,
+      category: 'Cooling Basics',
       topic_category: 'cooling-basics',
-      difficulty_level: 'beginner' as any,
+      difficulty_level: 'beginner',
       learning_objectives: [
         'Understand basic principles of two-phase cooling',
         'Learn about heat transfer mechanisms',
@@ -43,9 +70,12 @@ export const VideoShowcase: React.FC = () => {
       title: 'Advanced Thermal Dynamics',
       slug: 'advanced-thermal-dynamics',
       description: 'Deep dive into the thermal dynamics principles that make two-phase cooling superior.',
+      youtube_id: 'demo789012',
+      duration: 12,
       duration_seconds: 720,
+      category: 'Thermal Science',
       topic_category: 'thermal-science',
-      difficulty_level: 'advanced' as any,
+      difficulty_level: 'advanced',
       learning_objectives: [
         'Master thermal dynamics equations',
         'Analyze heat transfer coefficients',
@@ -68,9 +98,12 @@ export const VideoShowcase: React.FC = () => {
       title: 'Performance Under Load Testing',
       slug: 'performance-under-load',
       description: 'Witness real-time performance testing under extreme computational loads.',
+      youtube_id: 'demo345678',
+      duration: 15,
       duration_seconds: 900,
+      category: 'Performance',
       topic_category: 'performance',
-      difficulty_level: 'intermediate' as any,
+      difficulty_level: 'intermediate',
       learning_objectives: [
         'Observe real-time temperature monitoring',
         'Understand performance metrics',

@@ -11,7 +11,7 @@ import {
   CheckCircleIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline'
-import { RobotIcon } from '@heroicons/react/24/solid'
+import { SparklesIcon as RobotIcon } from '@heroicons/react/24/solid'
 
 // ============================================================================
 // TYPES AND INTERFACES

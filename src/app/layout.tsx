@@ -4,7 +4,7 @@ import './globals.css'
 import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { Toaster } from 'react-hot-toast'
+// Toaster is now handled in Providers
 
 // Optimized font loading for performance
 const inter = Inter({
@@ -148,33 +148,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//cdn.example.com" />
         <link rel="dns-prefetch" href="//analytics.google.com" />
 
-        {/* Critical CSS for above-the-fold content */}
-        <style jsx>{`
-          /* Critical CSS to prevent layout shift */
-          .hero-section {
-            min-height: 100vh;
-            background: linear-gradient(135deg, rgb(14 165 233 / 0.1) 0%, rgb(59 130 246 / 0.05) 100%);
-          }
-
-          /* Video player container sizing */
-          .video-container {
-            aspect-ratio: 16 / 9;
-            background: rgb(15 23 42);
-            border-radius: 0.75rem;
-          }
-
-          /* Loading states to prevent CLS */
-          .loading-skeleton {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-          }
-
-          @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-          }
-        `}</style>
+        {/* Critical CSS moved to globals.css */}
 
         {/* Favicon and app icons */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -229,33 +203,7 @@ export default function RootLayout({
           {/* Site footer */}
           <Footer />
 
-          {/* Global toast notifications */}
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#1e293b',
-                color: '#f1f5f9',
-                borderRadius: '0.75rem',
-                border: '1px solid #334155',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#22c55e',
-                  secondary: '#f1f5f9',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#f1f5f9',
-                },
-              },
-            }}
-          />
+          {/* Toast notifications handled in Providers */}
         </Providers>
 
         {/* Development-only performance monitoring */}
