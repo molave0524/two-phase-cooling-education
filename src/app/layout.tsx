@@ -149,6 +149,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//analytics.google.com" />
 
         {/* Critical CSS moved to globals.css */}
+        {/* Force styles to ensure section visibility */}
+        <link rel="stylesheet" href="/force-styles.css" />
 
         {/* Favicon and app icons */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
