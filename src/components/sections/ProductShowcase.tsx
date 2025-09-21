@@ -136,8 +136,8 @@ const SAMPLE_PRODUCTS: Products[] = [
       'Easy installation'
     ],
     images: [
-      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=640&h=480&fit=crop&crop=center',
-      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=640&h=480&fit=crop&crop=center'
+      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=640&h=480',
+      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=640&h=480'
     ],
     stock_quantity: 75,
     sku: 'TPC-CASE-ESS-001',
@@ -172,8 +172,8 @@ const SAMPLE_PRODUCTS: Products[] = [
       'STEM education certified'
     ],
     images: [
-      'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=640&h=480&fit=crop&crop=center',
-      'https://images.unsplash.com/photo-1616469829271-0a7e8ebcb668?w=640&h=480&fit=crop&crop=center'
+      'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=640&h=480',
+      'https://images.unsplash.com/photo-1616469829271-0a7e8ebcb668?w=640&h=480'
     ],
     stock_quantity: 100,
     sku: 'TPC-EDU-KIT-001',

@@ -152,10 +152,10 @@ export default function RootLayout({
         {/* Force styles to ensure section visibility */}
         <link rel="stylesheet" href="/force-styles.css" />
 
-        {/* Favicon and app icons */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* Favicon and app icons - disabled for demo */}
+        {/* <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> */}
         {/* Manifest disabled for demo */}
 
         {/* Security headers - X-Frame-Options must be set via server headers */}
