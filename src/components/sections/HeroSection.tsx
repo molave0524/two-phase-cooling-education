@@ -8,7 +8,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/solid'
 export const HeroSection: React.FC = () => {
   return (
     <div className="container-max section-padding">
-      <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+      <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen-80">
         {/* Content */}
         <div className="space-y-8">
           <div className="space-y-4">
