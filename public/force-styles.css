@@ -6,13 +6,29 @@ html, body, #__next, main, .min-h-screen {
   background-color: transparent !important;
 }
 
-/* Force section backgrounds with highest specificity */
+/* NUCLEAR APPROACH - Force section backgrounds with extreme specificity */
+section[id="hero"],
+html body section[id="hero"],
+html body div section[id="hero"],
+html body main section[id="hero"],
 html body div[class*="min-h-screen"] section[id="hero"] {
-  background: linear-gradient(135deg, #f0f9ff, #ffffff, #f8fafc) !important;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e40af) !important;
+  background-image: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e40af) !important;
+  background-color: #3b82f6 !important;
   min-height: 100vh !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* Force all children of hero section to be transparent */
+section[id="hero"] *,
+section[id="hero"] > *,
+section[id="hero"] div,
+section[id="hero"] .container-max,
+section[id="hero"] .section-padding {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 html body div[class*="min-h-screen"] section[id="technology"] {
@@ -20,8 +36,9 @@ html body div[class*="min-h-screen"] section[id="technology"] {
   padding: 5rem 0 !important;
 }
 
+section[id="demonstrations"],
 html body div[class*="min-h-screen"] section[id="demonstrations"] {
-  background-color: #f8fafc !important;
+  background-color: #e2e8f0 !important;
   padding: 5rem 0 !important;
 }
 
