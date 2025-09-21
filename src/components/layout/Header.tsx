@@ -344,7 +344,7 @@ export const Header: React.FC = () => {
             <div className="hidden lg:flex items-center gap-3">
               {/* Cart */}
               <Link
-                href="/cart"
+                href="#cart"
                 className="relative p-2 text-secondary-600 hover:text-primary-600 transition-colors"
               >
                 <ShoppingBagIcon className="w-6 h-6" />
@@ -370,7 +370,7 @@ export const Header: React.FC = () => {
             <div className="flex items-center gap-3 lg:hidden">
               {/* Mobile Cart */}
               <Link
-                href="/cart"
+                href="#cart"
                 className="relative p-2 text-secondary-600 hover:text-primary-600 transition-colors"
               >
                 <ShoppingBagIcon className="w-6 h-6" />

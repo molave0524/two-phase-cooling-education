@@ -506,13 +506,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         playsInline
       >
         <source src={video.file_url} type="video/mp4" />
-        <track
-          kind="captions"
-          srcLang="en"
-          label="English"
-          src={`${video.file_url.replace('.mp4', '.vtt')}`}
-          default
-        />
+        {/* Captions disabled for demo */}
         Your browser does not support the video tag.
       </video>
 

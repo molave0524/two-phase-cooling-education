@@ -156,7 +156,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.json" />
+        {/* Manifest disabled for demo */}
 
         {/* Security headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
@@ -233,24 +233,7 @@ export default function RootLayout({
           />
         )}
 
-        {/* Service Worker registration for PWA capabilities */}
-        {process.env.NODE_ENV === 'production' && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                if ('serviceWorker' in navigator) {
-                  window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
-                      console.log('SW registered: ', registration);
-                    }).catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
-                  });
-                }
-              `,
-            }}
-          />
-        )}
+        {/* Service Worker disabled for demo */}
       </body>
     </html>
   )
