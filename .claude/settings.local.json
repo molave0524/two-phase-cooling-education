@@ -6,7 +6,10 @@
       "Bash(npm install)",
       "Bash(npm ls:*)",
       "Bash(npm cache clean:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(npx tailwindcss:*)"
     ],
     "deny": [],
     "ask": []
