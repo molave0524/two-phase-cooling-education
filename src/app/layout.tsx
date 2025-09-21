@@ -142,7 +142,7 @@ export default function RootLayout({
     >
       <head>
         {/* Preload critical resources for performance */}
-        <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* Font loading handled by Next.js Google Fonts */}
 
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//cdn.example.com" />
