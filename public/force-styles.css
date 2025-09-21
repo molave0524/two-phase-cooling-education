@@ -12,9 +12,9 @@ html body section[id="hero"],
 html body div section[id="hero"],
 html body main section[id="hero"],
 html body div[class*="min-h-screen"] section[id="hero"] {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9, #e2e8f0) !important;
-  background-image: linear-gradient(135deg, #f8fafc, #f1f5f9, #e2e8f0) !important;
-  background-color: #f8fafc !important;
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc) !important;
+  background-image: linear-gradient(135deg, #e0f2fe, #bae6fd, #7dd3fc) !important;
+  background-color: #e0f2fe !important;
   min-height: 100vh !important;
   display: flex !important;
   align-items: center !important;
@@ -126,6 +126,15 @@ section .container-max > *,
 .text-primary-600 { color: #0284c7 !important; }
 .text-secondary-900 { color: #0f172a !important; }
 .text-secondary-600 { color: #475569 !important; }
+
+/* Fix invisible gradient text */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: #0284c7 !important; /* Fallback if gradient fails */
+}
 
 /* Force spacing */
 .gap-12 { gap: 3rem !important; }
