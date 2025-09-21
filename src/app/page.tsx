@@ -65,6 +65,13 @@ export default function HomePage() {
       <section
         id="hero"
         className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50"
+        style={{
+          background: 'linear-gradient(135deg, #f0f9ff, #ffffff, #f8fafc)',
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
         aria-labelledby="hero-heading"
       >
         <HeroSection />
@@ -74,6 +81,10 @@ export default function HomePage() {
       <section
         id="technology"
         className="py-20 bg-white"
+        style={{
+          backgroundColor: '#ffffff',
+          padding: '5rem 0'
+        }}
         aria-labelledby="technology-heading"
       >
         <div className="container-max section-padding">
@@ -85,6 +96,10 @@ export default function HomePage() {
       <section
         id="demonstrations"
         className="py-20 bg-secondary-50"
+        style={{
+          backgroundColor: '#f8fafc',
+          padding: '5rem 0'
+        }}
         aria-labelledby="demonstrations-heading"
       >
         <div className="container-max section-padding">
@@ -96,6 +111,10 @@ export default function HomePage() {
       <section
         id="performance"
         className="py-20 bg-white"
+        style={{
+          backgroundColor: '#ffffff',
+          padding: '5rem 0'
+        }}
         aria-labelledby="performance-heading"
       >
         <div className="container-max section-padding">
@@ -107,6 +126,10 @@ export default function HomePage() {
       <section
         id="ai-assistant"
         className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50"
+        style={{
+          background: 'linear-gradient(135deg, #f0f9ff, #f8fafc)',
+          padding: '5rem 0'
+        }}
         aria-labelledby="ai-assistant-heading"
       >
         <div className="container-max section-padding">
@@ -118,6 +141,10 @@ export default function HomePage() {
       <section
         id="product"
         className="py-20 bg-white"
+        style={{
+          backgroundColor: '#ffffff',
+          padding: '5rem 0'
+        }}
         aria-labelledby="product-heading"
       >
         <div className="container-max section-padding">
@@ -129,6 +156,11 @@ export default function HomePage() {
       <section
         id="get-started"
         className="py-20 bg-gradient-to-br from-primary-600 to-primary-800 text-white"
+        style={{
+          background: 'linear-gradient(135deg, #0284c7, #075985)',
+          color: 'white',
+          padding: '5rem 0'
+        }}
         aria-labelledby="cta-heading"
       >
         <div className="container-max section-padding">
