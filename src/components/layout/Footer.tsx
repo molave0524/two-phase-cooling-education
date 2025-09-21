@@ -46,108 +46,29 @@ const FOOTER_SECTIONS: FooterSection[] = [
     title: 'Learn',
     links: [
       {
-        label: 'Video Demonstrations',
-        href: '#demonstrations',
-        icon: <PlayCircleIcon className="w-4 h-4" />,
-        description: 'Watch two-phase cooling in action'
-      },
-      {
-        label: 'Technology Overview',
+        label: 'Technology',
         href: '#technology',
-        icon: <BeakerIcon className="w-4 h-4" />,
-        description: 'Understand the science'
+        icon: <BeakerIcon className="w-4 h-4" />
       },
       {
-        label: 'Performance Data',
-        href: '#performance',
-        description: 'Real-world testing results'
-      },
-      {
-        label: 'Educational Resources',
-        href: '/education',
-        icon: <BookOpenIcon className="w-4 h-4" />,
-        description: 'Courses and guides'
-      }
-    ]
-  },
-  {
-    title: 'Products & Services',
-    links: [
-      {
-        label: 'Computer Cases',
-        href: '#products',
-        icon: <ShoppingBagIcon className="w-4 h-4" />
-      },
-      {
-        label: 'Educational Kits',
-        href: '/products/education'
+        label: 'Demonstrations',
+        href: '#demonstrations',
+        icon: <PlayCircleIcon className="w-4 h-4" />
       },
       {
         label: 'AI Assistant',
         href: '#ai-assistant',
         icon: <ChatBubbleLeftRightIcon className="w-4 h-4" />
-      },
-      {
-        label: 'Technical Support',
-        href: '/support'
-      },
-      {
-        label: 'Installation Guide',
-        href: '/installation'
       }
     ]
   },
   {
-    title: 'Company',
+    title: 'Products',
     links: [
       {
-        label: 'About Us',
-        href: '/about'
-      },
-      {
-        label: 'Research & Development',
-        href: '/research'
-      },
-      {
-        label: 'Sustainability',
-        href: '/sustainability'
-      },
-      {
-        label: 'Careers',
-        href: '/careers'
-      },
-      {
-        label: 'Press & Media',
-        href: '/press'
-      }
-    ]
-  },
-  {
-    title: 'Support',
-    links: [
-      {
-        label: 'Contact Us',
-        href: '/contact',
-        icon: <EnvelopeIcon className="w-4 h-4" />
-      },
-      {
-        label: 'Help Center',
-        href: '/help'
-      },
-      {
-        label: 'Documentation',
-        href: '/docs',
-        icon: <ArrowTopRightOnSquareIcon className="w-4 h-4" />,
-        external: true
-      },
-      {
-        label: 'Community Forum',
-        href: '/community',
-        external: true
-      },
-      {
-        label: 'Warranty',
-        href: '/warranty'
+        label: 'Computer Cases',
+        href: '#product',
+        icon: <ShoppingBagIcon className="w-4 h-4" />
       }
     ]
   }
@@ -163,37 +84,13 @@ const SOCIAL_LINKS: SocialLink[] = [
     platform: 'Twitter',
     href: 'https://twitter.com/thermaledcenter',
     icon: '🐦'
-  },
-  {
-    platform: 'LinkedIn',
-    href: 'https://linkedin.com/company/thermal-ed-center',
-    icon: '💼'
-  },
-  {
-    platform: 'GitHub',
-    href: 'https://github.com/thermal-ed-center',
-    icon: '💻'
   }
 ]
 
 const CONTACT_INFO = {
   email: 'info@thermaledcenter.com',
-  phone: '+1 (555) 123-4567',
-  address: {
-    street: '123 Innovation Drive',
-    city: 'Tech Valley',
-    state: 'CA',
-    zip: '94043',
-    country: 'USA'
-  }
+  phone: '+1 (555) 123-4567'
 }
-
-const CERTIFICATIONS = [
-  { name: 'ISO 14001', description: 'Environmental Management' },
-  { name: 'ENERGY STAR', description: 'Energy Efficiency' },
-  { name: 'RoHS Compliant', description: 'Hazardous Substances' },
-  { name: 'CE Marked', description: 'European Conformity' }
-]
 
 // ============================================================================
 // FOOTER COMPONENT
