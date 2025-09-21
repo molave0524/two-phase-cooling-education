@@ -127,13 +127,18 @@ section .container-max > *,
 .text-secondary-900 { color: #0f172a !important; }
 .text-secondary-600 { color: #475569 !important; }
 
-/* Fix invisible gradient text */
-.text-gradient-primary {
-  background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  color: #0284c7 !important; /* Fallback if gradient fails */
+/* Fix invisible gradient text - use solid color instead */
+.text-gradient-primary,
+span.text-gradient-primary,
+h1 .text-gradient-primary,
+section[id="hero"] .text-gradient-primary {
+  color: #0284c7 !important; /* Solid blue color that will definitely work */
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Force spacing */
