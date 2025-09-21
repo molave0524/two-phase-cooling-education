@@ -194,16 +194,7 @@ export const Footer: React.FC = () => {
                     {CONTACT_INFO.phone}
                   </Link>
                 </div>
-                <div className="flex items-start gap-2">
-                  <MapPinIcon className="w-4 h-4 text-primary-400 mt-0.5 flex-shrink-0" />
-                  <div className="text-secondary-300">
-                    <div>{CONTACT_INFO.address.street}</div>
-                    <div>
-                      {CONTACT_INFO.address.city}, {CONTACT_INFO.address.state} {CONTACT_INFO.address.zip}
-                    </div>
-                    <div>{CONTACT_INFO.address.country}</div>
-                  </div>
-                </div>
+                {/* Address section removed for simplicity */}
               </div>
             </div>
 
