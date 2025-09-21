@@ -12,9 +12,9 @@ html body section[id="hero"],
 html body div section[id="hero"],
 html body main section[id="hero"],
 html body div[class*="min-h-screen"] section[id="hero"] {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e40af) !important;
-  background-image: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e40af) !important;
-  background-color: #3b82f6 !important;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9, #e2e8f0) !important;
+  background-image: linear-gradient(135deg, #f8fafc, #f1f5f9, #e2e8f0) !important;
+  background-color: #f8fafc !important;
   min-height: 100vh !important;
   display: flex !important;
   align-items: center !important;
@@ -38,7 +38,7 @@ html body div[class*="min-h-screen"] section[id="technology"] {
 
 section[id="demonstrations"],
 html body div[class*="min-h-screen"] section[id="demonstrations"] {
-  background-color: #e2e8f0 !important;
+  background-color: #f1f5f9 !important;
   padding: 5rem 0 !important;
 }
 
