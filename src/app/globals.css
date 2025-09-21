@@ -1,0 +1,609 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Two-Phase Cooling Education Center Global Styles */
+
+/* ============================================================================
+   CSS CUSTOM PROPERTIES (CSS Variables)
+   ============================================================================ */
+
+:root {
+  /* Laboratory color palette */
+  --color-cooling-primary: theme('colors.primary.500');
+  --color-cooling-secondary: theme('colors.secondary.500');
+  --color-thermal-warning: theme('colors.danger.500');
+  --color-success-active: theme('colors.success.500');
+
+  /* Typography scale */
+  --font-family-primary: theme('fontFamily.sans');
+  --font-family-mono: theme('fontFamily.mono');
+
+  /* Spacing for laboratory precision */
+  --spacing-unit: 0.25rem; /* 4px base unit */
+  --border-radius-technical: theme('borderRadius.technical');
+  --border-radius-equipment: theme('borderRadius.equipment');
+
+  /* Shadows for depth and technical feel */
+  --shadow-cooling: theme('boxShadow.cooling');
+  --shadow-thermal: theme('boxShadow.thermal');
+  --shadow-glass: theme('boxShadow.glass');
+  --shadow-equipment: theme('boxShadow.equipment');
+
+  /* Animation durations */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* Z-index layers */
+  --z-video-overlay: theme('zIndex.video-overlay');
+  --z-video-controls: theme('zIndex.video-controls');
+  --z-modal: theme('zIndex.modal');
+  --z-toast: theme('zIndex.toast');
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-cooling-primary: theme('colors.primary.400');
+    --color-cooling-secondary: theme('colors.secondary.400');
+  }
+}
+
+/* ============================================================================
+   BASE STYLES AND RESETS
+   ============================================================================ */
+
+/* Smooth scrolling for modern browsers */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced focus styles for accessibility */
+*:focus {
+  outline: 2px solid var(--color-cooling-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users, keep for keyboard users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Better box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Body styling for optimal readability */
+body {
+  font-family: var(--font-family-primary);
+  font-feature-settings: 'cv03', 'cv04', 'cv11';
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   COMPONENT LAYER STYLES
+   ============================================================================ */
+
+@layer components {
+  /* Button component styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-technical px-4 py-2
+           font-medium transition-all duration-normal
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700
+           focus:ring-primary-500 shadow-cooling
+           active:bg-primary-800 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary-100 text-secondary-900 hover:bg-secondary-200
+           focus:ring-secondary-500 border border-secondary-300
+           active:bg-secondary-300;
+  }
+
+  .btn-thermal {
+    @apply btn bg-danger-600 text-white hover:bg-danger-700
+           focus:ring-danger-500 shadow-thermal
+           active:bg-danger-800;
+  }
+
+  .btn-success {
+    @apply btn bg-success-600 text-white hover:bg-success-700
+           focus:ring-success-500
+           active:bg-success-800;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  /* Card component styles */
+  .card {
+    @apply bg-white rounded-equipment shadow-glass border border-secondary-200
+           overflow-hidden;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-normal
+           hover:shadow-equipment hover:-translate-y-1;
+  }
+
+  .card-thermal {
+    @apply card border-danger-200 bg-gradient-to-br from-white to-danger-50;
+  }
+
+  .card-cooling {
+    @apply card border-primary-200 bg-gradient-to-br from-white to-primary-50;
+  }
+
+  /* Input component styles */
+  .input {
+    @apply block w-full rounded-technical border-secondary-300
+           px-3 py-2 text-secondary-900 placeholder-secondary-500
+           focus:border-primary-500 focus:ring-primary-500
+           disabled:bg-secondary-50 disabled:text-secondary-500;
+  }
+
+  .input-error {
+    @apply input border-danger-300 focus:border-danger-500 focus:ring-danger-500;
+  }
+
+  /* Video player styles */
+  .video-player {
+    @apply relative w-full bg-secondary-900 rounded-equipment overflow-hidden
+           shadow-equipment;
+  }
+
+  .video-controls {
+    @apply absolute bottom-0 left-0 right-0 bg-gradient-to-t
+           from-black/80 via-black/40 to-transparent
+           p-4 transition-opacity duration-normal;
+  }
+
+  .video-progress {
+    @apply w-full h-1 bg-white/20 rounded-full overflow-hidden
+           cursor-pointer;
+  }
+
+  .video-progress-bar {
+    @apply h-full bg-primary-500 transition-all duration-fast
+           relative;
+  }
+
+  .video-progress-buffer {
+    @apply absolute top-0 left-0 h-full bg-white/30;
+  }
+
+  /* Technical measurement display */
+  .metric-display {
+    @apply font-mono text-sm bg-secondary-900 text-success-400
+           px-2 py-1 rounded border border-secondary-700
+           inline-flex items-center gap-1;
+  }
+
+  .metric-label {
+    @apply text-xs uppercase tracking-wider text-secondary-500 font-medium;
+  }
+
+  .metric-value {
+    @apply text-lg font-bold text-secondary-900;
+  }
+
+  .metric-unit {
+    @apply text-sm text-secondary-600 font-medium;
+  }
+
+  /* Status indicators */
+  .status-indicator {
+    @apply inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-cooling {
+    @apply status-indicator bg-primary-100 text-primary-800;
+  }
+
+  .status-thermal {
+    @apply status-indicator bg-danger-100 text-danger-800;
+  }
+
+  .status-optimal {
+    @apply status-indicator bg-success-100 text-success-800;
+  }
+
+  /* Loading states */
+  .loading-skeleton {
+    @apply animate-pulse bg-secondary-200 rounded;
+  }
+
+  .loading-spinner {
+    @apply inline-block animate-spin rounded-full border-2 border-transparent
+           border-t-current border-r-current;
+  }
+
+  /* Glass morphism effects for modern UI */
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20
+           shadow-glass;
+  }
+
+  .glass-dark {
+    @apply bg-secondary-900/80 backdrop-blur-md border border-white/10
+           text-white shadow-glass;
+  }
+
+  /* Data visualization styles */
+  .chart-container {
+    @apply bg-white rounded-equipment p-4 shadow-glass border border-secondary-200;
+  }
+
+  .chart-axis {
+    @apply text-xs text-secondary-500 fill-secondary-500;
+  }
+
+  .chart-grid {
+    @apply stroke-secondary-200 stroke-1;
+  }
+
+  .chart-line-primary {
+    @apply stroke-primary-500 stroke-2 fill-none;
+  }
+
+  .chart-line-thermal {
+    @apply stroke-danger-500 stroke-2 fill-none;
+  }
+
+  .chart-area-primary {
+    @apply fill-primary-500/20;
+  }
+
+  /* Alert and notification styles */
+  .alert {
+    @apply p-4 rounded-equipment border-l-4;
+  }
+
+  .alert-info {
+    @apply alert bg-primary-50 border-primary-500 text-primary-800;
+  }
+
+  .alert-warning {
+    @apply alert bg-accent-50 border-accent-500 text-accent-800;
+  }
+
+  .alert-error {
+    @apply alert bg-danger-50 border-danger-500 text-danger-800;
+  }
+
+  .alert-success {
+    @apply alert bg-success-50 border-success-500 text-success-800;
+  }
+
+  /* Progress bars */
+  .progress-bar {
+    @apply w-full bg-secondary-200 rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full bg-primary-500 transition-all duration-slow ease-out;
+  }
+
+  .progress-thermal {
+    @apply progress-fill bg-gradient-to-r from-success-500 via-accent-500 to-danger-500;
+  }
+
+  /* Responsive grid layouts */
+  .grid-auto-fit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .grid-auto-fill {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  /* Typography utilities */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-thermal {
+    @apply bg-gradient-to-r from-danger-600 to-danger-800 bg-clip-text text-transparent;
+  }
+
+  .text-technical {
+    @apply font-mono text-sm tracking-wide;
+  }
+
+  /* Layout utilities */
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-max {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .container-content {
+    @apply max-w-4xl mx-auto;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.5s ease-out forwards;
+  }
+
+  .animate-cooling-pulse {
+    animation: cooling-pulse 2s ease-in-out infinite;
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-transform duration-normal hover:-translate-y-1;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-normal hover:shadow-equipment;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-normal hover:scale-105;
+  }
+}
+
+/* ============================================================================
+   UTILITY LAYER STYLES
+   ============================================================================ */
+
+@layer utilities {
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .sr-only-focusable:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: inherit !important;
+    margin: inherit !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .btn-primary {
+      @apply border-2 border-primary-800;
+    }
+
+    .card {
+      @apply border-2 border-secondary-400;
+    }
+
+    .input {
+      @apply border-2 border-secondary-400;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .animate-cooling-pulse,
+    .animate-thermal-glow,
+    .animate-data-flow {
+      animation: none !important;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    .video-player {
+      @apply bg-secondary-100 flex items-center justify-center;
+    }
+
+    .video-player::after {
+      content: 'Video content - view online at twophasecooling.com';
+      @apply text-secondary-600 text-sm;
+    }
+
+    .btn {
+      @apply border border-secondary-400 bg-transparent text-secondary-900;
+    }
+
+    /* Ensure good contrast for printing */
+    * {
+      color-adjust: exact !important;
+      -webkit-print-color-adjust: exact !important;
+    }
+  }
+
+  /* Touch device optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    .btn {
+      @apply py-3; /* Larger touch targets */
+    }
+
+    .video-controls {
+      @apply p-6; /* Larger touch area for video controls */
+    }
+
+    /* Remove hover effects on touch devices */
+    .hover-lift:hover,
+    .hover-glow:hover,
+    .hover-scale:hover {
+      transform: none;
+      box-shadow: inherit;
+    }
+  }
+
+  /* High DPI display optimizations */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .metric-display {
+      @apply text-xs; /* Smaller text on high DPI displays */
+    }
+
+    .border {
+      border-width: 0.5px; /* Thinner borders on high DPI */
+    }
+  }
+}
+
+/* ============================================================================
+   CUSTOM KEYFRAME ANIMATIONS
+   ============================================================================ */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes thermal-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes data-stream {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   THIRD-PARTY COMPONENT OVERRIDES
+   ============================================================================ */
+
+/* Video.js player customization */
+.video-js {
+  @apply font-sans;
+}
+
+.vjs-big-play-button {
+  @apply bg-primary-600/80 border-primary-600 rounded-full;
+}
+
+.vjs-big-play-button:hover {
+  @apply bg-primary-700/90;
+}
+
+.vjs-control-bar {
+  @apply bg-gradient-to-t from-black/80 to-transparent;
+}
+
+.vjs-progress-control .vjs-progress-holder {
+  @apply bg-white/20;
+}
+
+.vjs-progress-control .vjs-play-progress {
+  @apply bg-primary-500;
+}
+
+.vjs-volume-panel .vjs-volume-control {
+  @apply bg-black/60 rounded;
+}
+
+/* React Hot Toast customization */
+.react-hot-toast > div {
+  @apply shadow-equipment;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-secondary-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-secondary-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-secondary-500;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.secondary.400') theme('colors.secondary.100');
+}
+
+/* Selection styling */
+::selection {
+  @apply bg-primary-200 text-primary-900;
+}
+
+::-moz-selection {
+  @apply bg-primary-200 text-primary-900;
+}

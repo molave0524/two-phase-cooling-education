@@ -1,0 +1,208 @@
+# Artillery.js CDN Load Testing Configuration
+#
+# Production-grade load testing for video CDN performance
+# Simulates realistic user behavior and traffic patterns
+
+config:
+  target: 'https://d123456789.cloudfront.net'  # Replace with your CloudFront domain
+  phases:
+    # Warm-up phase - normal traffic
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm-up"
+
+    # Ramp-up phase - building to peak
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: "Ramp-up"
+
+    # Peak traffic phase - YouTube review traffic spike
+    - duration: 300
+      arrivalRate: 50
+      rampTo: 200
+      name: "Peak Traffic"
+
+    # Sustained high load
+    - duration: 180
+      arrivalRate: 200
+      name: "Sustained Peak"
+
+    # Cool-down phase
+    - duration: 120
+      arrivalRate: 200
+      rampTo: 10
+      name: "Cool-down"
+
+  processor: "./artillery-processor.js"
+
+  # Performance thresholds (Artillery will fail if exceeded)
+  ensure:
+    maxErrorRate: 1        # Max 1% error rate
+    p95: 2000             # 95% of requests under 2 seconds
+    p99: 5000             # 99% of requests under 5 seconds
+    maxVusers: 1000       # Support up to 1000 concurrent users
+
+  # Variables for testing different video qualities
+  variables:
+    videoQualities:
+      - "4k"
+      - "1080p"
+      - "720p"
+      - "480p"
+
+    videoCategories:
+      - "intro-to-two-phase"
+      - "cooling-comparison"
+      - "thermal-imaging-demo"
+      - "installation-guide"
+      - "safety-demonstration"
+
+  # Custom headers to simulate real browser requests
+  defaults:
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      Accept: "video/mp4,video/webm,video/*;q=0.9,*/*;q=0.8"
+      Accept-Encoding: "gzip, deflate, br"
+      Accept-Language: "en-US,en;q=0.9"
+      Cache-Control: "no-cache"
+      DNT: "1"
+
+# Test scenarios simulating real user behavior
+scenarios:
+  # Scenario 1: Video browsing and watching
+  - name: "Video Viewing Experience"
+    weight: 70  # 70% of traffic
+    flow:
+      # User lands on video page
+      - get:
+          url: "/videos/{{ $randomFromList(videoCategories) }}-{{ $randomFromList(videoQualities) }}.mp4"
+          headers:
+            Range: "bytes=0-1048576"  # Request first 1MB (video start)
+          capture:
+            - json: "$.duration"
+              as: "videoDuration"
+          expect:
+            - statusCode: 206  # Partial content for range request
+            - hasHeader: "content-range"
+            - contentType: "video/mp4"
+
+      # Simulate progressive video loading
+      - loop:
+          over: "videoChunks"
+          flow:
+            - get:
+                url: "/videos/{{ $randomFromList(videoCategories) }}-{{ $randomFromList(videoQualities) }}.mp4"
+                headers:
+                  Range: "bytes={{ $randInt(1048576, 10485760) }}-{{ $randInt(10485760, 52428800) }}"
+                expect:
+                  - statusCode: 206
+
+            # Simulate user watching/buffering time
+            - think: "{{ $randInt(2, 8) }}"
+
+  # Scenario 2: Video thumbnail and metadata requests
+  - name: "Video Discovery"
+    weight: 20  # 20% of traffic
+    flow:
+      # Load video thumbnails
+      - get:
+          url: "/thumbnails/{{ $randomFromList(videoCategories) }}-thumb.jpg"
+          expect:
+            - statusCode: 200
+            - contentType: "image/jpeg"
+            - hasHeader: "cache-control"
+
+      # Load video metadata
+      - get:
+          url: "/api/videos/{{ $randomFromList(videoCategories) }}/metadata"
+          expect:
+            - statusCode: 200
+            - contentType: "application/json"
+
+      # Brief pause before next action
+      - think: "{{ $randInt(1, 5) }}"
+
+  # Scenario 3: Adaptive bitrate streaming simulation
+  - name: "Adaptive Streaming"
+    weight: 10  # 10% of traffic
+    flow:
+      # Start with lower quality
+      - get:
+          url: "/videos/{{ $randomFromList(videoCategories) }}-480p.mp4"
+          headers:
+            Range: "bytes=0-524288"  # 512KB initial chunk
+          expect:
+            - statusCode: 206
+
+      # Simulate quality upgrade to 720p
+      - think: 3
+      - get:
+          url: "/videos/{{ $randomFromList(videoCategories) }}-720p.mp4"
+          headers:
+            Range: "bytes=524288-1572864"
+          expect:
+            - statusCode: 206
+
+      # Continue with higher quality if connection is good
+      - think: 2
+      - get:
+          url: "/videos/{{ $randomFromList(videoCategories) }}-1080p.mp4"
+          headers:
+            Range: "bytes=1572864-5242880"
+          expect:
+            - statusCode: 206
+
+# Custom variables for loop scenarios
+before:
+  flow:
+    - set:
+        videoChunks: ["chunk1", "chunk2", "chunk3", "chunk4", "chunk5"]
+
+# Geographic distribution simulation
+# (Artillery will need to be run from different regions)
+geo:
+  regions:
+    - us-east-1: 40%      # East Coast US
+    - us-west-2: 25%      # West Coast US
+    - eu-west-1: 20%      # Europe
+    - ap-southeast-1: 10%  # Asia Pacific
+    - ap-northeast-1: 5%   # Asia
+
+# Metrics collection
+plugins:
+  metrics-by-endpoint:
+    useOnlyRequestNames: true
+    groupDynamicURLs: true
+
+  # CloudWatch metrics (if AWS credentials available)
+  cloudwatch:
+    namespace: "CoolingEducation/CDN/LoadTest"
+    metrics:
+      - RequestLatency
+      - ErrorRate
+      - ThroughputPerSecond
+
+  # Custom reporting
+  html-report:
+    output: "cdn-load-test-report.html"
+
+# Test environment variables
+environments:
+  development:
+    target: 'https://dev-d123456789.cloudfront.net'
+    phases:
+      - duration: 30
+        arrivalRate: 2
+        rampTo: 10
+
+  staging:
+    target: 'https://staging-d123456789.cloudfront.net'
+    phases:
+      - duration: 60
+        arrivalRate: 10
+        rampTo: 50
+
+  production:
+    target: 'https://d123456789.cloudfront.net'
+    # Use default phases defined above

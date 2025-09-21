@@ -1,0 +1,60 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_DEMO_MODE": "true",
+    "NEXT_PUBLIC_USE_SAMPLE_DATA": "true",
+    "NEXT_PUBLIC_ENABLE_AI_ASSISTANT": "true",
+    "NEXT_PUBLIC_ENABLE_ECOMMERCE": "true",
+    "NEXT_PUBLIC_ENABLE_VIDEO_STREAMING": "true",
+    "NEXT_PUBLIC_ENABLE_DEMO_VIDEOS": "true",
+    "AI_CIRCUIT_BREAKER_FAILURE_THRESHOLD": "3",
+    "AI_CIRCUIT_BREAKER_TIMEOUT_MS": "10000",
+    "AI_CIRCUIT_BREAKER_RESET_TIMEOUT_MS": "30000"
+  }
+}
