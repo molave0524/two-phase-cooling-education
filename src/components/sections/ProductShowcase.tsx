@@ -82,7 +82,7 @@ const SAMPLE_PRODUCTS: Products[] = [
     description: 'Our flagship computer case featuring integrated two-phase cooling system with transparent panels for visual monitoring.',
     price: 899,
     price_cents: 89900,
-    image: 'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=640&h=480&fit=crop&crop=center',
+    image: 'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=640&h=480',
     compare_at_price: 119900,
     currency: 'USD',
     category: 'Computer Cases',
@@ -98,9 +98,9 @@ const SAMPLE_PRODUCTS: Products[] = [
       'RGB lighting system'
     ],
     images: [
-      'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=640&h=480&fit=crop&crop=center',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=640&h=480&fit=crop&crop=center',
-      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=640&h=480&fit=crop&crop=center'
+      'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=640&h=480',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=640&h=480',
+      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=640&h=480'
     ],
     stock_quantity: 50,
     sku: 'TPC-CASE-PRO-001',
@@ -120,7 +120,7 @@ const SAMPLE_PRODUCTS: Products[] = [
     description: 'Entry-level two-phase cooling case perfect for enthusiasts wanting to experience revolutionary cooling technology.',
     price: 599,
     price_cents: 59900,
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=640&h=480&fit=crop&crop=center',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=640&h=480',
     compare_at_price: 79900,
     currency: 'USD',
     category: 'Computer Cases',
@@ -157,7 +157,7 @@ const SAMPLE_PRODUCTS: Products[] = [
     description: 'Comprehensive educational kit for understanding thermal dynamics principles in two-phase cooling systems.',
     price: 199,
     price_cents: 19900,
-    image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=640&h=480&fit=crop&crop=center',
+    image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=640&h=480',
     compare_at_price: undefined,
     currency: 'USD',
     category: 'Educational Materials',
