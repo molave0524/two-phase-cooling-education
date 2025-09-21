@@ -1,5 +1,11 @@
 /* CRITICAL STYLES - LOADED DIRECTLY TO FORCE APPLICATION */
 
+/* Force page background to be transparent */
+html, body, #__next, main, .min-h-screen {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 /* Force section backgrounds with highest specificity */
 html body div[class*="min-h-screen"] section[id="hero"] {
   background: linear-gradient(135deg, #f0f9ff, #ffffff, #f8fafc) !important;

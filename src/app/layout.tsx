@@ -171,10 +171,11 @@ export default function RootLayout({
       <body
         className={`
           font-sans antialiased
-          bg-white text-secondary-900
+          text-secondary-900
           min-h-screen flex flex-col
           selection:bg-primary-200 selection:text-primary-900
         `}
+        style={{ backgroundColor: 'transparent' }}
         suppressHydrationWarning
       >
         {/* Skip to main content for accessibility */}
