@@ -158,9 +158,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Manifest disabled for demo */}
 
-        {/* Security headers */}
+        {/* Security headers - X-Frame-Options must be set via server headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
 
         {/* Performance hints */}
