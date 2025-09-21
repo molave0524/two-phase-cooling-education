@@ -280,8 +280,8 @@ export const Header: React.FC = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation - Apple style */}
-            <nav className="hidden md:flex items-center space-x-8">
+            {/* Navigation - Always visible Apple style */}
+            <nav className="flex items-center space-x-8">
               {MAIN_NAVIGATION.map((item) => (
                 <div key={item.label}>
                   {item.children ? (

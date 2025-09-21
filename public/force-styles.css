@@ -183,13 +183,28 @@ section[id="hero"] .text-gradient-primary {
 .flex { display: flex !important; }
 .items-center { align-items: center !important; }
 
-/* Force header navigation to be visible */
-nav.md\\:flex {
+/* FORCE HEADER NAVIGATION TO BE VISIBLE */
+header nav,
+nav,
+.flex.items-center.space-x-8 {
   display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
-@media (min-width: 768px) {
-  .md\\:flex { display: flex !important; }
+header nav a,
+nav a {
+  display: inline-block !important;
+  visibility: visible !important;
+  color: #374151 !important;
+  text-decoration: none !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 500 !important;
+}
+
+header nav a:hover,
+nav a:hover {
+  color: #0284c7 !important;
 }
 
 /* Force responsive grid */
