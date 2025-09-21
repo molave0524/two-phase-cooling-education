@@ -66,7 +66,7 @@ export default function HomePage() {
         id="hero"
         className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50"
         style={{
-          background: 'linear-gradient(135deg, #f0f9ff, #ffffff, #f8fafc)',
+          background: 'linear-gradient(135deg, #dbeafe, #f0f9ff, #e0e7ff)',
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
@@ -97,7 +97,7 @@ export default function HomePage() {
         id="demonstrations"
         className="py-20 bg-secondary-50"
         style={{
-          backgroundColor: '#f8fafc',
+          backgroundColor: '#f1f5f9',
           padding: '5rem 0'
         }}
         aria-labelledby="demonstrations-heading"
@@ -127,7 +127,7 @@ export default function HomePage() {
         id="ai-assistant"
         className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50"
         style={{
-          background: 'linear-gradient(135deg, #f0f9ff, #f8fafc)',
+          background: 'linear-gradient(135deg, #dbeafe, #e0f2fe)',
           padding: '5rem 0'
         }}
         aria-labelledby="ai-assistant-heading"
