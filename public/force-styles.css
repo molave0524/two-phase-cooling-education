@@ -21,44 +21,76 @@ html body div[class*="min-h-screen"] section[id="hero"] {
   justify-content: center !important;
 }
 
-/* Force all children of hero section to be transparent */
-section[id="hero"] *,
-section[id="hero"] > *,
-section[id="hero"] div,
-section[id="hero"] .container-max,
-section[id="hero"] .section-padding {
+/* Force all children of sections to be transparent and inherit text colors */
+section *,
+section > *,
+section div,
+section .container-max,
+section .section-padding {
   background: transparent !important;
   background-color: transparent !important;
 }
 
+/* Force text colors in specific sections */
+section[id="demonstrations"] *,
+section[id="ai-assistant"] *,
+section[id="get-started"] * {
+  color: white !important;
+}
+
+section[id="demonstrations"] h2,
+section[id="demonstrations"] h3,
+section[id="demonstrations"] p,
+section[id="ai-assistant"] h2,
+section[id="ai-assistant"] h3,
+section[id="ai-assistant"] p,
+section[id="get-started"] h2,
+section[id="get-started"] h3,
+section[id="get-started"] p {
+  color: white !important;
+}
+
+/* DRAMATIC SECTION BACKGROUNDS FOR CLEAR DISTINCTION */
+section[id="technology"],
 html body div[class*="min-h-screen"] section[id="technology"] {
   background-color: #ffffff !important;
   padding: 5rem 0 !important;
+  border-bottom: 5px solid #e5e7eb !important;
 }
 
 section[id="demonstrations"],
 html body div[class*="min-h-screen"] section[id="demonstrations"] {
-  background-color: #f1f5f9 !important;
+  background-color: #1f2937 !important;
+  color: white !important;
   padding: 5rem 0 !important;
+  border-bottom: 5px solid #374151 !important;
 }
 
+section[id="performance"],
 html body div[class*="min-h-screen"] section[id="performance"] {
-  background-color: #ffffff !important;
+  background-color: #fef3c7 !important;
   padding: 5rem 0 !important;
+  border-bottom: 5px solid #f59e0b !important;
 }
 
+section[id="ai-assistant"],
 html body div[class*="min-h-screen"] section[id="ai-assistant"] {
-  background: linear-gradient(135deg, #f0f9ff, #f8fafc) !important;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  color: white !important;
   padding: 5rem 0 !important;
+  border-bottom: 5px solid #1e40af !important;
 }
 
+section[id="product"],
 html body div[class*="min-h-screen"] section[id="product"] {
-  background-color: #ffffff !important;
+  background-color: #f0fdf4 !important;
   padding: 5rem 0 !important;
+  border-bottom: 5px solid #22c55e !important;
 }
 
+section[id="get-started"],
 html body div[class*="min-h-screen"] section[id="get-started"] {
-  background: linear-gradient(135deg, #0284c7, #075985) !important;
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
   color: white !important;
   padding: 5rem 0 !important;
 }
