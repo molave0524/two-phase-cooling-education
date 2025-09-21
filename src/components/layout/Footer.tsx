@@ -41,38 +41,8 @@ interface SocialLink {
 // FOOTER DATA
 // ============================================================================
 
-const FOOTER_SECTIONS: FooterSection[] = [
-  {
-    title: 'Learn',
-    links: [
-      {
-        label: 'Technology',
-        href: '#technology',
-        icon: <BeakerIcon className="w-4 h-4" />
-      },
-      {
-        label: 'Demonstrations',
-        href: '#demonstrations',
-        icon: <PlayCircleIcon className="w-4 h-4" />
-      },
-      {
-        label: 'AI Assistant',
-        href: '#ai-assistant',
-        icon: <ChatBubbleLeftRightIcon className="w-4 h-4" />
-      }
-    ]
-  },
-  {
-    title: 'Products',
-    links: [
-      {
-        label: 'Computer Cases',
-        href: '#product',
-        icon: <ShoppingBagIcon className="w-4 h-4" />
-      }
-    ]
-  }
-]
+// Navigation links moved to header - keeping footer minimal
+const FOOTER_SECTIONS: FooterSection[] = []
 
 const SOCIAL_LINKS: SocialLink[] = [
   {

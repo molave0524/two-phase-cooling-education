@@ -38,65 +38,24 @@ interface MobileMenuProps {
 
 const MAIN_NAVIGATION: NavigationItem[] = [
   {
-    label: 'Learn',
-    icon: <BookOpenIcon className="w-5 h-5" />,
-    children: [
-      {
-        label: 'Video Demonstrations',
-        href: '#demonstrations',
-        description: 'Watch two-phase cooling in action'
-      },
-      {
-        label: 'Technology Overview',
-        href: '#technology',
-        description: 'Understand the science behind the innovation'
-      },
-      {
-        label: 'Performance Data',
-        href: '#performance',
-        description: 'Real-world testing results and benchmarks'
-      },
-      {
-        label: 'Educational Resources',
-        href: '/education',
-        description: 'Courses, guides, and learning materials'
-      }
-    ]
+    label: 'Technology',
+    href: '#technology'
+  },
+  {
+    label: 'Demonstrations',
+    href: '#demonstrations'
+  },
+  {
+    label: 'Performance',
+    href: '#performance'
   },
   {
     label: 'AI Assistant',
-    href: '#ai-assistant',
-    icon: <ChatBubbleLeftRightIcon className="w-5 h-5" />
+    href: '#ai-assistant'
   },
   {
     label: 'Products',
-    href: '#products',
-    icon: <ShoppingBagIcon className="w-5 h-5" />
-  },
-  {
-    label: 'About',
-    children: [
-      {
-        label: 'Our Mission',
-        href: '/about',
-        description: 'Environmental responsibility meets performance'
-      },
-      {
-        label: 'Research & Development',
-        href: '/research',
-        description: 'Innovation in thermal management'
-      },
-      {
-        label: 'Sustainability',
-        href: '/sustainability',
-        description: 'Environmental impact and responsibility'
-      },
-      {
-        label: 'Contact',
-        href: '/contact',
-        description: 'Get in touch with our team'
-      }
-    ]
+    href: '#product'
   }
 ]
 
