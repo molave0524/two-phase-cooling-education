@@ -49,6 +49,13 @@ html body div[class*="min-h-screen"] section[id="get-started"] {
   width: 100% !important;
 }
 
+/* Ensure containers inside gradient sections are transparent */
+section[id="hero"] .container-max,
+section[id="ai-assistant"] .container-max,
+section[id="get-started"] .container-max {
+  background: transparent !important;
+}
+
 .section-padding {
   padding-left: 1.5rem !important;
   padding-right: 1.5rem !important;
