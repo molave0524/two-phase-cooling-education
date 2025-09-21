@@ -183,6 +183,15 @@ section[id="hero"] .text-gradient-primary {
 .flex { display: flex !important; }
 .items-center { align-items: center !important; }
 
+/* Force header navigation to be visible */
+nav.md\\:flex {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .md\\:flex { display: flex !important; }
+}
+
 /* Force responsive grid */
 @media (min-width: 1024px) {
   .lg\\:grid-cols-2 {

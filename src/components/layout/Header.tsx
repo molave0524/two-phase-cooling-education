@@ -280,8 +280,8 @@ export const Header: React.FC = () => {
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-2">
+            {/* Desktop Navigation - Apple style */}
+            <nav className="hidden md:flex items-center space-x-8">
               {MAIN_NAVIGATION.map((item) => (
                 <div key={item.label}>
                   {item.children ? (
@@ -289,10 +289,9 @@ export const Header: React.FC = () => {
                   ) : (
                     <Link
                       href={item.href || '#'}
-                      className="flex items-center gap-2 px-4 py-2 text-secondary-700 hover:text-primary-600 font-medium transition-colors"
+                      className="px-4 py-2 text-secondary-700 hover:text-primary-600 font-medium transition-colors"
                     >
-                      {item.icon}
-                      <span>{item.label}</span>
+                      {item.label}
                     </Link>
                   )}
                 </div>
