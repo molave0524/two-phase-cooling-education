@@ -232,23 +232,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Certifications */}
-        <div className="mt-12 pt-8 border-t border-secondary-800">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-white text-center">Certifications & Compliance</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {CERTIFICATIONS.map((cert) => (
-                <div key={cert.name} className="text-center">
-                  <div className="w-16 h-16 bg-secondary-800 rounded-equipment mx-auto mb-2 flex items-center justify-center">
-                    <BeakerIcon className="w-8 h-8 text-primary-400" />
-                  </div>
-                  <div className="text-sm font-medium text-white">{cert.name}</div>
-                  <div className="text-xs text-secondary-400">{cert.description}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* Certifications section removed for simplicity */}
       </div>
 
       {/* Bottom Bar */}
