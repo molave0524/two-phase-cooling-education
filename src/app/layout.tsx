@@ -169,7 +169,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#075985" media="(prefers-color-scheme: dark)" />
 
-        {/* Emergency override until CSS modules fully working */}
+{/* Emergency override needed due to Tailwind CSS specificity */}
         <style dangerouslySetInnerHTML={{
           __html: `
             /* Filter buttons - lighter when not selected */
