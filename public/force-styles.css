@@ -37,6 +37,15 @@ section[id="performance"] p {
   color: #6b7280 !important; /* Light text for comfortable reading on white background */
 }
 
+/* Specific override for performance section filter buttons */
+section[id="performance"] button {
+  color: #6b7280 !important; /* Light text for filter buttons */
+}
+
+section[id="performance"] button.bg-primary-600 {
+  color: white !important; /* Keep white text for active button */
+}
+
 /* Medium text for slate-100 background sections (better readability) */
 section[id="demonstrations"] *,
 section[id="demonstrations"] h2,
