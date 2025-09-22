@@ -15,15 +15,33 @@ This platform transforms how cooling technology is understood by providing:
 
 ### Prerequisites
 - Node.js 18+
-- npm 8+
+- PNPM 8+ (recommended) or npm 8+
 
 ### Installation
+
+**Using PNPM (recommended):**
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd simple-todo
 
-# Install dependencies
+# Install dependencies with PNPM
+pnpm install
+
+# Setup environment
+cp .env.local.example .env.local
+
+# Run development server
+pnpm dev
+```
+
+**Using npm:**
+```bash
+# Clone the repository
+git clone <repository-url>
+cd simple-todo
+
+# Install dependencies with npm
 npm install
 
 # Setup environment
