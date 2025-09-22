@@ -10,7 +10,8 @@ import {
   ChatBubbleLeftRightIcon,
   ShoppingBagIcon,
   BookOpenIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 import { useCartStore } from '@/lib/stores/cart-store'
 
@@ -33,29 +34,29 @@ interface MobileMenuProps {
 }
 
 // ============================================================================
-// NAVIGATION DATA
+// NAVIGATION DATA - Apple.com style
 // ============================================================================
 
 const MAIN_NAVIGATION: NavigationItem[] = [
+  {
+    label: 'Store',
+    href: '#store'
+  },
   {
     label: 'Technology',
     href: '#technology'
   },
   {
-    label: 'Demonstrations',
-    href: '#demonstrations'
+    label: 'AI',
+    href: '#ai-assistant'
   },
   {
     label: 'Performance',
     href: '#performance'
   },
   {
-    label: 'AI Assistant',
-    href: '#ai-assistant'
-  },
-  {
-    label: 'Products',
-    href: '#product'
+    label: 'Support',
+    href: '#support'
   }
 ]
 
@@ -269,15 +270,9 @@ export const Header: React.FC = () => {
       >
         <div className="container-max">
           <div className="flex items-center justify-between py-4">
-            {/* Apple-style Logo */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-60 transition-opacity duration-200">
-              {/* Simple, clean logo like Apple */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-secondary-900 rounded-full flex items-center justify-center">
-                  <BeakerIcon className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-semibold text-lg text-secondary-900">ThermalPro</span>
-              </div>
+            {/* Apple.com-style Logo */}
+            <Link href="/" className="flex items-center hover:opacity-60 transition-opacity duration-200">
+              <span className="text-xl font-normal text-black tracking-tight">ThermalPro</span>
             </Link>
 
             {/* Apple-style Navigation */}
@@ -298,14 +293,22 @@ export const Header: React.FC = () => {
               ))}
             </nav>
 
-            {/* Apple-style Actions */}
-            <div className="hidden lg:flex items-center gap-4">
-              {/* Cart - Apple style */}
+            {/* Apple.com-style Actions */}
+            <div className="hidden lg:flex items-center gap-6">
+              {/* Search Icon - Apple style */}
+              <Link
+                href="#search"
+                className="text-black hover:text-black/80 transition-colors duration-200"
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+              </Link>
+
+              {/* Cart Icon - Apple style */}
               <Link
                 href="#cart"
                 className="relative text-black hover:text-black/80 transition-colors duration-200"
               >
-                <ShoppingBagIcon className="w-5 h-5" />
+                <ShoppingBagIcon className="w-4 h-4" />
                 {cartItemCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                     {cartItemCount}
