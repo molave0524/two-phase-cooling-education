@@ -177,18 +177,18 @@ export default function RootLayout({
               color: #f3f4f6 !important;
             }
             section[id="performance"] .filter-button--inactive:hover {
-              color: #f3f4f6 !important; /* Keep light gray on hover */
+              color: #374151 !important; /* Dark text on hover for contrast */
             }
             section[id="performance"] .filter-button--active {
-              color: #1f2937 !important; /* Dark text for selected state */
+              color: #111827 !important; /* Darker text for selected state */
               background-color: rgb(37 99 235) !important;
             }
             /* Extra aggressive override for selected buttons */
             section[id="performance"] button.filter-button--active {
-              color: #1f2937 !important;
+              color: #111827 !important;
             }
             section[id="performance"] .flex button.filter-button--active {
-              color: #1f2937 !important;
+              color: #111827 !important;
             }
             /* Brute force fallback for any buttons */
             section[id="performance"] button:not(.filter-button--active) {
@@ -204,12 +204,15 @@ export default function RootLayout({
             section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 span {
               color: #374151 !important;
             }
-            /* Make clock icon match hour label color */
+            /* Make clock icon match hour label color - darker */
             section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 svg {
-              color: #374151 !important;
+              color: #1f2937 !important;
             }
             section[id="performance"] .text-secondary-600 svg {
-              color: #374151 !important;
+              color: #1f2937 !important;
+            }
+            section[id="performance"] div.text-xs svg {
+              color: #1f2937 !important;
             }
           `
         }} />
