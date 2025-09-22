@@ -129,7 +129,12 @@ section[id="performance"] .bg-primary-600.text-white .text-primary-100 {
 }
 
 section[id="performance"] .bg-primary-600.text-white .text-primary-200 {
-  color: #6b7280 !important; /* Light gray for tertiary text */
+  color: #1f2937 !important; /* Darker gray for hour/duration text */
+}
+
+/* Real-World Test Scenarios - darker hour text for non-highlighted boxes */
+section[id="performance"] .text-secondary-500 {
+  color: #374151 !important; /* Darker gray for hour text in non-highlighted boxes */
 }
 
 /* Navigation link styles - remove underlines */
