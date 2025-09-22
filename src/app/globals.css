@@ -1,4 +1,7 @@
-/* Comprehensive CSS Replacement for Tailwind - Styled for Professional Look */
+/* Two-Phase Cooling Education Center - Global Styles */
+
+/* Import Design Token System */
+@import '../styles/design-tokens.css';
 
 /* CSS Reset and Base Styles */
 *, *::before, *::after {

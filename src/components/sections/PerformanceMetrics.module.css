@@ -1,18 +1,19 @@
 /* Performance Metrics Section - Dedicated CSS Module */
 
-/* CSS Custom Properties for maintainability */
+/* Performance Metrics Component using Design Token System */
 .performanceSection {
-  --filter-inactive: #6b7280;
-  --filter-hover: #374151;
-  --filter-active: #0f172a;
-  --filter-bg-active: rgb(37, 99, 235);
-  --filter-bg-hover: rgb(239, 246, 255);
+  /* Use centralized design tokens instead of hardcoded values */
+  --filter-inactive: var(--performance-filter-inactive);
+  --filter-hover: var(--performance-filter-hover);
+  --filter-active: var(--performance-filter-active);
+  --filter-bg-active: var(--performance-filter-bg-active);
+  --filter-bg-hover: var(--performance-filter-bg-hover);
 
-  --hour-text: #1f2937;
-  --hour-icon: #1f2937;
+  --hour-text: var(--performance-hour-text);
+  --hour-icon: var(--performance-hour-icon);
 
-  --scenario-heading: #111827;
-  --scenario-text-selected: #1f2937;
+  --scenario-heading: var(--performance-scenario-heading);
+  --scenario-text-selected: var(--performance-scenario-text);
 }
 
 /* High specificity selectors to override Tailwind - using CSS module class names */
