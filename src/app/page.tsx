@@ -64,14 +64,7 @@ export default function HomePage() {
       {/* Hero Section - Immediate Impact */}
       <section
         id="hero"
-        className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50"
-        style={{
-          background: 'linear-gradient(135deg, #dbeafe, #f0f9ff, #e0e7ff)',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
+        className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50"
         aria-labelledby="hero-heading"
       >
         <HeroSection />
@@ -81,10 +74,6 @@ export default function HomePage() {
       <section
         id="technology"
         className="py-20 bg-white"
-        style={{
-          backgroundColor: '#ffffff',
-          padding: '5rem 0'
-        }}
         aria-labelledby="technology-heading"
       >
         <div className="container-max section-padding">
@@ -95,11 +84,7 @@ export default function HomePage() {
       {/* Video Showcase - Core Demonstrations */}
       <section
         id="demonstrations"
-        className="py-20 bg-secondary-50"
-        style={{
-          backgroundColor: '#f1f5f9',
-          padding: '5rem 0'
-        }}
+        className="py-20 bg-slate-100"
         aria-labelledby="demonstrations-heading"
       >
         <div className="container-max section-padding">
@@ -111,10 +96,6 @@ export default function HomePage() {
       <section
         id="performance"
         className="py-20 bg-white"
-        style={{
-          backgroundColor: '#ffffff',
-          padding: '5rem 0'
-        }}
         aria-labelledby="performance-heading"
       >
         <div className="container-max section-padding">
@@ -125,11 +106,7 @@ export default function HomePage() {
       {/* AI Assistant Preview - Interactive Learning */}
       <section
         id="ai-assistant"
-        className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50"
-        style={{
-          background: 'linear-gradient(135deg, #dbeafe, #e0f2fe)',
-          padding: '5rem 0'
-        }}
+        className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50"
         aria-labelledby="ai-assistant-heading"
       >
         <div className="container-max section-padding">
@@ -141,10 +118,6 @@ export default function HomePage() {
       <section
         id="product"
         className="py-20 bg-white"
-        style={{
-          backgroundColor: '#ffffff',
-          padding: '5rem 0'
-        }}
         aria-labelledby="product-heading"
       >
         <div className="container-max section-padding">
@@ -155,12 +128,7 @@ export default function HomePage() {
       {/* Call to Action - Clear Next Steps */}
       <section
         id="get-started"
-        className="py-20 bg-gradient-to-br from-primary-600 to-primary-800 text-white"
-        style={{
-          background: 'linear-gradient(135deg, #0284c7, #075985)',
-          color: 'white',
-          padding: '5rem 0'
-        }}
+        className="py-20 bg-gradient-to-br from-sky-600 to-sky-800 text-white"
         aria-labelledby="cta-heading"
       >
         <div className="container-max section-padding">
