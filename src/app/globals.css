@@ -510,10 +510,7 @@ body {
 }
 
 /* Section background colors - force application */
-section[id="hero"] {
-  background: linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255), rgb(248 250 252)) !important;
-  min-height: 100vh !important;
-}
+/* Hero section background handled by Tailwind classes in page.tsx */
 
 section[id="technology"] {
   background-color: white !important;

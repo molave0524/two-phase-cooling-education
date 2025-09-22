@@ -71,8 +71,8 @@
   --performance-scenario-text: var(--color-secondary-800);
 
   /* Text Colors for Different Backgrounds */
-  --text-on-white: var(--color-secondary-600);
-  --text-on-light: var(--color-secondary-500);
+  --text-on-white: var(--color-secondary-900);
+  --text-on-light: var(--color-secondary-800);
   --text-on-dark: var(--color-secondary-50);
   --text-on-primary: var(--color-secondary-50);
 
