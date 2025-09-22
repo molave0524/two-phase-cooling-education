@@ -33,14 +33,17 @@ section .section-padding {
 
 /* Force text colors in specific sections */
 section[id="demonstrations"] *,
+section[id="demonstrations"] h2,
+section[id="demonstrations"] h3,
+section[id="demonstrations"] p {
+  color: #374151 !important; /* Dark text for light bg-slate-100 background */
+}
+
 section[id="ai-assistant"] *,
 section[id="get-started"] * {
   color: white !important;
 }
 
-section[id="demonstrations"] h2,
-section[id="demonstrations"] h3,
-section[id="demonstrations"] p,
 section[id="ai-assistant"] h2,
 section[id="ai-assistant"] h3,
 section[id="ai-assistant"] p,
