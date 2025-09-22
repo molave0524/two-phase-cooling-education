@@ -169,6 +169,29 @@ export default function RootLayout({
         <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#075985" media="(prefers-color-scheme: dark)" />
 
+        {/* Emergency override until CSS modules fully working */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Filter buttons - darker colors */
+            section[id="performance"] button[class*="filterButton"] {
+              color: #1f2937 !important;
+            }
+            section[id="performance"] button[class*="filterButton"][class*="active"] {
+              color: #0f172a !important;
+              background-color: rgb(37, 99, 235) !important;
+            }
+            section[id="performance"] button[class*="filterButton"]:hover {
+              color: #1f2937 !important;
+            }
+            /* Hour labels match workload labels */
+            section[id="performance"] .bg-primary-600 [class*="hourLabel"] {
+              color: #374151 !important;
+            }
+            section[id="performance"] [class*="scenarioText"] {
+              color: #374151 !important;
+            }
+          `
+        }} />
       </head>
 
       <body
