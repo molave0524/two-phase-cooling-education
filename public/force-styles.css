@@ -11,6 +11,11 @@ section .section-padding {
   background-color: transparent !important;
 }
 
+/* Ensure section backgrounds are applied correctly */
+section[id="technology"] {
+  background-color: white !important;
+}
+
 /* Force text colors in specific sections - grouped by color for maintainability */
 
 /* Dark text for white background sections - using design tokens */
