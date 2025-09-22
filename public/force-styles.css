@@ -37,16 +37,16 @@ section[id="performance"] p {
   color: #6b7280 !important; /* Light text for comfortable reading on white background */
 }
 
-/* Specific override for performance section filter buttons */
-section[id="performance"] button:not(.bg-primary-600) {
-  color: #6b7280 !important; /* Light text for inactive filter buttons */
+/* Nuclear override for performance section filter buttons - highest specificity */
+section[id="performance"] div.flex button.text-secondary-600.px-4.py-2.text-sm.font-medium,
+section[id="performance"] div button.text-secondary-600,
+section[id="performance"] button[class*="text-secondary-600"]:not(.bg-primary-600),
+section[id="performance"] button:not([class*="bg-primary-600"]) {
+  color: #6b7280 !important; /* Force light text for inactive filter buttons */
 }
 
-section[id="performance"] button.text-secondary-600 {
-  color: #6b7280 !important; /* Override Tailwind text-secondary-600 class */
-}
-
-section[id="performance"] button.bg-primary-600 {
+section[id="performance"] button.bg-primary-600,
+section[id="performance"] button[class*="bg-primary-600"] {
   color: white !important; /* Keep white text for active button */
 }
 
