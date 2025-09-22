@@ -5,6 +5,29 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    // Ensure section background colors are never purged
+    'bg-primary-50',
+    'bg-primary-600',
+    'bg-primary-800',
+    'bg-secondary-50',
+    'bg-secondary-100',
+    'bg-secondary-200',
+    'bg-secondary-900',
+    'text-primary-600',
+    'text-secondary-600',
+    'text-secondary-900',
+    'text-gradient-primary',
+    // Container and layout classes
+    'container-max',
+    'section-padding',
+    'min-h-screen-80',
+    // Button variants
+    'btn-primary',
+    'btn-secondary',
+    'btn-lg',
+    'btn-sm',
+  ],
   theme: {
     extend: {
       // Laboratory aesthetic color palette for Two-Phase Cooling
@@ -230,5 +253,67 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
+    // Add custom utilities plugin
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.container-max': {
+          width: '100%',
+          maxWidth: '1280px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          paddingLeft: '1rem',
+          paddingRight: '1rem',
+        },
+        '.section-padding': {
+          paddingLeft: '1.5rem',
+          paddingRight: '1.5rem',
+        },
+        '.min-h-screen-80': {
+          minHeight: '80vh',
+        },
+        '.text-gradient-primary': {
+          background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+          '-webkit-background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+          'background-clip': 'text',
+        },
+        '.btn': {
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0.5rem 1rem',
+          borderRadius: '0.375rem',
+          fontWeight: '500',
+          transition: 'all 0.15s ease',
+          cursor: 'pointer',
+          border: 'none',
+          textDecoration: 'none',
+        },
+        '.btn-primary': {
+          backgroundColor: '#0284c7',
+          color: 'white',
+          '&:hover': {
+            backgroundColor: '#0369a1',
+          },
+        },
+        '.btn-secondary': {
+          backgroundColor: '#f9fafb',
+          color: '#374151',
+          border: '1px solid #e5e7eb',
+          '&:hover': {
+            backgroundColor: '#f3f4f6',
+          },
+        },
+        '.btn-lg': {
+          padding: '0.75rem 1.5rem',
+          fontSize: '1.125rem',
+        },
+        '.btn-sm': {
+          padding: '0.375rem 0.75rem',
+          fontSize: '0.875rem',
+        },
+      }
+      addUtilities(newUtilities)
+    },
   ],
 }
