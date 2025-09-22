@@ -204,15 +204,26 @@ export default function RootLayout({
             section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 span {
               color: #374151 !important;
             }
-            /* Make clock icon match hour label color - darker */
+            /* Make clock icon match hour label color - darker and more aggressive */
             section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 svg {
               color: #1f2937 !important;
+              fill: #1f2937 !important;
             }
             section[id="performance"] .text-secondary-600 svg {
               color: #1f2937 !important;
+              fill: #1f2937 !important;
             }
             section[id="performance"] div.text-xs svg {
               color: #1f2937 !important;
+              fill: #1f2937 !important;
+            }
+            section[id="performance"] svg.w-3.h-3 {
+              color: #1f2937 !important;
+              fill: #1f2937 !important;
+            }
+            section[id="performance"] div.text-xs .w-3.h-3 {
+              color: #1f2937 !important;
+              fill: #1f2937 !important;
             }
             /* FINAL NUCLEAR OVERRIDES - MUST BE LAST */
             section[id="performance"] button.filter-button.filter-button--active,
