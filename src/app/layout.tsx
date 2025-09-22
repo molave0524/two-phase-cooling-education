@@ -183,9 +183,9 @@ export default function RootLayout({
             section[id="performance"] button[class*="filterButton"]:hover {
               color: #374151 !important;
             }
-            /* Hour labels match workload labels - darker when selected */
+            /* Hour labels match workload labels - same color when selected */
             section[id="performance"] .bg-primary-600 [class*="hourLabel"] {
-              color: #111827 !important;
+              color: #1f2937 !important;
             }
             section[id="performance"] .bg-primary-600 [class*="scenarioText"] {
               color: #1f2937 !important;
