@@ -37,17 +37,17 @@ section[id="demonstrations"] p {
 }
 
 section[id="ai-assistant"] *,
-section[id="get-started"] * {
-  color: white !important;
-}
-
 section[id="ai-assistant"] h2,
 section[id="ai-assistant"] h3,
-section[id="ai-assistant"] p,
+section[id="ai-assistant"] p {
+  color: #374151 !important; /* Dark text for light bg-gradient-to-br from-blue-50 to-cyan-50 */
+}
+
+section[id="get-started"] *,
 section[id="get-started"] h2,
 section[id="get-started"] h3,
 section[id="get-started"] p {
-  color: white !important;
+  color: white !important; /* White text for dark bg-gradient-to-br from-sky-600 to-sky-800 */
 }
 
 /* Section background overrides removed - now using proper Tailwind classes from page.tsx */
