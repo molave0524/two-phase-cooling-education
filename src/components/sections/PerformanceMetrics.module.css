@@ -17,18 +17,18 @@
 
 /* Filter Buttons - Clean and maintainable */
 .filterButton {
-  color: var(--filter-inactive);
+  color: var(--filter-inactive) !important;
   transition: all 0.2s ease;
 }
 
 .filterButton:hover {
-  color: var(--filter-hover);
-  background-color: var(--filter-bg-hover);
+  color: var(--filter-hover) !important;
+  background-color: var(--filter-bg-hover) !important;
 }
 
 .filterButton.active {
-  color: var(--filter-active);
-  background-color: var(--filter-bg-active);
+  color: var(--filter-active) !important;
+  background-color: var(--filter-bg-active) !important;
 }
 
 /* Test Scenario Styling */
@@ -37,28 +37,28 @@
 }
 
 .scenarioBox.selected .scenarioHeading {
-  color: var(--scenario-heading);
+  color: var(--scenario-heading) !important;
 }
 
 .scenarioBox.selected .scenarioText {
-  color: var(--scenario-text-selected);
+  color: var(--scenario-text-selected) !important;
 }
 
 .scenarioBox.selected .hourLabel {
-  color: var(--hour-text);
+  color: var(--hour-text) !important;
 }
 
 .scenarioBox.selected .hourIcon {
-  color: var(--hour-icon);
-  fill: var(--hour-icon);
+  color: var(--hour-icon) !important;
+  fill: var(--hour-icon) !important;
 }
 
 /* Non-selected scenario styling */
 .scenarioBox:not(.selected) .hourLabel {
-  color: var(--hour-text);
+  color: var(--hour-text) !important;
 }
 
 .scenarioBox:not(.selected) .hourIcon {
-  color: var(--hour-icon);
-  fill: var(--hour-icon);
+  color: var(--hour-icon) !important;
+  fill: var(--hour-icon) !important;
 }
