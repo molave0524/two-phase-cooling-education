@@ -215,10 +215,12 @@ export const PerformanceMetrics: React.FC = () => {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? 'bg-primary-600 text-white'
-                  : 'text-gray-200 hover:text-primary-600 hover:bg-primary-50'
+                  ? 'bg-primary-600'
+                  : 'hover:bg-primary-50'
               }`}
-              style={selectedCategory !== category ? { color: '#e5e7eb' } : { color: 'white' }}
+              style={{
+                color: selectedCategory === category ? 'white' : '#e5e7eb'
+              }}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
