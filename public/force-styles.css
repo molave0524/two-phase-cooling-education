@@ -22,15 +22,19 @@ section[id="ai-assistant"] *,
 section[id="ai-assistant"] h2,
 section[id="ai-assistant"] h3,
 section[id="ai-assistant"] p,
-section[id="performance"] *,
-section[id="performance"] h2,
-section[id="performance"] h3,
-section[id="performance"] p,
 section[id="product"] *,
 section[id="product"] h2,
 section[id="product"] h3,
 section[id="product"] p {
   color: #374151 !important; /* Dark text for white and light gradient backgrounds */
+}
+
+/* Medium text for performance section (better readability for metrics) */
+section[id="performance"] *,
+section[id="performance"] h2,
+section[id="performance"] h3,
+section[id="performance"] p {
+  color: #4b5563 !important; /* Lighter text for better readability on white background */
 }
 
 /* Medium-dark text for slate-100 background sections (better readability) */
