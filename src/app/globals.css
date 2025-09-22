@@ -601,34 +601,3 @@ section[id="get-started"] {
   margin-bottom: 0.5rem;
 }
 
-/* Performance Filter Button Utilities */
-.filter-button {
-  --text-inactive: #f3f4f6;
-  --text-active: white;
-  --bg-active: rgb(37 99 235);
-  --bg-hover: rgb(239 246 255);
-}
-
-.filter-button--inactive {
-  color: var(--text-inactive) !important;
-}
-
-.filter-button--active {
-  background-color: var(--bg-active);
-  color: var(--text-active) !important;
-}
-
-.filter-button--inactive:hover {
-  background-color: var(--bg-hover);
-  color: rgb(37 99 235) !important;
-}
-
-/* Extra specificity for performance section filter buttons */
-section[id="performance"] .filter-button--inactive {
-  color: #f3f4f6 !important;
-}
-
-section[id="performance"] .filter-button--active {
-  color: white !important;
-  background-color: rgb(37 99 235) !important;
-}

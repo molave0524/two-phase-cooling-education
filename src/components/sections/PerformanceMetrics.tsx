@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import styles from './PerformanceMetrics.module.css'
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -192,7 +193,7 @@ export const PerformanceMetrics: React.FC = () => {
   }
 
   return (
-    <div className="space-y-12">
+    <div className={`${styles.performanceSection} space-y-12`}>
       {/* Section Header */}
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-2">
@@ -214,10 +215,8 @@ export const PerformanceMetrics: React.FC = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`filter-button px-4 py-2 text-sm font-medium transition-colors ${
-                selectedCategory === category
-                  ? 'filter-button--active'
-                  : 'filter-button--inactive'
+              className={`${styles.filterButton} px-4 py-2 text-sm font-medium ${
+                selectedCategory === category ? styles.active : ''
               }`}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
@@ -303,23 +302,25 @@ export const PerformanceMetrics: React.FC = () => {
               <button
                 key={scenario.id}
                 onClick={() => setSelectedScenario(scenario)}
-                className={`p-4 rounded-equipment text-left transition-all ${
+                className={`${styles.scenarioBox} ${
+                  selectedScenario.id === scenario.id ? styles.selected : ''
+                } p-4 rounded-equipment text-left transition-all ${
                   selectedScenario.id === scenario.id
                     ? 'bg-primary-600 text-white shadow-lg'
                     : 'bg-white text-secondary-900 hover:bg-primary-50 border border-secondary-200'
                 }`}
               >
                 <div className="space-y-2">
-                  <h4 className="font-semibold">{scenario.name}</h4>
-                  <p className={`text-sm ${
+                  <h4 className={`font-semibold ${styles.scenarioHeading}`}>{scenario.name}</h4>
+                  <p className={`text-sm ${styles.scenarioText} ${
                     selectedScenario.id === scenario.id ? 'text-primary-100' : 'text-secondary-600'
                   }`}>
                     {scenario.workload}
                   </p>
-                  <div className={`flex items-center gap-1 text-xs ${
+                  <div className={`flex items-center gap-1 text-xs ${styles.hourLabel} ${
                     selectedScenario.id === scenario.id ? 'text-primary-100' : 'text-secondary-600'
                   }`}>
-                    <ClockIcon className="w-3 h-3" />
+                    <ClockIcon className={`w-3 h-3 ${styles.hourIcon}`} />
                     <span>{scenario.duration}</span>
                   </div>
                 </div>
