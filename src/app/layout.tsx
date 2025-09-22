@@ -180,7 +180,7 @@ export default function RootLayout({
               color: #f3f4f6 !important; /* Keep light gray on hover */
             }
             section[id="performance"] .filter-button--active {
-              color: #e5e7eb !important; /* Light text for selected state */
+              color: #1f2937 !important; /* Dark text for selected state */
               background-color: rgb(37 99 235) !important;
             }
             /* Brute force fallback for any buttons */
