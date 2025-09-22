@@ -1,7 +1,7 @@
 /* CRITICAL STYLES - LOADED DIRECTLY TO FORCE APPLICATION */
 
-/* Force page background to be transparent */
-html, body, #__next, main, .min-h-screen {
+/* Force page background to be transparent, but allow section backgrounds */
+html, body, #__next, main {
   background: transparent !important;
   background-color: transparent !important;
 }
@@ -21,10 +21,7 @@ html body div[class*="min-h-screen"] section[id="hero"] {
   justify-content: center !important;
 }
 
-/* Force all children of sections to be transparent and inherit text colors */
-section *,
-section > *,
-section div,
+/* Force content containers to be transparent, but allow section backgrounds */
 section .container-max,
 section .section-padding {
   background: transparent !important;
