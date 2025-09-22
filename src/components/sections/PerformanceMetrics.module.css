@@ -4,15 +4,15 @@
 .performanceSection {
   --filter-inactive: #f3f4f6;
   --filter-hover: #374151;
-  --filter-active: #111827;
+  --filter-active: #1f2937;
   --filter-bg-active: rgb(37, 99, 235);
   --filter-bg-hover: rgb(239, 246, 255);
 
-  --hour-text: #374151;
+  --hour-text: #1f2937;
   --hour-icon: #1f2937;
 
   --scenario-heading: #1f2937;
-  --scenario-text-light: #374151;
+  --scenario-text-selected: #1f2937;
 }
 
 /* Filter Buttons - Clean and maintainable */
@@ -41,7 +41,7 @@
 }
 
 .scenarioBox.selected .scenarioText {
-  color: var(--scenario-text-light);
+  color: var(--scenario-text-selected);
 }
 
 .scenarioBox.selected .hourLabel {
