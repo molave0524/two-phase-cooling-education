@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -154,6 +154,21 @@ export const PerformanceMetrics: React.FC = () => {
     const timer = setTimeout(() => setAnimatedMetrics(true), 500)
     return () => clearTimeout(timer)
   }, [])
+
+  // Force button colors after state changes
+  useEffect(() => {
+    const buttons = document.querySelectorAll('section[id="performance"] button')
+    buttons.forEach((button, index) => {
+      const category = categories[index]
+      if (selectedCategory !== category) {
+        (button as HTMLElement).style.color = '#e5e7eb'
+        ;(button as HTMLElement).style.setProperty('color', '#e5e7eb', 'important')
+      } else {
+        (button as HTMLElement).style.color = 'white'
+        ;(button as HTMLElement).style.setProperty('color', 'white', 'important')
+      }
+    })
+  }, [selectedCategory])
 
   const categories = ['all', 'temperature', 'efficiency', 'environmental', 'performance']
 
