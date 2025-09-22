@@ -604,6 +604,15 @@ section[id="get-started"] {
   margin-bottom: 0.5rem;
 }
 
+/* Animation delay utilities */
+.animate-bounce-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.animate-bounce-delay-2 {
+  animation-delay: 0.2s;
+}
+
 /* FINAL CASCADE: Section background fixes - loaded last to override all conflicts */
 section[id="technology"],
 section[id="technology"].bg-white,

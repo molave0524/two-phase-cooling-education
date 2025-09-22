@@ -233,12 +233,9 @@ export const PerformanceMetrics: React.FC = () => {
           return (
             <div
               key={metric.metric}
-              className="card-cooling p-6 hover-lift"
+              className={`card-cooling p-6 hover-lift ${styles.metricCard} ${animatedMetrics ? styles.animated : ''}`}
               style={{
-                animationDelay: animatedMetrics ? `${index * 100}ms` : '0ms',
-                opacity: animatedMetrics ? 1 : 0,
-                transform: animatedMetrics ? 'translateY(0)' : 'translateY(20px)',
-                transition: 'all 0.6s ease-out'
+                animationDelay: animatedMetrics ? `${index * 100}ms` : '0ms'
               }}
             >
               <div className="space-y-4">

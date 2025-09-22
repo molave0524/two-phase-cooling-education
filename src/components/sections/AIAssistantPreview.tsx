@@ -252,8 +252,8 @@ export const AIAssistantPreview: React.FC = () => {
                   <div className="bg-white px-4 py-3 rounded-equipment border border-secondary-200">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                      <div className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                      <div className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce animate-bounce-delay-1" />
+                      <div className="w-2 h-2 bg-secondary-400 rounded-full animate-bounce animate-bounce-delay-2" />
                     </div>
                   </div>
                 </div>
