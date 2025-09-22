@@ -119,13 +119,15 @@ export const metadata: Metadata = {
   // Additional metadata
   generator: 'Next.js',
   referrer: 'origin-when-cross-origin',
+}
+
+// Separate viewport export (Next.js 14+ requirement)
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
   colorScheme: 'light dark',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
 }
 
 // Root layout component with optimal performance and accessibility
