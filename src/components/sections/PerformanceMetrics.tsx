@@ -218,7 +218,7 @@ export const PerformanceMetrics: React.FC = () => {
                   ? 'bg-primary-600 text-white'
                   : 'text-gray-200 hover:text-primary-600 hover:bg-primary-50'
               }`}
-              style={selectedCategory !== category ? { color: '#e5e7eb !important' } : {}}
+              style={selectedCategory !== category ? { color: '#e5e7eb' } : { color: 'white' }}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
