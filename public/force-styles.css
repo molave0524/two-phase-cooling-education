@@ -128,6 +128,11 @@ section[id="performance"] .bg-primary-600.text-white .text-primary-100 {
   color: #374151 !important; /* Medium gray for both workload and hour text when selected */
 }
 
+section[id="performance"] .bg-primary-600.text-white p.text-primary-100,
+section[id="performance"] .bg-primary-600.text-white div.text-primary-100 {
+  color: #374151 !important; /* Ensure hour labels match workload labels */
+}
+
 /* Real-World Test Scenarios - darker hour text for non-highlighted boxes */
 section[id="performance"] .text-secondary-500 {
   color: #374151 !important; /* Darker gray for hour text in non-highlighted boxes */

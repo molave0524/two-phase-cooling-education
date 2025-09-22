@@ -176,12 +176,18 @@ export default function RootLayout({
             section[id="performance"] .filter-button--inactive {
               color: #f3f4f6 !important;
             }
+            section[id="performance"] .filter-button--inactive:hover {
+              color: #f3f4f6 !important; /* Keep light gray on hover */
+            }
             section[id="performance"] .filter-button--active {
-              color: white !important;
+              color: #1f2937 !important; /* Darker text for selected state */
               background-color: rgb(37 99 235) !important;
             }
             /* Brute force fallback for any buttons */
             section[id="performance"] button:not(.filter-button--active) {
+              color: #f3f4f6 !important;
+            }
+            section[id="performance"] button:not(.filter-button--active):hover {
               color: #f3f4f6 !important;
             }
           `
