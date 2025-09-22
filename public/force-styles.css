@@ -125,11 +125,7 @@ section[id="performance"] .bg-primary-600.text-white h4 {
 }
 
 section[id="performance"] .bg-primary-600.text-white .text-primary-100 {
-  color: #374151 !important; /* Medium gray for secondary text */
-}
-
-section[id="performance"] .bg-primary-600.text-white .text-primary-200 {
-  color: #1f2937 !important; /* Darker gray for hour/duration text */
+  color: #374151 !important; /* Medium gray for both workload and hour text when selected */
 }
 
 /* Real-World Test Scenarios - darker hour text for non-highlighted boxes */
