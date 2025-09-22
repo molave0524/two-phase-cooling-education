@@ -190,6 +190,13 @@ export default function RootLayout({
             section[id="performance"] button:not(.filter-button--active):hover {
               color: #f3f4f6 !important;
             }
+            /* Force hour labels to match workload labels in test scenarios */
+            section[id="performance"] .bg-primary-600 .text-primary-100 {
+              color: #374151 !important;
+            }
+            section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 span {
+              color: #374151 !important;
+            }
           `
         }} />
       </head>
