@@ -219,7 +219,17 @@ export const PerformanceMetrics: React.FC = () => {
                   : 'hover:bg-primary-50'
               }`}
               style={{
-                color: selectedCategory === category ? 'white' : '#e5e7eb'
+                color: selectedCategory === category ? 'white !important' : '#e5e7eb !important'
+              }}
+              onMouseEnter={(e) => {
+                if (selectedCategory !== category) {
+                  e.currentTarget.style.color = '#e5e7eb';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectedCategory !== category) {
+                  e.currentTarget.style.color = '#e5e7eb';
+                }
               }}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
