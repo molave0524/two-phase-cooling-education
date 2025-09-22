@@ -6,7 +6,6 @@
   "keywords": ["cooling", "education", "two-phase", "computer-case", "thermal-dynamics"],
   "packageManager": "pnpm@8.x",
   "scripts": {
-    "// NOTE": "Project is designed for PNPM but npm/yarn also work",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
