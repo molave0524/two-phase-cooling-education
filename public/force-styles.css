@@ -28,42 +28,33 @@ section .section-padding {
   background-color: transparent !important;
 }
 
-/* Force text colors in specific sections */
+/* Force text colors in specific sections - grouped by color for maintainability */
+
+/* Dark text for light background sections */
 section[id="technology"] *,
 section[id="technology"] h2,
 section[id="technology"] h3,
-section[id="technology"] p {
-  color: #374151 !important; /* Dark text for white bg-white background */
-}
-
+section[id="technology"] p,
 section[id="demonstrations"] *,
 section[id="demonstrations"] h2,
 section[id="demonstrations"] h3,
-section[id="demonstrations"] p {
-  color: #374151 !important; /* Dark text for light bg-slate-100 background */
-}
-
+section[id="demonstrations"] p,
 section[id="ai-assistant"] *,
 section[id="ai-assistant"] h2,
 section[id="ai-assistant"] h3,
-section[id="ai-assistant"] p {
-  color: #374151 !important; /* Dark text for light bg-gradient-to-br from-blue-50 to-cyan-50 */
-}
-
+section[id="ai-assistant"] p,
 section[id="performance"] *,
 section[id="performance"] h2,
 section[id="performance"] h3,
-section[id="performance"] p {
-  color: #374151 !important; /* Dark text for white bg-white background */
-}
-
+section[id="performance"] p,
 section[id="product"] *,
 section[id="product"] h2,
 section[id="product"] h3,
 section[id="product"] p {
-  color: #374151 !important; /* Dark text for white bg-white background */
+  color: #374151 !important; /* Dark text for light backgrounds (white, slate-100, gradients) */
 }
 
+/* White text for dark background sections */
 section[id="get-started"] *,
 section[id="get-started"] h2,
 section[id="get-started"] h3,
