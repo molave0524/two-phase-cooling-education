@@ -600,3 +600,25 @@ section[id="get-started"] {
   color: rgb(55 65 81);
   margin-bottom: 0.5rem;
 }
+
+/* Performance Filter Button Utilities */
+.filter-button {
+  --text-inactive: #e5e7eb;
+  --text-active: white;
+  --bg-active: rgb(37 99 235);
+  --bg-hover: rgb(239 246 255);
+}
+
+.filter-button--inactive {
+  color: var(--text-inactive) !important;
+}
+
+.filter-button--active {
+  background-color: var(--bg-active);
+  color: var(--text-active) !important;
+}
+
+.filter-button--inactive:hover {
+  background-color: var(--bg-hover);
+  color: rgb(37 99 235) !important;
+}

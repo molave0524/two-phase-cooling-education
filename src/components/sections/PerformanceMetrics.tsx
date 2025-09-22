@@ -155,20 +155,6 @@ export const PerformanceMetrics: React.FC = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  // Force button colors after state changes
-  useEffect(() => {
-    const buttons = document.querySelectorAll('section[id="performance"] button')
-    buttons.forEach((button, index) => {
-      const category = categories[index]
-      if (selectedCategory !== category) {
-        (button as HTMLElement).style.color = '#e5e7eb'
-        ;(button as HTMLElement).style.setProperty('color', '#e5e7eb', 'important')
-      } else {
-        (button as HTMLElement).style.color = 'white'
-        ;(button as HTMLElement).style.setProperty('color', 'white', 'important')
-      }
-    })
-  }, [selectedCategory])
 
   const categories = ['all', 'temperature', 'efficiency', 'environmental', 'performance']
 
@@ -228,24 +214,11 @@ export const PerformanceMetrics: React.FC = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`filter-button px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? 'bg-primary-600'
-                  : 'hover:bg-primary-50'
+                  ? 'filter-button--active'
+                  : 'filter-button--inactive'
               }`}
-              style={{
-                color: selectedCategory === category ? 'white !important' : '#e5e7eb !important'
-              }}
-              onMouseEnter={(e) => {
-                if (selectedCategory !== category) {
-                  e.currentTarget.style.color = '#e5e7eb';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (selectedCategory !== category) {
-                  e.currentTarget.style.color = '#e5e7eb';
-                }
-              }}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
