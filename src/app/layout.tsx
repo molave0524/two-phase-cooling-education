@@ -197,6 +197,13 @@ export default function RootLayout({
             section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 span {
               color: #374151 !important;
             }
+            /* Make clock icon match hour label color */
+            section[id="performance"] .bg-primary-600 div.text-xs.text-primary-100 svg {
+              color: #374151 !important;
+            }
+            section[id="performance"] .text-secondary-600 svg {
+              color: #374151 !important;
+            }
           `
         }} />
       </head>
