@@ -53,6 +53,11 @@ section[id="get-started"] .bg-secondary-50 p {
   color: #374151 !important; /* Dark text for light bg-secondary-50 cards */
 }
 
+/* Exception: Preserve button text colors within get-started section */
+section[id="get-started"] .btn-secondary {
+  color: #374151 !important; /* Dark text for light btn-secondary buttons */
+}
+
 /* Section background overrides removed - now using proper Tailwind classes from page.tsx */
 
 /* Force container styling */
