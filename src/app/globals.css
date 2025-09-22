@@ -51,8 +51,15 @@ header a:hover {
   text-decoration: none;
 }
 
+/* Force navigation to be visible - override Tailwind hidden classes */
 header nav {
-  display: flex;
+  display: flex !important;
+  visibility: visible !important;
+}
+
+header nav a {
+  display: block !important;
+  visibility: visible !important;
 }
 
 /* Section-specific text colors using proper cascade */
@@ -100,6 +107,45 @@ section[id="get-started"] .bg-secondary-50 * {
 section:not([id="hero"]) .container-max,
 section:not([id="hero"]) .section-padding {
   background: transparent;
+}
+
+/* Performance section - NUCLEAR button fix - target everything */
+section[id="performance"] button,
+section[id="performance"] .flex button,
+section[id="performance"] [class*="Button"],
+section[id="performance"] [class*="button"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  /* Strongly disabled/inactive look */
+  opacity: 0.5 !important; /* Semi-transparent for disabled look */
+  color: #1f2937 !important; /* Gray-800 for much darker disabled text */
+  background-color: #f3f4f6 !important; /* Gray-100 background */
+  border: 1px solid #e5e7eb !important; /* Gray-200 border */
+  transition: all 0.2s ease !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important; /* Lighter weight for disabled */
+  text-decoration: none !important;
+}
+
+/* Force active button styling - bright and prominent */
+section[id="performance"] button.active,
+section[id="performance"] button[class*="active"],
+section[id="performance"] .active {
+  opacity: 1 !important; /* Full opacity for active button */
+  color: #ffffff !important;
+  background-color: #0ea5e9 !important; /* Bright blue */
+  border-color: #0ea5e9 !important;
+  font-weight: 600 !important; /* Slightly bolder */
+}
+
+/* Force hover styling - subtle blue tint */
+section[id="performance"] button:hover:not(.active):not([class*="active"]) {
+  color: #374151 !important; /* Darker gray on hover */
+  background-color: #f3f4f6 !important; /* Slightly darker gray background */
+  border-color: #9ca3af !important; /* Darker border */
 }
 
 /* Icon Sizing */
