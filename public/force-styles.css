@@ -29,12 +29,12 @@ section[id="product"] p {
   color: #374151 !important; /* Dark text for white and light gradient backgrounds */
 }
 
-/* Medium text for performance section (better readability for metrics) */
+/* Light text for performance section (better readability for metrics) */
 section[id="performance"] *,
 section[id="performance"] h2,
 section[id="performance"] h3,
 section[id="performance"] p {
-  color: #4b5563 !important; /* Lighter text for better readability on white background */
+  color: #6b7280 !important; /* Light text for comfortable reading on white background */
 }
 
 /* Medium text for slate-100 background sections (better readability) */
