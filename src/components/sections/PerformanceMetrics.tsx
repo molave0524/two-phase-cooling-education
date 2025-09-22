@@ -317,7 +317,7 @@ export const PerformanceMetrics: React.FC = () => {
                     {scenario.workload}
                   </p>
                   <div className={`flex items-center gap-1 text-xs ${
-                    selectedScenario.id === scenario.id ? 'text-gray-800' : 'text-gray-700'
+                    selectedScenario.id === scenario.id ? 'text-primary-100' : 'text-secondary-600'
                   }`}>
                     <ClockIcon className="w-3 h-3" />
                     <span>{scenario.duration}</span>
