@@ -2,17 +2,17 @@
 
 /* CSS Custom Properties for maintainability */
 .performanceSection {
-  --filter-inactive: #f3f4f6;
+  --filter-inactive: #374151;
   --filter-hover: #374151;
-  --filter-active: #1f2937;
+  --filter-active: #111827;
   --filter-bg-active: rgb(37, 99, 235);
   --filter-bg-hover: rgb(239, 246, 255);
 
-  --hour-text: #1f2937;
+  --hour-text: #111827;
   --hour-icon: #1f2937;
 
-  --scenario-heading: #1f2937;
-  --scenario-text-selected: #1f2937;
+  --scenario-heading: #111827;
+  --scenario-text-selected: #111827;
 }
 
 /* Filter Buttons - Clean and maintainable */
