@@ -216,7 +216,7 @@ export const PerformanceMetrics: React.FC = () => {
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === category
                   ? 'bg-primary-600 text-white'
-                  : 'text-secondary-600 hover:text-primary-600 hover:bg-primary-50'
+                  : 'text-gray-500 hover:text-primary-600 hover:bg-primary-50'
               }`}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
