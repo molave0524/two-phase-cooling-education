@@ -1,10 +1,5 @@
 /* CRITICAL STYLES - LOADED DIRECTLY TO FORCE APPLICATION */
 
-/* Ensure body has a default background */
-body {
-  background-color: #f8fafc !important;
-}
-
 /* Hero section nuclear override removed - now using proper Tailwind classes from page.tsx */
 
 /* Force content containers to be transparent, but allow section backgrounds */
@@ -14,13 +9,6 @@ section .section-padding {
   background-color: transparent !important;
 }
 
-/* Ensure section backgrounds are applied correctly with maximum specificity */
-section[id="technology"],
-section[id="technology"].bg-white,
-section.py-20.bg-white[id="technology"] {
-  background: white !important;
-  background-color: white !important;
-}
 
 /* Force text colors in specific sections - grouped by color for maintainability */
 

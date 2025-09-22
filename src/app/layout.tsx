@@ -179,7 +179,6 @@ export default function RootLayout({
           min-h-screen flex flex-col
           selection:bg-primary-200 selection:text-primary-900
         `}
-        style={{ backgroundColor: 'transparent' }}
         suppressHydrationWarning
       >
         {/* Skip link removed for cleaner UI */}
