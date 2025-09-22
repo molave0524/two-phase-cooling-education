@@ -38,11 +38,14 @@ section[id="performance"] p {
 }
 
 /* Specific override for performance section filter buttons */
-section[id="performance"] button {
+section[id="performance"] button,
+section[id="performance"] button *,
+section[id="performance"] .text-secondary-600 {
   color: #6b7280 !important; /* Light text for filter buttons */
 }
 
-section[id="performance"] button.bg-primary-600 {
+section[id="performance"] button.bg-primary-600,
+section[id="performance"] button.bg-primary-600 * {
   color: white !important; /* Keep white text for active button */
 }
 
