@@ -216,7 +216,7 @@ export const PerformanceMetrics: React.FC = () => {
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === category
                   ? 'bg-primary-600 text-white'
-                  : 'text-gray-400 hover:text-primary-600 hover:bg-primary-50'
+                  : 'text-gray-300 hover:text-primary-600 hover:bg-primary-50'
               }`}
             >
               {category === 'all' ? 'All Metrics' : category.charAt(0).toUpperCase() + category.slice(1)}
@@ -316,7 +316,7 @@ export const PerformanceMetrics: React.FC = () => {
                     {scenario.workload}
                   </p>
                   <div className={`flex items-center gap-1 text-xs ${
-                    selectedScenario.id === scenario.id ? 'text-primary-200' : 'text-secondary-500'
+                    selectedScenario.id === scenario.id ? 'text-gray-800' : 'text-gray-700'
                   }`}>
                     <ClockIcon className="w-3 h-3" />
                     <span>{scenario.duration}</span>
