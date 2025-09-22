@@ -183,29 +183,7 @@ section[id="hero"] .text-gradient-primary {
 .flex { display: flex !important; }
 .items-center { align-items: center !important; }
 
-/* FORCE HEADER NAVIGATION TO BE VISIBLE */
-header nav,
-nav,
-.flex.items-center.space-x-8 {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-header nav a,
-nav a {
-  display: inline-block !important;
-  visibility: visible !important;
-  color: #374151 !important;
-  text-decoration: none !important;
-  padding: 0.5rem 1rem !important;
-  font-weight: 500 !important;
-}
-
-header nav a:hover,
-nav a:hover {
-  color: #0284c7 !important;
-}
+/* Navigation overrides removed - now using proper Tailwind classes */
 
 /* Force responsive grid */
 @media (min-width: 1024px) {
