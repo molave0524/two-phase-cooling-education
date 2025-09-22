@@ -29,26 +29,7 @@ section[id="product"] p {
   color: #374151 !important; /* Dark text for white and light gradient backgrounds */
 }
 
-/* Light text for performance section (better readability for metrics) */
-section[id="performance"] *,
-section[id="performance"] h2,
-section[id="performance"] h3,
-section[id="performance"] p {
-  color: #6b7280 !important; /* Light text for comfortable reading on white background */
-}
-
-/* Nuclear override for performance section filter buttons - highest specificity */
-section[id="performance"] div.flex button.text-secondary-600.px-4.py-2.text-sm.font-medium,
-section[id="performance"] div button.text-secondary-600,
-section[id="performance"] button[class*="text-secondary-600"]:not(.bg-primary-600),
-section[id="performance"] button:not([class*="bg-primary-600"]) {
-  color: #6b7280 !important; /* Force light text for inactive filter buttons */
-}
-
-section[id="performance"] button.bg-primary-600,
-section[id="performance"] button[class*="bg-primary-600"] {
-  color: white !important; /* Keep white text for active button */
-}
+/* Performance section styles moved to PerformanceMetrics.module.css */
 
 /* Medium text for slate-100 background sections (better readability) */
 section[id="demonstrations"] *,

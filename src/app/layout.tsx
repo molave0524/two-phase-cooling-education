@@ -169,29 +169,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#075985" media="(prefers-color-scheme: dark)" />
 
-{/* Emergency override needed due to Tailwind CSS specificity */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            /* Filter buttons - lighter when not selected */
-            section[id="performance"] button[class*="filterButton"]:not([class*="active"]) {
-              color: #6b7280 !important;
-            }
-            section[id="performance"] button[class*="filterButton"][class*="active"] {
-              color: #0f172a !important;
-              background-color: rgb(37, 99, 235) !important;
-            }
-            section[id="performance"] button[class*="filterButton"]:hover {
-              color: #374151 !important;
-            }
-            /* Hour labels match workload labels - same color when selected */
-            section[id="performance"] .bg-primary-600 [class*="hourLabel"] {
-              color: #1f2937 !important;
-            }
-            section[id="performance"] .bg-primary-600 [class*="scenarioText"] {
-              color: #1f2937 !important;
-            }
-          `
-        }} />
+{/* Performance section styles moved to PerformanceMetrics.module.css */}
       </head>
 
       <body

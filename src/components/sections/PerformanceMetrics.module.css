@@ -15,50 +15,41 @@
   --scenario-text-selected: #1f2937;
 }
 
-/* Filter Buttons - Clean and maintainable */
-.filterButton {
-  color: var(--filter-inactive) !important;
+/* High specificity selectors to override Tailwind without !important */
+.performanceSection button[class*="filterButton"]:not(.active) {
+  color: var(--filter-inactive);
   transition: all 0.2s ease;
 }
 
-.filterButton:hover {
-  color: var(--filter-hover) !important;
-  background-color: var(--filter-bg-hover) !important;
+.performanceSection button[class*="filterButton"].active {
+  color: var(--filter-active);
+  background-color: var(--filter-bg-active);
 }
 
-.filterButton.active {
-  color: var(--filter-active) !important;
-  background-color: var(--filter-bg-active) !important;
+.performanceSection button[class*="filterButton"]:hover:not(.active) {
+  color: var(--filter-hover);
+  background-color: var(--filter-bg-hover);
 }
 
-/* Test Scenario Styling */
+/* Hour labels and scenario text - high specificity without !important */
+.performanceSection .scenarioBox.selected [class*="hourLabel"] {
+  color: var(--hour-text);
+}
+
+.performanceSection .scenarioBox.selected [class*="hourIcon"] {
+  color: var(--hour-icon);
+  fill: var(--hour-icon);
+}
+
+.performanceSection .scenarioBox.selected [class*="scenarioText"] {
+  color: var(--scenario-text-selected);
+}
+
+/* Legacy filter button styles - replaced by high-specificity selectors above */
+
+/* Test Scenario Styling - cleaned up, using high-specificity selectors */
 .scenarioBox.selected {
   background-color: var(--filter-bg-active);
 }
 
-.scenarioBox.selected .scenarioHeading {
-  color: var(--scenario-heading) !important;
-}
-
-.scenarioBox.selected .scenarioText {
-  color: var(--scenario-text-selected) !important;
-}
-
-.scenarioBox.selected .hourLabel {
-  color: var(--hour-text) !important;
-}
-
-.scenarioBox.selected .hourIcon {
-  color: var(--hour-icon) !important;
-  fill: var(--hour-icon) !important;
-}
-
-/* Non-selected scenario styling */
-.scenarioBox:not(.selected) .hourLabel {
-  color: var(--hour-text) !important;
-}
-
-.scenarioBox:not(.selected) .hourIcon {
-  color: var(--hour-icon) !important;
-  fill: var(--hour-icon) !important;
-}
+/* Legacy styles replaced by high-specificity selectors above */
