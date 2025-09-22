@@ -37,12 +37,12 @@ section[id="performance"] p {
   color: #4b5563 !important; /* Lighter text for better readability on white background */
 }
 
-/* Medium-dark text for slate-100 background sections (better readability) */
+/* Medium text for slate-100 background sections (better readability) */
 section[id="demonstrations"] *,
 section[id="demonstrations"] h2,
 section[id="demonstrations"] h3,
 section[id="demonstrations"] p {
-  color: #1f2937 !important; /* Darker text for better contrast on bg-slate-100 */
+  color: #6b7280 !important; /* Lighter text for better readability on bg-slate-100 */
 }
 
 /* White text for dark background sections */
