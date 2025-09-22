@@ -50,50 +50,7 @@ section[id="get-started"] p {
   color: white !important;
 }
 
-/* DRAMATIC SECTION BACKGROUNDS FOR CLEAR DISTINCTION */
-section[id="technology"],
-html body div[class*="min-h-screen"] section[id="technology"] {
-  background-color: #ffffff !important;
-  padding: 5rem 0 !important;
-  border-bottom: 5px solid #e5e7eb !important;
-}
-
-section[id="demonstrations"],
-html body div[class*="min-h-screen"] section[id="demonstrations"] {
-  background-color: #1f2937 !important;
-  color: white !important;
-  padding: 5rem 0 !important;
-  border-bottom: 5px solid #374151 !important;
-}
-
-section[id="performance"],
-html body div[class*="min-h-screen"] section[id="performance"] {
-  background-color: #fef3c7 !important;
-  padding: 5rem 0 !important;
-  border-bottom: 5px solid #f59e0b !important;
-}
-
-section[id="ai-assistant"],
-html body div[class*="min-h-screen"] section[id="ai-assistant"] {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-  color: white !important;
-  padding: 5rem 0 !important;
-  border-bottom: 5px solid #1e40af !important;
-}
-
-section[id="product"],
-html body div[class*="min-h-screen"] section[id="product"] {
-  background-color: #f0fdf4 !important;
-  padding: 5rem 0 !important;
-  border-bottom: 5px solid #22c55e !important;
-}
-
-section[id="get-started"],
-html body div[class*="min-h-screen"] section[id="get-started"] {
-  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
-  color: white !important;
-  padding: 5rem 0 !important;
-}
+/* Section background overrides removed - now using proper Tailwind classes from page.tsx */
 
 /* Force container styling */
 .container-max {
@@ -147,17 +104,7 @@ section .container-max > *,
   cursor: pointer !important;
 }
 
-/* Force icon sizing */
-.w-5 { width: 1.25rem !important; }
-.h-5 { height: 1.25rem !important; }
-.w-6 { width: 1.5rem !important; }
-.h-6 { height: 1.5rem !important; }
-
-/* Force text styles */
-.text-4xl { font-size: 2.25rem !important; line-height: 2.5rem !important; }
-.text-primary-600 { color: #0284c7 !important; }
-.text-secondary-900 { color: #0f172a !important; }
-.text-secondary-600 { color: #475569 !important; }
+/* Icon sizing and text style overrides removed - using proper Tailwind classes */
 
 /* Fix invisible gradient text - use solid color instead */
 .text-gradient-primary,
@@ -173,15 +120,9 @@ section[id="hero"] .text-gradient-primary {
   visibility: visible !important;
 }
 
-/* Force spacing */
-.gap-12 { gap: 3rem !important; }
-.space-y-8 > * + * { margin-top: 2rem !important; }
-.space-y-4 > * + * { margin-top: 1rem !important; }
+/* Spacing overrides removed - using proper Tailwind classes */
 
-/* Force layout */
-.grid { display: grid !important; }
-.flex { display: flex !important; }
-.items-center { align-items: center !important; }
+/* Layout overrides removed - using proper Tailwind classes */
 
 /* Navigation link styles - remove underlines */
 nav a,
@@ -197,13 +138,4 @@ header a:hover {
   text-decoration: none !important;
 }
 
-/* Force responsive grid */
-@media (min-width: 1024px) {
-  .lg\\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  .lg\\:text-6xl {
-    font-size: 3.75rem !important;
-    line-height: 1 !important;
-  }
-}
+/* Responsive grid overrides removed - using proper Tailwind classes */
