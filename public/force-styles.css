@@ -29,6 +29,13 @@ section .section-padding {
 }
 
 /* Force text colors in specific sections */
+section[id="technology"] *,
+section[id="technology"] h2,
+section[id="technology"] h3,
+section[id="technology"] p {
+  color: #374151 !important; /* Dark text for white bg-white background */
+}
+
 section[id="demonstrations"] *,
 section[id="demonstrations"] h2,
 section[id="demonstrations"] h3,
@@ -41,6 +48,20 @@ section[id="ai-assistant"] h2,
 section[id="ai-assistant"] h3,
 section[id="ai-assistant"] p {
   color: #374151 !important; /* Dark text for light bg-gradient-to-br from-blue-50 to-cyan-50 */
+}
+
+section[id="performance"] *,
+section[id="performance"] h2,
+section[id="performance"] h3,
+section[id="performance"] p {
+  color: #374151 !important; /* Dark text for white bg-white background */
+}
+
+section[id="product"] *,
+section[id="product"] h2,
+section[id="product"] h3,
+section[id="product"] p {
+  color: #374151 !important; /* Dark text for white bg-white background */
 }
 
 section[id="get-started"] *,
