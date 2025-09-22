@@ -195,7 +195,7 @@ export default function RootLayout({
               color: #f3f4f6 !important;
             }
             section[id="performance"] button:not(.filter-button--active):hover {
-              color: #f3f4f6 !important;
+              color: #374151 !important; /* Dark text on hover */
             }
             /* Force hour labels to match workload labels in test scenarios */
             section[id="performance"] .bg-primary-600 .text-primary-100 {
@@ -213,6 +213,16 @@ export default function RootLayout({
             }
             section[id="performance"] div.text-xs svg {
               color: #1f2937 !important;
+            }
+            /* FINAL NUCLEAR OVERRIDES - MUST BE LAST */
+            section[id="performance"] button.filter-button.filter-button--active,
+            section[id="performance"] div.flex button.filter-button--active {
+              color: #111827 !important;
+              background-color: rgb(37 99 235) !important;
+            }
+            section[id="performance"] button.filter-button.filter-button--inactive:hover,
+            section[id="performance"] div.flex button.filter-button--inactive:hover {
+              color: #374151 !important;
             }
           `
         }} />
