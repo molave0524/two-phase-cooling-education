@@ -168,6 +168,16 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#075985" media="(prefers-color-scheme: dark)" />
+
+        {/* Critical override for Performance section buttons - must load last */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Ultra-specific override for Performance Validation filter buttons */
+            section[id="performance"] button:not([class*="bg-primary-600"]) {
+              color: #6b7280 !important;
+            }
+          `
+        }} />
       </head>
 
       <body
