@@ -3,8 +3,9 @@
 /* Hero section nuclear override removed - now using proper Tailwind classes from page.tsx */
 
 /* Force content containers to be transparent, but allow section backgrounds */
-section .container-max,
-section .section-padding {
+/* Exclude hero section to preserve gradient background */
+section:not([id="hero"]) .container-max,
+section:not([id="hero"]) .section-padding {
   background: transparent !important;
   background-color: transparent !important;
 }
@@ -13,15 +14,16 @@ section .section-padding {
 /* Force text colors in specific sections - grouped by color for maintainability */
 
 /* Dark text for white background sections - using design tokens */
-section[id="technology"] *,
+/* Exclude header to prevent overriding Apple styling */
+section[id="technology"] .container-max *:not(header *),
 section[id="technology"] h2,
 section[id="technology"] h3,
 section[id="technology"] p,
-section[id="ai-assistant"] *,
+section[id="ai-assistant"] .container-max *:not(header *),
 section[id="ai-assistant"] h2,
 section[id="ai-assistant"] h3,
 section[id="ai-assistant"] p,
-section[id="product"] *,
+section[id="product"] .container-max *:not(header *),
 section[id="product"] h2,
 section[id="product"] h3,
 section[id="product"] p {
@@ -73,6 +75,11 @@ section[id="get-started"] .btn-secondary {
 
 /* Layout overrides removed - using proper Tailwind classes */
 
+
+/* Apple-style header overrides */
+header * {
+  color: #000000 !important; /* Force black text for Apple styling */
+}
 
 /* Navigation link styles - remove underlines */
 nav a,

@@ -36,6 +36,22 @@ a:hover {
   text-decoration: none;
 }
 
+/* Apple.com-style navigation overrides */
+header a {
+  color: #000000 !important;
+  text-decoration: none !important;
+}
+
+header a:hover {
+  color: rgba(0, 0, 0, 0.8) !important;
+  text-decoration: none !important;
+}
+
+/* Ensure Hero section background is visible */
+section[id="hero"] {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe, #f8fafc) !important;
+}
+
 /* Icon Sizing */
 .w-3 { width: 0.75rem; }
 .h-3 { height: 0.75rem; }

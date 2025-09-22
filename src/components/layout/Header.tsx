@@ -39,24 +39,24 @@ interface MobileMenuProps {
 
 const MAIN_NAVIGATION: NavigationItem[] = [
   {
-    label: 'Store',
-    href: '#store'
-  },
-  {
     label: 'Technology',
     href: '#technology'
   },
   {
-    label: 'AI',
-    href: '#ai-assistant'
+    label: 'Demonstrations',
+    href: '#demonstrations'
   },
   {
     label: 'Performance',
     href: '#performance'
   },
   {
-    label: 'Support',
-    href: '#support'
+    label: 'AI Assistant',
+    href: '#ai-assistant'
+  },
+  {
+    label: 'Products',
+    href: '#product'
   }
 ]
 
