@@ -172,20 +172,16 @@ export default function RootLayout({
         {/* Critical override for Performance section buttons - must load last */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            /* Ultra-specific override for Performance Validation filter buttons */
-            section[id="performance"] button:not([class*="bg-primary-600"]) {
+            /* Maximum specificity override for Performance Validation filter buttons */
+            section[id="performance"] div.flex.justify-center div.flex.rounded-equipment button.px-4.py-2.text-sm.font-medium.transition-colors.text-secondary-600 {
               color: #6b7280 !important;
             }
-            /* Target by button text content as last resort */
-            section[id="performance"] button[aria-pressed="false"],
-            section[id="performance"] button:not(:focus):not(:active):not([class*="bg-primary"]) {
+            /* Fallback with exact class structure */
+            section[id="performance"] button.px-4.py-2.text-sm.font-medium.text-secondary-600 {
               color: #6b7280 !important;
             }
-            /* Brute force approach - target all buttons then override active */
-            section[id="performance"] .flex button {
-              color: #6b7280 !important;
-            }
-            section[id="performance"] .flex button[class*="bg-primary-600"] {
+            /* Keep active button white */
+            section[id="performance"] button.bg-primary-600.text-white {
               color: white !important;
             }
           `
