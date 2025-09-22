@@ -264,15 +264,15 @@ export const Header: React.FC = () => {
       <header
         className={`fixed top-0 w-full z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/80 backdrop-blur-xl border-b border-black/10'
-            : 'bg-transparent'
+            ? 'bg-white/50 backdrop-blur-xl border-b border-black/10'
+            : 'bg-white/30'
         }`}
       >
         <div className="container-max">
           <div className="flex items-center justify-between py-4">
             {/* Apple.com-style Logo */}
             <Link href="/" className="flex items-center hover:opacity-60 transition-opacity duration-200">
-              <span className="text-xl font-normal text-black tracking-tight">ThermalPro</span>
+              <span className="text-xl font-normal text-gray-600 tracking-tight">🍎</span>
             </Link>
 
             {/* Apple-style Navigation */}

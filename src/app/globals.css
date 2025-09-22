@@ -36,20 +36,70 @@ a:hover {
   text-decoration: none;
 }
 
-/* Apple.com-style navigation overrides */
+/* Apple.com-style navigation and header styling */
+header {
+  color: #000000;
+}
+
 header a {
-  color: #000000 !important;
-  text-decoration: none !important;
+  color: #000000;
+  text-decoration: none;
 }
 
 header a:hover {
-  color: rgba(0, 0, 0, 0.8) !important;
-  text-decoration: none !important;
+  color: rgba(0, 0, 0, 0.8);
+  text-decoration: none;
 }
 
-/* Ensure Hero section background is visible */
-section[id="hero"] {
-  background: linear-gradient(135deg, #f0f9ff, #e0f2fe, #f8fafc) !important;
+header nav {
+  display: flex;
+}
+
+/* Section-specific text colors using proper cascade */
+section[id="technology"] h1,
+section[id="technology"] h2,
+section[id="technology"] h3,
+section[id="technology"] p,
+section[id="technology"] span,
+section[id="technology"] div {
+  color: #000000;
+}
+
+section[id="performance"] h1,
+section[id="performance"] h2,
+section[id="performance"] h3,
+section[id="performance"] p,
+section[id="performance"] span,
+section[id="performance"] div {
+  color: #000000;
+}
+
+section[id="demonstrations"] h1,
+section[id="demonstrations"] h2,
+section[id="demonstrations"] h3,
+section[id="demonstrations"] p,
+section[id="demonstrations"] span,
+section[id="demonstrations"] div {
+  color: var(--text-on-light);
+}
+
+section[id="get-started"] h1,
+section[id="get-started"] h2,
+section[id="get-started"] h3,
+section[id="get-started"] p,
+section[id="get-started"] span,
+section[id="get-started"] div {
+  color: var(--text-on-dark);
+}
+
+section[id="get-started"] .bg-secondary-50 * {
+  color: var(--text-on-white);
+}
+
+/* Container transparency for section backgrounds */
+section:not([id="hero"]) .container-max,
+section:not([id="hero"]) .section-padding {
+  background: transparent;
 }
 
 /* Icon Sizing */
