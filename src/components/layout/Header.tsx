@@ -263,25 +263,25 @@ export const Header: React.FC = () => {
       <header
         className={`fixed top-0 w-full z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/95 backdrop-blur-md shadow-glass border-b border-secondary-200/50'
+            ? 'bg-white/80 backdrop-blur-xl border-b border-black/10'
             : 'bg-transparent'
         }`}
       >
         <div className="container-max">
           <div className="flex items-center justify-between py-4">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-equipment flex items-center justify-center">
-                <BeakerIcon className="w-6 h-6 text-white" />
-              </div>
-              <div className="hidden sm:block">
-                <div className="font-bold text-lg text-secondary-900">Thermal Ed Center</div>
-                <div className="text-xs text-secondary-600">Two-Phase Cooling Innovation</div>
+            {/* Apple-style Logo */}
+            <Link href="/" className="flex items-center gap-3 hover:opacity-60 transition-opacity duration-200">
+              {/* Simple, clean logo like Apple */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-secondary-900 rounded-full flex items-center justify-center">
+                  <BeakerIcon className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-lg text-secondary-900">ThermalPro</span>
               </div>
             </Link>
 
-            {/* Navigation - Always visible Apple style */}
-            <nav className="flex items-center space-x-8">
+            {/* Apple-style Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
               {MAIN_NAVIGATION.map((item) => (
                 <div key={item.label}>
                   {item.children ? (
@@ -289,7 +289,7 @@ export const Header: React.FC = () => {
                   ) : (
                     <Link
                       href={item.href || '#'}
-                      className="px-4 py-2 text-secondary-700 hover:text-primary-600 font-medium transition-colors"
+                      className="text-sm font-normal text-black hover:text-black/80 transition-colors duration-200"
                     >
                       {item.label}
                     </Link>
@@ -298,29 +298,19 @@ export const Header: React.FC = () => {
               ))}
             </nav>
 
-            {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-3">
-              {/* Cart */}
+            {/* Apple-style Actions */}
+            <div className="hidden lg:flex items-center gap-4">
+              {/* Cart - Apple style */}
               <Link
                 href="#cart"
-                className="relative p-2 text-secondary-600 hover:text-primary-600 transition-colors"
+                className="relative text-black hover:text-black/80 transition-colors duration-200"
               >
-                <ShoppingBagIcon className="w-6 h-6" />
+                <ShoppingBagIcon className="w-5 h-5" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                     {cartItemCount}
                   </span>
                 )}
-              </Link>
-
-              {/* CTA Buttons */}
-              <Link href="#demonstrations" className="btn-secondary btn-sm">
-                <PlayCircleIcon className="w-4 h-4 mr-1" />
-                Watch Demos
-              </Link>
-              <Link href="#ai-assistant" className="btn-primary btn-sm">
-                <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
-                Ask AI
               </Link>
             </div>
 

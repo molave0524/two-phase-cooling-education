@@ -13,8 +13,8 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-feature-settings: 'cv03', 'cv04', 'cv11';
+  /* Apple's exact font stack for SF Pro look */
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -22,7 +22,18 @@ body {
   padding: 0;
   background-color: #f8fafc;
   color: #0f172a;
-  line-height: 1.5;
+  line-height: 1.47059; /* Apple's line height */
+  font-weight: 400;
+  font-size: 17px; /* Apple's base font size */
+}
+
+/* Apple-style link styling - no underlines */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
 }
 
 /* Icon Sizing */

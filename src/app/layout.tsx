@@ -6,12 +6,8 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 // Toaster is now handled in Providers
 
-// Optimized font loading for performance
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
+// Apple-style system font stack for optimal performance and Apple look
+// Using system fonts to match Apple's approach
 
 // SEO optimized metadata for Two-Phase Cooling Education Center
 export const metadata: Metadata = {
