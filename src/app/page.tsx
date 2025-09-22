@@ -272,4 +272,4 @@ export default function HomePage() {
       />
     </div>
   )
-}<!-- Vercel deployment trigger: Mon, Sep 22, 2025  8:23:24 AM -->
+}
