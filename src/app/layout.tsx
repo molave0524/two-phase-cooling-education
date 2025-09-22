@@ -176,6 +176,18 @@ export default function RootLayout({
             section[id="performance"] button:not([class*="bg-primary-600"]) {
               color: #6b7280 !important;
             }
+            /* Target by button text content as last resort */
+            section[id="performance"] button[aria-pressed="false"],
+            section[id="performance"] button:not(:focus):not(:active):not([class*="bg-primary"]) {
+              color: #6b7280 !important;
+            }
+            /* Brute force approach - target all buttons then override active */
+            section[id="performance"] .flex button {
+              color: #6b7280 !important;
+            }
+            section[id="performance"] .flex button[class*="bg-primary-600"] {
+              color: white !important;
+            }
           `
         }} />
       </head>
