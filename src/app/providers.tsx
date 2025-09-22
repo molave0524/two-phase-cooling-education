@@ -40,7 +40,7 @@ export function Providers({ children }: { children: ReactNode }) {
             borderRadius: 'var(--radius-xl)',
             border: '1px solid var(--color-secondary-700)',
             fontSize: 'var(--text-sm)',
-            fontWeight: '500',
+            fontWeight: 'var(--font-weight-medium)',
           },
           success: {
             iconTheme: {
