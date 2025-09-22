@@ -172,23 +172,23 @@ export default function RootLayout({
         {/* Emergency override until CSS modules fully working */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            /* Filter buttons - darker colors */
-            section[id="performance"] button[class*="filterButton"] {
-              color: #1f2937 !important;
+            /* Filter buttons - lighter when not selected */
+            section[id="performance"] button[class*="filterButton"]:not([class*="active"]) {
+              color: #6b7280 !important;
             }
             section[id="performance"] button[class*="filterButton"][class*="active"] {
               color: #0f172a !important;
               background-color: rgb(37, 99, 235) !important;
             }
             section[id="performance"] button[class*="filterButton"]:hover {
+              color: #374151 !important;
+            }
+            /* Hour labels match workload labels - darker when selected */
+            section[id="performance"] .bg-primary-600 [class*="hourLabel"] {
               color: #1f2937 !important;
             }
-            /* Hour labels match workload labels */
-            section[id="performance"] .bg-primary-600 [class*="hourLabel"] {
-              color: #374151 !important;
-            }
-            section[id="performance"] [class*="scenarioText"] {
-              color: #374151 !important;
+            section[id="performance"] .bg-primary-600 [class*="scenarioText"] {
+              color: #1f2937 !important;
             }
           `
         }} />
