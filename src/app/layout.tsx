@@ -183,6 +183,13 @@ export default function RootLayout({
               color: #1f2937 !important; /* Dark text for selected state */
               background-color: rgb(37 99 235) !important;
             }
+            /* Extra aggressive override for selected buttons */
+            section[id="performance"] button.filter-button--active {
+              color: #1f2937 !important;
+            }
+            section[id="performance"] .flex button.filter-button--active {
+              color: #1f2937 !important;
+            }
             /* Brute force fallback for any buttons */
             section[id="performance"] button:not(.filter-button--active) {
               color: #f3f4f6 !important;
