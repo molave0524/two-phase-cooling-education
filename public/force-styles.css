@@ -183,7 +183,19 @@ section[id="hero"] .text-gradient-primary {
 .flex { display: flex !important; }
 .items-center { align-items: center !important; }
 
-/* Navigation overrides removed - now using proper Tailwind classes */
+/* Navigation link styles - remove underlines */
+nav a,
+header a,
+.nav-link,
+nav Link,
+header Link {
+  text-decoration: none !important;
+}
+
+nav a:hover,
+header a:hover {
+  text-decoration: none !important;
+}
 
 /* Force responsive grid */
 @media (min-width: 1024px) {
