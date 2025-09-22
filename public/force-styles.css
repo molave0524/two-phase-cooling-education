@@ -81,39 +81,13 @@ section[id="get-started"] .btn-secondary {
 
 /* Section background overrides removed - now using proper Tailwind classes from page.tsx */
 
-/* Force container styling */
-.container-max {
-  max-width: 1280px !important;
-  margin: 0 auto !important;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-  width: 100% !important;
-}
-
-/* Duplicate container transparency rules removed - handled above */
-
-.section-padding {
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem !important;
-}
+/* Duplicate utility classes removed - handled in globals.css */
 
 /* Button styling overrides removed - using proper styles from globals.css */
 
 /* Icon sizing and text style overrides removed - using proper Tailwind classes */
 
-/* Fix invisible gradient text - use solid color instead */
-.text-gradient-primary,
-span.text-gradient-primary,
-h1 .text-gradient-primary,
-section[id="hero"] .text-gradient-primary {
-  color: #0284c7 !important; /* Solid blue color that will definitely work */
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  background-clip: unset !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
+/* Gradient text styling handled in globals.css */
 
 /* Spacing overrides removed - using proper Tailwind classes */
 
