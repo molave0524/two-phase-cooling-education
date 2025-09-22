@@ -276,7 +276,7 @@ export const Header: React.FC = () => {
             </Link>
 
             {/* Apple-style Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-8">
               {MAIN_NAVIGATION.map((item) => (
                 <div key={item.label}>
                   {item.children ? (
@@ -294,7 +294,7 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Apple.com-style Actions */}
-            <div className="hidden lg:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
               {/* Search Icon - Apple style */}
               <Link
                 href="#search"
@@ -318,7 +318,7 @@ export const Header: React.FC = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="flex items-center gap-3 lg:hidden">
+            <div className="flex items-center gap-3 md:hidden">
               {/* Mobile Cart */}
               <Link
                 href="#cart"

@@ -81,6 +81,18 @@ header * {
   color: #000000 !important; /* Force black text for Apple styling */
 }
 
+/* Force navigation to be visible for debugging */
+header nav {
+  display: flex !important;
+  visibility: visible !important;
+}
+
+header nav a {
+  display: block !important;
+  visibility: visible !important;
+  color: #000000 !important;
+}
+
 /* Navigation link styles - remove underlines */
 nav a,
 header a,
