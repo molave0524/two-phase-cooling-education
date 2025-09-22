@@ -185,7 +185,7 @@ export default function RootLayout({
             }
             /* Hour labels match workload labels - darker when selected */
             section[id="performance"] .bg-primary-600 [class*="hourLabel"] {
-              color: #1f2937 !important;
+              color: #111827 !important;
             }
             section[id="performance"] .bg-primary-600 [class*="scenarioText"] {
               color: #1f2937 !important;
