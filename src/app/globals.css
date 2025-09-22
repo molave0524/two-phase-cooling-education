@@ -20,7 +20,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+  background-color: #f8fafc;
   color: #0f172a;
   line-height: 1.5;
 }
@@ -602,5 +602,13 @@ section[id="get-started"] {
   font-weight: 500;
   color: rgb(55 65 81);
   margin-bottom: 0.5rem;
+}
+
+/* FINAL CASCADE: Section background fixes - loaded last to override all conflicts */
+section[id="technology"],
+section[id="technology"].bg-white,
+section.py-20.bg-white[id="technology"] {
+  background: white !important;
+  background-color: white !important;
 }
 
