@@ -119,6 +119,19 @@ section[id="hero"] .text-gradient-primary {
 
 /* Layout overrides removed - using proper Tailwind classes */
 
+/* Real-World Test Scenarios - darker text when highlighted */
+section[id="performance"] .bg-primary-600.text-white h4 {
+  color: #1f2937 !important; /* Dark gray for better readability on blue background */
+}
+
+section[id="performance"] .bg-primary-600.text-white .text-primary-100 {
+  color: #374151 !important; /* Medium gray for secondary text */
+}
+
+section[id="performance"] .bg-primary-600.text-white .text-primary-200 {
+  color: #6b7280 !important; /* Light gray for tertiary text */
+}
+
 /* Navigation link styles - remove underlines */
 nav a,
 header a,
