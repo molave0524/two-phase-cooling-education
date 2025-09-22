@@ -172,17 +172,17 @@ export default function RootLayout({
         {/* Critical override for Performance section buttons - must load last */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            /* Maximum specificity override for Performance Validation filter buttons */
-            section[id="performance"] div.flex.justify-center div.flex.rounded-equipment button.px-4.py-2.text-sm.font-medium.transition-colors.text-secondary-600 {
-              color: #6b7280 !important;
+            /* Target our new filter-button classes */
+            section[id="performance"] .filter-button--inactive {
+              color: #f3f4f6 !important;
             }
-            /* Fallback with exact class structure */
-            section[id="performance"] button.px-4.py-2.text-sm.font-medium.text-secondary-600 {
-              color: #6b7280 !important;
-            }
-            /* Keep active button white */
-            section[id="performance"] button.bg-primary-600.text-white {
+            section[id="performance"] .filter-button--active {
               color: white !important;
+              background-color: rgb(37 99 235) !important;
+            }
+            /* Brute force fallback for any buttons */
+            section[id="performance"] button:not(.filter-button--active) {
+              color: #f3f4f6 !important;
             }
           `
         }} />
