@@ -1,11 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Simplified configuration for demo deployment
   output: 'standalone',
   compress: true,
   poweredByHeader: false,
 
-  // Basic image optimization
   images: {
     remotePatterns: [
       {
@@ -21,7 +19,6 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // Basic security headers
   async headers() {
     return [
       {
