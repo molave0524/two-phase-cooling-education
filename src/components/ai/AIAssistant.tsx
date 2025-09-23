@@ -215,7 +215,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     } catch (error) {
       console.error('Failed to end conversation:', error)
     }
-  }, [conversation.id, onConversationEnd, saveConversation])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation.id, onConversationEnd])
 
   // ============================================================================
   // MESSAGE HANDLING
