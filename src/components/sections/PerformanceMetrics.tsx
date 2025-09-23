@@ -295,34 +295,42 @@ export const PerformanceMetrics: React.FC = () => {
         {/* Scenario Selector */}
         <div className="flex justify-center mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
-            {TEST_SCENARIOS.map((scenario) => (
-              <button
-                key={scenario.id}
-                onClick={() => setSelectedScenario(scenario)}
-                className={`${styles.scenarioBox} ${
-                  selectedScenario.id === scenario.id ? styles.selected : ''
-                } p-4 rounded-equipment text-left transition-all ${
-                  selectedScenario.id === scenario.id
-                    ? 'bg-primary-600 text-white shadow-lg'
-                    : 'bg-white text-secondary-900 hover:bg-primary-50 border border-secondary-200'
-                }`}
-              >
-                <div className="space-y-2">
-                  <h4 className={`font-semibold ${styles.scenarioHeading}`}>{scenario.name}</h4>
-                  <p className={`text-sm ${styles.scenarioText} ${
-                    selectedScenario.id === scenario.id ? 'text-primary-100' : 'text-secondary-600'
-                  }`}>
-                    {scenario.workload}
-                  </p>
-                  <div className={`flex items-center gap-1 text-xs ${styles.hourLabel} ${
-                    selectedScenario.id === scenario.id ? 'text-primary-100' : 'text-secondary-600'
-                  }`}>
-                    <ClockIcon className={`w-3 h-3 ${styles.hourIcon}`} />
-                    <span>{scenario.duration}</span>
+            {TEST_SCENARIOS.map((scenario) => {
+              const isSelected = selectedScenario.id === scenario.id
+              return (
+                <div
+                  key={scenario.id}
+                  onClick={() => {
+                    console.log('Scenario clicked:', scenario.name)
+                    setSelectedScenario(scenario)
+                  }}
+                  className={`
+                    cursor-pointer p-4 rounded-equipment text-left
+                    ${isSelected
+                      ? 'bg-primary-600 text-white shadow-lg'
+                      : 'bg-white text-secondary-900 border border-secondary-200'
+                    }
+                  `}
+                  style={{
+                    transition: 'none',
+                    userSelect: 'none'
+                  }}
+                >
+                  <div className="space-y-2 pointer-events-none">
+                    <h4 className={`font-semibold ${isSelected ? 'text-white' : 'text-secondary-900'}`}>
+                      {scenario.name}
+                    </h4>
+                    <p className={`text-sm ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}>
+                      {scenario.workload}
+                    </p>
+                    <div className={`flex items-center gap-1 text-xs ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}>
+                      <ClockIcon className={`w-3 h-3 ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`} />
+                      <span>{scenario.duration}</span>
+                    </div>
                   </div>
                 </div>
-              </button>
-            ))}
+              )
+            })}
           </div>
         </div>
 

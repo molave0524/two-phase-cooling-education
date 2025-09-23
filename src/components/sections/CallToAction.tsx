@@ -282,7 +282,7 @@ export const CallToAction: React.FC = () => {
       <div className="bg-secondary-50 rounded-equipment p-8">
         <div className="text-center space-y-6">
           <h3 className="text-2xl font-bold text-secondary-900">Choose Your Learning Path</h3>
-          <p className="text-secondary-600 max-w-2xl mx-auto">
+          <p className="text-secondary-900 max-w-2xl mx-auto">
             Structured curricula designed for different experience levels and learning goals.
             Start where you are, progress at your pace.
           </p>
@@ -296,9 +296,9 @@ export const CallToAction: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <h4 className="font-semibold text-secondary-900">{path.title}</h4>
-                    <p className="text-sm text-secondary-600">{path.description}</p>
+                    <p className="text-sm text-secondary-900">{path.description}</p>
                   </div>
-                  <div className="flex justify-between text-xs text-secondary-500">
+                  <div className="flex justify-between text-xs text-secondary-900">
                     <span>{path.duration}</span>
                     <span>{path.courses} courses</span>
                   </div>

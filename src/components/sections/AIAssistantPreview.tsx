@@ -285,7 +285,7 @@ export const AIAssistantPreview: React.FC = () => {
                   key={index}
                   className="text-left p-3 bg-white rounded-technical border border-secondary-200 hover:border-primary-300 hover:bg-primary-50 transition-colors text-sm text-secondary-700"
                 >
-                  "{question}"
+                  &ldquo;{question}&rdquo;
                 </button>
               ))}
             </div>

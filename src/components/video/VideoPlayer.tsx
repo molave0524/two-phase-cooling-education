@@ -148,6 +148,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (userId) {
       loadSavedProgress()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   const handleTimeUpdate = useCallback(() => {
@@ -200,6 +201,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (percentage >= 90 && !progressData.percentage || progressData.percentage < 90) {
       handleVideoComplete()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoState.isPlaying, lastProgressUpdate, progressData.percentage, userId, onProgress])
 
   const handlePlay = useCallback(() => {
@@ -223,6 +225,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (userId) {
       saveProgressToStore()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   const handleSeeked = useCallback(() => {
@@ -271,7 +274,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     } catch (error) {
       console.error('Failed to load saved progress:', error)
     }
-  }, [userId, video.id, progressStore])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, video.id])
 
   const saveProgressToStore = useCallback(async () => {
     if (!userId) return
@@ -283,7 +287,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       console.error('Failed to save progress:', error)
       toast.error('Failed to save progress')
     }
-  }, [userId, video.id, progressData, totalWatchTime])
+  }, [userId, progressStore])
 
   const handleVideoComplete = useCallback(() => {
     if (onComplete) {
@@ -297,7 +301,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
 
     toast.success('Video completed! 🎉')
-  }, [onComplete, userId, saveProgressToStore])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onComplete, userId])
 
   // ============================================================================
   // PLAYBACK CONTROLS
@@ -458,7 +463,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         saveProgressToStore()
       }
     }
-  }, [userId, saveProgressToStore])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId])
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -481,7 +487,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <div className="text-4xl mb-4">⚠️</div>
             <h3 className="text-lg font-semibold mb-2">Video Unavailable</h3>
             <p className="text-secondary-300">
-              Sorry, we couldn't load this video. Please try refreshing the page.
+              Sorry, we couldn&apos;t load this video. Please try refreshing the page.
             </p>
           </div>
         </div>

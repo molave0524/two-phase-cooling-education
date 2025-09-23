@@ -87,11 +87,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
 
       {/* Menu Panel */}
       <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-xl">
-        <div className="flex items-center justify-between p-4 border-b border-secondary-200">
-          <div className="flex items-center gap-2">
-            <BeakerIcon className="w-6 h-6 text-primary-600" />
-            <span className="font-bold text-secondary-900">Thermal Ed Center</span>
-          </div>
+        <div className="flex items-center justify-end p-4 border-b border-secondary-200">
           <button
             onClick={onClose}
             className="p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-technical"
@@ -264,18 +260,18 @@ export const Header: React.FC = () => {
       <header
         className={`fixed top-0 w-full z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/50 backdrop-blur-xl border-b border-black/10'
-            : 'bg-white/30'
+            ? 'bg-white backdrop-blur-xl border-b border-black/10'
+            : 'bg-white'
         }`}
       >
         <div className="container-max">
-          <div className="flex items-center justify-between py-4">
-            {/* Apple.com-style Logo */}
-            <Link href="/" className="flex items-center hover:opacity-60 transition-opacity duration-200">
+          <div className="flex items-center justify-center py-4 relative">
+            {/* Apple.com-style Logo - Absolute positioned to left */}
+            <Link href="/" className="absolute left-0 flex items-center hover:opacity-60 transition-opacity duration-200">
               <span className="text-xl font-normal text-gray-600 tracking-tight">🍎</span>
             </Link>
 
-            {/* Apple-style Navigation */}
+            {/* Apple-style Navigation - Centered */}
             <nav className="hidden md:flex items-center space-x-8">
               {MAIN_NAVIGATION.map((item) => (
                 <div key={item.label}>
@@ -293,8 +289,8 @@ export const Header: React.FC = () => {
               ))}
             </nav>
 
-            {/* Apple.com-style Actions */}
-            <div className="hidden md:flex items-center gap-6">
+            {/* Apple.com-style Actions - Absolute positioned to right */}
+            <div className="absolute right-0 hidden md:flex items-center gap-6">
               {/* Search Icon - Apple style */}
               <Link
                 href="#search"
@@ -317,8 +313,8 @@ export const Header: React.FC = () => {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="flex items-center gap-3 md:hidden">
+            {/* Mobile Menu Button - Hidden for now */}
+            <div className="hidden">
               {/* Mobile Cart */}
               <Link
                 href="#cart"
@@ -343,12 +339,14 @@ export const Header: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        navigation={MAIN_NAVIGATION}
-      />
+      {/* Mobile Menu - Completely disabled for now */}
+      {false && (
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          navigation={MAIN_NAVIGATION}
+        />
+      )}
     </>
   )
 }

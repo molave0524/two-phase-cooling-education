@@ -103,17 +103,26 @@ section[id="get-started"] .bg-secondary-50 * {
   color: var(--text-on-white);
 }
 
+/* Force dark text in "Choose Your Learning Path" section */
+section[id="get-started"] .bg-secondary-50 h3,
+section[id="get-started"] .bg-secondary-50 p,
+section[id="get-started"] .bg-secondary-50 h4,
+section[id="get-started"] .bg-secondary-50 span,
+section[id="get-started"] .bg-secondary-50 div {
+  color: #0f172a !important; /* Very dark color for maximum contrast */
+}
+
 /* Container transparency for section backgrounds */
 section:not([id="hero"]) .container-max,
 section:not([id="hero"]) .section-padding {
   background: transparent;
 }
 
-/* Performance section - NUCLEAR button fix - target everything */
-section[id="performance"] button,
-section[id="performance"] .flex button,
-section[id="performance"] [class*="Button"],
-section[id="performance"] [class*="button"] {
+/* Performance section - NUCLEAR button fix - target everything EXCEPT scenario boxes */
+section[id="performance"] button:not([class*="scenarioBox"]),
+section[id="performance"] .flex button:not([class*="scenarioBox"]),
+section[id="performance"] [class*="Button"]:not([class*="scenarioBox"]),
+section[id="performance"] [class*="button"]:not([class*="scenarioBox"]) {
   pointer-events: auto !important;
   cursor: pointer !important;
   display: inline-block !important;
@@ -128,6 +137,81 @@ section[id="performance"] [class*="button"] {
   font-size: 14px !important;
   font-weight: 400 !important; /* Lighter weight for disabled */
   text-decoration: none !important;
+}
+
+/* Ensure scenario boxes in performance section work properly */
+section[id="performance"] [class*="scenarioBox"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* ULTRA HIGH SPECIFICITY - Force scenario box highlighting to work */
+section[id="performance"] button[class*="scenarioBox"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  /* Disable all mouse interactions except click */
+  transition: none !important;
+}
+
+section[id="performance"] button[class*="scenarioBox"]:not([class*="selected"]) {
+  background-color: white !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Removed hover effects - only click should trigger changes */
+
+section[id="performance"] button[class*="scenarioBox"][class*="selected"] {
+  background-color: #0ea5e9 !important;
+  color: white !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Force scenario box text colors */
+section[id="performance"] button[class*="scenarioBox"][class*="selected"] h4 {
+  color: white !important;
+}
+
+section[id="performance"] button[class*="scenarioBox"][class*="selected"] p {
+  color: #c7d2fe !important;
+}
+
+section[id="performance"] button[class*="scenarioBox"][class*="selected"] div {
+  color: #c7d2fe !important;
+}
+
+section[id="performance"] button[class*="scenarioBox"]:not([class*="selected"]) p {
+  color: #6b7280 !important;
+}
+
+section[id="performance"] button[class*="scenarioBox"]:not([class*="selected"]) div {
+  color: #6b7280 !important;
+}
+
+/* ULTRA HIGH SPECIFICITY - Force filter button styling to work properly */
+section[id="performance"] button[class*="filterButton"]:not([class*="active"]) {
+  opacity: 0.5 !important;
+  color: #1f2937 !important;
+  background-color: #f3f4f6 !important;
+  border: 1px solid #e5e7eb !important;
+  transition: all 0.2s ease !important;
+}
+
+section[id="performance"] button[class*="filterButton"][class*="active"] {
+  opacity: 1 !important;
+  color: #ffffff !important;
+  background-color: #0ea5e9 !important;
+  border: 1px solid #0ea5e9 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+section[id="performance"] button[class*="filterButton"]:not([class*="active"]):hover {
+  color: #0ea5e9 !important;
+  background-color: #eff6ff !important;
 }
 
 /* Force active button styling - bright and prominent */
@@ -633,7 +717,10 @@ section[id="performance"] button:hover:not(.active):not([class*="active"]) {
 }
 
 /* Section background colors - force application */
-/* Hero section background handled by Tailwind classes in page.tsx */
+/* Hero section background */
+section[id="hero"] {
+  background: linear-gradient(to bottom right, rgb(240 249 255), rgb(224 242 254), rgb(238 242 255)) !important;
+}
 
 section[id="technology"] {
   background-color: white !important;

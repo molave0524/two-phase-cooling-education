@@ -215,7 +215,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     } catch (error) {
       console.error('Failed to end conversation:', error)
     }
-  }, [conversation.id, onConversationEnd])
+  }, [conversation.id, onConversationEnd, saveConversation])
 
   // ============================================================================
   // MESSAGE HANDLING
@@ -317,7 +317,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       setIsTyping(false)
       setResponseStartTime(null)
     }
-  }, [aiSendMessage, conversation.context, conversation.messages, responseStartTime, responseTimes])
+  }, [aiSendMessage, responseStartTime, responseTimes])
 
   const handleSuggestedQuestion = useCallback((question: SuggestedQuestion) => {
     sendMessage(question.text)
@@ -419,7 +419,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     }
   }
 
-  const saveConversation = async (satisfaction?: number) => {
+  const saveConversation = useCallback(async (satisfaction?: number) => {
     if (!conversation.id || conversation.messages.length === 0) return
 
     try {
@@ -454,7 +454,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     } catch (error) {
       console.error('Failed to save conversation:', error)
     }
-  }
+  }, [conversation])
 
   // ============================================================================
   // RENDER

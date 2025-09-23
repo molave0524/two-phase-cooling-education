@@ -30,13 +30,8 @@ interface Video {
 import { PlayIcon, ClockIcon, StarIcon } from '@heroicons/react/24/outline'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
-export const VideoShowcase: React.FC = () => {
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
-  const [videos, setVideos] = useState<Video[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Sample video data (in production, this would come from API)
-  const sampleVideos: Video[] = [
+// Sample video data (in production, this would come from API)
+const SAMPLE_VIDEOS: Video[] = [
     {
       id: '1',
       title: 'Introduction to Two-Phase Cooling',
@@ -123,9 +118,14 @@ export const VideoShowcase: React.FC = () => {
     }
   ]
 
+export const VideoShowcase: React.FC = () => {
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null)
+  const [videos, setVideos] = useState<Video[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
-    setVideos(sampleVideos)
-    setSelectedVideo(sampleVideos[0]) // Default to first video
+    setVideos(SAMPLE_VIDEOS)
+    setSelectedVideo(SAMPLE_VIDEOS[0]) // Default to first video
   }, [])
 
   const formatDuration = (seconds: number): string => {
@@ -164,7 +164,7 @@ export const VideoShowcase: React.FC = () => {
         <h2 id="demonstrations-heading" className="text-3xl font-bold text-secondary-900">
           Interactive Demonstrations
         </h2>
-        <p className="text-lg text-secondary-600 max-w-3xl mx-auto">
+        <p className="text-lg text-secondary-800 max-w-3xl mx-auto">
           Experience two-phase cooling technology through our comprehensive video demonstrations.
           Watch real-world testing, learn the science, and see the results.
         </p>
@@ -218,7 +218,7 @@ export const VideoShowcase: React.FC = () => {
 
                 {/* Learning Objectives */}
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-secondary-900">What You'll Learn</h4>
+                  <h4 className="font-semibold text-secondary-900">What You&apos;ll Learn</h4>
                   <ul className="space-y-2">
                     {selectedVideo.learning_objectives.map((objective, index) => (
                       <li key={index} className="flex items-start gap-2">
