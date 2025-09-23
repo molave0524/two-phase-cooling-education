@@ -121,9 +121,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   })
 
   // Session tracking
-  const [sessionStartTime] = useState<number>(Date.now())
+  // const [sessionStartTime] = useState<number>(Date.now())
   const [lastProgressUpdate, setLastProgressUpdate] = useState<number>(0)
-  const [totalWatchTime, setTotalWatchTime] = useState<number>(0)
+  // const [totalWatchTime, setTotalWatchTime] = useState<number>(0)
 
   // UI state
   const [showControls, setShowControls] = useState(true)
@@ -174,10 +174,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     // Calculate watch time
     const now = Date.now()
-    if (videoState.isPlaying && lastProgressUpdate > 0) {
-      const timeDiff = (now - lastProgressUpdate) / 1000
-      setTotalWatchTime(prev => prev + timeDiff)
-    }
+    // if (videoState.isPlaying && lastProgressUpdate > 0) {
+    //   const timeDiff = (now - lastProgressUpdate) / 1000
+    //   setTotalWatchTime(prev => prev + timeDiff)
+    // }
     setLastProgressUpdate(now)
 
     // Call external progress callback
@@ -198,7 +198,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
 
     // Check for completion
-    if (percentage >= 90 && !progressData.percentage || progressData.percentage < 90) {
+    if ((percentage >= 90 && !progressData.percentage) || progressData.percentage < 90) {
       handleVideoComplete()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -250,17 +250,20 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }))
   }, [])
 
-  const handleError = useCallback((error: Event) => {
-    console.error('Video playback error:', error)
-    setVideoState(prev => ({ ...prev, isError: true, isLoading: false }))
+  const handleError = useCallback(
+    (error: Event) => {
+      console.error('Video playback error:', error)
+      setVideoState(prev => ({ ...prev, isError: true, isLoading: false }))
 
-    const errorMessage = 'Failed to load video. Please check your connection and try again.'
-    toast.error(errorMessage)
+      const errorMessage = 'Failed to load video. Please check your connection and try again.'
+      toast.error(errorMessage)
 
-    if (onError) {
-      onError(errorMessage)
-    }
-  }, [onError])
+      if (onError) {
+        onError(errorMessage)
+      }
+    },
+    [onError]
+  )
 
   // ============================================================================
   // PROGRESS MANAGEMENT
@@ -343,13 +346,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     video.currentTime = Math.max(0, Math.min(video.duration, time))
   }, [])
 
-  const seekToPercentage = useCallback((percentage: number) => {
-    const video = videoRef.current
-    if (!video || !video.duration) return
+  const seekToPercentage = useCallback(
+    (percentage: number) => {
+      const video = videoRef.current
+      if (!video || !video.duration) return
 
-    const time = (percentage / 100) * video.duration
-    seekTo(time)
-  }, [seekTo])
+      const time = (percentage / 100) * video.duration
+      seekTo(time)
+    },
+    [seekTo]
+  )
 
   const changePlaybackRate = useCallback((rate: number) => {
     const video = videoRef.current
@@ -379,14 +385,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
   }, [])
 
-  const handleProgressBarClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    const progressBar = progressBarRef.current
-    if (!progressBar || !videoState.duration) return
+  const handleProgressBarClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const progressBar = progressBarRef.current
+      if (!progressBar || !videoState.duration) return
 
-    const rect = progressBar.getBoundingClientRect()
-    const percentage = ((event.clientX - rect.left) / rect.width) * 100
-    seekToPercentage(percentage)
-  }, [videoState.duration, seekToPercentage])
+      const rect = progressBar.getBoundingClientRect()
+      const percentage = ((event.clientX - rect.left) / rect.width) * 100
+      seekToPercentage(percentage)
+    },
+    [videoState.duration, seekToPercentage]
+  )
 
   // ============================================================================
   // CONTROLS VISIBILITY
@@ -482,11 +491,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   if (videoState.isError) {
     return (
       <div className={`video-player ${className}`}>
-        <div className="flex items-center justify-center h-64 bg-secondary-900 rounded-equipment">
-          <div className="text-center text-white">
-            <div className="text-4xl mb-4">⚠️</div>
-            <h3 className="text-lg font-semibold mb-2">Video Unavailable</h3>
-            <p className="text-secondary-300">
+        <div className='flex items-center justify-center h-64 bg-secondary-900 rounded-equipment'>
+          <div className='text-center text-white'>
+            <div className='text-4xl mb-4'>⚠️</div>
+            <h3 className='text-lg font-semibold mb-2'>Video Unavailable</h3>
+            <p className='text-secondary-300'>
               Sorry, we couldn&apos;t load this video. Please try refreshing the page.
             </p>
           </div>
@@ -505,21 +514,21 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       {/* Video Element */}
       <video
         ref={videoRef}
-        className="w-full h-full bg-secondary-900 rounded-equipment"
+        className='w-full h-full bg-secondary-900 rounded-equipment'
         poster={video.thumbnail_url || undefined}
-        preload="metadata"
+        preload='metadata'
         autoPlay={autoPlay}
         playsInline
       >
-        <source src={video.file_url} type="video/mp4" />
+        <source src={video.file_url} type='video/mp4' />
         {/* Captions disabled for demo */}
         Your browser does not support the video tag.
       </video>
 
       {/* Loading Overlay */}
       {videoState.isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-secondary-900/50 rounded-equipment">
-          <div className="loading-spinner w-8 h-8 border-primary-500"></div>
+        <div className='absolute inset-0 flex items-center justify-center bg-secondary-900/50 rounded-equipment'>
+          <div className='loading-spinner w-8 h-8 border-primary-500'></div>
         </div>
       )}
 
@@ -530,83 +539,79 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         } transition-opacity duration-300`}
       >
         {/* Progress Bar */}
-        <div className="mb-4">
-          <div
-            ref={progressBarRef}
-            className="video-progress"
-            onClick={handleProgressBarClick}
-          >
+        <div className='mb-4'>
+          <div ref={progressBarRef} className='video-progress' onClick={handleProgressBarClick}>
             {/* Buffer Bar */}
             <div
-              className="video-progress-buffer"
+              className='video-progress-buffer'
               style={{ width: `${getBufferedPercentage()}%` }}
             />
             {/* Progress Bar */}
             <div
-              className="video-progress-bar"
+              className='video-progress-bar'
               style={{
                 width: `${(videoState.currentTime / videoState.duration) * 100 || 0}%`,
               }}
             >
               {/* Progress Handle */}
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-primary-500 rounded-full shadow-lg" />
+              <div className='absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-primary-500 rounded-full shadow-lg' />
             </div>
           </div>
         </div>
 
         {/* Control Buttons */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-4'>
             {/* Play/Pause Button */}
             <button
               onClick={togglePlayPause}
-              className="flex items-center justify-center w-10 h-10 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors"
+              className='flex items-center justify-center w-10 h-10 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors'
               aria-label={videoState.isPlaying ? 'Pause' : 'Play'}
             >
               {videoState.isPlaying ? (
-                <PauseIcon className="w-5 h-5" />
+                <PauseIcon className='w-5 h-5' />
               ) : (
-                <PlayIcon className="w-5 h-5 ml-0.5" />
+                <PlayIcon className='w-5 h-5 ml-0.5' />
               )}
             </button>
 
             {/* Volume Control */}
-            <div className="flex items-center gap-2">
+            <div className='flex items-center gap-2'>
               <button
                 onClick={toggleMute}
-                className="text-white hover:text-primary-300 transition-colors"
+                className='text-white hover:text-primary-300 transition-colors'
                 aria-label={videoState.isMuted ? 'Unmute' : 'Mute'}
               >
                 {videoState.isMuted || videoState.volume === 0 ? (
-                  <SpeakerXMarkIcon className="w-5 h-5" />
+                  <SpeakerXMarkIcon className='w-5 h-5' />
                 ) : (
-                  <SpeakerWaveIcon className="w-5 h-5" />
+                  <SpeakerWaveIcon className='w-5 h-5' />
                 )}
               </button>
 
               <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
+                type='range'
+                min='0'
+                max='1'
+                step='0.1'
                 value={videoState.isMuted ? 0 : videoState.volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="w-20 h-1 bg-white/20 rounded-full appearance-none slider"
+                onChange={e => setVolume(parseFloat(e.target.value))}
+                className='w-20 h-1 bg-white/20 rounded-full appearance-none slider'
               />
             </div>
 
             {/* Time Display */}
-            <div className="text-white text-sm font-mono">
+            <div className='text-white text-sm font-mono'>
               {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             {/* Playback Speed */}
             <select
               value={videoState.playbackRate}
-              onChange={(e) => changePlaybackRate(parseFloat(e.target.value))}
-              className="bg-white/20 text-white text-sm rounded px-2 py-1 border-none"
+              onChange={e => changePlaybackRate(parseFloat(e.target.value))}
+              className='bg-white/20 text-white text-sm rounded px-2 py-1 border-none'
             >
               <option value={0.5}>0.5x</option>
               <option value={0.75}>0.75x</option>
@@ -617,7 +622,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </select>
 
             {/* Progress Percentage */}
-            <div className="text-white text-sm font-mono">
+            <div className='text-white text-sm font-mono'>
               {Math.round((videoState.currentTime / videoState.duration) * 100 || 0)}%
             </div>
           </div>
@@ -625,9 +630,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       </div>
 
       {/* Video Metadata Overlay */}
-      <div className="absolute top-4 left-4 text-white">
-        <h3 className="text-lg font-semibold mb-1">{video.title}</h3>
-        <div className="flex items-center gap-4 text-sm text-white/80">
+      <div className='absolute top-4 left-4 text-white'>
+        <h3 className='text-lg font-semibold mb-1'>{video.title}</h3>
+        <div className='flex items-center gap-4 text-sm text-white/80'>
           {video.difficulty_level && (
             <span className={`status-${video.difficulty_level}`}>
               {video.difficulty_level.charAt(0).toUpperCase() + video.difficulty_level.slice(1)}
@@ -635,10 +640,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           )}
           <span>{formatTime(video.duration_seconds)}</span>
           {video.topic_category && (
-            <span>{video.topic_category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+            <span>
+              {video.topic_category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </span>
           )}
         </div>
       </div>
     </div>
   )
 }
+
+export default VideoPlayer

@@ -10,13 +10,14 @@ import { Toaster } from 'react-hot-toast'
 // Mock progress context for demo mode
 const ProgressContext = createContext({
   updateProgress: () => {},
-  getProgress: () => ({ percentage: 0, completed: false })
+  getProgress: () => ({ percentage: 0, completed: false }),
 })
 
 // Mock AI context for demo mode
 const AIContext = createContext({
-  sendMessage: async (message: string) => "This is a demo response. In production, this would connect to our AI assistant with full thermal dynamics knowledge.",
-  isLoading: false
+  sendMessage: async (_message: string) =>
+    'This is a demo response. In production, this would connect to our AI assistant with full thermal dynamics knowledge.',
+  isLoading: false,
 })
 
 export const useProgress = () => useContext(ProgressContext)
@@ -31,7 +32,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <>
       {children}
       <Toaster
-        position="bottom-right"
+        position='bottom-right'
         toastOptions={{
           duration: 4000,
           style: {

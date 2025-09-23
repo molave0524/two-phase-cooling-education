@@ -34,23 +34,57 @@
 
 /* Hour labels and scenario text - using CSS module class names */
 .performanceSection .scenarioBox.selected .hourLabel {
-  color: var(--hour-text) !important;
+  color: rgb(199 210 254) !important; /* text-primary-100 equivalent */
 }
 
 .performanceSection .scenarioBox.selected .hourIcon {
-  color: var(--hour-icon) !important;
-  fill: var(--hour-icon) !important;
+  color: rgb(199 210 254) !important; /* text-primary-100 equivalent */
+  fill: rgb(199 210 254) !important;
 }
 
 .performanceSection .scenarioBox.selected .scenarioText {
-  color: var(--scenario-text-selected) !important;
+  color: rgb(199 210 254) !important; /* text-primary-100 equivalent */
+}
+
+.performanceSection .scenarioBox.selected .scenarioHeading {
+  color: white !important;
+}
+
+.performanceSection .scenarioBox:not(.selected) .scenarioText {
+  color: rgb(75 85 99) !important; /* text-secondary-600 equivalent */
+}
+
+.performanceSection .scenarioBox:not(.selected) .hourLabel {
+  color: rgb(75 85 99) !important; /* text-secondary-600 equivalent */
 }
 
 /* Legacy filter button styles - replaced by high-specificity selectors above */
 
-/* Test Scenario Styling - cleaned up, using high-specificity selectors */
-.scenarioBox.selected {
-  background-color: var(--filter-bg-active);
+/* Test Scenario Styling - high-specificity selectors to override Tailwind AND globals.css */
+.performanceSection .scenarioBox {
+  cursor: pointer !important;
+  transition: none !important; /* Disable all transitions */
+  pointer-events: auto !important;
+  /* Override globals.css disabled button styling */
+  opacity: 1 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.performanceSection .scenarioBox:not(.selected) {
+  background-color: white !important;
+  color: var(--secondary-900) !important;
+  border: 1px solid var(--secondary-200) !important;
+}
+
+/* Removed hover effect - only click should trigger selection */
+
+.performanceSection .scenarioBox.selected {
+  background-color: var(--primary-600) !important;
+  color: white !important;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
 /* Animation styles for metric cards */

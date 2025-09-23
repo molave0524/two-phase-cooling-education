@@ -5,11 +5,9 @@ import Link from 'next/link'
 import {
   Bars3Icon,
   XMarkIcon,
-  BeakerIcon,
   PlayCircleIcon,
   ChatBubbleLeftRightIcon,
   ShoppingBagIcon,
-  BookOpenIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
@@ -298,7 +296,7 @@ export const Header: React.FC = () => {
                 href='#cart'
                 className='relative text-black hover:text-black/80 transition-colors duration-200'
               >
-                <ShoppingBagIcon className='w-4 h-4' />
+                <ShoppingBagIcon className='w-5 h-5' />
                 {cartItemCount > 0 && (
                   <span className='absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium'>
                     {cartItemCount}

@@ -1,16 +1,25 @@
 import { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { TechnologyOverview } from '@/components/sections/TechnologyOverview'
 import { VideoShowcase } from '@/components/sections/VideoShowcase'
-import { PerformanceMetrics } from '@/components/sections/PerformanceMetrics'
-import { AIAssistantPreview } from '@/components/sections/AIAssistantPreview'
 import { ProductShowcase } from '@/components/sections/ProductShowcase'
 import { CallToAction } from '@/components/sections/CallToAction'
+
+// Dynamic imports for performance optimization - simplified syntax
+const PerformanceMetrics = dynamic(() => import('@/components/sections/PerformanceMetrics'), {
+  loading: () => <div className='py-20 text-center'>Loading performance metrics...</div>,
+})
+
+const AIAssistantPreview = dynamic(() => import('@/components/sections/AIAssistantPreview'), {
+  loading: () => <div className='py-20 text-center'>Loading AI assistant...</div>,
+})
 
 // Page metadata for SEO optimization
 export const metadata: Metadata = {
   title: 'Revolutionary Two-Phase Cooling Technology | Education Center',
-  description: 'Experience the future of computer cooling through interactive demonstrations. Learn how our innovative two-phase cooling case achieves superior thermal performance with minimal environmental impact.',
+  description:
+    'Experience the future of computer cooling through interactive demonstrations. Learn how our innovative two-phase cooling case achieves superior thermal performance with minimal environmental impact.',
   keywords: [
     'two-phase cooling',
     'computer case',
@@ -19,7 +28,7 @@ export const metadata: Metadata = {
     'education',
     'interactive demonstrations',
     'thermal dynamics',
-    'high-performance computing'
+    'high-performance computing',
   ],
   openGraph: {
     title: 'Revolutionary Two-Phase Cooling Technology',
@@ -60,214 +69,205 @@ export const metadata: Metadata = {
  */
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className='min-h-screen'>
       {/* Hero Section - Immediate Impact */}
       <section
-        id="hero"
-        className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50"
-        aria-labelledby="hero-heading"
+        id='hero'
+        className='relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50'
+        aria-labelledby='hero-heading'
       >
         <HeroSection />
       </section>
 
       {/* Technology Overview - Educational Foundation */}
-      <section
-        id="technology"
-        className="py-20 bg-white"
-        aria-labelledby="technology-heading"
-      >
-        <div className="container-max section-padding">
+      <section id='technology' className='py-20 bg-white' aria-labelledby='technology-heading'>
+        <div className='container-max section-padding'>
           <TechnologyOverview />
         </div>
       </section>
 
       {/* Video Showcase - Core Demonstrations */}
       <section
-        id="demonstrations"
-        className="py-20 bg-slate-100"
-        aria-labelledby="demonstrations-heading"
+        id='demonstrations'
+        className='py-20 bg-slate-100'
+        aria-labelledby='demonstrations-heading'
       >
-        <div className="container-max section-padding">
+        <div className='container-max section-padding'>
           <VideoShowcase />
         </div>
       </section>
 
       {/* Performance Metrics - Data-Driven Validation */}
-      <section
-        id="performance"
-        className="py-20 bg-white"
-        aria-labelledby="performance-heading"
-      >
-        <div className="container-max section-padding">
+      <section id='performance' className='py-20 bg-white' aria-labelledby='performance-heading'>
+        <div className='container-max section-padding'>
           <PerformanceMetrics />
         </div>
       </section>
 
       {/* AI Assistant Preview - Interactive Learning */}
       <section
-        id="ai-assistant"
-        className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50"
-        aria-labelledby="ai-assistant-heading"
+        id='ai-assistant'
+        className='py-20 bg-gradient-to-br from-blue-50 to-cyan-50'
+        aria-labelledby='ai-assistant-heading'
       >
-        <div className="container-max section-padding">
+        <div className='container-max section-padding'>
           <AIAssistantPreview />
         </div>
       </section>
 
       {/* Product Showcase - Natural Purchase Transition */}
-      <section
-        id="product"
-        className="py-20 bg-white"
-        aria-labelledby="product-heading"
-      >
-        <div className="container-max section-padding">
+      <section id='product' className='py-20 bg-white' aria-labelledby='product-heading'>
+        <div className='container-max section-padding'>
           <ProductShowcase />
         </div>
       </section>
 
       {/* Call to Action - Clear Next Steps */}
       <section
-        id="get-started"
-        className="py-20 bg-gradient-to-br from-sky-600 to-sky-800 text-white"
-        aria-labelledby="cta-heading"
+        id='get-started'
+        className='py-20 bg-gradient-to-br from-sky-600 to-sky-800 text-white'
+        aria-labelledby='cta-heading'
       >
-        <div className="container-max section-padding">
+        <div className='container-max section-padding'>
           <CallToAction />
         </div>
       </section>
 
       {/* Schema.org structured data for rich search results */}
       <script
-        type="application/ld+json"
+        type='application/ld+json'
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "EducationalOrganization",
-            "name": "Two-Phase Cooling Education Center",
-            "description": "Learn about revolutionary two-phase cooling technology through interactive demonstrations and educational content.",
-            "url": "https://twophasecooling.com",
-            "logo": "https://twophasecooling.com/images/logo.png",
-            "image": "https://twophasecooling.com/images/hero-og.jpg",
-            "telephone": "+1-555-COOLING",
-            "address": {
-              "@type": "PostalAddress",
-              "addressCountry": "US",
-              "addressRegion": "USA"
+            '@context': 'https://schema.org',
+            '@type': 'EducationalOrganization',
+            name: 'Two-Phase Cooling Education Center',
+            description:
+              'Learn about revolutionary two-phase cooling technology through interactive demonstrations and educational content.',
+            url: 'https://twophasecooling.com',
+            logo: 'https://twophasecooling.com/images/logo.png',
+            image: 'https://twophasecooling.com/images/hero-og.jpg',
+            telephone: '+1-555-COOLING',
+            address: {
+              '@type': 'PostalAddress',
+              addressCountry: 'US',
+              addressRegion: 'USA',
             },
-            "sameAs": [
-              "https://youtube.com/@twophasecooling",
-              "https://twitter.com/twophasecooling",
-              "https://linkedin.com/company/twophasecooling"
+            sameAs: [
+              'https://youtube.com/@twophasecooling',
+              'https://twitter.com/twophasecooling',
+              'https://linkedin.com/company/twophasecooling',
             ],
-            "offers": {
-              "@type": "Product",
-              "name": "Two-Phase Cooling Case",
-              "description": "Revolutionary computer case with integrated two-phase cooling system",
-              "category": "Computer Hardware",
-              "brand": {
-                "@type": "Brand",
-                "name": "Two-Phase Cooling Technologies"
+            offers: {
+              '@type': 'Product',
+              name: 'Two-Phase Cooling Case',
+              description: 'Revolutionary computer case with integrated two-phase cooling system',
+              category: 'Computer Hardware',
+              brand: {
+                '@type': 'Brand',
+                name: 'Two-Phase Cooling Technologies',
               },
-              "offers": {
-                "@type": "Offer",
-                "price": "899.00",
-                "priceCurrency": "USD",
-                "availability": "https://schema.org/PreOrder",
-                "url": "https://twophasecooling.com/products"
-              }
+              offers: {
+                '@type': 'Offer',
+                price: '899.00',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/PreOrder',
+                url: 'https://twophasecooling.com/products',
+              },
             },
-            "educationalCredentialAwarded": "Certificate of Completion",
-            "teaches": [
-              "Two-Phase Cooling Principles",
-              "Thermal Dynamics",
-              "Heat Transfer Optimization",
-              "Environmental Impact Assessment",
-              "Performance Measurement"
-            ]
-          })
+            educationalCredentialAwarded: 'Certificate of Completion',
+            teaches: [
+              'Two-Phase Cooling Principles',
+              'Thermal Dynamics',
+              'Heat Transfer Optimization',
+              'Environmental Impact Assessment',
+              'Performance Measurement',
+            ],
+          }),
         }}
       />
 
       {/* Additional structured data for the main product */}
       <script
-        type="application/ld+json"
+        type='application/ld+json'
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "name": "Two-Phase Cooling Computer Case",
-            "description": "Revolutionary computer case featuring integrated two-phase cooling system with superior thermal performance and minimal environmental impact.",
-            "brand": {
-              "@type": "Brand",
-              "name": "Two-Phase Cooling Technologies"
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: 'Two-Phase Cooling Computer Case',
+            description:
+              'Revolutionary computer case featuring integrated two-phase cooling system with superior thermal performance and minimal environmental impact.',
+            brand: {
+              '@type': 'Brand',
+              name: 'Two-Phase Cooling Technologies',
             },
-            "category": "Computer Cases",
-            "image": [
-              "https://twophasecooling.com/images/product-main.jpg",
-              "https://twophasecooling.com/images/product-side.jpg",
-              "https://twophasecooling.com/images/product-internal.jpg"
+            category: 'Computer Cases',
+            image: [
+              'https://twophasecooling.com/images/product-main.jpg',
+              'https://twophasecooling.com/images/product-side.jpg',
+              'https://twophasecooling.com/images/product-internal.jpg',
             ],
-            "offers": {
-              "@type": "Offer",
-              "price": "899.00",
-              "priceCurrency": "USD",
-              "availability": "https://schema.org/PreOrder",
-              "url": "https://twophasecooling.com/products",
-              "seller": {
-                "@type": "Organization",
-                "name": "Two-Phase Cooling Technologies"
-              }
+            offers: {
+              '@type': 'Offer',
+              price: '899.00',
+              priceCurrency: 'USD',
+              availability: 'https://schema.org/PreOrder',
+              url: 'https://twophasecooling.com/products',
+              seller: {
+                '@type': 'Organization',
+                name: 'Two-Phase Cooling Technologies',
+              },
             },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.8",
-              "bestRating": "5",
-              "worstRating": "1",
-              "ratingCount": "127"
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.8',
+              bestRating: '5',
+              worstRating: '1',
+              ratingCount: '127',
             },
-            "review": [
+            review: [
               {
-                "@type": "Review",
-                "reviewRating": {
-                  "@type": "Rating",
-                  "ratingValue": "5",
-                  "bestRating": "5"
+                '@type': 'Review',
+                reviewRating: {
+                  '@type': 'Rating',
+                  ratingValue: '5',
+                  bestRating: '5',
                 },
-                "author": {
-                  "@type": "Person",
-                  "name": "Tech Enthusiast"
+                author: {
+                  '@type': 'Person',
+                  name: 'Tech Enthusiast',
                 },
-                "reviewBody": "Revolutionary cooling performance. Maintains optimal temperatures even under extreme loads."
-              }
+                reviewBody:
+                  'Revolutionary cooling performance. Maintains optimal temperatures even under extreme loads.',
+              },
             ],
-            "additionalProperty": [
+            additionalProperty: [
               {
-                "@type": "PropertyValue",
-                "name": "Cooling Type",
-                "value": "Two-Phase Immersion"
+                '@type': 'PropertyValue',
+                name: 'Cooling Type',
+                value: 'Two-Phase Immersion',
               },
               {
-                "@type": "PropertyValue",
-                "name": "GWP Rating",
-                "value": "20 (equivalent to gasoline)"
+                '@type': 'PropertyValue',
+                name: 'GWP Rating',
+                value: '20 (equivalent to gasoline)',
               },
               {
-                "@type": "PropertyValue",
-                "name": "ODP Rating",
-                "value": "0 (zero ozone depletion)"
+                '@type': 'PropertyValue',
+                name: 'ODP Rating',
+                value: '0 (zero ozone depletion)',
               },
               {
-                "@type": "PropertyValue",
-                "name": "Form Factor",
-                "value": "Mid-Tower ATX"
+                '@type': 'PropertyValue',
+                name: 'Form Factor',
+                value: 'Mid-Tower ATX',
               },
               {
-                "@type": "PropertyValue",
-                "name": "Materials",
-                "value": "Tempered Glass, Aluminum"
-              }
-            ]
-          })
+                '@type': 'PropertyValue',
+                name: 'Materials',
+                value: 'Tempered Glass, Aluminum',
+              },
+            ],
+          }),
         }}
       />
     </div>

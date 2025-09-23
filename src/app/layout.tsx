@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 // Toaster is now handled in Providers
 
 // Apple-style system font stack for optimal performance and Apple look
@@ -15,7 +15,8 @@ export const metadata: Metadata = {
     default: 'Two-Phase Cooling Education Center | Advanced Computer Case Technology',
     template: '%s | Two-Phase Cooling Education',
   },
-  description: 'Discover the future of computer cooling with our innovative two-phase cooling case. Learn through interactive demonstrations how superior thermal performance revolutionizes high-performance computing.',
+  description:
+    'Discover the future of computer cooling with our innovative two-phase cooling case. Learn through interactive demonstrations how superior thermal performance revolutionizes high-performance computing.',
   keywords: [
     'two-phase cooling',
     'computer case',
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     'education center',
     'cooling system',
     'computer hardware',
-    'thermal management'
+    'thermal management',
   ],
   authors: [{ name: 'Two-Phase Cooling Innovation Team' }],
   creator: 'Two-Phase Cooling Education Center',
@@ -39,7 +40,8 @@ export const metadata: Metadata = {
     url: 'https://twophasecooling.com',
     siteName: 'Two-Phase Cooling Education Center',
     title: 'Revolutionary Two-Phase Cooling Technology',
-    description: 'Experience the future of computer cooling through interactive demonstrations and educational content.',
+    description:
+      'Experience the future of computer cooling through interactive demonstrations and educational content.',
     images: [
       {
         url: '/images/og-image.jpg',
@@ -87,9 +89,9 @@ export const metadata: Metadata = {
 
   // Verification codes for search engines
   verification: {
-    google: process.env.GOOGLE_VERIFICATION_CODE,
-    yandex: process.env.YANDEX_VERIFICATION_CODE,
-    yahoo: process.env.YAHOO_VERIFICATION_CODE,
+    google: process.env.GOOGLE_VERIFICATION_CODE || null,
+    yandex: process.env.YANDEX_VERIFICATION_CODE || null,
+    yahoo: process.env.YAHOO_VERIFICATION_CODE || null,
   },
 
   // Categories for app stores
@@ -127,24 +129,16 @@ export const viewport = {
 }
 
 // Root layout component with optimal performance and accessibility
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className="scroll-smooth"
-      suppressHydrationWarning
-    >
+    <html lang='en' className='scroll-smooth' suppressHydrationWarning>
       <head>
         {/* Preload critical resources for performance */}
         {/* Font loading handled by Next.js Google Fonts */}
 
         {/* DNS prefetch for external resources */}
-        <link rel="dns-prefetch" href="//cdn.example.com" />
-        <link rel="dns-prefetch" href="//analytics.google.com" />
+        <link rel='dns-prefetch' href='//cdn.example.com' />
+        <link rel='dns-prefetch' href='//analytics.google.com' />
 
         {/* Critical CSS handled in globals.css */}
 
@@ -155,15 +149,15 @@ export default function RootLayout({
         {/* Manifest disabled for demo */}
 
         {/* Security headers - X-Frame-Options must be set via server headers */}
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
+        <meta httpEquiv='X-Content-Type-Options' content='nosniff' />
+        <meta httpEquiv='X-XSS-Protection' content='1; mode=block' />
 
         {/* Performance hints */}
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#075985" media="(prefers-color-scheme: dark)" />
+        <meta name='format-detection' content='telephone=no' />
+        <meta name='theme-color' content='#0ea5e9' media='(prefers-color-scheme: light)' />
+        <meta name='theme-color' content='#075985' media='(prefers-color-scheme: dark)' />
 
-{/* Performance section styles moved to PerformanceMetrics.module.css */}
+        {/* Performance section styles moved to PerformanceMetrics.module.css */}
       </head>
 
       <body
@@ -179,20 +173,18 @@ export default function RootLayout({
 
         {/* Application providers for state management and theming */}
         <Providers>
-          {/* Site header with navigation */}
-          <Header />
+          <ErrorBoundary>
+            {/* Site header with navigation */}
+            <Header />
 
-          {/* Main content area */}
-          <main
-            id="main-content"
-            className="flex-1 min-h-0"
-            role="main"
-          >
-            {children}
-          </main>
+            {/* Main content area */}
+            <main id='main-content' className='flex-1 min-h-0' role='main'>
+              <ErrorBoundary>{children}</ErrorBoundary>
+            </main>
 
-          {/* Site footer */}
-          <Footer />
+            {/* Site footer */}
+            <Footer />
+          </ErrorBoundary>
 
           {/* Toast notifications handled in Providers */}
         </Providers>
