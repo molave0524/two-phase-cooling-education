@@ -11,7 +11,7 @@ import {
   ShoppingBagIcon,
   BookOpenIcon,
   ChevronDownIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import { useCartStore } from '@/lib/stores/cart-store'
 
@@ -40,24 +40,24 @@ interface MobileMenuProps {
 const MAIN_NAVIGATION: NavigationItem[] = [
   {
     label: 'Technology',
-    href: '#technology'
+    href: '#technology',
   },
   {
     label: 'Demonstrations',
-    href: '#demonstrations'
+    href: '#demonstrations',
   },
   {
     label: 'Performance',
-    href: '#performance'
+    href: '#performance',
   },
   {
     label: 'AI Assistant',
-    href: '#ai-assistant'
+    href: '#ai-assistant',
   },
   {
     label: 'Products',
-    href: '#product'
-  }
+    href: '#product',
+  },
 ]
 
 // ============================================================================
@@ -69,45 +69,40 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
 
   const toggleExpanded = (label: string) => {
     setExpandedItems(prev =>
-      prev.includes(label)
-        ? prev.filter(item => item !== label)
-        : [...prev, label]
+      prev.includes(label) ? prev.filter(item => item !== label) : [...prev, label]
     )
   }
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
+    <div className='fixed inset-0 z-50 lg:hidden'>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-secondary-900/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className='fixed inset-0 bg-secondary-900/50 backdrop-blur-sm' onClick={onClose} />
 
       {/* Menu Panel */}
-      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-xl">
-        <div className="flex items-center justify-end p-4 border-b border-secondary-200">
+      <div className='fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-xl'>
+        <div className='flex items-center justify-end p-4 border-b border-secondary-200'>
           <button
             onClick={onClose}
-            className="p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-technical"
+            className='p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-technical'
           >
-            <XMarkIcon className="w-6 h-6" />
+            <XMarkIcon className='w-6 h-6' />
           </button>
         </div>
 
-        <div className="p-4 space-y-2 overflow-y-auto h-full pb-20">
-          {navigation.map((item) => (
+        <div className='p-4 space-y-2 overflow-y-auto h-full pb-20'>
+          {navigation.map(item => (
             <div key={item.label}>
               {item.children ? (
                 <div>
                   <button
                     onClick={() => toggleExpanded(item.label)}
-                    className="w-full flex items-center justify-between p-3 text-left text-secondary-900 hover:bg-secondary-50 rounded-technical"
+                    className='w-full flex items-center justify-between p-3 text-left text-secondary-900 hover:bg-secondary-50 rounded-technical'
                   >
-                    <div className="flex items-center gap-2">
+                    <div className='flex items-center gap-2'>
                       {item.icon}
-                      <span className="font-medium">{item.label}</span>
+                      <span className='font-medium'>{item.label}</span>
                     </div>
                     <ChevronDownIcon
                       className={`w-4 h-4 transition-transform ${
@@ -117,17 +112,17 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
                   </button>
 
                   {expandedItems.includes(item.label) && (
-                    <div className="ml-6 mt-2 space-y-1">
-                      {item.children.map((child) => (
+                    <div className='ml-6 mt-2 space-y-1'>
+                      {item.children.map(child => (
                         <Link
                           key={child.label}
                           href={child.href || '#'}
                           onClick={onClose}
-                          className="block p-2 text-sm text-secondary-700 hover:text-primary-600 hover:bg-primary-50 rounded-technical"
+                          className='block p-2 text-sm text-secondary-700 hover:text-primary-600 hover:bg-primary-50 rounded-technical'
                         >
-                          <div className="font-medium">{child.label}</div>
+                          <div className='font-medium'>{child.label}</div>
                           {child.description && (
-                            <div className="text-xs text-secondary-500 mt-0.5">
+                            <div className='text-xs text-secondary-500 mt-0.5'>
                               {child.description}
                             </div>
                           )}
@@ -140,31 +135,31 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
                 <Link
                   href={item.href || '#'}
                   onClick={onClose}
-                  className="flex items-center gap-2 p-3 text-secondary-900 hover:bg-secondary-50 rounded-technical"
+                  className='flex items-center gap-2 p-3 text-secondary-900 hover:bg-secondary-50 rounded-technical'
                 >
                   {item.icon}
-                  <span className="font-medium">{item.label}</span>
+                  <span className='font-medium'>{item.label}</span>
                 </Link>
               )}
             </div>
           ))}
 
           {/* Mobile CTA */}
-          <div className="pt-6 mt-6 border-t border-secondary-200 space-y-3">
+          <div className='pt-6 mt-6 border-t border-secondary-200 space-y-3'>
             <Link
-              href="#demonstrations"
+              href='#demonstrations'
               onClick={onClose}
-              className="btn-primary w-full justify-center"
+              className='btn-primary w-full justify-center'
             >
-              <PlayCircleIcon className="w-4 h-4 mr-2" />
+              <PlayCircleIcon className='w-4 h-4 mr-2' />
               Watch Demos
             </Link>
             <Link
-              href="#ai-assistant"
+              href='#ai-assistant'
               onClick={onClose}
-              className="btn-secondary w-full justify-center"
+              className='btn-secondary w-full justify-center'
             >
-              <ChatBubbleLeftRightIcon className="w-4 h-4 mr-2" />
+              <ChatBubbleLeftRightIcon className='w-4 h-4 mr-2' />
               Ask AI
             </Link>
           </div>
@@ -182,37 +177,35 @@ const DropdownMenu: React.FC<{ item: NavigationItem }> = ({ item }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="relative group">
+    <div className='relative group'>
       <button
-        className="flex items-center gap-1 px-4 py-2 text-secondary-700 hover:text-primary-600 font-medium transition-colors"
+        className='flex items-center gap-1 px-4 py-2 text-secondary-700 hover:text-primary-600 font-medium transition-colors'
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
         {item.icon}
         <span>{item.label}</span>
-        <ChevronDownIcon className="w-4 h-4" />
+        <ChevronDownIcon className='w-4 h-4' />
       </button>
 
       {isOpen && item.children && (
         <div
-          className="absolute top-full left-0 mt-1 w-80 bg-white shadow-xl border border-secondary-200 rounded-equipment overflow-hidden z-50"
+          className='absolute top-full left-0 mt-1 w-80 bg-white shadow-xl border border-secondary-200 rounded-equipment overflow-hidden z-50'
           onMouseEnter={() => setIsOpen(true)}
           onMouseLeave={() => setIsOpen(false)}
         >
-          <div className="p-4 space-y-2">
-            {item.children.map((child) => (
+          <div className='p-4 space-y-2'>
+            {item.children.map(child => (
               <Link
                 key={child.label}
                 href={child.href || '#'}
-                className="block p-3 hover:bg-primary-50 rounded-technical group"
+                className='block p-3 hover:bg-primary-50 rounded-technical group'
               >
-                <div className="font-medium text-secondary-900 group-hover:text-primary-600">
+                <div className='font-medium text-secondary-900 group-hover:text-primary-600'>
                   {child.label}
                 </div>
                 {child.description && (
-                  <div className="text-sm text-secondary-600 mt-1">
-                    {child.description}
-                  </div>
+                  <div className='text-sm text-secondary-600 mt-1'>{child.description}</div>
                 )}
               </Link>
             ))}
@@ -259,28 +252,29 @@ export const Header: React.FC = () => {
     <>
       <header
         className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-white backdrop-blur-xl border-b border-black/10'
-            : 'bg-white'
+          isScrolled ? 'bg-white backdrop-blur-xl border-b border-black/10' : 'bg-white'
         }`}
       >
-        <div className="container-max">
-          <div className="flex items-center justify-center py-4 relative">
+        <div className='container-max'>
+          <div className='flex items-center justify-center py-4 relative'>
             {/* Apple.com-style Logo - Absolute positioned to left */}
-            <Link href="/" className="absolute left-0 flex items-center hover:opacity-60 transition-opacity duration-200">
-              <span className="text-xl font-normal text-gray-600 tracking-tight">🍎</span>
+            <Link
+              href='/'
+              className='absolute left-0 flex items-center hover:opacity-60 transition-opacity duration-200'
+            >
+              <span className='text-xl font-normal text-gray-600 tracking-tight'>🍎</span>
             </Link>
 
             {/* Apple-style Navigation - Centered */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {MAIN_NAVIGATION.map((item) => (
+            <nav className='hidden md:flex items-center space-x-8'>
+              {MAIN_NAVIGATION.map(item => (
                 <div key={item.label}>
                   {item.children ? (
                     <DropdownMenu item={item} />
                   ) : (
                     <Link
                       href={item.href || '#'}
-                      className="text-sm font-normal text-black hover:text-black/80 transition-colors duration-200"
+                      className='text-sm font-normal text-black hover:text-black/80 transition-colors duration-200'
                     >
                       {item.label}
                     </Link>
@@ -290,39 +284,39 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Apple.com-style Actions - Absolute positioned to right */}
-            <div className="absolute right-0 hidden md:flex items-center gap-6">
+            <div className='absolute right-0 hidden md:flex items-center gap-6'>
               {/* Search Icon - Apple style */}
               <Link
-                href="#search"
-                className="text-black hover:text-black/80 transition-colors duration-200"
+                href='#search'
+                className='text-black hover:text-black/80 transition-colors duration-200'
               >
-                <MagnifyingGlassIcon className="w-4 h-4" />
+                <MagnifyingGlassIcon className='w-4 h-4' />
               </Link>
 
               {/* Cart Icon - Apple style */}
               <Link
-                href="#cart"
-                className="relative text-black hover:text-black/80 transition-colors duration-200"
+                href='#cart'
+                className='relative text-black hover:text-black/80 transition-colors duration-200'
               >
-                <ShoppingBagIcon className="w-4 h-4" />
+                <ShoppingBagIcon className='w-4 h-4' />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                  <span className='absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium'>
                     {cartItemCount}
                   </span>
                 )}
               </Link>
             </div>
 
-            {/* Mobile Menu Button - Hidden for now */}
-            <div className="hidden">
+            {/* Mobile Menu Button */}
+            <div className='md:hidden flex items-center gap-2'>
               {/* Mobile Cart */}
               <Link
-                href="#cart"
-                className="relative p-2 text-secondary-600 hover:text-primary-600 transition-colors"
+                href='#cart'
+                className='relative p-2 text-black hover:text-black/80 transition-colors'
               >
-                <ShoppingBagIcon className="w-6 h-6" />
+                <ShoppingBagIcon className='w-5 h-5' />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                  <span className='absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium'>
                     {cartItemCount}
                   </span>
                 )}
@@ -330,23 +324,21 @@ export const Header: React.FC = () => {
 
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="p-2 text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 rounded-technical"
+                className='p-2 text-black hover:text-black/80 transition-colors'
               >
-                <Bars3Icon className="w-6 h-6" />
+                <Bars3Icon className='w-5 h-5' />
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu - Completely disabled for now */}
-      {false && (
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-          navigation={MAIN_NAVIGATION}
-        />
-      )}
+      {/* Mobile Menu */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        navigation={MAIN_NAVIGATION}
+      />
     </>
   )
 }
