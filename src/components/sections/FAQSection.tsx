@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { FAQ_CONTENT, FAQ_CATEGORIES, FAQItem } from '@/data/faq-content'
+import { FAQ_CONTENT, FAQ_CATEGORIES } from '@/data/faq-content'
 import { MagnifyingGlassIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 
 export const FAQSection: React.FC = () => {

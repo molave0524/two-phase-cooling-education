@@ -9,11 +9,15 @@ interface ProductImageGalleryProps {
   productName: string
 }
 
-export default function ProductImageGallery({ images, productName }: ProductImageGalleryProps) {
+export default function ProductImageGallery({ images }: Pick<ProductImageGalleryProps, 'images'>) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
 
   const selectedImage = images[selectedImageIndex]
+
+  if (!selectedImage) {
+    return <div>No images available</div>
+  }
 
   const goToPrevious = () => {
     setSelectedImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1))

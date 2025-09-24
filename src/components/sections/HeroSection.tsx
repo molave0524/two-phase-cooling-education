@@ -1,9 +1,7 @@
 'use client'
 
 import React from 'react'
-import Link from 'next/link'
-import { PlayCircleIcon, SparklesIcon, BeakerIcon } from '@heroicons/react/24/outline'
-import { ArrowRightIcon } from '@heroicons/react/24/solid'
+import { SparklesIcon, BeakerIcon } from '@heroicons/react/24/outline'
 
 export const HeroSection: React.FC = () => {
   return (

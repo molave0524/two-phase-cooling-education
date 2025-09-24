@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ProductCard } from '@/components/product/ProductCard'
 import { getFeaturedProducts } from '@/data/products'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
@@ -39,123 +38,6 @@ interface ViewMode {
 // ============================================================================
 // LEGACY SAMPLE DATA (keeping for backwards compatibility)
 // ============================================================================
-
-const LEGACY_SAMPLE_PRODUCTS = [
-  {
-    id: '1',
-    name: 'Two-Phase Cooling Case Pro',
-    slug: 'two-phase-cooling-case-pro',
-    description:
-      'Our flagship computer case featuring integrated two-phase cooling system with transparent panels for visual monitoring.',
-    price: 899,
-    price_cents: 89900,
-    image: 'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=640&h=480',
-    compare_at_price: 119900,
-    currency: 'USD',
-    category: 'Computer Cases',
-    specifications: {
-      formFactor: 'Mid-Tower ATX',
-      cooling: { gwpRating: '20', type: 'Two-Phase Immersion' },
-      compatibility: { motherboard: ['ATX', 'Micro-ATX', 'Mini-ITX'] },
-    },
-    features: [
-      'Integrated two-phase cooling system',
-      'Transparent tempered glass panels',
-      'Real-time temperature monitoring',
-      'RGB lighting system',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=640&h=480',
-      'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=640&h=480',
-      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=640&h=480',
-    ],
-    stock_quantity: 50,
-    sku: 'TPC-CASE-PRO-001',
-    is_digital: false,
-    is_active: true,
-    is_featured: true,
-    sort_order: 1,
-    meta_title: 'Two-Phase Cooling Case Pro',
-    meta_description: 'Revolutionary computer case with two-phase cooling technology',
-    created_at: new Date(),
-    updated_at: new Date(),
-  },
-  {
-    id: '2',
-    name: 'Two-Phase Cooling Case Essential',
-    slug: 'two-phase-cooling-case-essential',
-    description:
-      'Entry-level two-phase cooling case perfect for enthusiasts wanting to experience revolutionary cooling technology.',
-    price: 599,
-    price_cents: 59900,
-    image: 'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=640&h=480',
-    compare_at_price: 79900,
-    currency: 'USD',
-    category: 'Computer Cases',
-    specifications: {
-      formFactor: 'Micro-ATX',
-      cooling: { gwpRating: '20', type: 'Two-Phase Immersion' },
-      compatibility: { motherboard: ['Micro-ATX', 'Mini-ITX'] },
-    },
-    features: [
-      'Compact two-phase cooling system',
-      'Acrylic viewing panels',
-      'Silent operation',
-      'Easy installation',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=640&h=480',
-      'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=640&h=480',
-    ],
-    stock_quantity: 75,
-    sku: 'TPC-CASE-ESS-001',
-    is_digital: false,
-    is_active: true,
-    is_featured: false,
-    sort_order: 2,
-    meta_title: 'Two-Phase Cooling Case Essential',
-    meta_description: 'Affordable two-phase cooling case for enthusiasts',
-    created_at: new Date(),
-    updated_at: new Date(),
-  },
-  {
-    id: '3',
-    name: 'Educational Kit - Thermal Dynamics',
-    slug: 'educational-kit-thermal-dynamics',
-    description:
-      'Comprehensive educational kit for understanding thermal dynamics principles in two-phase cooling systems.',
-    price: 199,
-    price_cents: 19900,
-    image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=640&h=480',
-    // compare_at_price: undefined,
-    currency: 'USD',
-    category: 'Educational Materials',
-    specifications: {
-      contents: ['Demo unit', 'Sensors', 'Workbook', 'Video access'],
-      educational: true,
-    },
-    features: [
-      'Hands-on learning experience',
-      'Real-time data collection',
-      'Curriculum-aligned materials',
-      'STEM education certified',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=640&h=480',
-      'https://images.unsplash.com/photo-1616469829271-0a7e8ebcb668?w=640&h=480',
-    ],
-    stock_quantity: 100,
-    sku: 'TPC-EDU-KIT-001',
-    is_digital: false,
-    is_active: true,
-    is_featured: true,
-    sort_order: 3,
-    meta_title: 'Educational Kit - Thermal Dynamics',
-    meta_description: 'Learn thermal dynamics with hands-on educational kit',
-    created_at: new Date(),
-    updated_at: new Date(),
-  },
-]
 
 // ============================================================================
 // PRODUCT SHOWCASE COMPONENT
@@ -211,7 +93,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
   // Component state
   const [products] = useState(convertToLegacyFormat(featuredProducts))
-  const [filteredProducts, setFilteredProducts] = useState<Products[]>(products)
+  const [filteredProducts, setFilteredProducts] = useState(products)
 
   // Filter and view state
   const [filters, setFilters] = useState<FilterState>({

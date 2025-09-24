@@ -16,32 +16,6 @@ export default function ProductComparison() {
     }
   }
 
-  const getColumnTitle = (key: string) => {
-    switch (key) {
-      case 'twoPhaseCooling':
-        return 'Two-Phase Cooling'
-      case 'traditionalAir':
-        return 'Traditional Air Cooling'
-      case 'traditionalLiquid':
-        return 'Traditional Liquid Cooling'
-      default:
-        return key
-    }
-  }
-
-  const getColumnStyle = (key: string) => {
-    switch (key) {
-      case 'twoPhaseCooling':
-        return 'bg-primary-50 border-primary-200 text-primary-900'
-      case 'traditionalAir':
-        return 'bg-secondary-50 border-secondary-200 text-secondary-900'
-      case 'traditionalLiquid':
-        return 'bg-accent-50 border-accent-200 text-accent-900'
-      default:
-        return 'bg-white border-secondary-200 text-secondary-900'
-    }
-  }
-
   return (
     <section>
       <div className='mb-8'>
