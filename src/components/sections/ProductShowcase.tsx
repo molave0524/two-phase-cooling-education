@@ -11,7 +11,6 @@ import {
   Squares2X2Icon,
   ListBulletIcon,
 } from '@heroicons/react/24/outline'
-import { toast } from 'react-hot-toast'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -182,27 +181,6 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     const originalProduct = featuredProducts.find(p => p.id === product.id)
     if (originalProduct) {
       addItem(originalProduct, 1)
-    }
-  }
-
-  const handleAddToWishlist = async (product: Products) => {
-    try {
-      // In production, make actual API call
-      const response = await fetch('/api/wishlist/toggle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update wishlist')
-      }
-
-      const result = await response.json()
-      toast.success(result.added ? 'Added to wishlist!' : 'Removed from wishlist')
-    } catch (error) {
-      console.error('Wishlist error:', error)
-      toast.error('Failed to update wishlist')
     }
   }
 

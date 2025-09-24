@@ -228,7 +228,7 @@ export const VideoShowcase: React.FC = () => {
             <div className='space-y-6'>
               <VideoPlayer
                 key={selectedVideo.id} // Force re-mount when video changes
-                video={selectedVideo}
+                video={selectedVideo as any}
                 userId='demo-user' // In production, get from auth
                 autoPlay={true} // Story 1.3: Video ready to play immediately
                 enableAdaptiveStreaming={true}
