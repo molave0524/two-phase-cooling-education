@@ -4,6 +4,7 @@ import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import CartDrawer from '@/components/cart/CartDrawer'
 // Toaster is now handled in Providers
 
 // Apple-style system font stack for optimal performance and Apple look
@@ -190,6 +191,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Site footer */}
             <Footer />
           </ErrorBoundary>
+
+          {/* Cart Drawer */}
+          <CartDrawer />
 
           {/* Toast notifications handled in Providers */}
         </Providers>
