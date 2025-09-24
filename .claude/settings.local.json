@@ -47,7 +47,8 @@
       "Bash(do echo \"=== $file ===\")",
       "Bash(tail:*)",
       "Bash(done)",
-      "Read(//c/Users/molave.estigoy/OneDrive - Thermo Fisher Scientific/Pictures/Claude/**)"
+      "Read(//c/Users/molave.estigoy/OneDrive - Thermo Fisher Scientific/Pictures/Claude/**)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

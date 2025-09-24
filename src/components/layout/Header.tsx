@@ -8,11 +8,9 @@ import {
   XMarkIcon,
   PlayCircleIcon,
   ChatBubbleLeftRightIcon,
-  ShoppingBagIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
-import { useCartStore } from '@/stores/cartStore'
 import CartButton from '@/components/cart/CartButton'
 
 // ============================================================================
@@ -227,7 +225,6 @@ const DropdownMenu: React.FC<{ item: NavigationItem }> = ({ item }) => {
 export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const cartItemCount = useCartStore(state => state.itemCount)
   const pathname = usePathname()
 
   // Handle scroll effect

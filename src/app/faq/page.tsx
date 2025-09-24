@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { FAQ_CONTENT, FAQ_CATEGORIES, FAQItem } from '@/data/faq-content'
+import { FAQ_CONTENT } from '@/data/faq-content'
 import { FAQSection } from '@/components/sections/FAQSection'
 
 export const metadata: Metadata = {

@@ -10,10 +10,8 @@ import { ShippingForm } from '@/components/checkout/ShippingForm'
 import { PaymentForm } from '@/components/checkout/PaymentForm'
 import { Order, OrderCustomer, OrderShippingAddress } from '@/lib/orders'
 import {
-  CreditCardIcon,
   TruckIcon,
   ShieldCheckIcon,
-  ExclamationTriangleIcon,
   ChevronRightIcon,
   LockClosedIcon,
 } from '@heroicons/react/24/outline'
@@ -24,7 +22,7 @@ export default function CheckoutPage() {
     useCartStore()
 
   const [step, setStep] = useState<'shipping' | 'payment'>('shipping')
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [isProcessing] = useState(false)
   const [customer, setCustomer] = useState<OrderCustomer | null>(null)
   const [shippingAddress, setShippingAddress] = useState<OrderShippingAddress | null>(null)
 
@@ -56,7 +54,11 @@ export default function CheckoutPage() {
 
   // Create order data for payment form
   const orderData = {
-    items,
+    items: items.map(item => ({
+      ...item,
+      unitPrice: item.product.price,
+      totalPrice: item.product.price * item.quantity,
+    })),
     totals: {
       subtotal,
       tax,
@@ -68,7 +70,7 @@ export default function CheckoutPage() {
           ? subtotal * (appliedCoupon.value / 100)
           : appliedCoupon.value
         : 0,
-      discountCode: appliedCoupon?.code,
+      discountCode: appliedCoupon?.code || '',
       total,
     },
   }

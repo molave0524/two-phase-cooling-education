@@ -166,20 +166,20 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
       email: formData.email,
       firstName: formData.firstName,
       lastName: formData.lastName,
-      phone: formData.phone || undefined,
+      phone: formData.phone || '',
     }
 
     const shippingAddress: OrderShippingAddress = {
       firstName: formData.firstName,
       lastName: formData.lastName,
-      company: formData.company || undefined,
+      company: formData.company || '',
       addressLine1: formData.addressLine1,
-      addressLine2: formData.addressLine2 || undefined,
+      addressLine2: formData.addressLine2 || '',
       city: formData.city,
       state: formData.state,
       zipCode: formData.zipCode,
       country: formData.country,
-      phone: formData.shippingPhone || formData.phone || undefined,
+      phone: formData.shippingPhone || formData.phone || '',
     }
 
     onSubmit(customer, shippingAddress)

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPaymentIntent, createCustomer, handleStripeError } from '@/lib/stripe'
 import { createOrder, validateOrderInventory, reserveInventory } from '@/lib/orders'
-import { useCartStore } from '@/stores/cartStore'
 import { z } from 'zod'
 
 const CreatePaymentIntentSchema = z.object({
@@ -76,10 +75,10 @@ export async function POST(request: NextRequest) {
       stripeCustomer = await createCustomer({
         email: customer.email,
         name: `${customer.firstName} ${customer.lastName}`,
-        phone: customer.phone,
+        ...(customer.phone && { phone: customer.phone }),
         address: {
           line1: shippingAddress.addressLine1,
-          line2: shippingAddress.addressLine2,
+          ...(shippingAddress.addressLine2 && { line2: shippingAddress.addressLine2 }),
           city: shippingAddress.city,
           state: shippingAddress.state,
           postal_code: shippingAddress.zipCode,
@@ -96,11 +95,22 @@ export async function POST(request: NextRequest) {
 
     // Create order record
     const newOrder = await createOrder({
-      customer,
-      shippingAddress,
+      customer: {
+        ...customer,
+        phone: customer.phone || '',
+      },
+      shippingAddress: {
+        ...shippingAddress,
+        company: shippingAddress.company || '',
+        addressLine2: shippingAddress.addressLine2 || '',
+        phone: shippingAddress.phone || '',
+      },
       items: cartItems,
-      totals,
-      stripeCustomerId: stripeCustomer?.id,
+      totals: {
+        ...totals,
+        discountCode: totals.discountCode || '',
+      },
+      stripeCustomerId: stripeCustomer?.id || '',
       metadata: {
         userAgent: request.headers.get('user-agent'),
         ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
@@ -115,7 +125,7 @@ export async function POST(request: NextRequest) {
     const paymentIntent = await createPaymentIntent({
       amount: Math.round(totals.total * 100), // Convert to cents
       currency: 'usd',
-      customerId: stripeCustomer?.id,
+      ...(stripeCustomer?.id && { customerId: stripeCustomer.id }),
       description: `Two-Phase Cooling Order #${newOrder.orderNumber}`,
       metadata: {
         orderId: newOrder.id,
@@ -126,7 +136,7 @@ export async function POST(request: NextRequest) {
         name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
         address: {
           line1: shippingAddress.addressLine1,
-          line2: shippingAddress.addressLine2 || undefined,
+          ...(shippingAddress.addressLine2 && { line2: shippingAddress.addressLine2 }),
           city: shippingAddress.city,
           state: shippingAddress.state,
           postal_code: shippingAddress.zipCode,
@@ -156,7 +166,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle Stripe-specific errors
-    if (error.type && error.type.startsWith('Stripe')) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'type' in error &&
+      typeof error.type === 'string' &&
+      error.type.startsWith('Stripe')
+    ) {
       const stripeError = handleStripeError(error)
       return NextResponse.json({ error: stripeError.message }, { status: 400 })
     }

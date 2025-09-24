@@ -96,10 +96,10 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           billing_details: {
             name: `${customer.firstName} ${customer.lastName}`,
             email: customer.email,
-            phone: customer.phone,
+            phone: customer.phone || null,
             address: {
               line1: shippingAddress.addressLine1,
-              line2: shippingAddress.addressLine2,
+              line2: shippingAddress.addressLine2 || null,
               city: shippingAddress.city,
               state: shippingAddress.state,
               postal_code: shippingAddress.zipCode,

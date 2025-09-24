@@ -1,0 +1,7 @@
+# Exclude backend Express.js code from Vercel deployment
+backend/
+shared/
+*.md
+.env.example
+.git/
+node_modules/
