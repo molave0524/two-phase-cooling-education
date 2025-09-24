@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { VideoPlayer } from './VideoPlayer'
 import { VideoMetadata } from '@/types'
 
@@ -93,12 +93,12 @@ export const ThermalComparisonPlayer: React.FC<ThermalComparisonPlayerProps> = (
       <div className='relative'>
         <VideoPlayer
           video={video}
-          userId={userId}
+          userId={userId || 'anonymous'}
           autoPlay={autoPlay}
           enableAdaptiveStreaming={true}
           preferredQuality='1080p'
           onProgress={handleVideoProgress}
-          onComplete={onComplete}
+          {...(onComplete && { onComplete })}
           className='w-full aspect-video'
         />
 

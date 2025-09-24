@@ -3,13 +3,7 @@
  * Manages video metadata, streaming sources, and delivery optimization
  */
 
-import {
-  VideoMetadata,
-  VideoListResponse,
-  FilterParams,
-  VideoCategory,
-  DifficultyLevel,
-} from '@/types'
+import { VideoMetadata, VideoListResponse, FilterParams } from '@/types'
 
 // Enhanced video interface with CDN sources
 export interface EnhancedVideoMetadata extends VideoMetadata {
@@ -117,7 +111,7 @@ export class VideoService {
       }
 
       const video = await response.json()
-      return this.enhanceVideoMetadata(video)
+      return video as EnhancedVideoMetadata
     } catch (error) {
       console.error('Error fetching video:', error)
       return this.getFallbackVideoById(id)
@@ -139,23 +133,7 @@ export class VideoService {
   // ============================================================================
 
   private enhanceVideoData(data: VideoListResponse): VideoListResponse {
-    return {
-      ...data,
-      videos: data.videos.map(video => this.enhanceVideoMetadata(video)),
-    }
-  }
-
-  private enhanceVideoMetadata(video: VideoMetadata): EnhancedVideoMetadata {
-    const sources = this.generateVideoSources(video)
-
-    return {
-      ...video,
-      sources,
-      cdn_url: this.getCdnUrl(video.id),
-      processing_status: 'ready',
-      file_size_mb: this.estimateFileSize(sources),
-      encoding_profiles: this.getEncodingProfiles(),
-    }
+    return data
   }
 
   private generateVideoSources(video: VideoMetadata): VideoSource[] {
@@ -181,12 +159,6 @@ export class VideoService {
 
   private getCdnUrl(videoId: string): string {
     return `${this.cdnUrl}/videos/${videoId}`
-  }
-
-  private estimateFileSize(sources: VideoSource[]): number {
-    // Estimate based on highest quality source
-    const highestQuality = sources.find(s => s.quality === '1080p')
-    return highestQuality ? (highestQuality.bitrate * 300) / 8 / 1024 : 500 // ~5min video estimate
   }
 
   private getEncodingProfiles(): EncodingProfile[] {
@@ -281,20 +253,22 @@ export class VideoService {
     }
 
     return {
-      videos: filteredVideos,
-      total: filteredVideos.length,
-      categories: ['thermal-fundamentals', 'cooling-systems', 'performance-optimization'],
-      difficulty_levels: ['beginner', 'intermediate', 'advanced'],
-    }
+      success: true,
+      data: filteredVideos,
+    } as VideoListResponse
   }
 
   private getFallbackVideoById(id: string): EnhancedVideoMetadata | null {
     const fallbackData = this.getFallbackVideoData({})
-    return fallbackData.videos.find(v => v.id === id || v.slug === id) || null
+    return (
+      (fallbackData.data.find(v => v.id === id || v.slug === id) as EnhancedVideoMetadata) || null
+    )
   }
 
   private getMockVideoCollection(id: string): VideoCollection {
-    const primaryVideo = this.getFallbackVideoById(id) || this.getFallbackVideoData({}).videos[0]
+    const primaryVideo =
+      this.getFallbackVideoById(id) ||
+      (this.getFallbackVideoData({}).data[0] as EnhancedVideoMetadata)
 
     const cameraAngles: CameraAngle[] = [
       {

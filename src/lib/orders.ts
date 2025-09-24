@@ -152,7 +152,7 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
         ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.price ||
           cartItem.product.price
         : cartItem.product.price) * cartItem.quantity,
-    selectedVariantId: cartItem.selectedVariantId,
+    selectedVariantId: cartItem.selectedVariantId || '',
   }))
 
   const order: Order = {
@@ -165,9 +165,9 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
     billingAddress: params.billingAddress || params.shippingAddress,
     items: orderItems,
     totals: params.totals,
-    paymentIntentId: params.paymentIntentId,
-    stripeCustomerId: params.stripeCustomerId,
-    notes: params.notes,
+    paymentIntentId: params.paymentIntentId || '',
+    stripeCustomerId: params.stripeCustomerId || '',
+    notes: params.notes || '',
     metadata: params.metadata || {},
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -185,7 +185,8 @@ export async function getOrder(orderId: string): Promise<Order | null> {
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
-  for (const order of orders.values()) {
+  const orderArray = Array.from(orders.values())
+  for (const order of orderArray) {
     if (order.orderNumber === orderNumber) {
       return order
     }
@@ -195,7 +196,8 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
 
 export async function getOrdersByCustomer(customerEmail: string): Promise<Order[]> {
   const customerOrders: Order[] = []
-  for (const order of orders.values()) {
+  const orderArray = Array.from(orders.values())
+  for (const order of orderArray) {
     if (order.customer.email === customerEmail) {
       customerOrders.push(order)
     }

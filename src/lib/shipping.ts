@@ -3,7 +3,7 @@
  * Handles shipping rate calculation, label generation, and tracking integration
  */
 
-import { OrderShippingAddress, Order, OrderTracking } from './orders'
+import { OrderShippingAddress, Order } from './orders'
 
 // Shipping provider types
 export type ShippingProvider = 'ups' | 'fedex' | 'usps' | 'dhl'
@@ -265,7 +265,6 @@ function calculateBaseShippingRate(state: string, weight: number): number {
   }
 
   const zoneMultiplier = zones[state] || 1.5 // Default for unknown states
-  const weightMultiplier = Math.max(1, weight / 20) // $1 per 20 lbs base rate
 
   return Math.round((25 + weight * 1.2) * zoneMultiplier * 100) / 100
 }
@@ -338,7 +337,7 @@ export async function trackPackage(
 
   // Determine provider from tracking number if not provided
   if (!provider) {
-    provider = detectProvider(trackingNumber)
+    provider = detectProvider(trackingNumber) || undefined
   }
 
   if (!provider) {

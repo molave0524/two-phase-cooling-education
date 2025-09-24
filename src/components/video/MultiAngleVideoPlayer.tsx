@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback } from 'react'
 import { VideoPlayer } from './VideoPlayer'
 import { VideoMetadata } from '@/types'
 
@@ -49,12 +49,7 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
   // State for active camera angles
   const [activeMainAngle, setActiveMainAngle] = useState<string>(primaryVideo.id)
   const [activePipAngles, setActivePipAngles] = useState<string[]>([])
-  const [isPipEnabled, setIsPipEnabled] = useState(false)
   const [syncPlayback, setSyncPlayback] = useState(true)
-
-  // Refs for video synchronization
-  const mainVideoRef = useRef<any>(null)
-  const pipVideoRefs = useRef<Map<string, any>>(new Map())
 
   // Get current active video data
   const getCurrentVideo = useCallback(() => {
@@ -73,19 +68,9 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
         onAngleChange(angleId)
       }
 
-      // Sync all videos to the current time if sync is enabled
-      if (syncPlayback && mainVideoRef.current) {
-        const currentTime = mainVideoRef.current.getCurrentTime?.() || 0
-
-        // Sync PiP videos
-        pipVideoRefs.current.forEach(ref => {
-          if (ref && ref.seekTo) {
-            ref.seekTo(currentTime)
-          }
-        })
-      }
+      // Sync functionality disabled (refs removed for simplicity)
     },
-    [onAngleChange, syncPlayback]
+    [onAngleChange]
   )
 
   // Toggle picture-in-picture for a camera angle
@@ -98,7 +83,7 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
       } else {
         // Limit to 2 PiP videos for performance
         if (prev.length >= 2) {
-          return [prev[1], angleId] // Remove oldest, add new
+          return [prev[1]!, angleId] // Remove oldest, add new
         }
         return [...prev, angleId]
       }
@@ -112,51 +97,10 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
         onProgress(activeMainAngle, progress)
       }
 
-      // Sync PiP videos if enabled
-      if (syncPlayback && progress.currentTime) {
-        pipVideoRefs.current.forEach((ref, angleId) => {
-          if (ref && ref.seekTo && !activePipAngles.includes(angleId)) {
-            // Small tolerance to avoid constant seeking
-            const timeDiff = Math.abs(ref.getCurrentTime?.() - progress.currentTime)
-            if (timeDiff > 0.5) {
-              ref.seekTo(progress.currentTime)
-            }
-          }
-        })
-      }
+      // Sync functionality disabled (refs removed for simplicity)
     },
-    [activeMainAngle, onProgress, syncPlayback, activePipAngles]
+    [activeMainAngle, onProgress]
   )
-
-  // Handle play/pause synchronization
-  const handleMainVideoPlay = useCallback(() => {
-    if (syncPlayback) {
-      pipVideoRefs.current.forEach(ref => {
-        if (ref && ref.play) {
-          ref.play()
-        }
-      })
-    }
-  }, [syncPlayback])
-
-  const handleMainVideoPause = useCallback(() => {
-    if (syncPlayback) {
-      pipVideoRefs.current.forEach(ref => {
-        if (ref && ref.pause) {
-          ref.pause()
-        }
-      })
-    }
-  }, [syncPlayback])
-
-  // Register PiP video ref
-  const registerPipVideoRef = useCallback((angleId: string, ref: any) => {
-    if (ref) {
-      pipVideoRefs.current.set(angleId, ref)
-    } else {
-      pipVideoRefs.current.delete(angleId)
-    }
-  }, [])
 
   // ============================================================================
   // RENDER
@@ -169,15 +113,12 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
       {/* Main Video Player */}
       <div className='relative'>
         <VideoPlayer
-          ref={mainVideoRef}
           video={currentVideo}
-          userId={userId}
+          userId={userId || 'anonymous'}
           className='w-full aspect-video'
           enableAdaptiveStreaming={true}
           preferredQuality='1080p'
           onProgress={handleMainVideoProgress}
-          onPlay={handleMainVideoPlay}
-          onPause={handleMainVideoPause}
         />
 
         {/* Camera Angle Selector */}
@@ -255,9 +196,8 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
                   style={{ zIndex: 10 - index }}
                 >
                   <VideoPlayer
-                    ref={ref => registerPipVideoRef(angleId, ref)}
                     video={angle.video}
-                    userId={userId}
+                    userId={userId || 'anonymous'}
                     className='w-full h-full'
                     autoPlay={false}
                     enableAdaptiveStreaming={false}

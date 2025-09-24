@@ -5,7 +5,7 @@ import { useProgress } from '@/app/providers'
 // import { updateUserProgress } from '@/lib/services/progress-service'
 // import { Video } from '@prisma/client'
 
-import { VideoMetadata, VideoSource, DifficultyLevel } from '@/types'
+import { VideoMetadata, VideoSource } from '@/types'
 
 // Enhanced video interface for player (VideoMetadata already includes sources)
 interface EnhancedVideo extends VideoMetadata {
@@ -416,7 +416,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
 
     // Find source matching current quality
-    return video.sources.find(s => s.quality === videoState.currentQuality) || video.sources[0]
+    return (
+      video.sources.find(s => s.quality === videoState.currentQuality) || video.sources[0] || null
+    )
   }, [video.sources, video.file_url, videoState.currentQuality])
 
   const changeVideoQuality = useCallback(
@@ -652,6 +654,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           connection.removeEventListener('change', handleNetworkChange)
         }
       }
+    }
+
+    return () => {
+      // Cleanup for non-adaptive streaming case
     }
   }, [enableAdaptiveStreaming, adaptQualityToNetwork])
 

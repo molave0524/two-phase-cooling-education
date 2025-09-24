@@ -22,7 +22,7 @@ if (!STRIPE_PUBLISHABLE_KEY) {
 
 // Server-side Stripe instance
 export const stripe = new Stripe(STRIPE_SECRET_KEY || 'sk_test_mock_key', {
-  apiVersion: '2024-06-20',
+  apiVersion: '2025-08-27.basil',
   typescript: true,
 })
 
@@ -65,15 +65,15 @@ export async function createPaymentIntent(
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount), // Ensure integer
       currency,
-      customer: customerId,
+      ...(customerId && { customer: customerId }),
       metadata,
-      description,
-      shipping: shippingAddress
-        ? {
-            name: shippingAddress.name,
-            address: shippingAddress.address,
-          }
-        : undefined,
+      ...(description && { description }),
+      ...(shippingAddress && {
+        shipping: {
+          name: shippingAddress.name,
+          address: shippingAddress.address,
+        },
+      }),
       automatic_payment_methods: {
         enabled: true,
       },
@@ -106,9 +106,9 @@ export async function createCustomer(params: CreateCustomerParams): Promise<Stri
   try {
     const customer = await stripe.customers.create({
       email: params.email,
-      name: params.name,
-      phone: params.phone,
-      address: params.address,
+      ...(params.name && { name: params.name }),
+      ...(params.phone && { phone: params.phone }),
+      ...(params.address && { address: params.address }),
       metadata: params.metadata || {},
     })
 

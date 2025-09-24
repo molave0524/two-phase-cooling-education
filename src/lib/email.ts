@@ -274,7 +274,7 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
     customerName,
     estimatedDelivery,
     supportEmail: EMAIL_CONFIG.supportEmail,
-    trackingUrl: order.tracking?.trackingUrl,
+    trackingUrl: order.tracking?.trackingUrl || '',
   })
 
   return await sendEmail({

@@ -69,7 +69,7 @@ export const useCartStore = create<CartStore>()(
       tax: 0,
       shipping: 0,
       total: 0,
-      appliedCoupon: undefined,
+      appliedCoupon: null as any,
       estimatedDelivery: '5-7 business days',
 
       // Actions
@@ -82,7 +82,7 @@ export const useCartStore = create<CartStore>()(
         if (existingItemIndex >= 0) {
           // Update existing item
           const updatedItems = [...state.items]
-          const existingItem = updatedItems[existingItemIndex]
+          const existingItem = updatedItems[existingItemIndex]!
           const newQuantity = existingItem.quantity + quantity
 
           // Check stock limits
@@ -113,7 +113,7 @@ export const useCartStore = create<CartStore>()(
             productId: product.id,
             product,
             quantity,
-            selectedVariantId: variantId,
+            selectedVariantId: variantId || '',
             addedAt: new Date(),
             updatedAt: new Date(),
           }
@@ -153,7 +153,7 @@ export const useCartStore = create<CartStore>()(
         const itemIndex = state.items.findIndex(item => item.id === itemId)
 
         if (itemIndex >= 0) {
-          const item = state.items[itemIndex]
+          const item = state.items[itemIndex]!
 
           // Check stock limits
           if (quantity > item.product.stockQuantity) {
@@ -176,7 +176,7 @@ export const useCartStore = create<CartStore>()(
       clearCart: () => {
         set({
           items: [],
-          appliedCoupon: undefined,
+          appliedCoupon: null as any,
           isOpen: false,
         })
         get().calculateTotals()
@@ -259,7 +259,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       removeCoupon: () => {
-        set({ appliedCoupon: undefined })
+        set({ appliedCoupon: null as any })
         get().calculateTotals()
         toast.success('Coupon removed')
       },
