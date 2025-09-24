@@ -14,50 +14,30 @@ export const HeroSection: React.FC = () => {
           <div className='space-y-4'>
             <div className='flex items-center gap-2 text-primary-600 font-medium'>
               <BeakerIcon className='w-5 h-5' />
-              <span className='text-sm sm:text-base'>Revolutionary Cooling Technology</span>
+              <span className='text-sm sm:text-base'>Two-Phase Cooling Technology</span>
             </div>
 
-            <h1 className='text-3xl sm:text-4xl lg:text-6xl font-bold text-secondary-900 leading-tight'>
-              Experience the <span className='text-gradient-primary'>Future</span> of{' '}
-              <span className='text-gradient-primary'>Computer Cooling</span>
+            <h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900 leading-tight'>
+              See It In <span className='text-gradient-primary'>Action</span>
             </h1>
 
-            <p className='text-lg sm:text-xl text-secondary-600 leading-relaxed'>
-              Discover two-phase cooling technology through interactive demonstrations. Learn how
-              superior thermal performance meets environmental responsibility in our transparent,
-              visually stunning computer cases.
+            <p className='text-lg text-secondary-600 leading-relaxed'>
+              Watch real-time demonstrations of revolutionary cooling performance.
             </p>
-          </div>
-
-          <div className='flex flex-col sm:flex-row gap-4'>
-            <Link
-              href='#demonstrations'
-              className='btn-primary btn-lg flex items-center justify-center gap-2'
-            >
-              <PlayCircleIcon className='w-5 h-5' />
-              Watch Demonstrations
-            </Link>
-            <Link
-              href='#technology'
-              className='btn-secondary btn-lg flex items-center justify-center gap-2'
-            >
-              Learn More
-              <ArrowRightIcon className='w-4 h-4' />
-            </Link>
           </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 pt-6 lg:pt-8 border-t border-secondary-200'>
             <div className='text-center sm:text-left lg:text-center'>
-              <div className='text-xl sm:text-2xl font-bold text-primary-600'>GWP 20</div>
-              <div className='text-sm text-secondary-600'>Minimal Environmental Impact</div>
+              <div className='text-xl sm:text-2xl font-bold text-green-600'>47%</div>
+              <div className='text-sm text-secondary-600'>Lower Peak Temps</div>
             </div>
             <div className='text-center sm:text-left lg:text-center'>
-              <div className='text-xl sm:text-2xl font-bold text-primary-600'>0 ODP</div>
-              <div className='text-sm text-secondary-600'>Zero Ozone Depletion</div>
+              <div className='text-xl sm:text-2xl font-bold text-blue-600'>60%</div>
+              <div className='text-sm text-secondary-600'>Quieter Operation</div>
             </div>
             <div className='text-center sm:text-left lg:text-center'>
-              <div className='text-xl sm:text-2xl font-bold text-primary-600'>Superior</div>
-              <div className='text-sm text-secondary-600'>Thermal Performance</div>
+              <div className='text-xl sm:text-2xl font-bold text-primary-600'>0°C</div>
+              <div className='text-sm text-secondary-600'>Thermal Throttling</div>
             </div>
           </div>
         </div>

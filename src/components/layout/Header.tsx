@@ -38,23 +38,27 @@ interface MobileMenuProps {
 const MAIN_NAVIGATION: NavigationItem[] = [
   {
     label: 'Technology',
-    href: '#technology',
+    href: '/#technology',
   },
   {
     label: 'Demonstrations',
-    href: '#demonstrations',
+    href: '/#demonstrations',
   },
   {
     label: 'Performance',
-    href: '#performance',
+    href: '/#performance',
   },
   {
     label: 'AI Assistant',
-    href: '#ai-assistant',
+    href: '/#ai-assistant',
+  },
+  {
+    label: 'FAQ',
+    href: '/faq',
   },
   {
     label: 'Products',
-    href: '#product',
+    href: '/#product',
   },
 ]
 
@@ -145,7 +149,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
           {/* Mobile CTA */}
           <div className='pt-6 mt-6 border-t border-secondary-200 space-y-3'>
             <Link
-              href='#demonstrations'
+              href='/#demonstrations'
               onClick={onClose}
               className='btn-primary w-full justify-center'
             >
@@ -153,7 +157,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
               Watch Demos
             </Link>
             <Link
-              href='#ai-assistant'
+              href='/#ai-assistant'
               onClick={onClose}
               className='btn-secondary w-full justify-center'
             >

@@ -1,0 +1,561 @@
+/* ============================================================================ */
+/* VIDEO PLAYER MOBILE RESPONSIVE STYLES */
+/* ============================================================================ */
+
+.videoPlayer {
+  position: relative;
+  width: 100%;
+  background: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.videoPlayer:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Video Element */
+.videoElement {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Loading States */
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Video Controls */
+.videoControls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  padding: 20px;
+  transition: opacity 0.3s ease;
+}
+
+.videoControls.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Progress Bar */
+.progressContainer {
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.progressBar {
+  position: relative;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBuffer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: width 0.2s ease;
+}
+
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #3b82f6;
+  transition: width 0.1s ease;
+}
+
+.progressHandle {
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: #3b82f6;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Control Buttons */
+.controlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.controlsLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.controlsRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.playButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.playButton:hover {
+  background: #2563eb;
+  transform: scale(1.05);
+}
+
+.playButton:active {
+  transform: scale(0.95);
+}
+
+.volumeControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volumeButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.volumeButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.volumeSlider {
+  width: 80px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+.timeDisplay {
+  color: white;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+.qualitySelect {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.qualitySelect option {
+  background: #1a1a1a;
+  color: white;
+}
+
+.adaptiveButton {
+  font-size: 10px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.adaptiveButton.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.adaptiveButton.inactive {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.networkIndicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.networkDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.networkDot.excellent {
+  background: #10b981;
+}
+
+.networkDot.good {
+  background: #f59e0b;
+}
+
+.networkDot.fair {
+  background: #f97316;
+}
+
+.networkDot.poor {
+  background: #ef4444;
+}
+
+.progressPercentage {
+  color: white;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+/* Video Metadata Overlay */
+.metadataOverlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.videoTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.videoMeta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.difficultyBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.difficultyBadge.beginner {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.difficultyBadge.intermediate {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.difficultyBadge.advanced {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* ============================================================================ */
+/* MOBILE RESPONSIVE BREAKPOINTS */
+/* ============================================================================ */
+
+/* Large Mobile (480px and up) */
+@media (min-width: 480px) {
+  .videoControls {
+    padding: 24px;
+  }
+
+  .controlsRow {
+    gap: 20px;
+  }
+
+  .controlsLeft {
+    gap: 20px;
+  }
+
+  .volumeSlider {
+    width: 100px;
+  }
+
+  .videoTitle {
+    font-size: 20px;
+  }
+
+  .videoMeta {
+    font-size: 14px;
+    gap: 20px;
+  }
+}
+
+/* Tablet (768px and up) */
+@media (min-width: 768px) {
+  .videoControls {
+    padding: 28px;
+  }
+
+  .progressBar {
+    height: 8px;
+  }
+
+  .progressHandle {
+    width: 16px;
+    height: 16px;
+    right: -8px;
+  }
+
+  .playButton {
+    width: 48px;
+    height: 48px;
+  }
+
+  .controlsRight {
+    gap: 16px;
+  }
+
+  .qualitySelect {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .adaptiveButton {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .timeDisplay {
+    font-size: 16px;
+  }
+
+  .videoTitle {
+    font-size: 24px;
+  }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .videoControls {
+    padding: 32px;
+  }
+
+  .metadataOverlay {
+    top: 24px;
+    left: 24px;
+  }
+
+  .volumeSlider {
+    width: 120px;
+  }
+
+  .videoMeta {
+    font-size: 16px;
+  }
+}
+
+/* ============================================================================ */
+/* MOBILE-SPECIFIC OPTIMIZATIONS */
+/* ============================================================================ */
+
+/* Touch-friendly controls on mobile */
+@media (max-width: 767px) {
+  .playButton {
+    width: 44px;
+    height: 44px;
+    /* Larger touch target */
+  }
+
+  .volumeButton,
+  .qualitySelect,
+  .adaptiveButton {
+    min-height: 44px;
+    /* iOS recommended touch target size */
+  }
+
+  .progressBar {
+    height: 8px;
+    /* Larger for easier touch interaction */
+  }
+
+  .progressHandle {
+    width: 20px;
+    height: 20px;
+    right: -10px;
+    /* Larger handle for touch */
+  }
+
+  /* Hide volume slider on very small screens */
+  @media (max-width: 480px) {
+    .volumeSlider {
+      display: none;
+    }
+
+    .controlsRight {
+      gap: 8px;
+    }
+
+    .videoMeta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+  }
+
+  /* Simplified controls for small screens */
+  @media (max-width: 360px) {
+    .networkIndicator {
+      display: none;
+    }
+
+    .qualitySelect {
+      font-size: 10px;
+      padding: 4px 6px;
+    }
+
+    .timeDisplay {
+      font-size: 12px;
+    }
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 767px) and (orientation: landscape) {
+  .metadataOverlay {
+    top: 8px;
+    left: 8px;
+  }
+
+  .videoTitle {
+    font-size: 14px;
+  }
+
+  .videoMeta {
+    font-size: 10px;
+  }
+
+  .videoControls {
+    padding: 12px 16px;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .videoPlayer {
+    background: #0f0f0f;
+  }
+
+  .loadingOverlay {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .qualitySelect {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .qualitySelect option {
+    background: #0f0f0f;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .videoPlayer,
+  .playButton,
+  .volumeButton,
+  .progressFill,
+  .progressBuffer,
+  .videoControls {
+    transition: none;
+  }
+
+  .loadingSpinner {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .progressBar {
+    background: #000;
+    border: 1px solid #fff;
+  }
+
+  .progressFill {
+    background: #fff;
+  }
+
+  .playButton {
+    border: 2px solid #fff;
+  }
+}

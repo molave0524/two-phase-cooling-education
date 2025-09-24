@@ -1,0 +1,36 @@
+{
+  "name": "@two-phase-cooling/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Two-Phase Cooling Education Platform",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^29.5.6",
+    "@types/node": "^20.8.7",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
+    "eslint": "^8.52.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "keywords": [
+    "shared",
+    "utilities",
+    "types",
+    "education",
+    "video-platform"
+  ],
+  "author": "Two-Phase Cooling Team",
+  "license": "MIT"
+}

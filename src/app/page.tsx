@@ -73,27 +73,27 @@ export default function HomePage() {
       {/* Hero Section - Immediate Impact */}
       <section
         id='hero'
-        className='relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50'
+        className='relative py-20 lg:py-32 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50'
         aria-labelledby='hero-heading'
       >
         <HeroSection />
       </section>
 
-      {/* Technology Overview - Educational Foundation */}
-      <section id='technology' className='py-20 bg-white' aria-labelledby='technology-heading'>
-        <div className='container-max section-padding'>
-          <TechnologyOverview />
-        </div>
-      </section>
-
-      {/* Video Showcase - Core Demonstrations */}
+      {/* Video Showcase - Immediate Demonstrations */}
       <section
         id='demonstrations'
-        className='py-20 bg-slate-100'
+        className='py-16 lg:py-24 bg-white'
         aria-labelledby='demonstrations-heading'
       >
         <div className='container-max section-padding'>
           <VideoShowcase />
+        </div>
+      </section>
+
+      {/* Technology Overview - Educational Foundation */}
+      <section id='technology' className='py-20 bg-slate-50' aria-labelledby='technology-heading'>
+        <div className='container-max section-padding'>
+          <TechnologyOverview />
         </div>
       </section>
 

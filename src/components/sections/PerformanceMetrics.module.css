@@ -18,7 +18,8 @@
 
 /* High specificity selectors to override Tailwind - using CSS module class names */
 .performanceSection .filterButton:not(.active) {
-  color: var(--filter-inactive) !important;
+  color: rgb(209 213 219) !important; /* text-gray-300 - even lighter font for disabled state */
+  font-weight: 300 !important; /* lighter font weight */
   transition: all 0.2s ease;
 }
 

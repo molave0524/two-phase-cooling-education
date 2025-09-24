@@ -5,6 +5,7 @@ An innovative educational platform showcasing revolutionary two-phase cooling te
 ## 🎯 Project Overview
 
 This platform transforms how cooling technology is understood by providing:
+
 - **Interactive Video Demonstrations** - Pre-recorded professional testing scenarios
 - **AI Technical Assistant** - Instant expert guidance on cooling technology
 - **Educational Content** - Progressive learning from basics to advanced concepts
@@ -14,12 +15,14 @@ This platform transforms how cooling technology is understood by providing:
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - PNPM 8+ (recommended) or npm 8+
 
 ### Installation
 
 **Using PNPM (recommended):**
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -36,6 +39,7 @@ pnpm dev
 ```
 
 **Using npm:**
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -56,36 +60,44 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                    # Next.js 14 App Router
-│   ├── api/               # API routes
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx          # Homepage
-│   └── providers.tsx      # Context providers
-├── components/            # React components
-│   ├── ai/               # AI assistant components
-│   ├── layout/           # Header, Footer
-│   ├── product/          # Product showcase
-│   ├── sections/         # Homepage sections
-│   └── video/            # Video player
-├── lib/                  # Utilities and services
-│   ├── ai/              # AI service integration
-│   ├── database/        # Database client and services
-│   ├── stores/          # Zustand state management
-│   └── monitoring/      # Performance monitoring
-└── hooks/               # Custom React hooks
+two-phase-cooling-education/
+├── src/                    # Frontend Next.js application
+│   ├── app/               # App Router pages
+│   ├── components/        # React components
+│   ├── hooks/            # Custom React hooks
+│   ├── types/            # TypeScript type definitions
+│   └── utils/            # Utility functions
+├── backend/              # Serverless backend services
+│   ├── src/              # Backend source code
+│   │   ├── handlers/     # Lambda function handlers
+│   │   ├── middleware/   # Express middleware
+│   │   └── utils/        # Backend utilities
+│   ├── serverless.yml    # Serverless configuration
+│   └── package.json      # Backend dependencies
+├── shared/               # Shared types and utilities
+│   ├── src/              # Shared source code
+│   │   ├── types/        # Common type definitions
+│   │   ├── utils/        # Shared utility functions
+│   │   └── constants/    # Application constants
+│   └── package.json      # Shared dependencies
+├── docs/                 # Documentation
+│   └── prd/             # Product requirements
+├── .github/             # GitHub workflows
+│   └── workflows/       # CI/CD pipelines
+└── package.json         # Frontend dependencies
 ```
 
 ## 🎨 Key Features
 
 ### Educational Philosophy: "Experience Over Selling"
+
 - Video demonstrations take priority over product marketing
 - Progressive disclosure of technical complexity
 - AI assistant provides educational support, not sales pressure
 - Data-driven credibility through performance metrics
 
 ### Technical Highlights
+
 - **Next.js 14** with App Router and Server Components
 - **TypeScript** for type safety
 - **Tailwind CSS** with custom design system
@@ -95,6 +107,7 @@ src/
 - **Responsive Design** optimized for all devices
 
 ### Environmental Responsibility
+
 - **GWP 20** cooling fluid (equivalent to gasoline)
 - **Zero ODP** (ozone depletion potential)
 - **98.6% reduction** in environmental impact vs traditional refrigerants
@@ -102,37 +115,44 @@ src/
 ## 🛠️ Development Scripts
 
 ```bash
-# Development
+# Frontend (Root Directory)
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
 npm run type-check   # TypeScript type checking
+npm test             # Run tests
 
-# Database
-npm run db:generate  # Generate Prisma client
-npm run db:push      # Push schema to database
-npm run db:migrate   # Run database migrations
-npm run db:seed      # Seed database with sample data
+# Backend
+cd backend
+npm run dev             # Start development server with hot reload
+npm run build           # Build TypeScript to JavaScript
+npm run start           # Start production server
+npm test                # Run backend tests
+npm run deploy:dev      # Deploy to AWS dev environment
+npm run deploy:staging  # Deploy to AWS staging environment
+npm run deploy:prod     # Deploy to AWS production environment
 
-# Testing
-npm run test         # Run unit tests
-npm run test:e2e     # Run end-to-end tests
-
-# Performance
-npm run cdn-test            # Test CDN performance
-npm run performance-monitor # Start performance monitoring
+# Shared
+cd shared
+npm run build       # Build shared TypeScript
+npm run dev         # Watch mode for development
+npm test            # Run shared utility tests
+npm run lint        # Run ESLint on shared code
 ```
 
 ## 🌍 Environment Configuration
 
 ### Demo Mode (Default)
+
 - Uses sample data and mock services
 - AI assistant falls back to FAQ system
 - No external service dependencies
 
 ### Production Mode
+
 Required environment variables:
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `OPENAI_API_KEY` - OpenAI API key for AI assistant
 - `AWS_*` - AWS credentials for CDN and monitoring
@@ -143,6 +163,7 @@ See `.env.example` for complete configuration options.
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -152,6 +173,7 @@ vercel --prod
 ```
 
 ### Docker
+
 ```bash
 # Build image
 docker build -t two-phase-cooling .
@@ -161,6 +183,7 @@ docker run -p 3000:3000 two-phase-cooling
 ```
 
 ### Static Export
+
 ```bash
 # Generate static files
 npm run build
@@ -178,6 +201,7 @@ npm run build
 ## 🎓 Educational Goals
 
 Transform cooling technology understanding through:
+
 - **Visual Learning** - "Circuits getting wet" demonstrations
 - **Scientific Credibility** - FLIR thermal imaging comparisons
 - **Progressive Complexity** - From basic principles to advanced concepts
@@ -187,6 +211,7 @@ Transform cooling technology understanding through:
 ## 🌱 Environmental Impact
 
 Two-phase cooling technology offers:
+
 - **47% lower peak temperatures** vs air cooling
 - **33% higher thermal efficiency** vs liquid cooling
 - **60% quieter operation** vs traditional systems

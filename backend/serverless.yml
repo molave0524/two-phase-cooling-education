@@ -1,0 +1,135 @@
+service: two-phase-cooling-backend
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    CLOUDWATCH_LOG_GROUP: /aws/lambda/${self:service}-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+        - cloudwatch:PutMetricData
+        - s3:GetObject
+        - s3:PutObject
+      Resource: '*'
+
+functions:
+  api:
+    handler: dist/index.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+      - http:
+          path: /
+          method: ANY
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  healthCheck:
+    handler: dist/handlers/health.handler
+    events:
+      - http:
+          path: /health
+          method: GET
+          cors: true
+
+  videoMetadata:
+    handler: dist/handlers/video.handler
+    events:
+      - http:
+          path: /api/videos
+          method: GET
+          cors: true
+      - http:
+          path: /api/videos/{id}
+          method: GET
+          cors: true
+
+resources:
+  Resources:
+    CloudWatchLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: ${self:provider.environment.CLOUDWATCH_LOG_GROUP}
+        RetentionInDays: 14
+
+    S3BucketVideos:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:provider.stage}-videos
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, HEAD]
+              AllowedOrigins: ['*']
+              MaxAge: 3000
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          Comment: ${self:service}-${self:provider.stage} CDN
+          DefaultCacheBehavior:
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+          Origins:
+            - Id: S3Origin
+              DomainName: !GetAtt S3BucketVideos.RegionalDomainName
+              S3OriginConfig:
+                OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+          PriceClass: PriceClass_100
+
+    CloudFrontOriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: ${self:service}-${self:provider.stage} OAI
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3001
+    host: 0.0.0.0

@@ -5,33 +5,41 @@ import { useProgress } from '@/app/providers'
 // import { updateUserProgress } from '@/lib/services/progress-service'
 // import { Video } from '@prisma/client'
 
-// Mock types for demo mode
-interface Video {
-  id: string
-  title: string
-  slug: string
-  description: string
-  duration_seconds: number
-  file_url: string
-  thumbnail_url: string
-  difficulty_level?: string
-  topic_category?: string
+import { VideoMetadata, VideoProgress as SharedVideoProgress, DifficultyLevel } from '@/types'
+
+// Enhanced video interface for player
+interface EnhancedVideo extends VideoMetadata {
+  file_url?: string
+  sources?: VideoSource[]
+  poster_url?: string
+}
+
+interface VideoSource {
+  src: string
+  type: string
+  quality: '240p' | '360p' | '480p' | '720p' | '1080p' | '1440p' | '2160p'
+  framerate?: 30 | 60
+  bitrate?: number
 }
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'
+import styles from './VideoPlayer.module.css'
 
 // ============================================================================
 // TYPES AND INTERFACES
 // ============================================================================
 
 interface VideoPlayerProps {
-  video: Video
+  video: EnhancedVideo
   userId?: string
   autoPlay?: boolean
   className?: string
+  enableAdaptiveStreaming?: boolean
+  preferredQuality?: VideoSource['quality']
   onProgress?: (progress: VideoProgress) => void
   onComplete?: () => void
   onError?: (error: string) => void
+  onQualityChange?: (quality: VideoSource['quality']) => void
 }
 
 interface VideoProgress {
@@ -55,6 +63,10 @@ interface VideoState {
   playbackRate: number
   isFullscreen: boolean
   bufferedRanges: TimeRanges | null
+  currentQuality: VideoSource['quality']
+  availableQualities: VideoSource['quality'][]
+  adaptiveStreamingEnabled: boolean
+  networkQuality: 'poor' | 'fair' | 'good' | 'excellent'
 }
 
 interface ProgressUpdateData {
@@ -79,9 +91,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   userId,
   autoPlay = false,
   className = '',
+  enableAdaptiveStreaming = true,
+  preferredQuality = '1080p',
   onProgress,
   onComplete,
   onError,
+  onQualityChange,
 }) => {
   // Refs for video element and controls
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -104,6 +119,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     playbackRate: 1,
     isFullscreen: false,
     bufferedRanges: null,
+    currentQuality: preferredQuality,
+    availableQualities: video.sources?.map(s => s.quality) || ['1080p'],
+    adaptiveStreamingEnabled: enableAdaptiveStreaming,
+    networkQuality: 'good',
   })
 
   // Progress tracking state
@@ -119,6 +138,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       replayCount: 0,
     },
   })
+
+  // Completion tracking - reset when video changes
+  const [hasCompleted, setHasCompleted] = useState(false)
+
+  // Reset completion state when video changes
+  useEffect(() => {
+    setHasCompleted(false)
+  }, [video.id])
 
   // Session tracking
   // const [sessionStartTime] = useState<number>(Date.now())
@@ -197,12 +224,20 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       saveProgressToStore()
     }
 
-    // Check for completion
-    if ((percentage >= 90 && !progressData.percentage) || progressData.percentage < 90) {
+    // Check for completion (only trigger once when reaching 90% or more)
+    if (percentage >= 90 && !hasCompleted) {
+      setHasCompleted(true)
       handleVideoComplete()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoState.isPlaying, lastProgressUpdate, progressData.percentage, userId, onProgress])
+  }, [
+    videoState.isPlaying,
+    lastProgressUpdate,
+    progressData.percentage,
+    userId,
+    onProgress,
+    hasCompleted,
+  ])
 
   const handlePlay = useCallback(() => {
     setVideoState(prev => ({ ...prev, isPlaying: true, isPaused: false }))
@@ -229,6 +264,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [userId])
 
   const handleSeeked = useCallback(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    // Reset completion state if seeking backwards
+    const percentage = video.duration > 0 ? (video.currentTime / video.duration) * 100 : 0
+    if (percentage < 90) {
+      setHasCompleted(false)
+    }
+
     // Track seek interaction
     setProgressData(prev => ({
       ...prev,
@@ -366,6 +410,125 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [])
 
   // ============================================================================
+  // ADAPTIVE STREAMING AND QUALITY MANAGEMENT
+  // ============================================================================
+
+  const getCurrentVideoSource = useCallback((): VideoSource | null => {
+    if (!video.sources || video.sources.length === 0) {
+      return video.file_url
+        ? {
+            src: video.file_url,
+            type: 'video/mp4',
+            quality: '1080p',
+            framerate: 60,
+          }
+        : null
+    }
+
+    // Find source matching current quality
+    return video.sources.find(s => s.quality === videoState.currentQuality) || video.sources[0]
+  }, [video.sources, video.file_url, videoState.currentQuality])
+
+  const changeVideoQuality = useCallback(
+    (quality: VideoSource['quality']) => {
+      const videoElement = videoRef.current
+      if (!videoElement) return
+
+      const newSource = video.sources?.find(s => s.quality === quality)
+      if (!newSource) return
+
+      const currentTime = videoElement.currentTime
+      const wasPlaying = !videoElement.paused
+
+      // Update video source
+      videoElement.src = newSource.src
+      videoElement.load()
+
+      // Restore playback position and state
+      const handleLoadedMetadata = () => {
+        videoElement.currentTime = currentTime
+        if (wasPlaying) {
+          videoElement.play().catch(console.error)
+        }
+        videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      }
+
+      videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
+
+      setVideoState(prev => ({ ...prev, currentQuality: quality }))
+
+      if (onQualityChange) {
+        onQualityChange(quality)
+      }
+    },
+    [video.sources, onQualityChange]
+  )
+
+  const detectNetworkQuality = useCallback(() => {
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection
+
+    if (!connection) {
+      return 'good' // Default if Network Information API not available
+    }
+
+    const { downlink, effectiveType } = connection
+
+    if (effectiveType === '4g' && downlink > 10) return 'excellent'
+    if (effectiveType === '4g' && downlink > 5) return 'good'
+    if (effectiveType === '3g' || (effectiveType === '4g' && downlink > 1)) return 'fair'
+    return 'poor'
+  }, [])
+
+  const adaptQualityToNetwork = useCallback(() => {
+    if (!videoState.adaptiveStreamingEnabled || !video.sources) return
+
+    const networkQuality = detectNetworkQuality()
+    setVideoState(prev => ({ ...prev, networkQuality }))
+
+    // Auto-adjust quality based on network
+    let recommendedQuality: VideoSource['quality'] = '720p'
+
+    switch (networkQuality) {
+      case 'excellent':
+        recommendedQuality = '1080p'
+        break
+      case 'good':
+        recommendedQuality = '720p'
+        break
+      case 'fair':
+        recommendedQuality = '480p'
+        break
+      case 'poor':
+        recommendedQuality = '360p'
+        break
+    }
+
+    // Only change if the recommended quality is available and different
+    if (
+      video.sources.some(s => s.quality === recommendedQuality) &&
+      recommendedQuality !== videoState.currentQuality
+    ) {
+      changeVideoQuality(recommendedQuality)
+    }
+  }, [
+    videoState.adaptiveStreamingEnabled,
+    videoState.currentQuality,
+    video.sources,
+    detectNetworkQuality,
+    changeVideoQuality,
+  ])
+
+  const toggleAdaptiveStreaming = useCallback(() => {
+    setVideoState(prev => ({
+      ...prev,
+      adaptiveStreamingEnabled: !prev.adaptiveStreamingEnabled,
+    }))
+  }, [])
+
+  // ============================================================================
   // UI HELPERS
   // ============================================================================
 
@@ -484,6 +647,48 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [controlsTimeout])
 
+  // Initialize adaptive streaming
+  useEffect(() => {
+    if (enableAdaptiveStreaming) {
+      adaptQualityToNetwork()
+
+      // Monitor network changes
+      const connection = (navigator as any).connection
+      if (connection) {
+        const handleNetworkChange = () => adaptQualityToNetwork()
+        connection.addEventListener('change', handleNetworkChange)
+
+        return () => {
+          connection.removeEventListener('change', handleNetworkChange)
+        }
+      }
+    }
+  }, [enableAdaptiveStreaming, adaptQualityToNetwork])
+
+  // Update video source when quality changes
+  useEffect(() => {
+    const currentSource = getCurrentVideoSource()
+    const videoElement = videoRef.current
+
+    if (currentSource && videoElement && videoElement.src !== currentSource.src) {
+      const currentTime = videoElement.currentTime
+      const wasPlaying = !videoElement.paused
+
+      videoElement.src = currentSource.src
+      videoElement.load()
+
+      const handleLoadedMetadata = () => {
+        videoElement.currentTime = currentTime
+        if (wasPlaying) {
+          videoElement.play().catch(console.error)
+        }
+        videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
+      }
+
+      videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
+    }
+  }, [getCurrentVideoSource])
+
   // ============================================================================
   // RENDER
   // ============================================================================
@@ -507,65 +712,72 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`video-player relative ${className}`}
+      className={`${styles.videoPlayer} ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       {/* Video Element */}
       <video
         ref={videoRef}
-        className='w-full h-full bg-secondary-900 rounded-equipment'
-        poster={video.thumbnail_url || undefined}
+        className={styles.videoElement}
+        poster={video.thumbnail_url || video.poster_url || undefined}
         preload='metadata'
         autoPlay={autoPlay}
         playsInline
+        crossOrigin='anonymous'
       >
-        <source src={video.file_url} type='video/mp4' />
+        {video.sources && video.sources.length > 0
+          ? video.sources.map((source, index) => (
+              <source
+                key={index}
+                src={source.src}
+                type={source.type}
+                data-quality={source.quality}
+                data-framerate={source.framerate}
+              />
+            ))
+          : video.file_url && <source src={video.file_url} type='video/mp4' />}
         {/* Captions disabled for demo */}
         Your browser does not support the video tag.
       </video>
 
       {/* Loading Overlay */}
       {videoState.isLoading && (
-        <div className='absolute inset-0 flex items-center justify-center bg-secondary-900/50 rounded-equipment'>
-          <div className='loading-spinner w-8 h-8 border-primary-500'></div>
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}></div>
         </div>
       )}
 
       {/* Video Controls */}
-      <div
-        className={`video-controls ${
-          showControls ? 'opacity-100' : 'opacity-0'
-        } transition-opacity duration-300`}
-      >
+      <div className={`${styles.videoControls} ${showControls ? '' : styles.hidden}`}>
         {/* Progress Bar */}
-        <div className='mb-4'>
-          <div ref={progressBarRef} className='video-progress' onClick={handleProgressBarClick}>
+        <div className={styles.progressContainer}>
+          <div ref={progressBarRef} className={styles.progressBar} onClick={handleProgressBarClick}>
             {/* Buffer Bar */}
             <div
-              className='video-progress-buffer'
+              className={styles.progressBuffer}
               style={{ width: `${getBufferedPercentage()}%` }}
             />
             {/* Progress Bar */}
             <div
-              className='video-progress-bar'
+              className={styles.progressFill}
               style={{
                 width: `${(videoState.currentTime / videoState.duration) * 100 || 0}%`,
               }}
             >
               {/* Progress Handle */}
-              <div className='absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-primary-500 rounded-full shadow-lg' />
+              <div className={styles.progressHandle} />
             </div>
           </div>
         </div>
 
         {/* Control Buttons */}
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-4'>
+        <div className={styles.controlsRow}>
+          <div className={styles.controlsLeft}>
             {/* Play/Pause Button */}
             <button
               onClick={togglePlayPause}
-              className='flex items-center justify-center w-10 h-10 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors'
+              className={styles.playButton}
               aria-label={videoState.isPlaying ? 'Pause' : 'Play'}
             >
               {videoState.isPlaying ? (
@@ -576,10 +788,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </button>
 
             {/* Volume Control */}
-            <div className='flex items-center gap-2'>
+            <div className={styles.volumeControls}>
               <button
                 onClick={toggleMute}
-                className='text-white hover:text-primary-300 transition-colors'
+                className={styles.volumeButton}
                 aria-label={videoState.isMuted ? 'Unmute' : 'Mute'}
               >
                 {videoState.isMuted || videoState.volume === 0 ? (
@@ -596,22 +808,49 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 step='0.1'
                 value={videoState.isMuted ? 0 : videoState.volume}
                 onChange={e => setVolume(parseFloat(e.target.value))}
-                className='w-20 h-1 bg-white/20 rounded-full appearance-none slider'
+                className={styles.volumeSlider}
               />
             </div>
 
             {/* Time Display */}
-            <div className='text-white text-sm font-mono'>
+            <div className={styles.timeDisplay}>
               {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
             </div>
           </div>
 
-          <div className='flex items-center gap-2'>
+          <div className={styles.controlsRight}>
+            {/* Quality Selector */}
+            {videoState.availableQualities.length > 1 && (
+              <select
+                value={videoState.currentQuality}
+                onChange={e => changeVideoQuality(e.target.value as VideoSource['quality'])}
+                className={styles.qualitySelect}
+                title={`Current: ${videoState.currentQuality} (Network: ${videoState.networkQuality})`}
+              >
+                {videoState.availableQualities.map(quality => (
+                  <option key={quality} value={quality}>
+                    {quality} {quality === '1080p' ? '60fps' : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Adaptive Streaming Toggle */}
+            <button
+              onClick={toggleAdaptiveStreaming}
+              className={`${styles.adaptiveButton} ${
+                videoState.adaptiveStreamingEnabled ? styles.active : styles.inactive
+              }`}
+              title='Toggle adaptive streaming based on network quality'
+            >
+              AUTO
+            </button>
+
             {/* Playback Speed */}
             <select
               value={videoState.playbackRate}
               onChange={e => changePlaybackRate(parseFloat(e.target.value))}
-              className='bg-white/20 text-white text-sm rounded px-2 py-1 border-none'
+              className={styles.qualitySelect}
             >
               <option value={0.5}>0.5x</option>
               <option value={0.75}>0.75x</option>
@@ -621,8 +860,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               <option value={2}>2x</option>
             </select>
 
+            {/* Network Quality Indicator */}
+            <div className={styles.networkIndicator}>
+              <div className={`${styles.networkDot} ${styles[videoState.networkQuality]}`} />
+              <span className='capitalize'>{videoState.networkQuality}</span>
+            </div>
+
             {/* Progress Percentage */}
-            <div className='text-white text-sm font-mono'>
+            <div className={styles.progressPercentage}>
               {Math.round((videoState.currentTime / videoState.duration) * 100 || 0)}%
             </div>
           </div>
@@ -630,11 +875,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       </div>
 
       {/* Video Metadata Overlay */}
-      <div className='absolute top-4 left-4 text-white'>
-        <h3 className='text-lg font-semibold mb-1'>{video.title}</h3>
-        <div className='flex items-center gap-4 text-sm text-white/80'>
+      <div className={styles.metadataOverlay}>
+        <h3 className={styles.videoTitle}>{video.title}</h3>
+        <div className={styles.videoMeta}>
           {video.difficulty_level && (
-            <span className={`status-${video.difficulty_level}`}>
+            <span className={`${styles.difficultyBadge} ${styles[video.difficulty_level]}`}>
               {video.difficulty_level.charAt(0).toUpperCase() + video.difficulty_level.slice(1)}
             </span>
           )}
