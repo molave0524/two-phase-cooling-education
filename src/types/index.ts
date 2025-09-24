@@ -12,5 +12,11 @@ export * from './common'
 // Export all AI-related types
 export * from './ai'
 
+// Export all product-related types
+export * from './product'
+
+// Export all cart-related types
+export * from './cart'
+
 // Re-export commonly used React types for convenience
 export type { ReactNode, ReactElement, ComponentProps } from 'react'

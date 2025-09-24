@@ -5,21 +5,11 @@ import { useProgress } from '@/app/providers'
 // import { updateUserProgress } from '@/lib/services/progress-service'
 // import { Video } from '@prisma/client'
 
-import { VideoMetadata, VideoProgress as SharedVideoProgress, DifficultyLevel } from '@/types'
+import { VideoMetadata, VideoSource, DifficultyLevel } from '@/types'
 
-// Enhanced video interface for player
+// Enhanced video interface for player (VideoMetadata already includes sources)
 interface EnhancedVideo extends VideoMetadata {
-  file_url?: string
-  sources?: VideoSource[]
-  poster_url?: string
-}
-
-interface VideoSource {
-  src: string
-  type: string
-  quality: '240p' | '360p' | '480p' | '720p' | '1080p' | '1440p' | '2160p'
-  framerate?: 30 | 60
-  bitrate?: number
+  // Additional player-specific fields if needed
 }
 import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'

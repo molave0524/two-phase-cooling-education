@@ -81,3 +81,76 @@ so that **I can build understanding systematically from basic to advanced concep
 5. Personalized question suggestions to deepen understanding
 6. AI explains connections between different educational topics and demonstrations
 7. Assessment of user understanding level through conversation analysis
+
+## Story 2.6: E-commerce Integration with AI Support
+
+As a **customer exploring products with AI assistance**,
+I want **AI-powered support throughout the purchasing journey**,
+so that **I can make informed decisions with technical guidance**.
+
+### Acceptance Criteria
+
+1. AI assistant provides product recommendations based on educational engagement
+2. Technical questions about products answered with personalized context
+3. AI explains product specifications in relation to customer's use case
+4. Purchase decision support with comparisons and technical analysis
+5. Pre-purchase consultation with AI assistant based on learning history
+6. AI-powered customer support integration for post-purchase assistance
+7. Educational journey tracking influences product recommendations
+
+## Story 2.7: Analytics & Conversion Intelligence
+
+As a **business stakeholder**,
+I want **AI-enhanced analytics on educational engagement and conversion patterns**,
+so that **I can optimize the platform for maximum educational effectiveness and revenue**.
+
+### Acceptance Criteria
+
+1. Educational engagement tracking: session time, video completion rates, AI assistant usage
+2. Conversion funnel analysis from video viewing through purchase completion
+3. AI assistant interaction analysis for improving knowledge base and responses
+4. User journey mapping showing progression from education to purchase
+5. A/B testing framework for optimizing educational content and conversion paths
+6. Performance metrics dashboard for business KPIs and user behavior
+7. Integration with Google Analytics for comprehensive web analytics
+
+## Story 2.8: Customer Support with Educational Context
+
+As a **customer with questions or issues**,
+I want **integrated support that leverages my educational engagement and AI assistance**,
+so that **I receive personalized assistance based on my learning journey**.
+
+### Acceptance Criteria
+
+1. Support ticket system integrated with customer educational history
+2. AI assistant escalation to human support for complex issues
+3. Customer support dashboard showing educational engagement context
+4. Pre-purchase and post-purchase support workflows with AI assistance
+5. Knowledge base integration for self-service support options
+6. Support response time tracking and customer satisfaction measurement
+7. Integration between support system and educational progression tracking
+
+## Story 2.9: AI-Powered Customer Support System
+
+As a **customer needing technical support**,
+I want **an AI-powered support system that understands two-phase cooling technology**,
+so that **I can get instant, accurate technical assistance 24/7**.
+
+### Acceptance Criteria
+
+1. AI chatbot capable of handling 80% of technical support inquiries automatically
+2. Natural language processing for understanding customer problems and questions
+3. Integration with product knowledge base and technical documentation
+4. AI can diagnose common installation, operation, and troubleshooting issues
+5. Intelligent ticket routing to appropriate human specialists when needed
+6. Support conversation history maintained with context awareness
+7. AI provides step-by-step troubleshooting guides with visual aids
+8. Escalation triggers for complex issues requiring human intervention
+9. Customer satisfaction tracking for AI support interactions
+10. Multi-language support for international customers
+11. Integration with order history and product registration data
+12. AI-generated support summaries for human agent handoffs
+
+---
+
+**Note**: Stories 2.6, 2.7, 2.8, and 2.9 were moved from Epic 3 to maintain separation between pure e-commerce functionality and AI/educational integration features. Epic 3 now focuses solely on traditional e-commerce operations.

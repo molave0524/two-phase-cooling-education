@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   Bars3Icon,
   XMarkIcon,
@@ -11,7 +12,8 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
-import { useCartStore } from '@/lib/stores/cart-store'
+import { useCartStore } from '@/stores/cartStore'
+import CartButton from '@/components/cart/CartButton'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -226,6 +228,7 @@ export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const cartItemCount = useCartStore(state => state.itemCount)
+  const pathname = usePathname()
 
   // Handle scroll effect
   useEffect(() => {
@@ -233,9 +236,26 @@ export const Header: React.FC = () => {
       setIsScrolled(window.scrollY > 20)
     }
 
+    // Check initial scroll position
+    handleScroll()
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Reset scroll state on route change
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+
+    // Small delay to ensure page has rendered
+    const timer = setTimeout(() => {
+      handleScroll()
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [pathname])
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -253,30 +273,44 @@ export const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-          isScrolled ? 'bg-white backdrop-blur-xl border-b border-black/10' : 'bg-white'
-        }`}
+        className={`fixed top-0 w-full z-50 h-20 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-white backdrop-blur-xl border-b border-black/10'
+            : 'bg-white/95 backdrop-blur-lg'
+        } shadow-sm`}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 9999,
+          height: '80px',
+          minHeight: '80px',
+          maxHeight: '80px',
+        }}
       >
-        <div className='container-max'>
-          <div className='flex items-center justify-center py-4 relative'>
-            {/* Apple.com-style Logo - Absolute positioned to left */}
-            <Link
-              href='/'
-              className='absolute left-0 flex items-center hover:opacity-60 transition-opacity duration-200'
-            >
-              <span className='text-xl font-normal text-gray-600 tracking-tight'>🍎</span>
-            </Link>
+        <div className='container mx-auto px-4 max-w-7xl h-full'>
+          <div className='flex items-center justify-between h-full'>
+            {/* Logo - Fixed position on left */}
+            <div className='flex items-center flex-shrink-0'>
+              <Link
+                href='/'
+                className='flex items-center hover:opacity-60 transition-opacity duration-200'
+              >
+                <span className='text-xl font-normal text-gray-600 tracking-tight'>🍎</span>
+              </Link>
+            </div>
 
             {/* Apple-style Navigation - Centered */}
-            <nav className='hidden md:flex items-center space-x-8'>
+            <nav className='hidden md:flex items-center space-x-10'>
               {MAIN_NAVIGATION.map(item => (
-                <div key={item.label}>
+                <div key={item.label} className='flex-shrink-0'>
                   {item.children ? (
                     <DropdownMenu item={item} />
                   ) : (
                     <Link
                       href={item.href || '#'}
-                      className='text-sm font-normal text-black hover:text-black/80 transition-colors duration-200'
+                      className='text-sm font-normal text-black hover:text-black/80 transition-colors duration-200 px-2 py-1'
                     >
                       {item.label}
                     </Link>
@@ -285,51 +319,34 @@ export const Header: React.FC = () => {
               ))}
             </nav>
 
-            {/* Apple.com-style Actions - Absolute positioned to right */}
-            <div className='absolute right-0 hidden md:flex items-center gap-6'>
-              {/* Search Icon - Apple style */}
-              <Link
-                href='#search'
-                className='text-black hover:text-black/80 transition-colors duration-200'
-              >
-                <MagnifyingGlassIcon className='w-4 h-4' />
-              </Link>
+            {/* Right side actions */}
+            <div className='flex items-center gap-6 flex-shrink-0'>
+              {/* Desktop actions */}
+              <div className='hidden md:flex items-center gap-6'>
+                {/* Search Icon - Apple style */}
+                <Link
+                  href='#search'
+                  className='text-black hover:text-black/80 transition-colors duration-200'
+                >
+                  <MagnifyingGlassIcon className='w-4 h-4' />
+                </Link>
 
-              {/* Cart Icon - Apple style */}
-              <Link
-                href='#cart'
-                className='relative text-black hover:text-black/80 transition-colors duration-200'
-              >
-                <ShoppingBagIcon className='w-5 h-5' />
-                {cartItemCount > 0 && (
-                  <span className='absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium'>
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
-            </div>
+                {/* Cart Icon - Apple style */}
+                <CartButton />
+              </div>
 
-            {/* Mobile Menu Button */}
-            <div className='md:hidden flex items-center gap-2'>
-              {/* Mobile Cart */}
-              <Link
-                href='#cart'
-                className='relative p-2 text-black hover:text-black/80 transition-colors'
-              >
-                <ShoppingBagIcon className='w-5 h-5' />
-                {cartItemCount > 0 && (
-                  <span className='absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium'>
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
+              {/* Mobile Menu Button */}
+              <div className='md:hidden flex items-center gap-2'>
+                {/* Mobile Cart */}
+                <CartButton />
 
-              <button
-                onClick={() => setIsMobileMenuOpen(true)}
-                className='p-2 text-black hover:text-black/80 transition-colors'
-              >
-                <Bars3Icon className='w-5 h-5' />
-              </button>
+                <button
+                  onClick={() => setIsMobileMenuOpen(true)}
+                  className='p-2 text-black hover:text-black/80 transition-colors'
+                >
+                  <Bars3Icon className='w-5 h-5' />
+                </button>
+              </div>
             </div>
           </div>
         </div>

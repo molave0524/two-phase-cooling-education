@@ -1,44 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { ProductCard } from '@/components/product/ProductCard'
-// Mock type for demo mode - reusing the same interface as ProductCard
-interface Products {
-  id: string
-  name: string
-  description: string
-  price: number
-  price_cents: number
-  currency?: string
-  compare_at_price?: number
-  stock_quantity: number
-  image: string
-  images: string[]
-  category: string
-  slug: string
-  sku?: string
-  is_featured?: boolean
-  is_digital?: boolean
-  is_active?: boolean
-  sort_order?: number
-  meta_title?: string
-  meta_description?: string
-  created_at?: Date
-  updated_at?: Date
-  specifications?: {
-    cooling?: {
-      gwpRating?: string
-      type?: string
-    }
-    formFactor?: string
-    compatibility?: {
-      motherboard?: string[]
-    }
-    contents?: string[]
-    educational?: boolean
-  }
-  features?: string[]
-}
+import { getFeaturedProducts } from '@/data/products'
+import { TwoPhaseCoolingProduct } from '@/types/product'
+import { useCartStore } from '@/stores/cartStore'
 import {
   SparklesIcon,
   FunnelIcon,
@@ -54,7 +21,7 @@ import { toast } from 'react-hot-toast'
 interface ProductShowcaseProps {
   className?: string
   showFilters?: boolean
-  initialProducts?: Products[]
+  maxProducts?: number
 }
 
 interface FilterState {
@@ -70,10 +37,10 @@ interface ViewMode {
 }
 
 // ============================================================================
-// SAMPLE PRODUCT DATA
+// LEGACY SAMPLE DATA (keeping for backwards compatibility)
 // ============================================================================
 
-const SAMPLE_PRODUCTS: Products[] = [
+const LEGACY_SAMPLE_PRODUCTS = [
   {
     id: '1',
     name: 'Two-Phase Cooling Case Pro',
@@ -196,11 +163,54 @@ const SAMPLE_PRODUCTS: Products[] = [
 
 export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   className = '',
-  showFilters = true,
-  initialProducts,
+  showFilters = false,
+  maxProducts = 4,
 }) => {
+  // Get featured products from new data structure
+  const featuredProducts = getFeaturedProducts().slice(0, maxProducts)
+
+  // Legacy conversion for backward compatibility
+  const convertToLegacyFormat = (products: TwoPhaseCoolingProduct[]) => {
+    return products.map(product => ({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      price: product.price,
+      price_cents: product.price * 100,
+      currency: product.currency,
+      compare_at_price: product.originalPrice ? product.originalPrice * 100 : undefined,
+      stock_quantity: product.stockQuantity,
+      image: product.images[0]?.url || '',
+      images: product.images.map(img => img.url),
+      category: product.categories[0] || 'Computer Cases',
+      sku: product.sku,
+      is_featured: product.categories.includes('complete-cases'),
+      is_digital: false,
+      is_active: product.inStock,
+      sort_order: 1,
+      meta_title: product.metaTitle,
+      meta_description: product.metaDescription,
+      created_at: product.createdAt,
+      updated_at: product.updatedAt,
+      specifications: {
+        cooling: {
+          gwpRating: product.specifications.environmental.gwp.toString(),
+          type: 'Two-Phase Immersion',
+        },
+        formFactor: 'Mid-Tower ATX',
+        compatibility: {
+          motherboard: product.specifications.compatibility.cpuSockets,
+        },
+        contents: [],
+        educational: false,
+      },
+      features: product.features,
+    }))
+  }
+
   // Component state
-  const [products] = useState<Products[]>(initialProducts || SAMPLE_PRODUCTS)
+  const [products] = useState(convertToLegacyFormat(featuredProducts))
   const [filteredProducts, setFilteredProducts] = useState<Products[]>(products)
 
   // Filter and view state
@@ -283,26 +293,13 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     setViewMode(prev => ({ ...prev, ...newViewMode }))
   }
 
-  const handleAddToCart = async (product: Products) => {
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+  const { addItem } = useCartStore()
 
-      // In production, make actual API call
-      const response = await fetch('/api/cart/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id, quantity: 1 }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to add to cart')
-      }
-
-      toast.success(`${product.name} added to cart!`)
-    } catch (error) {
-      console.error('Add to cart error:', error)
-      toast.error('Failed to add to cart')
+  const handleAddToCart = (product: any) => {
+    // Convert legacy format back to TwoPhaseCoolingProduct for cart
+    const originalProduct = featuredProducts.find(p => p.id === product.id)
+    if (originalProduct) {
+      addItem(originalProduct, 1)
     }
   }
 
@@ -523,28 +520,90 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
             }
           >
             {filteredProducts.map(product => (
-              <ProductCard
+              <div
                 key={product.id}
-                product={product}
-                variant={
-                  viewMode.type === 'list'
-                    ? 'compact'
-                    : product.is_featured
-                      ? 'featured'
-                      : 'default'
-                }
-                onAddToCart={handleAddToCart}
-                onAddToWishlist={handleAddToWishlist}
-              />
+                className='bg-white rounded-equipment shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300'
+              >
+                {/* Product Image */}
+                <div className='relative aspect-[4/3] overflow-hidden'>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className='w-full h-full object-cover hover:scale-105 transition-transform duration-300'
+                  />
+                  {product.compare_at_price && (
+                    <div className='absolute top-4 right-4'>
+                      <span className='bg-accent-500 text-white px-3 py-1 text-xs font-semibold rounded-full'>
+                        Sale
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Info */}
+                <div className='p-6'>
+                  <h3 className='text-xl font-semibold text-secondary-900 mb-2'>{product.name}</h3>
+                  <p className='text-secondary-600 mb-4 line-clamp-3'>{product.description}</p>
+
+                  {/* Key Features */}
+                  {product.features && (
+                    <div className='mb-4'>
+                      <div className='flex flex-wrap gap-2'>
+                        {product.features.slice(0, 2).map((feature, index) => (
+                          <span
+                            key={index}
+                            className='inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-primary-100 text-primary-800 rounded-full'
+                          >
+                            {feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pricing */}
+                  <div className='mb-4'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-2xl font-bold text-primary-600'>
+                        ${product.price.toLocaleString()}
+                      </span>
+                      {product.compare_at_price && (
+                        <span className='text-lg text-secondary-400 line-through'>
+                          ${(product.compare_at_price / 100).toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className='flex flex-col gap-2'>
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className='btn btn-primary w-full text-center'
+                    >
+                      View Details & Specifications
+                    </Link>
+                    <button
+                      className='btn btn-secondary w-full'
+                      onClick={() => handleAddToCart(product)}
+                      disabled={product.stock_quantity === 0}
+                    >
+                      {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Load More / Pagination */}
-      {filteredProducts.length > 0 && (
-        <div className='text-center'>
-          <button className='btn-secondary'>Load More Products</button>
+      {/* View All Products Link */}
+      {!showFilters && (
+        <div className='text-center mt-12'>
+          <Link href='/products' className='btn btn-primary btn-lg'>
+            View All Products & Specifications
+          </Link>
         </div>
       )}
     </div>

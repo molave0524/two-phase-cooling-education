@@ -41,7 +41,13 @@
       "Bash(git branch:*)",
       "Bash(git fetch:*)",
       "Bash(mkdir:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx eslint:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(tail:*)",
+      "Bash(done)",
+      "Read(//c/Users/molave.estigoy/OneDrive - Thermo Fisher Scientific/Pictures/Claude/**)"
     ],
     "deny": [],
     "ask": []
