@@ -48,7 +48,9 @@
       "Bash(tail:*)",
       "Bash(done)",
       "Read(//c/Users/molave.estigoy/OneDrive - Thermo Fisher Scientific/Pictures/Claude/**)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(git restore:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
