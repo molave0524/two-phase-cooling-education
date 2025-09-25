@@ -207,7 +207,7 @@ export const VideoShowcase: React.FC = () => {
   }
 
   return (
-    <div className='space-y-8' style={{ paddingTop: '60px' }}>
+    <div className='space-y-8'>
       {/* Section Header */}
       <div className='text-center'>
         <h2
