@@ -16,7 +16,7 @@ export const HeroSection: React.FC = () => {
       }}
     >
       <div className='container-max'>
-        <div className='flex flex-col items-center justify-center pt-8 lg:pt-4'>
+        <div className='flex flex-col items-center justify-center pt-4 lg:pt-2'>
           {/* Text */}
           <div className='text-center mb-4'>
             <h1
