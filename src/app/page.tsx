@@ -19,20 +19,20 @@ const AIAssistantPreview = dynamic(() => import('@/components/sections/AIAssista
 export const metadata: Metadata = {
   title: 'Revolutionary Two-Phase Cooling Technology | Education Center',
   description:
-    'Experience the future of computer cooling through interactive demonstrations. Learn how our innovative two-phase cooling case achieves superior thermal performance with minimal environmental impact.',
+    'Experience the future of computer cooling through interactive demos. Learn how our innovative two-phase cooling case achieves superior thermal performance with minimal environmental impact.',
   keywords: [
     'two-phase cooling',
     'computer case',
     'thermal performance',
     'cooling technology',
     'education',
-    'interactive demonstrations',
+    'interactive demos',
     'thermal dynamics',
     'high-performance computing',
   ],
   openGraph: {
     title: 'Revolutionary Two-Phase Cooling Technology',
-    description: 'Experience the future of computer cooling through interactive demonstrations.',
+    description: 'Experience the future of computer cooling through interactive demos.',
     images: [
       {
         url: '/images/hero-og.jpg',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Revolutionary Two-Phase Cooling Technology',
-    description: 'Experience the future of computer cooling through interactive demonstrations.',
+    description: 'Experience the future of computer cooling through interactive demos.',
     images: ['/images/hero-twitter.jpg'],
   },
 }
@@ -56,12 +56,12 @@ export const metadata: Metadata = {
  *
  * The main landing page implementing the "experience over selling" philosophy.
  * Structured to guide visitors through progressive discovery of two-phase cooling
- * technology through interactive demonstrations and educational content.
+ * technology through interactive demos and educational content.
  *
  * Section Flow:
  * 1. Hero - Immediate visual impact and value proposition
  * 2. Technology Overview - Educational foundation
- * 3. Video Showcase - Core demonstration content
+ * 3. Video Showcase - Core demo content
  * 4. Performance Metrics - Data-driven proof
  * 5. AI Assistant Preview - Interactive learning
  * 6. Product Showcase - Natural transition to purchase
@@ -73,19 +73,20 @@ export default function HomePage() {
       {/* Hero Section - Immediate Impact */}
       <section
         id='hero'
-        className='relative py-20 lg:py-32 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50'
+        className='relative pt-32 pb-20 lg:pt-40 lg:pb-32'
         aria-labelledby='hero-heading'
       >
         <HeroSection />
       </section>
 
-      {/* Video Showcase - Immediate Demonstrations */}
+      {/* Video Showcase - Immediate Demos */}
       <section
-        id='demonstrations'
-        className='py-16 lg:py-24 bg-white'
-        aria-labelledby='demonstrations-heading'
+        id='demos'
+        className='pt-0 pb-8 lg:pb-12 bg-white'
+        style={{ marginTop: '-40px' }}
+        aria-labelledby='demos-heading'
       >
-        <div className='container-max section-padding'>
+        <div className='container-max px-6 lg:px-8'>
           <VideoShowcase />
         </div>
       </section>
@@ -142,7 +143,7 @@ export default function HomePage() {
             '@type': 'EducationalOrganization',
             name: 'Two-Phase Cooling Education Center',
             description:
-              'Learn about revolutionary two-phase cooling technology through interactive demonstrations and educational content.',
+              'Learn about revolutionary two-phase cooling technology through interactive demos and educational content.',
             url: 'https://twophasecooling.com',
             logo: 'https://twophasecooling.com/images/logo.png',
             image: 'https://twophasecooling.com/images/hero-og.jpg',

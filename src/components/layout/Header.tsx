@@ -270,7 +270,7 @@ export const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 w-full z-50 h-20 transition-all duration-300 ${
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           isScrolled
             ? 'bg-white backdrop-blur-xl border-b border-black/10'
             : 'bg-white/95 backdrop-blur-lg'
@@ -281,13 +281,16 @@ export const Header: React.FC = () => {
           left: 0,
           right: 0,
           zIndex: 9999,
-          height: '80px',
-          minHeight: '80px',
-          maxHeight: '80px',
+          height: '40px !important',
+          minHeight: '40px !important',
+          maxHeight: '40px !important',
         }}
       >
         <div className='container mx-auto px-4 max-w-7xl h-full'>
-          <div className='flex items-center justify-between h-full'>
+          <div
+            className='flex items-center justify-between h-full'
+            style={{ transform: 'translateY(-1px)' }}
+          >
             {/* Logo - Fixed position on left */}
             <div className='flex items-center flex-shrink-0'>
               <Link

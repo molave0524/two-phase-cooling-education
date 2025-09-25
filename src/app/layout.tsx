@@ -182,7 +182,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               id='main-content'
               className='flex-1 min-h-0'
               role='main'
-              style={{ marginTop: '80px' }}
+              style={{ marginTop: '40px' }}
             >
               <ErrorBoundary>{children}</ErrorBoundary>
             </main>

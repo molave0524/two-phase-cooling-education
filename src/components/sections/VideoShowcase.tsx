@@ -207,16 +207,17 @@ export const VideoShowcase: React.FC = () => {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-8' style={{ paddingTop: '60px' }}>
       {/* Section Header */}
-      <div className='text-center space-y-4'>
+      <div className='text-center'>
         <h2
           id='demonstrations-heading'
-          className='text-3xl lg:text-4xl font-bold text-secondary-900'
+          className='text-3xl lg:text-4xl font-bold'
+          style={{ color: '#000000', marginBottom: '0px' }}
         >
-          Stress Test Demonstrations
+          Stress Test Demos
         </h2>
-        <p className='text-xl text-secondary-700 max-w-2xl mx-auto'>
+        <p className='text-xl max-w-2xl mx-auto' style={{ color: '#000000', marginTop: '8px' }}>
           Watch thermal comparisons under extreme loads. See the difference when it matters most.
         </p>
       </div>
