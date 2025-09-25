@@ -272,8 +272,8 @@ export const Header: React.FC = () => {
       <header
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white backdrop-blur-xl border-b border-black/10'
-            : 'bg-white/95 backdrop-blur-lg'
+            ? 'bg-blue-50 backdrop-blur-xl border-b border-black/10'
+            : 'bg-blue-50/95 backdrop-blur-lg'
         } shadow-sm`}
         style={{
           position: 'fixed',
