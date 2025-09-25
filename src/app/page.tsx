@@ -81,7 +81,7 @@ export default function HomePage() {
 
       {/* Video Showcase - Immediate Demos */}
       <section
-        id='demos'
+        id='demonstrations'
         className='pt-0 pb-8 lg:pb-12 bg-white'
         style={{ marginTop: '-40px' }}
         aria-labelledby='demos-heading'
