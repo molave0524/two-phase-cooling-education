@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { SparklesIcon, BeakerIcon } from '@heroicons/react/24/outline'
 
 export const HeroSection: React.FC = () => {
   return (
