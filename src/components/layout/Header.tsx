@@ -41,7 +41,7 @@ const MAIN_NAVIGATION: NavigationItem[] = [
     href: '/#technology',
   },
   {
-    label: 'Demonstrations',
+    label: 'Demo',
     href: '/#demonstrations',
   },
   {
