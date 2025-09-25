@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
   compress: true,
   poweredByHeader: false,
 
@@ -22,6 +21,15 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/_next/static/css/(.*)',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/css',
+          },
+        ],
+      },
+      {
         source: '/(.*)',
         headers: [
           {
@@ -34,8 +42,8 @@ const nextConfig = {
           },
         ],
       },
-    ];
+    ]
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
