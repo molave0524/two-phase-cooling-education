@@ -10,7 +10,6 @@ export const HeroSection: React.FC = () => {
         width: '100vw',
         marginLeft: 'calc(-50vw + 50%)',
         paddingBottom: '40px',
-        marginBottom: '-84px',
         position: 'relative',
         zIndex: 10,
       }}
