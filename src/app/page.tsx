@@ -22,8 +22,21 @@ const PerformanceMetrics = dynamic(() => import('@/components/sections/Performan
 
 const AIAssistantPreview = dynamic(() => import('@/components/sections/AIAssistantPreview'), {
   loading: () => (
-    <div className='py-section-bottom bg-gradient-to-br from-blue-50 to-cyan-50'>
-      <div className='container-max section-padding'>
+    <div
+      style={{
+        backgroundColor: '#e2e8f0',
+        paddingTop: '1.5rem',
+        paddingBottom: '1rem',
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
+        borderTop: '12px solid white',
+      }}
+    >
+      <div className='max-w-6xl mx-auto px-6'>
         <div className='text-center space-y-4'>
           <div className='w-8 h-8 mx-auto border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin'></div>
           <p className='text-secondary-600'>Loading AI assistant...</p>
@@ -109,14 +122,8 @@ export default function HomePage() {
       </section>
 
       {/* AI Assistant Preview - Interactive Learning */}
-      <section
-        id='ai-assistant'
-        className='py-section-bottom bg-gradient-to-br from-blue-50 to-cyan-50'
-        aria-labelledby='ai-assistant-heading'
-      >
-        <div className='container-max section-padding'>
-          <AIAssistantPreview />
-        </div>
+      <section id='ai-assistant' aria-labelledby='ai-assistant-heading'>
+        <AIAssistantPreview />
       </section>
 
       {/* Product Showcase - Natural Purchase Transition */}
