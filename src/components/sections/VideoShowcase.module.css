@@ -2,24 +2,39 @@
 /* Clean, scoped styles that replace all the problematic global CSS and inline styles */
 
 .demoSection {
-  background-color: #e2e8f0;
+  background-color: var(--color-section-background);
   margin-top: 0;
   margin-left: 0;
   margin-right: 0;
-  padding-top: 0rem;
-  padding-bottom: 0rem;
+  padding-top: var(--spacing-section-top);
+  padding-bottom: var(--spacing-section-bottom);
   width: 100vw;
   position: relative;
   left: 50%;
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
-  border-top: 12px solid white;
+  border-top: var(--spacing-between-sections) solid white;
 }
 
-@media (min-width: 1024px) {
+/* Mobile-first responsive spacing */
+@media (max-width: 768px) {
   .demoSection {
-    padding-bottom: 1.02rem;
+    padding-top: var(--spacing-section-top-mobile);
+    padding-bottom: var(--spacing-section-bottom-mobile);
+    border-top-width: calc(var(--spacing-between-sections) * 0.75);
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .demoSection {
+    padding-top: var(--spacing-section-top);
+    padding-bottom: var(--spacing-section-bottom);
   }
 }
 

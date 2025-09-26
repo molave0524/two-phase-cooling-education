@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getFeaturedProducts } from '@/data/products'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
@@ -201,15 +202,15 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     <div
       style={{
         backgroundColor: 'var(--color-section-background)',
-        paddingTop: '1.5rem',
-        paddingBottom: '1rem',
+        paddingTop: 'var(--spacing-section-top)',
+        paddingBottom: 'var(--spacing-section-bottom)',
         width: '100vw',
         position: 'relative',
         left: '50%',
         right: '50%',
         marginLeft: '-50vw',
         marginRight: '-50vw',
-        borderTop: '12px solid white',
+        borderTop: 'var(--spacing-between-sections) solid white',
       }}
     >
       <div className='max-w-6xl mx-auto px-6'>
@@ -405,10 +406,12 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                   >
                     {/* Product Image */}
                     <div className='relative aspect-[4/3] overflow-hidden'>
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        className='w-full h-full object-cover hover:scale-105 transition-transform duration-300'
+                        className='object-cover hover:scale-105 transition-transform duration-300'
+                        fill
+                        sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                       />
                       {product.compare_at_price && (
                         <div className='absolute top-4 right-4'>

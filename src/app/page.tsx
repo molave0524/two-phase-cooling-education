@@ -6,13 +6,31 @@ import { VideoShowcase } from '@/components/sections/VideoShowcase'
 import { ProductShowcase } from '@/components/sections/ProductShowcase'
 import { CallToAction } from '@/components/sections/CallToAction'
 
-// Dynamic imports for performance optimization - simplified syntax
+// Dynamic imports for performance optimization with enhanced loading states
 const PerformanceMetrics = dynamic(() => import('@/components/sections/PerformanceMetrics'), {
-  loading: () => <div className='py-20 text-center'>Loading performance metrics...</div>,
+  loading: () => (
+    <div className='py-section-bottom bg-section-bg'>
+      <div className='max-w-6xl mx-auto px-6'>
+        <div className='text-center space-y-4'>
+          <div className='w-8 h-8 mx-auto border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin'></div>
+          <p className='text-secondary-600'>Loading performance metrics...</p>
+        </div>
+      </div>
+    </div>
+  ),
 })
 
 const AIAssistantPreview = dynamic(() => import('@/components/sections/AIAssistantPreview'), {
-  loading: () => <div className='py-20 text-center'>Loading AI assistant...</div>,
+  loading: () => (
+    <div className='py-section-bottom bg-gradient-to-br from-blue-50 to-cyan-50'>
+      <div className='container-max section-padding'>
+        <div className='text-center space-y-4'>
+          <div className='w-8 h-8 mx-auto border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin'></div>
+          <p className='text-secondary-600'>Loading AI assistant...</p>
+        </div>
+      </div>
+    </div>
+  ),
 })
 
 // Page metadata for SEO optimization
@@ -95,7 +113,7 @@ export default function HomePage() {
       {/* AI Assistant Preview - Interactive Learning */}
       <section
         id='ai-assistant'
-        className='py-4 bg-gradient-to-br from-blue-50 to-cyan-50'
+        className='py-section-bottom bg-gradient-to-br from-blue-50 to-cyan-50'
         aria-labelledby='ai-assistant-heading'
       >
         <div className='container-max section-padding'>
@@ -111,7 +129,7 @@ export default function HomePage() {
       {/* Call to Action - Clear Next Steps */}
       <section
         id='get-started'
-        className='py-6 bg-gradient-to-br from-sky-600 to-sky-800 text-white'
+        className='py-section-bottom bg-gradient-to-br from-sky-600 to-sky-800 text-white'
         aria-labelledby='cta-heading'
       >
         <div className='container-max section-padding'>

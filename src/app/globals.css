@@ -1301,6 +1301,36 @@ section[id='get-started'] {
   background-color: var(--color-page-background);
 }
 
+/* Mobile-Responsive Spacing Utilities */
+@media (max-width: 768px) {
+  .py-section-bottom {
+    padding-top: var(--spacing-section-bottom-mobile);
+    padding-bottom: var(--spacing-section-bottom-mobile);
+  }
+
+  .py-section-top {
+    padding-top: var(--spacing-section-top-mobile);
+    padding-bottom: var(--spacing-section-top-mobile);
+  }
+
+  .section-title {
+    margin-top: var(--spacing-section-title-top-mobile);
+  }
+
+  /* Reduce content spacing on mobile */
+  .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+  }
+
+  .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+  }
+}
+
 /* Form styles */
 .form-input {
   width: 100%;

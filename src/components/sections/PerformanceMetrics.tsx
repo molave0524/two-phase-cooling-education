@@ -201,15 +201,15 @@ export const PerformanceMetrics: React.FC = () => {
     <div
       style={{
         backgroundColor: 'var(--color-section-background)',
-        paddingTop: '1.5rem',
-        paddingBottom: '1rem',
+        paddingTop: 'var(--spacing-section-top)',
+        paddingBottom: 'var(--spacing-section-bottom)',
         width: '100vw',
         position: 'relative',
         left: '50%',
         right: '50%',
         marginLeft: '-50vw',
         marginRight: '-50vw',
-        borderTop: '12px solid white',
+        borderTop: 'var(--spacing-between-sections) solid white',
       }}
     >
       <div className='max-w-6xl mx-auto px-6'>

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import styles from './HeroSection.module.css'
 
 export const HeroSection: React.FC = () => {
@@ -17,10 +18,14 @@ export const HeroSection: React.FC = () => {
           {/* Visual */}
           <div className={styles.visualSection}>
             <div className={styles.imageContainer}>
-              <img
+              <Image
                 src='/images/hero-product.jpg'
                 alt='Two-Phase Cooling Computer Case'
                 className={styles.heroImage}
+                width={600}
+                height={400}
+                priority={true}
+                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px'
               />
             </div>
           </div>
