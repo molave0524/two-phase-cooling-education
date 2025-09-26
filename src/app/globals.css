@@ -12,7 +12,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 43px; /* Account for 40px header + 3px spacing buffer */
+  scroll-padding-top: var(--spacing-between-sections); /* Match white separator spacing */
 }
 
 /* VideoShowcase-related overrides removed - now handled by CSS Modules */
@@ -1362,6 +1362,22 @@ section[id='get-started'] {
 
 .animate-bounce-delay-2 {
   animation-delay: 0.2s;
+}
+
+/* Anchor navigation scroll offset - responsive to match separator spacing */
+section[id] {
+  scroll-margin-top: var(--spacing-between-sections);
+}
+
+/* Mobile responsive anchor positioning */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: var(--spacing-between-sections-mobile);
+  }
+
+  section[id] {
+    scroll-margin-top: var(--spacing-between-sections-mobile);
+  }
 }
 
 /* FINAL CASCADE: Section background fixes - loaded last to override all conflicts */

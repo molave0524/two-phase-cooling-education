@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { FAQ_CONTENT } from '@/data/faq-content'
 import { FAQSection } from '@/components/sections/FAQSection'
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions | Two-Phase Cooling Technology',
@@ -31,9 +32,9 @@ export default function FAQPage() {
   return (
     <div className='min-h-screen'>
       {/* Hero Section */}
-      <section
+      <div
         id='hero'
-        className='relative pt-32 lg:pt-40 pb-12'
+        className='relative pt-6 pb-12'
         aria-labelledby='hero-heading'
         style={{
           backgroundColor: '#e2e8f0',
@@ -47,19 +48,18 @@ export default function FAQPage() {
       >
         <div className='max-w-6xl mx-auto px-6'>
           <div className='text-center space-y-6 max-w-4xl mx-auto'>
-            <h1
-              id='hero-heading'
-              className='section-title text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'
-            >
-              Frequently Asked Questions
-            </h1>
-            <p className='text-xl text-secondary-700'>
-              Get answers to common questions about two-phase cooling technology, performance
-              benefits, and product specifications.
-            </p>
+            <div className='flex items-center justify-center gap-2'>
+              <QuestionMarkCircleIcon className='w-8 h-8 text-primary-600' />
+              <h1
+                id='hero-heading'
+                className='section-title text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'
+              >
+                FAQ
+              </h1>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* FAQ Content */}
       <section
@@ -75,7 +75,6 @@ export default function FAQPage() {
           right: '50%',
           marginLeft: '-50vw',
           marginRight: '-50vw',
-          borderTop: 'var(--spacing-between-sections) solid white',
         }}
       >
         <div className='max-w-6xl mx-auto px-6'>

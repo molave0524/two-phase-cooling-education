@@ -50,6 +50,11 @@ export const FAQSection: React.FC = () => {
 
   return (
     <div className='space-y-8'>
+      <style jsx>{`
+        .search-input::placeholder {
+          color: white !important;
+        }
+      `}</style>
       {/* Search and Filters */}
       <div className='space-y-6'>
         {/* Search Bar */}
@@ -62,7 +67,7 @@ export const FAQSection: React.FC = () => {
             placeholder='Search FAQ...'
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className='block w-full pl-10 pr-3 py-3 border border-secondary-300 rounded-equipment text-secondary-900 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
+            className='search-input block w-full pl-10 pr-3 py-3 border border-secondary-300 rounded-equipment text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
           />
         </div>
 
@@ -101,14 +106,14 @@ export const FAQSection: React.FC = () => {
           <div className='flex justify-center gap-4'>
             <button
               onClick={expandAll}
-              className='text-sm text-secondary-700 hover:text-secondary-900 font-medium'
+              className='text-sm text-white hover:text-gray-200 font-medium'
             >
               Expand All
             </button>
             <span className='text-secondary-400'>|</span>
             <button
               onClick={collapseAll}
-              className='text-sm text-secondary-700 hover:text-secondary-900 font-medium'
+              className='text-sm text-white hover:text-gray-200 font-medium'
             >
               Collapse All
             </button>
@@ -157,9 +162,7 @@ export const FAQSection: React.FC = () => {
                   className='w-full px-6 py-4 text-left flex items-center justify-between hover:bg-secondary-50 transition-colors rounded-equipment'
                 >
                   <div className='flex-1 space-y-1'>
-                    <h3 className='text-lg font-semibold text-secondary-900 pr-4'>
-                      {faq.question}
-                    </h3>
+                    <h3 className='text-lg font-semibold text-white pr-4'>{faq.question}</h3>
                     <div className='flex items-center gap-2'>
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -188,7 +191,7 @@ export const FAQSection: React.FC = () => {
                 {isExpanded && (
                   <div className='px-6 pb-4'>
                     <div className='border-t border-secondary-200 pt-4'>
-                      <p className='text-secondary-700 leading-relaxed whitespace-pre-line'>
+                      <p className='text-gray-700 leading-relaxed whitespace-pre-line'>
                         {faq.answer}
                       </p>
                     </div>
@@ -199,28 +202,6 @@ export const FAQSection: React.FC = () => {
           })
         )}
       </div>
-
-      {/* Category Overview */}
-      {selectedCategory === 'all' && searchQuery === '' && (
-        <div className='mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          {FAQ_CATEGORIES.map(category => {
-            const count = FAQ_CONTENT.filter(faq => faq.category === category.id).length
-            return (
-              <div
-                key={category.id}
-                className='text-center p-6 bg-secondary-50 rounded-equipment hover:bg-secondary-100 transition-colors cursor-pointer'
-                onClick={() => setSelectedCategory(category.id)}
-              >
-                <h3 className='text-lg font-semibold text-secondary-900 mb-2'>{category.name}</h3>
-                <p className='text-sm text-secondary-600 mb-3'>{category.description}</p>
-                <p className='text-primary-600 font-medium'>
-                  {count} question{count !== 1 ? 's' : ''}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      )}
     </div>
   )
 }
