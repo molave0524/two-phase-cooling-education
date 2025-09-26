@@ -95,9 +95,7 @@ export default function HomePage() {
 
       {/* Video Showcase - Immediate Demos */}
       <section id='demonstrations' aria-labelledby='demonstrations-heading'>
-        <div className='container-max px-6 lg:px-8'>
-          <VideoShowcase />
-        </div>
+        <VideoShowcase />
       </section>
 
       {/* Technology Overview - Educational Foundation */}
