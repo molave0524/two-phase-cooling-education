@@ -219,7 +219,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           <div className='text-center space-y-4'>
             <div className='flex items-center justify-center gap-2'>
               <SparklesIcon className='w-8 h-8 text-primary-600' />
-              <h2 className='text-3xl font-bold text-secondary-900' style={{ margin: 0 }}>
+              <h2 className='section-title text-3xl font-bold text-secondary-900'>
                 Revolutionary Products
               </h2>
             </div>

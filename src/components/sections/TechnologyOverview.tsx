@@ -56,11 +56,7 @@ export const TechnologyOverview: React.FC = () => {
         <div className='text-center space-y-4'>
           <div className='flex items-center justify-center gap-2'>
             <CogIcon className='w-8 h-8 text-primary-600' />
-            <h2
-              id='technology-heading'
-              className='text-3xl font-bold text-black'
-              style={{ margin: 0 }}
-            >
+            <h2 id='technology-heading' className='section-title text-3xl font-bold text-black'>
               Technology
             </h2>
           </div>

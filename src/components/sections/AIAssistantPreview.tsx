@@ -196,8 +196,7 @@ export const AIAssistantPreview: React.FC = () => {
               <ChatBubbleLeftRightIcon className='w-8 h-8 text-primary-600' />
               <h2
                 id='ai-assistant-heading'
-                className='text-3xl font-bold text-secondary-900'
-                style={{ margin: 0 }}
+                className='section-title text-3xl font-bold text-secondary-900'
               >
                 AI Technical Assistant
               </h2>

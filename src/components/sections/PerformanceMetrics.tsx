@@ -220,8 +220,7 @@ export const PerformanceMetrics: React.FC = () => {
               <ChartBarIcon className='w-8 h-8 text-primary-600' />
               <h2
                 id='performance-heading'
-                className='text-3xl font-bold text-secondary-900'
-                style={{ margin: 0 }}
+                className='section-title text-3xl font-bold text-secondary-900'
               >
                 Performance Validation
               </h2>
