@@ -114,7 +114,7 @@
    * ============================================================================ */
 
   /* 1. Between-Section Spacing - Controls gaps between sections */
-  --spacing-between-sections: 0px; /* ZERO spacing - should eliminate white borders completely */
+  --spacing-between-sections: 12px; /* White border separators between sections */
 
   /* 2. Section Title Top Spacing - Controls whitespace above section titles */
   --spacing-section-title-top: 2rem; /* Space above h2 titles within sections */
