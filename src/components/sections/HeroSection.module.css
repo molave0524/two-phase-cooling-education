@@ -1,0 +1,138 @@
+/* HeroSection Component Styles */
+/* Clean, scoped styles replacing problematic inline styles and layout hacks */
+
+.heroSection {
+  background-color: #000000;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding-bottom: 0;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .contentWrapper {
+    padding-top: 0.5rem;
+  }
+}
+
+.textSection {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: 4.5rem;
+  }
+}
+
+.subtitle {
+  font-size: 1.875rem;
+  color: white;
+  margin-top: 0.5rem;
+  margin-bottom: -1rem;
+}
+
+@media (min-width: 640px) {
+  .subtitle {
+    font-size: 2.25rem;
+  }
+}
+
+.visualSection {
+  position: relative;
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .visualSection {
+    max-width: 42rem;
+  }
+}
+
+.imageContainer {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.heroImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  max-height: 600px;
+}
+
+/* Alternative layout without calc() hack - commented for future use */
+/*
+.heroSectionAlternative {
+  background-color: #000000;
+  width: 100%;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 10;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.heroSectionAlternative::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 50%;
+  bottom: 0;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background-color: #000000;
+  z-index: -1;
+}
+*/

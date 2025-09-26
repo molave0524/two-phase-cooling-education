@@ -51,7 +51,11 @@
       "Bash(git log:*)",
       "Bash(git restore:*)",
       "Bash(find:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(tasklist:*)",
+      "Bash(Get-Process -Name node)",
+      "Bash(Stop-Process -Force)"
     ],
     "deny": [],
     "ask": []

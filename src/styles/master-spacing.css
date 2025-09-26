@@ -1,0 +1,38 @@
+/* ============================================================================
+ * MASTER SPACING CONTROLS - Change these 5 values to update entire application
+ * ============================================================================ */
+
+:root {
+  /* 1. Between-Section Spacing - Controls gaps between sections */
+  --spacing-between-sections: 2.4px; /* White borders/separators between sections (80% reduction from 12px) */
+
+  /* 2. Section Title Top Spacing - Controls whitespace above section titles */
+  --spacing-section-title-top: 1rem; /* Space above h2 titles within sections */
+
+  /* 3. Section Bottom Spacing - Controls bottom whitespace of sections */
+  --spacing-section-bottom: 0.6rem; /* Bottom padding within sections (80% reduction from 3rem) */
+
+  /* 4. Section Background Color - Controls all section backgrounds */
+  --color-section-background: #e2e8f0; /* Light gray for all sections */
+
+  /* 5. Page Background Color - Controls non-section areas */
+  --color-page-background: #ffffff; /* White for page background */
+
+  /* DERIVED VALUES - Automatically calculated from master variables */
+  --spacing-section-top: 0.13rem; /* Top padding within sections (reduced from 0.67rem) */
+
+  /* RESPONSIVE VARIATIONS - Optional different values for different screen sizes */
+  --spacing-between-sections-mobile: calc(var(--spacing-between-sections) * 0.75);
+  --spacing-section-title-top-mobile: calc(var(--spacing-section-title-top) * 0.8);
+  --spacing-section-bottom-mobile: calc(var(--spacing-section-bottom) * 0.8);
+}
+
+/* Apply page background globally */
+body {
+  background-color: var(--color-page-background);
+}
+
+/* Standard section title spacing */
+.section-title {
+  margin-top: var(--spacing-section-title-top);
+}

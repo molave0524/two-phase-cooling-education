@@ -1,34 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import Link from 'next/link'
-import {
-  PlayCircleIcon,
-  ChatBubbleLeftRightIcon,
-  ShoppingBagIcon,
-  BookOpenIcon,
-  ArrowRightIcon,
-  CheckCircleIcon,
-  SparklesIcon,
-  AcademicCapIcon,
-  CogIcon,
-} from '@heroicons/react/24/outline'
 import { toast } from 'react-hot-toast'
 
 // ============================================================================
 // TYPES AND INTERFACES
 // ============================================================================
-
-interface CTAOption {
-  id: string
-  title: string
-  description: string
-  icon: React.ReactNode
-  action: string
-  href?: string
-  variant: 'primary' | 'secondary' | 'accent'
-  benefits: string[]
-}
 
 interface NewsletterFormData {
   email: string
@@ -37,87 +14,14 @@ interface NewsletterFormData {
 }
 
 // ============================================================================
-// CTA OPTIONS DATA
+// CTA OPTIONS DATA (removed unused data)
 // ============================================================================
-
-const CTA_OPTIONS: CTAOption[] = [
-  {
-    id: 'watch-demos',
-    title: 'Watch Live Demonstrations',
-    description: 'Experience two-phase cooling in action through our comprehensive video series',
-    icon: <PlayCircleIcon className='w-8 h-8' />,
-    action: 'Start Learning',
-    href: '#demonstrations',
-    variant: 'primary',
-    benefits: [
-      'Real-world performance testing',
-      'Visual thermal dynamics',
-      'Expert explanations',
-      'Progress tracking',
-    ],
-  },
-  {
-    id: 'ai-consultation',
-    title: 'Get AI Technical Consultation',
-    description: 'Speak with our AI assistant for personalized cooling system recommendations',
-    icon: <ChatBubbleLeftRightIcon className='w-8 h-8' />,
-    action: 'Start Chat',
-    href: '#ai-assistant',
-    variant: 'secondary',
-    benefits: [
-      'Instant expert guidance',
-      'Hardware compatibility',
-      'Performance predictions',
-      'Free consultation',
-    ],
-  },
-  {
-    id: 'explore-products',
-    title: 'Explore Our Products',
-    description: 'Discover revolutionary two-phase cooling cases and educational materials',
-    icon: <ShoppingBagIcon className='w-8 h-8' />,
-    action: 'Browse Products',
-    href: '#products',
-    variant: 'accent',
-    benefits: [
-      'Professional-grade cases',
-      'Educational kits',
-      'Complete solutions',
-      'Expert support',
-    ],
-  },
-]
-
-const LEARNING_PATHS = [
-  {
-    title: 'Enthusiast Path',
-    description: 'Perfect for PC builders and gaming enthusiasts',
-    duration: '2-3 hours',
-    courses: 3,
-    icon: <CogIcon className='w-6 h-6' />,
-  },
-  {
-    title: 'Educational Path',
-    description: 'Comprehensive curriculum for students and educators',
-    duration: '8-12 hours',
-    courses: 8,
-    icon: <AcademicCapIcon className='w-6 h-6' />,
-  },
-  {
-    title: 'Professional Path',
-    description: 'Advanced training for engineers and professionals',
-    duration: '16-20 hours',
-    courses: 12,
-    icon: <BookOpenIcon className='w-6 h-6' />,
-  },
-]
 
 // ============================================================================
 // CALL TO ACTION COMPONENT
 // ============================================================================
 
 export const CallToAction: React.FC = () => {
-  const [selectedCTA, setSelectedCTA] = useState<string>(CTA_OPTIONS[0]?.id || '')
   const [newsletterData, setNewsletterData] = useState<NewsletterFormData>({
     email: '',
     interests: [],

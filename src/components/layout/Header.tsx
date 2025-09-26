@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import styles from './Header.module.css'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -41,7 +42,7 @@ const MAIN_NAVIGATION: NavigationItem[] = [
     href: '/#technology',
   },
   {
-    label: 'Demo',
+    label: 'Demos',
     href: '/#demonstrations',
   },
   {
@@ -224,34 +225,11 @@ const DropdownMenu: React.FC<{ item: NavigationItem }> = ({ item }) => {
 
 export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
 
-  // Handle scroll effect
+  // Handle route changes - simplified for CSS Modules
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-
-    // Check initial scroll position
-    handleScroll()
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  // Reset scroll state on route change
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-
-    // Small delay to ensure page has rendered
-    const timer = setTimeout(() => {
-      handleScroll()
-    }, 100)
-
-    return () => clearTimeout(timer)
+    // Route-specific handling can be added back if needed
   }, [pathname])
 
   // Prevent body scroll when mobile menu is open
@@ -269,49 +247,24 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-blue-50 backdrop-blur-xl border-b border-black/10'
-            : 'bg-blue-50/95 backdrop-blur-lg'
-        } shadow-sm`}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 9999,
-          height: '40px !important',
-          minHeight: '40px !important',
-          maxHeight: '40px !important',
-        }}
-      >
-        <div className='container mx-auto px-4 max-w-7xl h-full'>
-          <div
-            className='flex items-center justify-between h-full'
-            style={{ transform: 'translateY(-1px)' }}
-          >
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <div className={styles.contentWrapper}>
             {/* Logo - Fixed position on left */}
-            <div className='flex items-center flex-shrink-0'>
-              <Link
-                href='/'
-                className='flex items-center hover:opacity-60 transition-opacity duration-200'
-              >
-                <span className='text-xl font-normal text-gray-600 tracking-tight'>🍎</span>
+            <div className={styles.logoSection}>
+              <Link href='/' className={styles.logoLink}>
+                <span className={styles.logoIcon}>🍎</span>
               </Link>
             </div>
 
             {/* Apple-style Navigation - Centered */}
-            <nav className='hidden md:flex items-center space-x-10'>
+            <nav className={styles.navigation}>
               {MAIN_NAVIGATION.map(item => (
-                <div key={item.label} className='flex-shrink-0'>
+                <div key={item.label} className={styles.navigationItem}>
                   {item.children ? (
                     <DropdownMenu item={item} />
                   ) : (
-                    <Link
-                      href={item.href || '#'}
-                      className='text-sm font-normal text-black hover:text-black/80 transition-colors duration-200 px-2 py-1'
-                    >
+                    <Link href={item.href || '#'} className={styles.navigationLink}>
                       {item.label}
                     </Link>
                   )}
@@ -320,15 +273,12 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Right side actions */}
-            <div className='flex items-center gap-6 flex-shrink-0'>
+            <div className={styles.actionsSection}>
               {/* Desktop actions */}
-              <div className='hidden md:flex items-center gap-6'>
+              <div className={styles.desktopActions}>
                 {/* Search Icon - Apple style */}
-                <Link
-                  href='#search'
-                  className='text-black hover:text-black/80 transition-colors duration-200'
-                >
-                  <MagnifyingGlassIcon className='w-4 h-4' />
+                <Link href='#search' className={styles.actionLink}>
+                  <MagnifyingGlassIcon className={styles.actionIcon} />
                 </Link>
 
                 {/* Cart Icon - Apple style */}
@@ -336,15 +286,15 @@ export const Header: React.FC = () => {
               </div>
 
               {/* Mobile Menu Button */}
-              <div className='md:hidden flex items-center gap-2'>
+              <div className={styles.mobileActions}>
                 {/* Mobile Cart */}
                 <CartButton />
 
                 <button
                   onClick={() => setIsMobileMenuOpen(true)}
-                  className='p-2 text-black hover:text-black/80 transition-colors'
+                  className={styles.mobileMenuButton}
                 >
-                  <Bars3Icon className='w-5 h-5' />
+                  <Bars3Icon className={styles.hamburgerIcon} />
                 </button>
               </div>
             </div>

@@ -869,24 +869,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Video Metadata Overlay */}
-      <div className={styles.metadataOverlay}>
-        <h3 className={styles.videoTitle}>{video.title}</h3>
-        <div className={styles.videoMeta}>
-          {video.difficulty_level && (
-            <span className={`${styles.difficultyBadge} ${styles[video.difficulty_level]}`}>
-              {video.difficulty_level.charAt(0).toUpperCase() + video.difficulty_level.slice(1)}
-            </span>
-          )}
-          <span>{formatTime(video.duration_seconds)}</span>
-          {video.topic_category && (
-            <span>
-              {video.topic_category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </span>
-          )}
-        </div>
-      </div>
     </div>
   )
 }
