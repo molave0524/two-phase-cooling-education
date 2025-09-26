@@ -29,12 +29,28 @@ export const metadata: Metadata = {
  */
 export default function FAQPage() {
   return (
-    <div className='min-h-screen bg-white'>
+    <div className='min-h-screen'>
       {/* Hero Section */}
-      <section className='py-20 lg:py-32 bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50'>
-        <div className='container-max section-padding'>
+      <section
+        id='hero'
+        className='relative pt-32 lg:pt-40 pb-12'
+        aria-labelledby='hero-heading'
+        style={{
+          backgroundColor: '#e2e8f0',
+          width: '100vw',
+          position: 'relative',
+          left: '50%',
+          right: '50%',
+          marginLeft: '-50vw',
+          marginRight: '-50vw',
+        }}
+      >
+        <div className='max-w-6xl mx-auto px-6'>
           <div className='text-center space-y-6 max-w-4xl mx-auto'>
-            <h1 className='text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'>
+            <h1
+              id='hero-heading'
+              className='section-title text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'
+            >
               Frequently Asked Questions
             </h1>
             <p className='text-xl text-secondary-700'>
@@ -46,17 +62,52 @@ export default function FAQPage() {
       </section>
 
       {/* FAQ Content */}
-      <section className='py-16 lg:py-24'>
-        <div className='container-max section-padding'>
+      <section
+        id='faq-content'
+        aria-labelledby='faq-content-heading'
+        style={{
+          backgroundColor: 'var(--color-section-background)',
+          paddingTop: 'var(--spacing-section-top)',
+          paddingBottom: 'var(--spacing-section-bottom)',
+          width: '100vw',
+          position: 'relative',
+          left: '50%',
+          right: '50%',
+          marginLeft: '-50vw',
+          marginRight: '-50vw',
+          borderTop: 'var(--spacing-between-sections) solid white',
+        }}
+      >
+        <div className='max-w-6xl mx-auto px-6'>
           <FAQSection />
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className='py-16 bg-secondary-50'>
-        <div className='container-max section-padding'>
+      <section
+        id='contact-support'
+        aria-labelledby='contact-heading'
+        style={{
+          backgroundColor: 'var(--color-section-background)',
+          paddingTop: 'var(--spacing-section-top)',
+          paddingBottom: 'var(--spacing-section-bottom)',
+          width: '100vw',
+          position: 'relative',
+          left: '50%',
+          right: '50%',
+          marginLeft: '-50vw',
+          marginRight: '-50vw',
+          borderTop: 'var(--spacing-between-sections) solid white',
+        }}
+      >
+        <div className='max-w-6xl mx-auto px-6'>
           <div className='text-center space-y-6 max-w-2xl mx-auto'>
-            <h2 className='text-2xl font-bold text-secondary-900'>Still have questions?</h2>
+            <h2
+              id='contact-heading'
+              className='section-title text-2xl font-bold text-secondary-900'
+            >
+              Still have questions?
+            </h2>
             <p className='text-secondary-700'>
               Can&apos;t find the answer you&apos;re looking for? Our technical team is here to help
               with any questions about two-phase cooling technology.
