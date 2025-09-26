@@ -71,43 +71,31 @@ export default function HomePage() {
   return (
     <div className='min-h-screen'>
       {/* Hero Section - Immediate Impact */}
-      <section
-        id='hero'
-        className='relative pt-32 pb-20 lg:pt-40 lg:pb-32'
-        aria-labelledby='hero-heading'
-      >
+      <section id='hero' className='relative pt-32 lg:pt-40' aria-labelledby='hero-heading'>
         <HeroSection />
       </section>
 
       {/* Video Showcase - Immediate Demos */}
-      <section
-        id='demonstrations'
-        className='pt-4 lg:pt-2 pb-8 lg:pb-12 bg-white'
-        aria-labelledby='demonstrations-heading'
-      >
+      <section id='demonstrations' aria-labelledby='demonstrations-heading'>
         <div className='container-max px-6 lg:px-8'>
           <VideoShowcase />
         </div>
       </section>
 
       {/* Technology Overview - Educational Foundation */}
-      <section id='technology' className='py-20 bg-slate-50' aria-labelledby='technology-heading'>
-        <div className='container-max section-padding'>
-          <TechnologyOverview />
-        </div>
+      <section id='technology' aria-labelledby='technology-heading'>
+        <TechnologyOverview />
       </section>
 
       {/* Performance Metrics - Data-Driven Validation */}
-      <section id='performance' className='py-20 bg-white' aria-labelledby='performance-heading'>
-        <div className='container-max section-padding'>
-          <PerformanceMetrics />
-        </div>
+      <section id='performance' aria-labelledby='performance-heading'>
+        <PerformanceMetrics />
       </section>
 
       {/* AI Assistant Preview - Interactive Learning */}
       <section
         id='ai-assistant'
-        className='py-20 bg-gradient-to-br from-blue-50 to-cyan-50'
+        className='py-4 bg-gradient-to-br from-blue-50 to-cyan-50'
         aria-labelledby='ai-assistant-heading'
       >
         <div className='container-max section-padding'>
@@ -116,16 +104,14 @@ export default function HomePage() {
       </section>
 
       {/* Product Showcase - Natural Purchase Transition */}
-      <section id='product' className='py-20 bg-white' aria-labelledby='product-heading'>
-        <div className='container-max section-padding'>
-          <ProductShowcase />
-        </div>
+      <section id='product' aria-labelledby='product-heading'>
+        <ProductShowcase />
       </section>
 
       {/* Call to Action - Clear Next Steps */}
       <section
         id='get-started'
-        className='py-20 bg-gradient-to-br from-sky-600 to-sky-800 text-white'
+        className='py-6 bg-gradient-to-br from-sky-600 to-sky-800 text-white'
         aria-labelledby='cta-heading'
       >
         <div className='container-max section-padding'>

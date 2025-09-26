@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import { PlayIcon, ClockIcon, StarIcon, VideoCameraIcon } from '@heroicons/react/24/outline'
+import styles from './VideoShowcase.module.css'
 
 // Dynamic import for performance optimization
 const VideoPlayer = dynamic(() => import('@/components/video/VideoPlayer'), {
@@ -37,8 +39,6 @@ interface Video {
   created_at?: Date
   updated_at?: Date
 }
-import { PlayIcon, ClockIcon, StarIcon } from '@heroicons/react/24/outline'
-import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
 // Stress test demonstration videos (Story 1.3 focus)
 const SAMPLE_VIDEOS: Video[] = [
@@ -179,19 +179,6 @@ export const VideoShowcase: React.FC = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
   }
 
-  const getDifficultyColor = (level: string): string => {
-    switch (level) {
-      case 'beginner':
-        return 'text-success-600 bg-success-100'
-      case 'intermediate':
-        return 'text-accent-600 bg-accent-100'
-      case 'advanced':
-        return 'text-danger-600 bg-danger-100'
-      default:
-        return 'text-secondary-600 bg-secondary-100'
-    }
-  }
-
   const handleVideoSelect = (video: Video) => {
     setSelectedVideo(video)
   }
@@ -206,173 +193,98 @@ export const VideoShowcase: React.FC = () => {
     console.log('Video completed!')
   }
 
+  // Component render
   return (
-    <div className='space-y-8'>
-      {/* Section Header */}
-      <div className='text-center'>
-        <h2
-          id='demonstrations-heading'
-          className='text-3xl lg:text-4xl font-bold'
-          style={{ color: '#000000', marginBottom: '0px' }}
-        >
-          Stress Test Demos
-        </h2>
-        <p className='text-xl max-w-2xl mx-auto' style={{ color: '#000000', marginTop: '8px' }}>
-          Watch thermal comparisons under extreme loads. See the difference when it matters most.
-        </p>
-      </div>
-
-      <div className='grid lg:grid-cols-3 gap-6 lg:gap-8'>
-        {/* Video Player - Prominent on all screens */}
-        <div className='lg:col-span-2 order-1'>
-          {selectedVideo && (
-            <div className='space-y-6'>
-              <VideoPlayer
-                key={selectedVideo.id} // Force re-mount when video changes
-                video={selectedVideo as any}
-                userId='demo-user' // In production, get from auth
-                autoPlay={true} // Story 1.3: Video ready to play immediately
-                enableAdaptiveStreaming={true}
-                preferredQuality='1080p'
-                onProgress={handleVideoProgress}
-                onComplete={handleVideoComplete}
-                className='aspect-video'
-              />
-
-              {/* Video Info */}
-              <div className='space-y-4'>
-                <div className='flex items-start justify-between'>
-                  <div className='space-y-2'>
-                    <h3 className='text-2xl font-bold text-secondary-900'>{selectedVideo.title}</h3>
-                    <div className='flex items-center gap-4 text-sm text-secondary-600'>
-                      <div className='flex items-center gap-1'>
-                        <ClockIcon className='w-4 h-4' />
-                        <span>{formatDuration(selectedVideo.duration_seconds)}</span>
-                      </div>
-                      <div className='flex items-center gap-1'>
-                        <PlayIcon className='w-4 h-4' />
-                        <span>{selectedVideo.view_count.toLocaleString()} views</span>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(selectedVideo.difficulty_level)}`}
-                      >
-                        {selectedVideo.difficulty_level.charAt(0).toUpperCase() +
-                          selectedVideo.difficulty_level.slice(1)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className='text-right'>
-                    <div className='text-sm text-secondary-600'>Completion Rate</div>
-                    <div className='text-lg font-bold text-primary-600'>
-                      {selectedVideo.average_completion_percentage.toFixed(1)}%
-                    </div>
-                  </div>
-                </div>
-
-                <p className='text-secondary-700 leading-relaxed'>{selectedVideo.description}</p>
-
-                {/* Learning Objectives */}
-                <div className='space-y-3'>
-                  <h4 className='font-semibold text-secondary-900'>What You&apos;ll Learn</h4>
-                  <ul className='space-y-2'>
-                    {selectedVideo.learning_objectives.map((objective, index) => (
-                      <li key={index} className='flex items-start gap-2'>
-                        <CheckCircleIcon className='w-5 h-5 text-success-600 mt-0.5 flex-shrink-0' />
-                        <span className='text-secondary-700'>{objective}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+    <div className={styles.demoSection}>
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>
+          {/* Section Header */}
+          <div className={styles.header}>
+            <div className='flex items-center justify-center gap-2'>
+              <VideoCameraIcon className='w-8 h-8 text-primary-600' />
+              <h2 id='demonstrations-heading' className={styles.title}>
+                Demos
+              </h2>
             </div>
-          )}
-        </div>
-
-        {/* Video Playlist */}
-        <div className='space-y-6 order-2'>
-          <h3 className='text-xl font-semibold text-secondary-900'>Video Series</h3>
-
-          <div className='space-y-3'>
-            {videos.map(video => (
-              <button
-                key={video.id}
-                onClick={() => handleVideoSelect(video)}
-                className={`w-full text-left p-4 rounded-equipment transition-all hover:shadow-glass ${
-                  selectedVideo?.id === video.id
-                    ? 'bg-primary-50 border-2 border-primary-200'
-                    : 'bg-white border border-secondary-200 hover:border-primary-200'
-                }`}
-              >
-                <div className='flex gap-4'>
-                  {/* Thumbnail */}
-                  <div className='relative w-20 h-12 bg-secondary-200 rounded flex-shrink-0 overflow-hidden'>
-                    <div
-                      className={`absolute inset-0 flex items-center justify-center ${
-                        selectedVideo?.id === video.id
-                          ? 'bg-gradient-to-br from-green-500 to-green-700'
-                          : 'bg-gradient-to-br from-primary-500 to-primary-700'
-                      }`}
-                    >
-                      <PlayIcon className='w-6 h-6 text-white' />
-                    </div>
-                    {video.is_featured && (
-                      <div className='absolute top-1 right-1'>
-                        <StarIcon className='w-3 h-3 text-accent-500 fill-current' />
-                      </div>
-                    )}
-                    {selectedVideo?.id === video.id && (
-                      <div className='absolute bottom-1 left-1'>
-                        <div className='w-2 h-2 bg-green-400 rounded-full animate-pulse'></div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Video Info */}
-                  <div className='flex-1 min-w-0 space-y-1'>
-                    <h4 className='font-medium text-secondary-900 line-clamp-2 text-sm'>
-                      {video.title}
-                    </h4>
-                    <div className='flex items-center gap-2 text-xs text-secondary-600'>
-                      <span>{formatDuration(video.duration_seconds)}</span>
-                      <span>•</span>
-                      <span
-                        className={`px-1.5 py-0.5 rounded text-xs ${getDifficultyColor(video.difficulty_level)}`}
-                      >
-                        {video.difficulty_level.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className='text-xs text-secondary-500'>
-                      {video.view_count.toLocaleString()} views
-                    </div>
-                  </div>
-                </div>
-              </button>
-            ))}
           </div>
 
-          {/* Stress Test Categories */}
-          <div className='bg-secondary-50 rounded-equipment p-4'>
-            <h4 className='font-semibold text-secondary-900 mb-2'>Stress Test Categories</h4>
-            <p className='text-sm text-secondary-600 mb-3'>
-              See dramatic thermal performance under different extreme loads.
-            </p>
-            <div className='space-y-2 text-sm'>
-              <div className='flex items-center gap-2'>
-                <span className='w-3 h-3 bg-green-500 rounded-full'></span>
-                <span>Gaming Loads - Real-time thermal comparison</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='w-3 h-3 bg-blue-500 rounded-full'></span>
-                <span>FLIR Thermal Analysis - Professional imaging</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='w-3 h-3 bg-orange-500 rounded-full'></span>
-                <span>Rendering Workloads - Sustained performance</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='w-3 h-3 bg-red-500 rounded-full'></span>
-                <span>Extreme Overclocking - Beyond limits</span>
-              </div>
+          <div className={styles.videoGrid}>
+            {/* Video Player - Prominent on all screens */}
+            <div className={styles.videoPlayerSection}>
+              {selectedVideo && (
+                <div className={styles.videoInfo}>
+                  <VideoPlayer
+                    key={selectedVideo.id}
+                    video={selectedVideo as any}
+                    userId='demo-user'
+                    autoPlay={true}
+                    enableAdaptiveStreaming={true}
+                    preferredQuality='1080p'
+                    onProgress={handleVideoProgress}
+                    onComplete={handleVideoComplete}
+                    className='aspect-video'
+                  />
+
+                  {/* Video Info */}
+                  <div>
+                    <div className={styles.videoHeader}>
+                      <div className={styles.videoTitleSection}>
+                        <h3 className={styles.videoTitle}>{selectedVideo.title}</h3>
+                      </div>
+                      <div className={styles.videoMeta}>
+                        <div className={styles.metaItem}>
+                          <ClockIcon className='w-4 h-4' />
+                          <span>{formatDuration(selectedVideo.duration_seconds)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className={styles.videoDescription}>{selectedVideo.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Video Playlist */}
+          <div className={styles.playlistSection}>
+            <h3 className={styles.playlistTitle}>Demo Videos</h3>
+
+            <div className={styles.playlistContainer}>
+              {videos.map(video => (
+                <button
+                  key={video.id}
+                  onClick={() => handleVideoSelect(video)}
+                  className={`${styles.playlistItem} ${
+                    selectedVideo?.id === video.id ? styles.playlistItemSelected : ''
+                  }`}
+                >
+                  <div className={styles.playlistItemContent}>
+                    {/* Thumbnail */}
+                    <div
+                      className={`${styles.playlistThumbnail} ${
+                        selectedVideo?.id === video.id
+                          ? styles.playlistThumbnailSelected
+                          : styles.playlistThumbnailDefault
+                      }`}
+                    >
+                      <PlayIcon className={styles.playIcon} />
+                      {video.is_featured && <StarIcon className={styles.featuredStar} />}
+                      {selectedVideo?.id === video.id && (
+                        <div className={styles.playingIndicator}></div>
+                      )}
+                    </div>
+
+                    {/* Video Info */}
+                    <div className={styles.playlistItemInfo}>
+                      <h4 className={styles.playlistItemTitle}>{video.title}</h4>
+                      <div className={styles.playlistItemMeta}>
+                        <span>{formatDuration(video.duration_seconds)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>

@@ -12,8 +12,10 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 60px; /* Account for 40px header + 20px buffer */
+  scroll-padding-top: 43px; /* Account for 40px header + 3px spacing buffer */
 }
+
+/* VideoShowcase-related overrides removed - now handled by CSS Modules */
 
 body {
   /* Apple's exact font stack for SF Pro look */
@@ -25,7 +27,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+  background-color: var(--color-page-background);
   color: #0f172a;
   line-height: 1.47059; /* Apple's line height */
   font-weight: 400;
@@ -86,14 +88,7 @@ section[id='performance'] div {
   color: #000000;
 }
 
-section[id='demonstrations'] h1,
-section[id='demonstrations'] h2,
-section[id='demonstrations'] h3,
-section[id='demonstrations'] p,
-section[id='demonstrations'] span,
-section[id='demonstrations'] div {
-  color: var(--text-on-light);
-}
+/* VideoShowcase text color now handled by CSS Modules */
 
 section[id='get-started'] h1,
 section[id='get-started'] h2,
@@ -1225,33 +1220,25 @@ section[id='hero'] {
 
 section[id='technology'] {
   background-color: white !important;
-  padding: 5rem 0 !important;
 }
 
-section[id='demonstrations'] {
-  background-color: rgb(248 250 252) !important;
-  padding: 5rem 0 !important;
-}
+/* VideoShowcase background and padding now handled by CSS Modules */
 
 section[id='performance'] {
   background-color: white !important;
-  padding: 5rem 0 !important;
 }
 
 section[id='ai-assistant'] {
   background: linear-gradient(135deg, rgb(240 249 255), rgb(248 250 252)) !important;
-  padding: 5rem 0 !important;
 }
 
 section[id='product'] {
   background-color: white !important;
-  padding: 5rem 0 !important;
 }
 
 section[id='get-started'] {
   background: linear-gradient(135deg, rgb(2 132 199), rgb(7 89 133)) !important;
   color: white !important;
-  padding: 5rem 0 !important;
 }
 
 /* Card styles */
@@ -1288,6 +1275,30 @@ section[id='get-started'] {
 .section-lg {
   padding-top: 6rem;
   padding-bottom: 6rem;
+}
+
+/* Master spacing control - Section title spacing */
+.section-title {
+  margin-top: var(--spacing-section-title-top);
+}
+
+/* Master spacing utility classes */
+.py-section-bottom {
+  padding-top: var(--spacing-section-bottom);
+  padding-bottom: var(--spacing-section-bottom);
+}
+
+.py-section-top {
+  padding-top: var(--spacing-section-top);
+  padding-bottom: var(--spacing-section-top);
+}
+
+.bg-section-bg {
+  background-color: var(--color-section-background);
+}
+
+.bg-page-bg {
+  background-color: var(--color-page-background);
 }
 
 /* Form styles */

@@ -198,274 +198,297 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // ============================================================================
 
   return (
-    <div className={`space-y-8 ${className}`}>
-      {/* Section Header */}
-      <div className='text-center space-y-4'>
-        <div className='flex items-center justify-center gap-2'>
-          <SparklesIcon className='w-8 h-8 text-primary-600' />
-          <h2 className='text-3xl font-bold text-secondary-900'>Revolutionary Products</h2>
-        </div>
-        <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
-          Experience the future of computer cooling with our innovative two-phase cooling solutions.
-          Each product is engineered for superior thermal performance and environmental
-          responsibility.
-        </p>
-      </div>
-
-      {/* Filters and Controls */}
-      {showFilters && (
-        <div className='bg-white rounded-equipment shadow-glass border border-secondary-200 p-6'>
-          <div className='flex flex-col lg:flex-row gap-6'>
-            {/* Filter Controls */}
-            <div className='flex-1 space-y-4'>
-              <div className='flex items-center justify-between'>
-                <h3 className='font-semibold text-secondary-900 flex items-center gap-2'>
-                  <FunnelIcon className='w-5 h-5' />
-                  Filters
-                </h3>
-                <button
-                  onClick={resetFilters}
-                  className='text-sm text-primary-600 hover:text-primary-700 font-medium'
-                >
-                  Reset All
-                </button>
-              </div>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-                {/* Category Filter */}
-                <div>
-                  <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                    Category
-                  </label>
-                  <select
-                    value={filters.category}
-                    onChange={e => handleFilterChange({ category: e.target.value })}
-                    className='input w-full'
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category === 'all' ? 'All Categories' : category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Price Range */}
-                <div>
-                  <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                    Price Range
-                  </label>
-                  <div className='space-y-2'>
-                    <input
-                      type='range'
-                      min='0'
-                      max={maxPrice}
-                      value={filters.priceRange[1]}
-                      onChange={e =>
-                        handleFilterChange({
-                          priceRange: [filters.priceRange[0], parseInt(e.target.value)],
-                        })
-                      }
-                      className='w-full'
-                    />
-                    <div className='text-sm text-secondary-600'>
-                      ${filters.priceRange[0]} - ${filters.priceRange[1]}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sort By */}
-                <div>
-                  <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                    Sort By
-                  </label>
-                  <select
-                    value={filters.sortBy}
-                    onChange={e => handleFilterChange({ sortBy: e.target.value as any })}
-                    className='input w-full'
-                  >
-                    <option value='featured'>Featured</option>
-                    <option value='name'>Name A-Z</option>
-                    <option value='price_low'>Price: Low to High</option>
-                    <option value='price_high'>Price: High to Low</option>
-                    <option value='newest'>Newest First</option>
-                  </select>
-                </div>
-
-                {/* Stock Filter */}
-                <div>
-                  <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                    Availability
-                  </label>
-                  <label className='flex items-center'>
-                    <input
-                      type='checkbox'
-                      checked={filters.inStock}
-                      onChange={e => handleFilterChange({ inStock: e.target.checked })}
-                      className='rounded border-secondary-300 text-primary-600 focus:ring-primary-500'
-                    />
-                    <span className='ml-2 text-sm text-secondary-700'>In Stock Only</span>
-                  </label>
-                </div>
-              </div>
+    <div
+      style={{
+        backgroundColor: 'var(--color-section-background)',
+        paddingTop: '1.5rem',
+        paddingBottom: '1rem',
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
+        borderTop: '12px solid white',
+      }}
+    >
+      <div className='max-w-6xl mx-auto px-6'>
+        <div className={`space-y-8 ${className}`}>
+          {/* Section Header */}
+          <div className='text-center space-y-4'>
+            <div className='flex items-center justify-center gap-2'>
+              <SparklesIcon className='w-8 h-8 text-primary-600' />
+              <h2 className='text-3xl font-bold text-secondary-900' style={{ margin: 0 }}>
+                Revolutionary Products
+              </h2>
             </div>
-
-            {/* View Controls */}
-            <div className='flex items-center gap-4 lg:border-l lg:border-secondary-200 lg:pl-6'>
-              <div className='flex items-center gap-2'>
-                <span className='text-sm font-medium text-secondary-700'>View:</span>
-                <div className='flex rounded-technical border border-secondary-300 overflow-hidden'>
-                  <button
-                    onClick={() => handleViewModeChange({ type: 'grid' })}
-                    className={`p-2 ${viewMode.type === 'grid' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
-                    aria-label='Grid view'
-                  >
-                    <Squares2X2Icon className='w-4 h-4' />
-                  </button>
-                  <button
-                    onClick={() => handleViewModeChange({ type: 'list' })}
-                    className={`p-2 ${viewMode.type === 'list' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
-                    aria-label='List view'
-                  >
-                    <ListBulletIcon className='w-4 h-4' />
-                  </button>
-                </div>
-              </div>
-
-              {viewMode.type === 'grid' && (
-                <div className='flex items-center gap-2'>
-                  <span className='text-sm text-secondary-700'>Columns:</span>
-                  <select
-                    value={viewMode.gridCols}
-                    onChange={e =>
-                      handleViewModeChange({ gridCols: parseInt(e.target.value) as any })
-                    }
-                    className='input text-sm py-1'
-                  >
-                    <option value={2}>2</option>
-                    <option value={3}>3</option>
-                    <option value={4}>4</option>
-                  </select>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Results Summary */}
-          <div className='mt-4 pt-4 border-t border-secondary-200'>
-            <p className='text-sm text-secondary-600'>
-              Showing {filteredProducts.length} of {products.length} products
+            <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
+              Experience the future of computer cooling with our innovative two-phase cooling
+              solutions. Each product is engineered for superior thermal performance and
+              environmental responsibility.
             </p>
           </div>
-        </div>
-      )}
 
-      {/* Products Grid/List */}
-      <div className='space-y-6'>
-        {filteredProducts.length === 0 ? (
-          <div className='text-center py-12'>
-            <div className='text-secondary-400 text-6xl mb-4'>🔍</div>
-            <h3 className='text-xl font-semibold text-secondary-900 mb-2'>No products found</h3>
-            <p className='text-secondary-600 mb-4'>Try adjusting your filters or search criteria</p>
-            <button onClick={resetFilters} className='btn-primary'>
-              Reset Filters
-            </button>
-          </div>
-        ) : (
-          <div
-            className={
-              viewMode.type === 'grid'
-                ? `grid grid-cols-1 md:grid-cols-${viewMode.gridCols} gap-6`
-                : 'space-y-4'
-            }
-          >
-            {filteredProducts.map(product => (
-              <div
-                key={product.id}
-                className='bg-white rounded-equipment shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300'
-              >
-                {/* Product Image */}
-                <div className='relative aspect-[4/3] overflow-hidden'>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className='w-full h-full object-cover hover:scale-105 transition-transform duration-300'
-                  />
-                  {product.compare_at_price && (
-                    <div className='absolute top-4 right-4'>
-                      <span className='bg-accent-500 text-white px-3 py-1 text-xs font-semibold rounded-full'>
-                        Sale
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Product Info */}
-                <div className='p-6'>
-                  <h3 className='text-xl font-semibold text-secondary-900 mb-2'>{product.name}</h3>
-                  <p className='text-secondary-600 mb-4 line-clamp-3'>{product.description}</p>
-
-                  {/* Key Features */}
-                  {product.features && (
-                    <div className='mb-4'>
-                      <div className='flex flex-wrap gap-2'>
-                        {product.features.slice(0, 2).map((feature, index) => (
-                          <span
-                            key={index}
-                            className='inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-primary-100 text-primary-800 rounded-full'
-                          >
-                            {feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Pricing */}
-                  <div className='mb-4'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-2xl font-bold text-primary-600'>
-                        ${product.price.toLocaleString()}
-                      </span>
-                      {product.compare_at_price && (
-                        <span className='text-lg text-secondary-400 line-through'>
-                          ${(product.compare_at_price / 100).toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className='flex flex-col gap-2'>
-                    <Link
-                      href={`/products/${product.slug}`}
-                      className='btn btn-primary w-full text-center'
-                    >
-                      View Details & Specifications
-                    </Link>
+          {/* Filters and Controls */}
+          {showFilters && (
+            <div className='bg-white rounded-equipment shadow-glass border border-secondary-200 p-6'>
+              <div className='flex flex-col lg:flex-row gap-6'>
+                {/* Filter Controls */}
+                <div className='flex-1 space-y-4'>
+                  <div className='flex items-center justify-between'>
+                    <h3 className='font-semibold text-secondary-900 flex items-center gap-2'>
+                      <FunnelIcon className='w-5 h-5' />
+                      Filters
+                    </h3>
                     <button
-                      className='btn btn-secondary w-full'
-                      onClick={() => handleAddToCart(product)}
-                      disabled={product.stock_quantity === 0}
+                      onClick={resetFilters}
+                      className='text-sm text-primary-600 hover:text-primary-700 font-medium'
                     >
-                      {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+                      Reset All
                     </button>
                   </div>
+
+                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+                    {/* Category Filter */}
+                    <div>
+                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
+                        Category
+                      </label>
+                      <select
+                        value={filters.category}
+                        onChange={e => handleFilterChange({ category: e.target.value })}
+                        className='input w-full'
+                      >
+                        {categories.map(category => (
+                          <option key={category} value={category}>
+                            {category === 'all' ? 'All Categories' : category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Price Range */}
+                    <div>
+                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
+                        Price Range
+                      </label>
+                      <div className='space-y-2'>
+                        <input
+                          type='range'
+                          min='0'
+                          max={maxPrice}
+                          value={filters.priceRange[1]}
+                          onChange={e =>
+                            handleFilterChange({
+                              priceRange: [filters.priceRange[0], parseInt(e.target.value)],
+                            })
+                          }
+                          className='w-full'
+                        />
+                        <div className='text-sm text-secondary-600'>
+                          ${filters.priceRange[0]} - ${filters.priceRange[1]}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sort By */}
+                    <div>
+                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
+                        Sort By
+                      </label>
+                      <select
+                        value={filters.sortBy}
+                        onChange={e => handleFilterChange({ sortBy: e.target.value as any })}
+                        className='input w-full'
+                      >
+                        <option value='featured'>Featured</option>
+                        <option value='name'>Name A-Z</option>
+                        <option value='price_low'>Price: Low to High</option>
+                        <option value='price_high'>Price: High to Low</option>
+                        <option value='newest'>Newest First</option>
+                      </select>
+                    </div>
+
+                    {/* Stock Filter */}
+                    <div>
+                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
+                        Availability
+                      </label>
+                      <label className='flex items-center'>
+                        <input
+                          type='checkbox'
+                          checked={filters.inStock}
+                          onChange={e => handleFilterChange({ inStock: e.target.checked })}
+                          className='rounded border-secondary-300 text-primary-600 focus:ring-primary-500'
+                        />
+                        <span className='ml-2 text-sm text-secondary-700'>In Stock Only</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* View Controls */}
+                <div className='flex items-center gap-4 lg:border-l lg:border-secondary-200 lg:pl-6'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm font-medium text-secondary-700'>View:</span>
+                    <div className='flex rounded-technical border border-secondary-300 overflow-hidden'>
+                      <button
+                        onClick={() => handleViewModeChange({ type: 'grid' })}
+                        className={`p-2 ${viewMode.type === 'grid' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
+                        aria-label='Grid view'
+                      >
+                        <Squares2X2Icon className='w-4 h-4' />
+                      </button>
+                      <button
+                        onClick={() => handleViewModeChange({ type: 'list' })}
+                        className={`p-2 ${viewMode.type === 'list' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
+                        aria-label='List view'
+                      >
+                        <ListBulletIcon className='w-4 h-4' />
+                      </button>
+                    </div>
+                  </div>
+
+                  {viewMode.type === 'grid' && (
+                    <div className='flex items-center gap-2'>
+                      <span className='text-sm text-secondary-700'>Columns:</span>
+                      <select
+                        value={viewMode.gridCols}
+                        onChange={e =>
+                          handleViewModeChange({ gridCols: parseInt(e.target.value) as any })
+                        }
+                        className='input text-sm py-1'
+                      >
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
+                        <option value={4}>4</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* View All Products Link */}
-      {!showFilters && (
-        <div className='text-center mt-12'>
-          <Link href='/products' className='btn btn-primary btn-lg'>
-            View All Products & Specifications
-          </Link>
+              {/* Results Summary */}
+              <div className='mt-4 pt-4 border-t border-secondary-200'>
+                <p className='text-sm text-secondary-600'>
+                  Showing {filteredProducts.length} of {products.length} products
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Products Grid/List */}
+          <div className='space-y-6'>
+            {filteredProducts.length === 0 ? (
+              <div className='text-center py-12'>
+                <div className='text-secondary-400 text-6xl mb-4'>🔍</div>
+                <h3 className='text-xl font-semibold text-secondary-900 mb-2'>No products found</h3>
+                <p className='text-secondary-600 mb-4'>
+                  Try adjusting your filters or search criteria
+                </p>
+                <button onClick={resetFilters} className='btn-primary'>
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div
+                className={
+                  viewMode.type === 'grid'
+                    ? `grid grid-cols-1 md:grid-cols-${viewMode.gridCols} gap-6`
+                    : 'space-y-4'
+                }
+              >
+                {filteredProducts.map(product => (
+                  <div
+                    key={product.id}
+                    className='bg-white rounded-equipment shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300'
+                  >
+                    {/* Product Image */}
+                    <div className='relative aspect-[4/3] overflow-hidden'>
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className='w-full h-full object-cover hover:scale-105 transition-transform duration-300'
+                      />
+                      {product.compare_at_price && (
+                        <div className='absolute top-4 right-4'>
+                          <span className='bg-accent-500 text-white px-3 py-1 text-xs font-semibold rounded-full'>
+                            Sale
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Product Info */}
+                    <div className='p-6'>
+                      <h3 className='text-xl font-semibold text-secondary-900 mb-2'>
+                        {product.name}
+                      </h3>
+                      <p className='text-secondary-600 mb-4 line-clamp-3'>{product.description}</p>
+
+                      {/* Key Features */}
+                      {product.features && (
+                        <div className='mb-4'>
+                          <div className='flex flex-wrap gap-2'>
+                            {product.features.slice(0, 2).map((feature, index) => (
+                              <span
+                                key={index}
+                                className='inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-primary-100 text-primary-800 rounded-full'
+                              >
+                                {feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Pricing */}
+                      <div className='mb-4'>
+                        <div className='flex items-center gap-2'>
+                          <span className='text-2xl font-bold text-primary-600'>
+                            ${product.price.toLocaleString()}
+                          </span>
+                          {product.compare_at_price && (
+                            <span className='text-lg text-secondary-400 line-through'>
+                              ${(product.compare_at_price / 100).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className='flex flex-col gap-2'>
+                        <Link
+                          href={`/products/${product.slug}`}
+                          className='btn btn-primary w-full text-center'
+                        >
+                          View Details & Specifications
+                        </Link>
+                        <button
+                          className='btn btn-secondary w-full'
+                          onClick={() => handleAddToCart(product)}
+                          disabled={product.stock_quantity === 0}
+                        >
+                          {product.stock_quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* View All Products Link */}
+          {!showFilters && (
+            <div className='text-center mt-12'>
+              <Link href='/products' className='btn btn-primary btn-lg'>
+                View All Products & Specifications
+              </Link>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

@@ -186,7 +186,7 @@ export const PerformanceMetrics: React.FC = () => {
     }
   }
 
-  const getTrendIcon = (trend: string) => {
+  const getTrendIcon = (trend: string): JSX.Element => {
     switch (trend) {
       case 'up':
         return <ArrowTrendingUpIcon className='w-4 h-4 text-success-600' />
@@ -198,119 +198,145 @@ export const PerformanceMetrics: React.FC = () => {
   }
 
   return (
-    <div className={`${styles.performanceSection} space-y-12`}>
-      {/* Section Header */}
-      <div className='text-center space-y-4'>
-        <div className='flex items-center justify-center gap-2'>
-          <ChartBarIcon className='w-8 h-8 text-primary-600' />
-          <h2 id='performance-heading' className='text-3xl font-bold text-secondary-900'>
-            Performance Validation
-          </h2>
-        </div>
-        <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
-          Real-world testing data demonstrates the superior thermal performance and environmental
-          benefits of two-phase cooling technology across demanding computational workloads.
-        </p>
-      </div>
-
-      {/* Category Filter */}
-      <div className='flex justify-center'>
-        <div className='flex rounded-equipment border border-secondary-300 overflow-hidden bg-white shadow-sm'>
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`${styles.filterButton} px-4 py-2 text-sm font-medium ${
-                selectedCategory === category ? styles.active : ''
-              }`}
-            >
-              {category === 'all'
-                ? 'All Metrics'
-                : category.charAt(0).toUpperCase() + category.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Performance Metrics Grid */}
-      <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {filteredMetrics.map((metric, index) => {
-          const improvement = getImprovementPercentage(
-            metric.current,
-            metric.baseline,
-            metric.trend
-          )
-
-          return (
-            <div
-              key={metric.metric}
-              className={`card-cooling p-6 hover-lift ${styles.metricCard} ${animatedMetrics ? styles.animated : ''}`}
-              style={{
-                animationDelay: animatedMetrics ? `${index * 100}ms` : '0ms',
-              }}
-            >
-              <div className='space-y-4'>
-                {/* Header */}
-                <div className='flex items-start justify-between'>
-                  <div className='space-y-1'>
-                    <div
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${getCategoryColor(metric.category)}`}
-                    >
-                      {metric.category.charAt(0).toUpperCase() + metric.category.slice(1)}
-                    </div>
-                    <h3 className='font-semibold text-secondary-900 text-sm'>{metric.metric}</h3>
-                  </div>
-                  {getTrendIcon(metric.trend)}
-                </div>
-
-                {/* Main Value */}
-                <div className='space-y-2'>
-                  <div className='flex items-baseline gap-2'>
-                    <span className='text-2xl font-bold text-primary-600'>{metric.current}</span>
-                    <span className='text-sm text-secondary-600'>{metric.unit}</span>
-                  </div>
-
-                  <div className='text-xs text-secondary-500'>
-                    vs {metric.baseline}
-                    {metric.unit} baseline
-                  </div>
-                </div>
-
-                {/* Improvement Badge */}
-                <div className='flex items-center gap-2'>
-                  <CheckCircleIcon className='w-4 h-4 text-success-600' />
-                  <span className='text-sm font-medium text-success-600'>
-                    {improvement}% improvement
-                  </span>
-                </div>
-
-                {/* Description */}
-                <p className='text-xs text-secondary-600 leading-relaxed'>{metric.description}</p>
-              </div>
+    <div
+      style={{
+        backgroundColor: 'var(--color-section-background)',
+        paddingTop: '1.5rem',
+        paddingBottom: '1rem',
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
+        borderTop: '12px solid white',
+      }}
+    >
+      <div className='max-w-6xl mx-auto px-6'>
+        <div className={`${styles.performanceSection} space-y-4`}>
+          {/* Section Header */}
+          <div className='text-center space-y-1'>
+            <div className='flex items-center justify-center gap-2'>
+              <ChartBarIcon className='w-8 h-8 text-primary-600' />
+              <h2
+                id='performance-heading'
+                className='text-3xl font-bold text-secondary-900'
+                style={{ margin: 0 }}
+              >
+                Performance Validation
+              </h2>
             </div>
-          )
-        })}
-      </div>
+            <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
+              Real-world testing data demonstrates the superior thermal performance and
+              environmental benefits of two-phase cooling technology across demanding computational
+              workloads.
+            </p>
+          </div>
 
-      {/* Test Scenarios Section */}
-      <div className='bg-secondary-50 rounded-equipment p-8'>
-        <h3 className='text-2xl font-bold text-secondary-900 text-center mb-8'>
-          Real-World Test Scenarios
-        </h3>
+          {/* Category Filter */}
+          <div className='flex justify-center'>
+            <div className='flex rounded-equipment border border-secondary-300 overflow-hidden bg-white shadow-sm'>
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`${styles.filterButton} px-4 py-2 text-sm font-medium ${
+                    selectedCategory === category ? styles.active : ''
+                  }`}
+                >
+                  {category === 'all'
+                    ? 'All Metrics'
+                    : category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
 
-        {/* Scenario Selector */}
-        <div className='flex justify-center mb-8'>
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl'>
-            {TEST_SCENARIOS.map(scenario => {
-              const isSelected = selectedScenario.id === scenario.id
+          {/* Performance Metrics Grid */}
+          <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-2'>
+            {filteredMetrics.map((metric, index) => {
+              const improvement = getImprovementPercentage(
+                metric.current,
+                metric.baseline,
+                metric.trend
+              )
+
               return (
                 <div
-                  key={scenario.id}
-                  onClick={() => {
-                    console.log('Scenario clicked:', scenario.name)
-                    setSelectedScenario(scenario)
+                  key={metric.metric}
+                  className={`card-cooling p-2 hover-lift ${styles.metricCard} ${animatedMetrics ? styles.animated : ''}`}
+                  style={{
+                    animationDelay: animatedMetrics ? `${index * 100}ms` : '0ms',
                   }}
-                  className={`
+                >
+                  <div className='space-y-1'>
+                    {/* Header */}
+                    <div className='flex items-start justify-between'>
+                      <div className='space-y-1'>
+                        <div
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${getCategoryColor(metric.category)}`}
+                        >
+                          {metric.category.charAt(0).toUpperCase() + metric.category.slice(1)}
+                        </div>
+                        <h3 className='font-semibold text-secondary-900 text-sm'>
+                          {metric.metric}
+                        </h3>
+                      </div>
+                      {getTrendIcon(metric.trend)}
+                    </div>
+
+                    {/* Main Value */}
+                    <div className='space-y-1'>
+                      <div className='flex items-baseline gap-2'>
+                        <span className='text-2xl font-bold text-primary-600'>
+                          {metric.current}
+                        </span>
+                        <span className='text-sm text-secondary-600'>{metric.unit}</span>
+                      </div>
+
+                      <div className='text-xs text-secondary-500'>
+                        vs {metric.baseline}
+                        {metric.unit} baseline
+                      </div>
+                    </div>
+
+                    {/* Improvement Badge */}
+                    <div className='flex items-center gap-2'>
+                      <CheckCircleIcon className='w-4 h-4 text-success-600' />
+                      <span className='text-sm font-medium text-success-600'>
+                        {improvement}% improvement
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className='text-xs text-secondary-600 leading-relaxed'>
+                      {metric.description}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Test Scenarios Section */}
+          <div className='bg-secondary-50 rounded-equipment p-8'>
+            <h3 className='text-2xl font-bold text-secondary-900 text-center mb-8'>
+              Real-World Test Scenarios
+            </h3>
+
+            {/* Scenario Selector */}
+            <div className='flex justify-center mb-8'>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl'>
+                {TEST_SCENARIOS.map(scenario => {
+                  const isSelected = selectedScenario.id === scenario.id
+                  return (
+                    <div
+                      key={scenario.id}
+                      onClick={() => {
+                        console.log('Scenario clicked:', scenario.name)
+                        setSelectedScenario(scenario)
+                      }}
+                      className={`
                     cursor-pointer p-4 rounded-equipment text-left
                     ${
                       isSelected
@@ -318,124 +344,130 @@ export const PerformanceMetrics: React.FC = () => {
                         : 'bg-white text-secondary-900 border border-secondary-200'
                     }
                   `}
-                  style={{
-                    transition: 'none',
-                    userSelect: 'none',
-                  }}
-                >
-                  <div className='space-y-2 pointer-events-none'>
-                    <h4
-                      className={`font-semibold ${isSelected ? 'text-white' : 'text-secondary-900'}`}
+                      style={{
+                        transition: 'none',
+                        userSelect: 'none',
+                      }}
                     >
-                      {scenario.name}
-                    </h4>
-                    <p
-                      className={`text-sm ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
-                    >
-                      {scenario.workload}
-                    </p>
-                    <div
-                      className={`flex items-center gap-1 text-xs ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
-                    >
-                      <ClockIcon
-                        className={`w-3 h-3 ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
-                      />
-                      <span>{scenario.duration}</span>
+                      <div className='space-y-2 pointer-events-none'>
+                        <h4
+                          className={`font-semibold ${isSelected ? 'text-white' : 'text-secondary-900'}`}
+                        >
+                          {scenario.name}
+                        </h4>
+                        <p
+                          className={`text-sm ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
+                        >
+                          {scenario.workload}
+                        </p>
+                        <div
+                          className={`flex items-center gap-1 text-xs ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
+                        >
+                          <ClockIcon
+                            className={`w-3 h-3 ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
+                          />
+                          <span>{scenario.duration}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Selected Scenario Details */}
+            <div className='bg-white rounded-equipment p-6 shadow-sm'>
+              <div className='grid md:grid-cols-2 gap-8'>
+                {/* Scenario Info */}
+                <div className='space-y-4'>
+                  <h4 className='text-xl font-bold text-secondary-900'>{selectedScenario.name}</h4>
+                  <p className='text-secondary-600'>{selectedScenario.description}</p>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div className='space-y-1'>
+                      <div className='text-sm font-medium text-secondary-700'>Duration</div>
+                      <div className='text-lg font-semibold text-primary-600'>
+                        {selectedScenario.duration}
+                      </div>
+                    </div>
+                    <div className='space-y-1'>
+                      <div className='text-sm font-medium text-secondary-700'>Workload</div>
+                      <div className='text-sm text-secondary-600'>{selectedScenario.workload}</div>
                     </div>
                   </div>
                 </div>
-              )
-            })}
-          </div>
-        </div>
 
-        {/* Selected Scenario Details */}
-        <div className='bg-white rounded-equipment p-6 shadow-sm'>
-          <div className='grid md:grid-cols-2 gap-8'>
-            {/* Scenario Info */}
-            <div className='space-y-4'>
-              <h4 className='text-xl font-bold text-secondary-900'>{selectedScenario.name}</h4>
-              <p className='text-secondary-600'>{selectedScenario.description}</p>
-              <div className='grid grid-cols-2 gap-4'>
-                <div className='space-y-1'>
-                  <div className='text-sm font-medium text-secondary-700'>Duration</div>
-                  <div className='text-lg font-semibold text-primary-600'>
-                    {selectedScenario.duration}
-                  </div>
-                </div>
-                <div className='space-y-1'>
-                  <div className='text-sm font-medium text-secondary-700'>Workload</div>
-                  <div className='text-sm text-secondary-600'>{selectedScenario.workload}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Results */}
-            <div className='space-y-4'>
-              <h5 className='font-semibold text-secondary-900'>Test Results</h5>
-              <div className='grid grid-cols-2 gap-4'>
-                <div className='space-y-2'>
-                  <div className='flex items-center gap-2'>
-                    <BeakerIcon className='w-4 h-4 text-danger-600' />
-                    <span className='text-sm font-medium text-secondary-700'>Max Temperature</span>
-                  </div>
-                  <div className='text-lg font-bold text-danger-600'>
-                    {selectedScenario.results.maxTemp}°C
-                  </div>
-                </div>
-                <div className='space-y-2'>
-                  <div className='flex items-center gap-2'>
-                    <BeakerIcon className='w-4 h-4 text-accent-600' />
-                    <span className='text-sm font-medium text-secondary-700'>Avg Temperature</span>
-                  </div>
-                  <div className='text-lg font-bold text-accent-600'>
-                    {selectedScenario.results.avgTemp}°C
-                  </div>
-                </div>
-                <div className='space-y-2'>
-                  <div className='flex items-center gap-2'>
-                    <BeakerIcon className='w-4 h-4 text-success-600' />
-                    <span className='text-sm font-medium text-secondary-700'>Efficiency</span>
-                  </div>
-                  <div className='text-lg font-bold text-success-600'>
-                    {selectedScenario.results.efficiency}%
-                  </div>
-                </div>
-                <div className='space-y-2'>
-                  <div className='flex items-center gap-2'>
-                    <div className='w-4 h-4 bg-primary-600 rounded-full' />
-                    <span className='text-sm font-medium text-secondary-700'>Quietness</span>
-                  </div>
-                  <div className='text-lg font-bold text-primary-600'>
-                    {selectedScenario.results.quietness} dB
+                {/* Results */}
+                <div className='space-y-4'>
+                  <h5 className='font-semibold text-secondary-900'>Test Results</h5>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-2'>
+                        <BeakerIcon className='w-4 h-4 text-danger-600' />
+                        <span className='text-sm font-medium text-secondary-700'>
+                          Max Temperature
+                        </span>
+                      </div>
+                      <div className='text-lg font-bold text-danger-600'>
+                        {selectedScenario.results.maxTemp}°C
+                      </div>
+                    </div>
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-2'>
+                        <BeakerIcon className='w-4 h-4 text-accent-600' />
+                        <span className='text-sm font-medium text-secondary-700'>
+                          Avg Temperature
+                        </span>
+                      </div>
+                      <div className='text-lg font-bold text-accent-600'>
+                        {selectedScenario.results.avgTemp}°C
+                      </div>
+                    </div>
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-2'>
+                        <BeakerIcon className='w-4 h-4 text-success-600' />
+                        <span className='text-sm font-medium text-secondary-700'>Efficiency</span>
+                      </div>
+                      <div className='text-lg font-bold text-success-600'>
+                        {selectedScenario.results.efficiency}%
+                      </div>
+                    </div>
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-2'>
+                        <div className='w-4 h-4 bg-primary-600 rounded-full' />
+                        <span className='text-sm font-medium text-secondary-700'>Quietness</span>
+                      </div>
+                      <div className='text-lg font-bold text-primary-600'>
+                        {selectedScenario.results.quietness} dB
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Key Achievements */}
-      <div className='bg-gradient-to-r from-primary-500 to-primary-700 rounded-equipment p-8 text-white'>
-        <div className='text-center space-y-6'>
-          <h3 className='text-2xl font-bold'>Key Performance Achievements</h3>
-          <div className='grid md:grid-cols-4 gap-6'>
-            <div className='space-y-2'>
-              <div className='text-3xl font-bold'>47%</div>
-              <div className='text-primary-100 text-sm'>Lower Peak Temperatures</div>
-            </div>
-            <div className='space-y-2'>
-              <div className='text-3xl font-bold'>33%</div>
-              <div className='text-primary-100 text-sm'>Higher Thermal Efficiency</div>
-            </div>
-            <div className='space-y-2'>
-              <div className='text-3xl font-bold'>60%</div>
-              <div className='text-primary-100 text-sm'>Quieter Operation</div>
-            </div>
-            <div className='space-y-2'>
-              <div className='text-3xl font-bold'>98.6%</div>
-              <div className='text-primary-100 text-sm'>Lower Environmental Impact</div>
+          {/* Key Achievements */}
+          <div className='bg-gradient-to-r from-primary-500 to-primary-700 rounded-equipment p-8 text-white'>
+            <div className='text-center space-y-6'>
+              <h3 className='text-2xl font-bold'>Key Performance Achievements</h3>
+              <div className='grid md:grid-cols-4 gap-6'>
+                <div className='space-y-2'>
+                  <div className='text-3xl font-bold'>47%</div>
+                  <div className='text-primary-100 text-sm'>Lower Peak Temperatures</div>
+                </div>
+                <div className='space-y-2'>
+                  <div className='text-3xl font-bold'>33%</div>
+                  <div className='text-primary-100 text-sm'>Higher Thermal Efficiency</div>
+                </div>
+                <div className='space-y-2'>
+                  <div className='text-3xl font-bold'>60%</div>
+                  <div className='text-primary-100 text-sm'>Quieter Operation</div>
+                </div>
+                <div className='space-y-2'>
+                  <div className='text-3xl font-bold'>98.6%</div>
+                  <div className='text-primary-100 text-sm'>Lower Environmental Impact</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
