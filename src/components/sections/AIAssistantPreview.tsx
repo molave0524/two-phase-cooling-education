@@ -186,10 +186,6 @@ export const AIAssistantPreview: React.FC = () => {
                 AI Technical Assistant
               </h2>
             </div>
-            <p className={styles.subtitle}>
-              Get instant expert guidance on two-phase cooling technology. Our AI assistant helps
-              with technical questions, configuration advice, and educational support.
-            </p>
           </div>
 
           <div className={styles.mainGrid}>
@@ -295,108 +291,6 @@ export const AIAssistantPreview: React.FC = () => {
                     </button>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Capabilities Overview */}
-            <div className={styles.capabilities}>
-              <div className={styles.capabilitiesHeader}>
-                <h3 className={styles.capabilitiesTitle}>Assistant Capabilities</h3>
-
-                <div className={styles.capabilityList}>
-                  {ASSISTANT_CAPABILITIES.map((capability, index) => (
-                    <div
-                      key={index}
-                      className={`${styles.capabilityCard} ${
-                        selectedCapability === index ? styles.capabilityCardActive : ''
-                      }`}
-                      onClick={() => setSelectedCapability(index)}
-                    >
-                      <div className={styles.capabilityContent}>
-                        <div
-                          className={`${styles.capabilityIcon} ${
-                            selectedCapability === index ? styles.capabilityIconActive : ''
-                          }`}
-                        >
-                          {capability.icon}
-                        </div>
-                        <div className={styles.capabilityDetails}>
-                          <div className={styles.capabilityInfo}>
-                            <h4>{capability.title}</h4>
-                            <p>{capability.description}</p>
-                          </div>
-
-                          <div className={styles.capabilityExamples}>
-                            <div className={styles.examplesLabel}>Examples:</div>
-                            <ul className={styles.examplesList}>
-                              {capability.examples.map((example, exampleIndex) => (
-                                <li key={exampleIndex} className={styles.exampleItem}>
-                                  <CheckCircleIcon className={styles.exampleIcon} />
-                                  {example}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Key Features */}
-              <div className={styles.keyFeatures}>
-                <h4 className={styles.featuresTitle}>
-                  <LightBulbIcon className={styles.featuresTitleIcon} />
-                  Why Our AI Assistant?
-                </h4>
-                <ul className={styles.featuresList}>
-                  <li className={styles.featureItem}>
-                    <CheckCircleIcon className={styles.featureIcon} />
-                    <div className={styles.featureContent}>
-                      <div className={styles.featureTitle}>Expert Knowledge Base</div>
-                      <div className={styles.featureDescription}>
-                        Trained on comprehensive thermal dynamics and cooling system data
-                      </div>
-                    </div>
-                  </li>
-                  <li className={styles.featureItem}>
-                    <CheckCircleIcon className={styles.featureIcon} />
-                    <div className={styles.featureContent}>
-                      <div className={styles.featureTitle}>Real-Time Calculations</div>
-                      <div className={styles.featureDescription}>
-                        Instant thermal analysis and performance predictions
-                      </div>
-                    </div>
-                  </li>
-                  <li className={styles.featureItem}>
-                    <CheckCircleIcon className={styles.featureIcon} />
-                    <div className={styles.featureContent}>
-                      <div className={styles.featureTitle}>Personalized Recommendations</div>
-                      <div className={styles.featureDescription}>
-                        Tailored advice based on your specific hardware and use case
-                      </div>
-                    </div>
-                  </li>
-                  <li className={styles.featureItem}>
-                    <CheckCircleIcon className={styles.featureIcon} />
-                    <div className={styles.featureContent}>
-                      <div className={styles.featureTitle}>24/7 Availability</div>
-                      <div className={styles.featureDescription}>
-                        Always ready to help with technical questions and support
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              {/* CTA */}
-              <div className={styles.ctaSection}>
-                <button className={styles.ctaButton}>
-                  <ChatBubbleLeftRightIcon className={styles.ctaButtonIcon} />
-                  Start Conversation
-                </button>
-                <p className={styles.ctaNote}>Free technical consultation • No signup required</p>
               </div>
             </div>
           </div>

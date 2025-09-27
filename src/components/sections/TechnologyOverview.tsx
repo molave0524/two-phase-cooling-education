@@ -64,69 +64,6 @@ export const TechnologyOverview: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* Comparison Section */}
-        <div className={styles.comparisonSection}>
-          <h3 className={styles.comparisonTitle}>Performance Comparison</h3>
-          <div className={styles.tableWrapper}>
-            <table className={styles.comparisonTable}>
-              <thead className={styles.tableHeader}>
-                <tr>
-                  <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellLeft}`}>
-                    Feature
-                  </th>
-                  <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellCenter}`}>
-                    Air Cooling
-                  </th>
-                  <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellCenter}`}>
-                    Liquid Cooling
-                  </th>
-                  <th className={`${styles.tableHeaderCell} ${styles.tableHeaderCellPrimary}`}>
-                    Two-Phase Cooling
-                  </th>
-                </tr>
-              </thead>
-              <tbody className={styles.tableBody}>
-                <tr className={styles.tableRow}>
-                  <td className={`${styles.tableCell} ${styles.tableCellLeft}`}>
-                    Thermal Performance
-                  </td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>Good</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>Better</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellPrimary}`}>Superior</td>
-                </tr>
-                <tr className={styles.tableRow}>
-                  <td className={`${styles.tableCell} ${styles.tableCellLeft}`}>Noise Level</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>High</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>Medium</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellPrimary}`}>
-                    Whisper Quiet
-                  </td>
-                </tr>
-                <tr className={styles.tableRow}>
-                  <td className={`${styles.tableCell} ${styles.tableCellLeft}`}>Maintenance</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>
-                    Regular cleaning
-                  </td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>
-                    Pump maintenance
-                  </td>
-                  <td className={`${styles.tableCell} ${styles.tableCellPrimary}`}>Minimal</td>
-                </tr>
-                <tr className={styles.tableRow}>
-                  <td className={`${styles.tableCell} ${styles.tableCellLeft}`}>
-                    Environmental Impact
-                  </td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>Low</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellCenter}`}>Medium</td>
-                  <td className={`${styles.tableCell} ${styles.tableCellPrimary}`}>
-                    Minimal (GWP 20)
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
     </div>
   )

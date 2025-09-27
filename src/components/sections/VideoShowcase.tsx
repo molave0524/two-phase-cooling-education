@@ -202,8 +202,8 @@ export const VideoShowcase: React.FC = () => {
           <div className={styles.header}>
             <div className={styles.titleWrapper}>
               <VideoCameraIcon className={styles.titleIcon} />
-              <h2 id='demonstrations-heading' className={styles.title}>
-                Demos
+              <h2 id='videos-heading' className={styles.title}>
+                Videos
               </h2>
             </div>
           </div>

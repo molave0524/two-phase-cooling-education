@@ -209,14 +209,9 @@ export const PerformanceMetrics: React.FC = () => {
                 id='performance-heading'
                 className='section-title text-3xl font-bold text-secondary-900'
               >
-                Performance Validation
+                Performance
               </h2>
             </div>
-            <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
-              Real-world testing data demonstrates the superior thermal performance and
-              environmental benefits of two-phase cooling technology across demanding computational
-              workloads.
-            </p>
           </div>
 
           {/* Category Filter */}

@@ -831,3 +831,54 @@ section[id] {
 }
 
 /* Section background styles - now handled by CSS Modules */
+
+/* FAQ Full Width Override - Force FAQ boxes to full width */
+[class*='faqContainer'],
+[class*='faq_faqContainer'],
+[class*='FAQSection_faqContainer'] {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+[class*='faqItem'],
+[class*='faq_faqItem'],
+[class*='FAQSection_faqItem'] {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Extremely specific override for exact classes seen in HTML */
+.FAQSection_faqContainer__RUqR1 {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.FAQSection_faqItem__f4_8Z {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.FAQSection_faqItem__f4_8Z button {
+  width: 100% !important;
+  max-width: none !important;
+  text-align: left !important;
+}
+
+/* Left-align FAQ question text and categories */
+.FAQSection_faqQuestion__e7Nbu {
+  text-align: left !important;
+  color: #9ca3af !important; /* Light gray color */
+}
+
+.FAQSection_faqItem__f4_8Z div {
+  text-align: left !important;
+}
+
+[class*='faqQuestion'] {
+  text-align: left !important;
+  color: #9ca3af !important; /* Light gray color */
+}
+
+[class*='faqCategory'] {
+  text-align: left !important;
+}

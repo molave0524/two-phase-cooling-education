@@ -106,8 +106,8 @@ export default function HomePage() {
         <HeroSection />
       </section>
 
-      {/* Video Showcase - Immediate Demos */}
-      <section id='demonstrations' aria-labelledby='demonstrations-heading'>
+      {/* Video Showcase - Immediate Videos */}
+      <section id='videos' aria-labelledby='videos-heading'>
         <VideoShowcase />
       </section>
 

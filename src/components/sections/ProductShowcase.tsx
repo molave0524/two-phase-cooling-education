@@ -207,13 +207,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           <div className={styles.header}>
             <div className={styles.titleWrapper}>
               <SparklesIcon className={styles.titleIcon} />
-              <h2 className={styles.title}>Revolutionary Products</h2>
+              <h2 className={styles.title}>Products</h2>
             </div>
-            <p className={styles.subtitle}>
-              Experience the future of computer cooling with our innovative two-phase cooling
-              solutions. Each product is engineered for superior thermal performance and
-              environmental responsibility.
-            </p>
           </div>
 
           {/* Filters and Controls */}

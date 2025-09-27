@@ -43,8 +43,8 @@ const MAIN_NAVIGATION: NavigationItem[] = [
     href: '/#technology',
   },
   {
-    label: 'Demos',
-    href: '/#demonstrations',
+    label: 'Videos',
+    href: '/#videos',
   },
   {
     label: 'Performance',
@@ -156,7 +156,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navigation }) 
               className='btn-primary w-full justify-center'
             >
               <PlayCircleIcon className='w-4 h-4 mr-2' />
-              Watch Demos
+              Watch Videos
             </Link>
             <Link
               href='/#ai-assistant'

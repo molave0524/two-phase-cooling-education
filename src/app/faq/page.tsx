@@ -39,10 +39,7 @@ export default function FAQPage() {
           <div className={styles.heroContent}>
             <div className={styles.heroTitle}>
               <QuestionMarkCircleIcon className={styles.heroIcon} />
-              <h1
-                id='hero-heading'
-                className='section-title text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'
-              >
+              <h1 id='hero-heading' className={styles.heroHeading}>
                 FAQ
               </h1>
             </div>
@@ -56,7 +53,7 @@ export default function FAQPage() {
         aria-labelledby='faq-content-heading'
         className={styles.faqContentSection}
       >
-        <div className={styles.container}>
+        <div className={styles.faqContentContainer}>
           <FAQSection />
         </div>
       </section>
@@ -77,10 +74,10 @@ export default function FAQPage() {
               with any questions about two-phase cooling technology.
             </p>
             <div className={styles.contactActions}>
-              <a href={`mailto:${COMPANY_INFO.EMAIL}`} className='btn-primary'>
+              <a href={`mailto:${COMPANY_INFO.EMAIL}`} className={styles.primaryButton}>
                 Contact Technical Support
               </a>
-              <a href='#ai-assistant' className='btn-secondary'>
+              <a href='/' className={styles.secondaryButton}>
                 Ask AI Assistant
               </a>
             </div>
