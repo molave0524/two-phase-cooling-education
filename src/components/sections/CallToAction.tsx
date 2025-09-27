@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
+import styles from './CallToAction.module.css'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -84,22 +85,25 @@ export const CallToAction: React.FC = () => {
   // const selectedOption = CTA_OPTIONS.find(option => option.id === selectedCTA)
 
   return (
-    <div className='space-y-16'>
+    <div className={styles.ctaWrapper}>
       {/* Newsletter Signup */}
-      <div className='bg-gradient-to-r from-primary-600 to-primary-800 rounded-equipment p-8 text-white'>
-        <div className='max-w-3xl mx-auto text-center space-y-6'>
-          <h3 className='text-2xl font-bold'>Stay Updated on Thermal Innovation</h3>
-          <p className='text-primary-100'>
+      <div className={styles.newsletterSection}>
+        <div className={styles.newsletterContainer}>
+          <h3 className={styles.newsletterTitle}>Stay Updated on Thermal Innovation</h3>
+          <p className={styles.newsletterDescription}>
             Get the latest insights on two-phase cooling technology, performance benchmarks, and
             educational resources delivered to your inbox.
           </p>
 
           {!showNewsletterForm ? (
-            <div className='space-y-4'>
-              <button onClick={() => setShowNewsletterForm(true)} className='btn-secondary btn-lg'>
+            <div className={styles.ctaButtons}>
+              <button
+                onClick={() => setShowNewsletterForm(true)}
+                className={styles.subscribeButton}
+              >
                 Subscribe to Newsletter
               </button>
-              <div className='flex items-center justify-center gap-6 text-sm text-primary-200'>
+              <div className={styles.benefits}>
                 <span>• Monthly updates</span>
                 <span>• Expert insights</span>
                 <span>• Early access</span>
@@ -107,21 +111,21 @@ export const CallToAction: React.FC = () => {
               </div>
             </div>
           ) : (
-            <form onSubmit={handleNewsletterSubmit} className='space-y-4 max-w-md mx-auto'>
-              <div className='space-y-3'>
+            <form onSubmit={handleNewsletterSubmit} className={styles.newsletterForm}>
+              <div className={styles.formFields}>
                 <input
                   type='email'
                   placeholder='Enter your email address'
                   value={newsletterData.email}
                   onChange={e => setNewsletterData(prev => ({ ...prev, email: e.target.value }))}
-                  className='input w-full text-secondary-900'
+                  className={styles.formInput}
                   required
                 />
 
                 <select
                   value={newsletterData.role}
                   onChange={e => setNewsletterData(prev => ({ ...prev, role: e.target.value }))}
-                  className='input w-full text-secondary-900'
+                  className={styles.formSelect}
                   required
                 >
                   <option value=''>Select your role</option>
@@ -132,39 +136,39 @@ export const CallToAction: React.FC = () => {
                   <option value='other'>Other</option>
                 </select>
 
-                <div className='text-left'>
-                  <label className='block text-sm font-medium text-primary-100 mb-2'>
+                <div className={styles.interestsWrapper}>
+                  <label className={styles.interestsLabel}>
                     Interests (select all that apply):
                   </label>
-                  <div className='grid grid-cols-2 gap-2'>
+                  <div className={styles.interestsGrid}>
                     {[
                       'Performance Benchmarks',
                       'Educational Content',
                       'Product Updates',
                       'Technical Deep Dives',
                     ].map(interest => (
-                      <label key={interest} className='flex items-center text-sm'>
+                      <label key={interest} className={styles.interestItem}>
                         <input
                           type='checkbox'
                           checked={newsletterData.interests.includes(interest)}
                           onChange={() => handleInterestToggle(interest)}
-                          className='rounded border-primary-300 text-primary-600 focus:ring-primary-500 mr-2'
+                          className={styles.interestCheckbox}
                         />
-                        <span className='text-primary-100'>{interest}</span>
+                        <span className={styles.interestLabel}>{interest}</span>
                       </label>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className='flex gap-3'>
-                <button type='submit' disabled={isSubmitting} className='btn-secondary flex-1'>
+              <div className={styles.formActions}>
+                <button type='submit' disabled={isSubmitting} className={styles.submitButton}>
                   {isSubmitting ? 'Subscribing...' : 'Subscribe'}
                 </button>
                 <button
                   type='button'
                   onClick={() => setShowNewsletterForm(false)}
-                  className='btn px-4 py-2 border border-primary-400 text-primary-100 rounded-technical hover:bg-primary-700 transition-colors'
+                  className={styles.cancelButton}
                 >
                   Cancel
                 </button>

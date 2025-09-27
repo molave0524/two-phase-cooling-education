@@ -12,6 +12,7 @@ import {
   Squares2X2Icon,
   ListBulletIcon,
 } from '@heroicons/react/24/outline'
+import styles from './ProductShowcase.module.css'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -199,31 +200,16 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // ============================================================================
 
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-section-background)',
-        paddingTop: 'var(--spacing-section-top)',
-        paddingBottom: 'var(--spacing-section-bottom)',
-        width: '100vw',
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
-        borderTop: 'var(--spacing-between-sections) solid white',
-      }}
-    >
-      <div className='max-w-6xl mx-auto px-6'>
-        <div className={`space-y-8 ${className}`}>
+    <div className={styles.showcaseSection}>
+      <div className={styles.container}>
+        <div className={`${styles.content} ${className}`}>
           {/* Section Header */}
-          <div className='text-center space-y-4'>
-            <div className='flex items-center justify-center gap-2'>
-              <SparklesIcon className='w-8 h-8 text-primary-600' />
-              <h2 className='section-title text-3xl font-bold text-secondary-900'>
-                Revolutionary Products
-              </h2>
+          <div className={styles.header}>
+            <div className={styles.titleWrapper}>
+              <SparklesIcon className={styles.titleIcon} />
+              <h2 className={styles.title}>Revolutionary Products</h2>
             </div>
-            <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
+            <p className={styles.subtitle}>
               Experience the future of computer cooling with our innovative two-phase cooling
               solutions. Each product is engineered for superior thermal performance and
               environmental responsibility.
@@ -232,19 +218,16 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
           {/* Filters and Controls */}
           {showFilters && (
-            <div className='bg-white rounded-equipment shadow-glass border border-secondary-200 p-6'>
-              <div className='flex flex-col lg:flex-row gap-6'>
+            <div className={styles.filtersPanel}>
+              <div className={styles.filtersContent}>
                 {/* Filter Controls */}
-                <div className='flex-1 space-y-4'>
-                  <div className='flex items-center justify-between'>
-                    <h3 className='font-semibold text-secondary-900 flex items-center gap-2'>
-                      <FunnelIcon className='w-5 h-5' />
+                <div className={styles.filtersMain}>
+                  <div className={styles.filtersHeader}>
+                    <h3 className={styles.filtersTitle}>
+                      <FunnelIcon className={styles.filtersIcon} />
                       Filters
                     </h3>
-                    <button
-                      onClick={resetFilters}
-                      className='text-sm text-primary-600 hover:text-primary-700 font-medium'
-                    >
+                    <button onClick={resetFilters} className={styles.resetButton}>
                       Reset All
                     </button>
                   </div>
@@ -338,14 +321,14 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                         className={`p-2 ${viewMode.type === 'grid' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
                         aria-label='Grid view'
                       >
-                        <Squares2X2Icon className='w-4 h-4' />
+                        <Squares2X2Icon className={styles.smallIcon} />
                       </button>
                       <button
                         onClick={() => handleViewModeChange({ type: 'list' })}
                         className={`p-2 ${viewMode.type === 'list' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
                         aria-label='List view'
                       >
-                        <ListBulletIcon className='w-4 h-4' />
+                        <ListBulletIcon className={styles.smallIcon} />
                       </button>
                     </div>
                   </div>
@@ -395,49 +378,35 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               <div
                 className={
                   viewMode.type === 'grid'
-                    ? `grid grid-cols-1 md:grid-cols-${viewMode.gridCols} gap-6`
+                    ? `${styles.productsGrid} ${styles[`productsGrid${viewMode.gridCols}`] || styles.productsGrid2}`
                     : 'space-y-4'
                 }
               >
                 {filteredProducts.map(product => (
-                  <div
-                    key={product.id}
-                    className='bg-white rounded-equipment shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300'
-                  >
+                  <div key={product.id} className={styles.productCard}>
                     {/* Product Image */}
-                    <div className='relative aspect-[4/3] overflow-hidden'>
+                    <div className={styles.productImageContainer}>
                       <Image
                         src={product.image}
                         alt={product.name}
-                        className='object-cover hover:scale-105 transition-transform duration-300'
+                        className={styles.productImage}
                         fill
                         sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                       />
-                      {product.compare_at_price && (
-                        <div className='absolute top-4 right-4'>
-                          <span className='bg-accent-500 text-white px-3 py-1 text-xs font-semibold rounded-full'>
-                            Sale
-                          </span>
-                        </div>
-                      )}
+                      {product.compare_at_price && <div className={styles.saleTag}>Sale</div>}
                     </div>
 
                     {/* Product Info */}
-                    <div className='p-6'>
-                      <h3 className='text-xl font-semibold text-secondary-900 mb-2'>
-                        {product.name}
-                      </h3>
-                      <p className='text-secondary-600 mb-4 line-clamp-3'>{product.description}</p>
+                    <div className={styles.productInfo}>
+                      <h3 className={styles.productTitle}>{product.name}</h3>
+                      <p className={styles.productDescription}>{product.description}</p>
 
                       {/* Key Features */}
                       {product.features && (
-                        <div className='mb-4'>
-                          <div className='flex flex-wrap gap-2'>
+                        <div className={styles.productFeatures}>
+                          <div className={styles.featuresContainer}>
                             {product.features.slice(0, 2).map((feature, index) => (
-                              <span
-                                key={index}
-                                className='inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-primary-100 text-primary-800 rounded-full'
-                              >
+                              <span key={index} className={styles.featureTag}>
                                 {feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
                               </span>
                             ))}
@@ -446,13 +415,13 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       )}
 
                       {/* Pricing */}
-                      <div className='mb-4'>
-                        <div className='flex items-center gap-2'>
-                          <span className='text-2xl font-bold text-primary-600'>
+                      <div className={styles.productPricing}>
+                        <div className={styles.pricingContainer}>
+                          <span className={styles.currentPrice}>
                             ${product.price.toLocaleString()}
                           </span>
                           {product.compare_at_price && (
-                            <span className='text-lg text-secondary-400 line-through'>
+                            <span className={styles.originalPrice}>
                               ${(product.compare_at_price / 100).toLocaleString()}
                             </span>
                           )}
@@ -460,15 +429,15 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       </div>
 
                       {/* Actions */}
-                      <div className='flex flex-col gap-2'>
+                      <div className={styles.productActions}>
                         <Link
                           href={`/products/${product.slug}`}
-                          className='btn btn-primary w-full text-center'
+                          className={`${styles.actionButton} ${styles.primaryButton}`}
                         >
                           View Details & Specifications
                         </Link>
                         <button
-                          className='btn btn-secondary w-full'
+                          className={`${styles.actionButton} ${styles.secondaryButton}`}
                           onClick={() => handleAddToCart(product)}
                           disabled={product.stock_quantity === 0}
                         >

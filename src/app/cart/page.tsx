@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/stores/cartStore'
 import { CartItem } from '@/types/cart'
+import { CART_CONFIG } from '@/constants'
 import {
   PlusIcon,
   MinusIcon,
@@ -13,6 +14,7 @@ import {
   TagIcon,
 } from '@heroicons/react/24/outline'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import styles from './cart.module.css'
 
 export default function CartPage() {
   const {
@@ -43,30 +45,14 @@ export default function CartPage() {
   }
 
   return (
-    <div className='min-h-screen'>
+    <div className={styles.cartPage}>
       {/* Hero Section */}
-      <div
-        id='hero'
-        className='relative pt-6 pb-12'
-        aria-labelledby='hero-heading'
-        style={{
-          backgroundColor: '#e2e8f0',
-          width: '100vw',
-          position: 'relative',
-          left: '50%',
-          right: '50%',
-          marginLeft: '-50vw',
-          marginRight: '-50vw',
-        }}
-      >
-        <div className='max-w-6xl mx-auto px-6'>
-          <div className='text-center space-y-6 max-w-4xl mx-auto'>
-            <div className='flex items-center justify-center gap-2'>
-              <ShoppingBagIcon className='w-8 h-8 text-primary-600' />
-              <h1
-                id='hero-heading'
-                className='section-title text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'
-              >
+      <div id='hero' className={styles.heroSection} aria-labelledby='hero-heading'>
+        <div className={styles.container}>
+          <div className={styles.heroContent}>
+            <div className={styles.heroTitle}>
+              <ShoppingBagIcon className={styles.heroIcon} />
+              <h1 id='hero-heading' className='section-title text-3xl font-bold text-secondary-900'>
                 Shopping Cart
               </h1>
             </div>
@@ -77,19 +63,13 @@ export default function CartPage() {
             )}
 
             {/* Action buttons */}
-            <div className='flex items-center justify-between mt-8'>
-              <Link
-                href='/products'
-                className='flex items-center gap-2 text-secondary-600 hover:text-primary-600 transition-colors'
-              >
-                <ArrowLeftIcon className='w-5 h-5' />
+            <div className={styles.heroActions}>
+              <Link href='/products' className={styles.continueShoppingLink}>
+                <ArrowLeftIcon className={styles.continueShoppingIcon} />
                 <span>Continue Shopping</span>
               </Link>
               {items.length > 0 && (
-                <button
-                  onClick={handleClearCart}
-                  className='text-secondary-500 hover:text-danger-600 transition-colors text-sm'
-                >
+                <button onClick={handleClearCart} className={styles.clearCartButton}>
                   Clear Cart
                 </button>
               )}
@@ -103,27 +83,17 @@ export default function CartPage() {
         <section
           id='cart-content'
           aria-labelledby='cart-content-heading'
-          style={{
-            backgroundColor: 'var(--color-section-background)',
-            paddingTop: 'var(--spacing-section-top)',
-            paddingBottom: 'var(--spacing-section-bottom)',
-            width: '100vw',
-            position: 'relative',
-            left: '50%',
-            right: '50%',
-            marginLeft: '-50vw',
-            marginRight: '-50vw',
-          }}
+          className={styles.cartSection}
         >
-          <div className='max-w-6xl mx-auto px-6'>
-            <div className='text-center max-w-md mx-auto'>
-              <ShoppingBagIcon className='w-24 h-24 text-secondary-300 mx-auto mb-6' />
-              <h2 className='text-2xl font-bold text-secondary-900 mb-4'>Your cart is empty</h2>
-              <p className='text-secondary-600 mb-8'>
+          <div className={styles.container}>
+            <div className={styles.emptyCartContent}>
+              <ShoppingBagIcon className={styles.emptyCartIcon} />
+              <h2 className={styles.emptyCartTitle}>Your cart is empty</h2>
+              <p className={styles.emptyCartDescription}>
                 Discover our revolutionary two-phase cooling systems and add some products to get
                 started.
               </p>
-              <div className='space-y-4'>
+              <div className={styles.emptyCartActions}>
                 <Link href='/products' className='btn btn-primary btn-lg w-full'>
                   Shop All Products
                 </Link>
@@ -139,30 +109,18 @@ export default function CartPage() {
         <section
           id='cart-items'
           aria-labelledby='cart-items-heading'
-          style={{
-            backgroundColor: 'var(--color-section-background)',
-            paddingTop: 'var(--spacing-section-top)',
-            paddingBottom: 'var(--spacing-section-bottom)',
-            width: '100vw',
-            position: 'relative',
-            left: '50%',
-            right: '50%',
-            marginLeft: '-50vw',
-            marginRight: '-50vw',
-          }}
+          className={styles.cartSection}
         >
-          <div className='max-w-6xl mx-auto px-6'>
-            <div className='grid lg:grid-cols-3 gap-8'>
+          <div className={styles.container}>
+            <div className={styles.cartGrid}>
               {/* Cart Items */}
-              <div className='lg:col-span-2'>
-                <div className='bg-white rounded-equipment shadow-sm border border-secondary-200'>
-                  <div className='p-6 border-b border-secondary-200'>
-                    <h2 className='text-lg font-semibold text-secondary-900'>
-                      Cart Items ({itemCount})
-                    </h2>
+              <div>
+                <div className={styles.cartItems}>
+                  <div className={styles.cartItemsHeader}>
+                    <h2 className={styles.cartItemsTitle}>Cart Items ({itemCount})</h2>
                   </div>
 
-                  <div className='divide-y divide-secondary-200'>
+                  <div className={styles.cartItemsList}>
                     {items.map(item => (
                       <CartItemRow
                         key={item.id}
@@ -176,43 +134,39 @@ export default function CartPage() {
               </div>
 
               {/* Order Summary */}
-              <div className='lg:col-span-1'>
-                <div className='bg-white rounded-equipment shadow-sm border border-secondary-200 sticky top-8'>
-                  <div className='p-6'>
-                    <h2 className='text-lg font-semibold text-secondary-900 mb-4'>Order Summary</h2>
+              <div>
+                <div className={styles.orderSummary}>
+                  <div className={styles.orderSummaryContent}>
+                    <h2 className={styles.orderSummaryTitle}>Order Summary</h2>
 
                     {/* Coupon Section */}
                     <CouponSection appliedCoupon={appliedCoupon} />
 
                     {/* Price Breakdown */}
-                    <div className='space-y-3 py-4 border-t border-secondary-200'>
-                      <div className='flex justify-between text-sm'>
-                        <span className='text-secondary-600'>Subtotal ({itemCount} items):</span>
-                        <span className='text-secondary-900 font-medium'>
-                          ${subtotal.toFixed(2)}
-                        </span>
+                    <div className={styles.priceBreakdown}>
+                      <div className={styles.priceRow}>
+                        <span className={styles.priceLabel}>Subtotal ({itemCount} items):</span>
+                        <span className={styles.priceValue}>${subtotal.toFixed(2)}</span>
                       </div>
 
-                      <div className='flex justify-between text-sm'>
-                        <span className='text-secondary-600'>Shipping:</span>
+                      <div className={styles.priceRow}>
+                        <span className={styles.priceLabel}>Shipping:</span>
                         {shipping > 0 ? (
-                          <span className='text-secondary-900 font-medium'>
-                            ${shipping.toFixed(2)}
-                          </span>
+                          <span className={styles.priceValue}>${shipping.toFixed(2)}</span>
                         ) : (
-                          <span className='text-success-600 font-medium'>FREE</span>
+                          <span className={styles.priceValueFree}>FREE</span>
                         )}
                       </div>
 
-                      <div className='flex justify-between text-sm'>
-                        <span className='text-secondary-600'>Estimated Tax:</span>
-                        <span className='text-secondary-900 font-medium'>${tax.toFixed(2)}</span>
+                      <div className={styles.priceRow}>
+                        <span className={styles.priceLabel}>Estimated Tax:</span>
+                        <span className={styles.priceValue}>${tax.toFixed(2)}</span>
                       </div>
 
                       {appliedCoupon && (
-                        <div className='flex justify-between text-sm text-success-600'>
-                          <span>Coupon Discount:</span>
-                          <span className='font-medium'>
+                        <div className={styles.priceRow}>
+                          <span className={styles.priceLabel}>Coupon Discount:</span>
+                          <span className={styles.priceValueDiscount}>
                             -
                             {appliedCoupon.type === 'percentage'
                               ? `${appliedCoupon.value}%`
@@ -223,36 +177,37 @@ export default function CartPage() {
                     </div>
 
                     {/* Total */}
-                    <div className='flex justify-between items-center py-4 border-t border-secondary-300'>
-                      <span className='text-lg font-semibold text-secondary-900'>Total:</span>
-                      <span className='text-xl font-bold text-primary-600'>
-                        ${total.toFixed(2)}
-                      </span>
+                    <div className={styles.totalRow}>
+                      <span className={styles.totalLabel}>Total:</span>
+                      <span className={styles.totalValue}>${total.toFixed(2)}</span>
                     </div>
 
                     {/* Free Shipping Progress */}
-                    {subtotal < 500 && (
-                      <div className='mb-4 p-3 bg-accent-50 border border-accent-200 rounded-lg'>
-                        <div className='flex items-center gap-2 mb-2'>
-                          <TagIcon className='w-4 h-4 text-accent-600' />
-                          <span className='text-sm font-medium text-accent-800'>
-                            Add ${(500 - subtotal).toFixed(2)} more for free shipping
+                    {subtotal < CART_CONFIG.FREE_SHIPPING_THRESHOLD && (
+                      <div className={styles.shippingProgress}>
+                        <div className={styles.shippingProgressHeader}>
+                          <TagIcon className={styles.shippingProgressIcon} />
+                          <span className={styles.shippingProgressText}>
+                            Add ${(CART_CONFIG.FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} more
+                            for free shipping
                           </span>
                         </div>
-                        <div className='w-full bg-accent-200 rounded-full h-2'>
+                        <div className={styles.shippingProgressBar}>
                           <div
-                            className='bg-accent-500 h-2 rounded-full transition-all duration-300'
-                            style={{ width: `${Math.min((subtotal / 500) * 100, 100)}%` }}
+                            className={styles.shippingProgressFill}
+                            style={{
+                              width: `${Math.min((subtotal / CART_CONFIG.FREE_SHIPPING_THRESHOLD) * 100, 100)}%`,
+                            }}
                           />
                         </div>
                       </div>
                     )}
 
-                    {subtotal >= 500 && (
-                      <div className='mb-4 p-3 bg-success-50 border border-success-200 rounded-lg'>
-                        <div className='flex items-center gap-2'>
-                          <CheckCircleIcon className='w-5 h-5 text-success-500' />
-                          <span className='text-sm font-medium text-success-800'>
+                    {subtotal >= CART_CONFIG.FREE_SHIPPING_THRESHOLD && (
+                      <div className={styles.shippingQualified}>
+                        <div className={styles.shippingQualifiedContent}>
+                          <CheckCircleIcon className={styles.shippingQualifiedIcon} />
+                          <span className={styles.shippingQualifiedText}>
                             You qualify for free shipping!
                           </span>
                         </div>
@@ -260,12 +215,12 @@ export default function CartPage() {
                     )}
 
                     {/* Checkout Button */}
-                    <div className='space-y-3'>
+                    <div className={styles.checkoutActions}>
                       <Link href='/checkout' className='btn btn-primary btn-lg w-full'>
                         Secure Checkout
                       </Link>
 
-                      <div className='text-center text-xs text-secondary-500'>
+                      <div className={styles.secureNotice}>
                         🔒 Secure SSL Checkout • Free Returns • 5-Year Warranty
                       </div>
                     </div>
@@ -296,95 +251,91 @@ function CartItemRow({
     : item.product.price
 
   return (
-    <div className='p-6'>
-      <div className='flex gap-6'>
+    <div className={styles.cartItem}>
+      <div className={styles.cartItemContent}>
         {/* Product Image */}
-        <div className='flex-shrink-0'>
-          <Link href={`/products/${item.product.slug}`}>
+        <div className={styles.cartItemImage}>
+          <Link href={`/products/${item.product.slug}`} className={styles.cartItemImageLink}>
             <img
               src={mainImage?.url}
               alt={mainImage?.altText || item.product.name}
-              className='w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg border border-secondary-200 hover:opacity-75 transition-opacity'
+              className={styles.cartItemImg}
             />
           </Link>
         </div>
 
         {/* Product Details */}
-        <div className='flex-1 min-w-0'>
-          <div className='flex justify-between items-start mb-2'>
-            <div className='flex-1'>
-              <Link
-                href={`/products/${item.product.slug}`}
-                className='text-lg font-semibold text-secondary-900 hover:text-primary-600 line-clamp-2'
-              >
+        <div className={styles.cartItemDetails}>
+          {/* Header Section with Title and Remove Button */}
+          <div className={styles.cartItemHeader}>
+            <div className={styles.cartItemTitleSection}>
+              <Link href={`/products/${item.product.slug}`} className={styles.cartItemTitle}>
                 {item.product.name}
               </Link>
 
               {item.selectedVariantId && (
-                <p className='text-sm text-secondary-600 mt-1'>
-                  Configuration:{' '}
-                  {item.product.variants?.find(v => v.id === item.selectedVariantId)?.name}
-                </p>
+                <div className={styles.cartItemVariant}>
+                  <span className={styles.cartItemVariantBadge}>
+                    {item.product.variants?.find(v => v.id === item.selectedVariantId)?.name}
+                  </span>
+                </div>
               )}
-
-              <p className='text-sm text-secondary-600 mt-2 line-clamp-2'>
-                {item.product.shortDescription}
-              </p>
             </div>
 
             <button
               onClick={() => onRemove(item.id)}
-              className='p-2 ml-4 hover:bg-secondary-100 rounded-full transition-colors'
+              className={styles.removeButton}
               aria-label='Remove item'
             >
-              <TrashIcon className='w-5 h-5 text-secondary-400 hover:text-danger-500' />
+              <TrashIcon className={styles.removeIcon} />
             </button>
           </div>
 
-          {/* Price and Controls */}
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4'>
+          {/* Description Section */}
+          <div className={styles.cartItemDescription}>
+            <p className={styles.cartItemDescriptionText}>{item.product.shortDescription}</p>
+          </div>
+
+          {/* Controls Section */}
+          <div className={styles.cartItemControls}>
             {/* Quantity Controls */}
-            <div className='flex items-center gap-3'>
-              <span className='text-sm text-secondary-600'>Qty:</span>
-              <div className='flex items-center gap-1'>
+            <div className={styles.quantitySection}>
+              <span className={styles.quantityLabel}>Quantity:</span>
+              <div className={styles.quantityControls}>
                 <button
                   onClick={() => onQuantityChange(item.id, item.quantity - 1)}
                   disabled={item.quantity <= 1}
-                  className='p-2 hover:bg-secondary-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                  className={`${styles.quantityButton} ${styles.quantityButtonLeft}`}
                   aria-label='Decrease quantity'
                 >
-                  <MinusIcon className='w-4 h-4' />
+                  <MinusIcon className={styles.quantityIcon} />
                 </button>
 
-                <span className='text-base font-medium text-secondary-900 min-w-[3rem] text-center'>
-                  {item.quantity}
-                </span>
+                <span className={styles.quantityDisplay}>{item.quantity}</span>
 
                 <button
                   onClick={() => onQuantityChange(item.id, item.quantity + 1)}
-                  disabled={item.quantity >= item.product.stockQuantity}
-                  className='p-2 hover:bg-secondary-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                  disabled={item.quantity >= CART_CONFIG.MAX_QUANTITY_PER_ITEM}
+                  className={`${styles.quantityButton} ${styles.quantityButtonRight}`}
                   aria-label='Increase quantity'
                 >
-                  <PlusIcon className='w-4 h-4' />
+                  <PlusIcon className={styles.quantityIcon} />
                 </button>
               </div>
 
               {/* Stock Warning */}
-              {item.product.stockQuantity <= 5 && (
-                <span className='text-xs text-accent-600'>
-                  Only {item.product.stockQuantity} left
-                </span>
+              {item.product.stockQuantity <= CART_CONFIG.LOW_STOCK_THRESHOLD && (
+                <span className={styles.stockWarning}>Only {item.product.stockQuantity} left</span>
               )}
             </div>
 
             {/* Pricing */}
-            <div className='text-right'>
-              <div className='text-xl font-bold text-secondary-900'>
+            <div className={styles.cartItemPricing}>
+              <div className={styles.cartItemTotal}>
                 ${(currentPrice * item.quantity).toFixed(2)}
               </div>
               {item.quantity > 1 && (
-                <div className='text-sm text-secondary-500'>${currentPrice.toFixed(2)} each</div>
+                <div className={styles.cartItemUnitPrice}>${currentPrice.toFixed(2)} each</div>
               )}
             </div>
           </div>
@@ -398,14 +349,12 @@ function CartItemRow({
 function CouponSection({ appliedCoupon }: { appliedCoupon?: any }) {
   // This would integrate with actual coupon system
   return (
-    <div className='mb-4'>
+    <div className={styles.couponSection}>
       {appliedCoupon ? (
-        <div className='p-3 bg-success-50 border border-success-200 rounded-lg'>
-          <div className='flex items-center justify-between'>
-            <span className='text-sm font-medium text-success-800'>
-              Coupon: {appliedCoupon.code}
-            </span>
-            <span className='text-sm text-success-700'>
+        <div className={styles.appliedCoupon}>
+          <div className={styles.appliedCouponContent}>
+            <span className={styles.appliedCouponCode}>Coupon: {appliedCoupon.code}</span>
+            <span className={styles.appliedCouponValue}>
               -
               {appliedCoupon.type === 'percentage'
                 ? `${appliedCoupon.value}%`
@@ -414,7 +363,7 @@ function CouponSection({ appliedCoupon }: { appliedCoupon?: any }) {
           </div>
         </div>
       ) : (
-        <div className='text-sm text-secondary-500'>
+        <div className={styles.couponPlaceholder}>
           <p>Have a coupon code? Enter it at checkout.</p>
         </div>
       )}

@@ -11,7 +11,7 @@ export default function CartButton() {
   return (
     <Link
       href='/cart'
-      className='relative p-2 text-secondary-600 hover:text-primary-600 transition-colors'
+      className='relative p-2 text-secondary-900 hover:text-primary-600 transition-colors border border-gray-300 rounded'
       aria-label={`Shopping cart with ${itemCount} items`}
     >
       <div className='relative'>

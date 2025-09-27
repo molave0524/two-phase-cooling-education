@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react'
 import { FAQ_CONTENT, FAQ_CATEGORIES } from '@/data/faq-content'
 import { MagnifyingGlassIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
+import styles from './FAQSection.module.css'
 
 export const FAQSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -49,36 +50,31 @@ export const FAQSection: React.FC = () => {
   }
 
   return (
-    <div className='space-y-8'>
-      <style jsx>{`
-        .search-input::placeholder {
-          color: white !important;
-        }
-      `}</style>
+    <div className={styles.faqWrapper}>
       {/* Search and Filters */}
-      <div className='space-y-6'>
+      <div className={styles.searchControls}>
         {/* Search Bar */}
-        <div className='relative max-w-md mx-auto'>
-          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-            <MagnifyingGlassIcon className='h-5 w-5 text-secondary-400' />
+        <div className={styles.searchContainer}>
+          <div className={styles.searchIconContainer}>
+            <MagnifyingGlassIcon className={styles.searchIcon} />
           </div>
           <input
             type='text'
             placeholder='Search FAQ...'
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className='search-input block w-full pl-10 pr-3 py-3 border border-secondary-300 rounded-equipment text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
+            className={styles.searchInput}
           />
         </div>
 
         {/* Category Filters */}
-        <div className='flex flex-wrap justify-center gap-2'>
+        <div className={styles.categoryFilters}>
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-4 py-2 rounded-equipment text-sm font-medium transition-colors ${
+            className={`${styles.categoryButton} ${
               selectedCategory === 'all'
-                ? 'bg-primary-600 text-white'
-                : 'bg-secondary-100 text-secondary-700 hover:bg-secondary-200'
+                ? styles.categoryButtonActive
+                : styles.categoryButtonInactive
             }`}
           >
             All Questions ({FAQ_CONTENT.length})
@@ -89,10 +85,10 @@ export const FAQSection: React.FC = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-equipment text-sm font-medium transition-colors ${
+                className={`${styles.categoryButton} ${
                   selectedCategory === category.id
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-secondary-100 text-secondary-700 hover:bg-secondary-200'
+                    ? styles.categoryButtonActive
+                    : styles.categoryButtonInactive
                 }`}
               >
                 {category.name} ({count})
@@ -103,18 +99,12 @@ export const FAQSection: React.FC = () => {
 
         {/* Expand/Collapse Controls */}
         {filteredFAQs.length > 0 && (
-          <div className='flex justify-center gap-4'>
-            <button
-              onClick={expandAll}
-              className='text-sm text-white hover:text-gray-200 font-medium'
-            >
+          <div className={styles.expandControls}>
+            <button onClick={expandAll} className={styles.expandButton}>
               Expand All
             </button>
-            <span className='text-secondary-400'>|</span>
-            <button
-              onClick={collapseAll}
-              className='text-sm text-white hover:text-gray-200 font-medium'
-            >
+            <span className={styles.expandSeparator}>|</span>
+            <button onClick={collapseAll} className={styles.expandButton}>
               Collapse All
             </button>
           </div>
@@ -123,26 +113,23 @@ export const FAQSection: React.FC = () => {
 
       {/* Results Count */}
       {searchQuery && (
-        <div className='text-center text-secondary-600'>
+        <div className={styles.resultsCount}>
           Found {filteredFAQs.length} question{filteredFAQs.length !== 1 ? 's' : ''}
           {searchQuery && ` for "${searchQuery}"`}
         </div>
       )}
 
       {/* FAQ Items */}
-      <div className='space-y-4 max-w-4xl mx-auto'>
+      <div className={styles.faqContainer}>
         {filteredFAQs.length === 0 ? (
-          <div className='text-center py-12'>
-            <div className='text-secondary-500 text-lg'>
+          <div className={styles.emptyState}>
+            <div className={styles.emptyStateMessage}>
               {searchQuery
                 ? 'No questions found matching your search.'
                 : 'No questions in this category.'}
             </div>
             {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className='mt-4 text-primary-600 hover:text-primary-700 font-medium'
-              >
+              <button onClick={() => setSearchQuery('')} className={styles.emptyStateClearButton}>
                 Clear search
               </button>
             )}
@@ -153,47 +140,35 @@ export const FAQSection: React.FC = () => {
             const category = FAQ_CATEGORIES.find(cat => cat.id === faq.category)
 
             return (
-              <div
-                key={faq.id}
-                className='bg-white border border-secondary-200 rounded-equipment shadow-sm hover:shadow-md transition-shadow'
-              >
-                <button
-                  onClick={() => toggleExpanded(faq.id)}
-                  className='w-full px-6 py-4 text-left flex items-center justify-between hover:bg-secondary-50 transition-colors rounded-equipment'
-                >
-                  <div className='flex-1 space-y-1'>
-                    <h3 className='text-lg font-semibold text-white pr-4'>{faq.question}</h3>
-                    <div className='flex items-center gap-2'>
+              <div key={faq.id} className={styles.faqItem}>
+                <button onClick={() => toggleExpanded(faq.id)} className={styles.faqButton}>
+                  <div className={styles.faqButtonContent}>
+                    <h3 className={styles.faqQuestion}>{faq.question}</h3>
+                    <div className={styles.faqCategoryContainer}>
                       <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        className={`${styles.faqCategoryBadge} ${
                           category?.id === 'technology'
-                            ? 'bg-secondary-100 text-secondary-700'
+                            ? styles.faqCategoryTechnology
                             : category?.id === 'performance'
-                              ? 'bg-secondary-100 text-secondary-700'
+                              ? styles.faqCategoryPerformance
                               : category?.id === 'environmental'
-                                ? 'bg-secondary-100 text-secondary-700'
-                                : 'bg-secondary-100 text-secondary-700'
+                                ? styles.faqCategoryEnvironmental
+                                : styles.faqCategorySupport
                         }`}
                       >
                         {category?.name}
                       </span>
                     </div>
                   </div>
-                  <div className='flex-shrink-0 ml-4'>
-                    {isExpanded ? (
-                      <ChevronUpIcon className='h-5 w-5 text-secondary-400' />
-                    ) : (
-                      <ChevronDownIcon className='h-5 w-5 text-secondary-400' />
-                    )}
+                  <div className={styles.faqToggleIcon}>
+                    {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
                   </div>
                 </button>
 
                 {isExpanded && (
-                  <div className='px-6 pb-4'>
-                    <div className='border-t border-secondary-200 pt-4'>
-                      <p className='text-gray-700 leading-relaxed whitespace-pre-line'>
-                        {faq.answer}
-                      </p>
+                  <div className={styles.faqAnswer}>
+                    <div className={styles.faqAnswerContent}>
+                      <p className={styles.faqAnswerText}>{faq.answer}</p>
                     </div>
                   </div>
                 )}

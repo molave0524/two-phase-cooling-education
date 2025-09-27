@@ -4,6 +4,7 @@
  */
 
 import { TwoPhaseCoolingProduct, ProductComparison } from '@/types/product'
+import { PRICING, PRODUCT_CONFIG, TECHNICAL_SPECS } from '@/constants'
 
 // Main product data
 export const PRODUCTS: TwoPhaseCoolingProduct[] = [
@@ -12,9 +13,9 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     name: 'Two-Phase Cooling Case Pro',
     slug: 'two-phase-cooling-case-pro',
     sku: 'TPC-CASE-PRO-001',
-    price: 1299.99,
-    originalPrice: 1499.99,
-    currency: 'USD',
+    price: PRICING.PRO_CASE,
+    originalPrice: PRICING.PRO_CASE * 1.15, // 15% markup for original price
+    currency: PRODUCT_CONFIG.DEFAULT_CURRENCY,
     description:
       'Revolutionary two-phase cooling system featuring transparent design and superior thermal performance. This complete cooling case provides unmatched heat dissipation for high-performance computing workloads.',
     shortDescription:
@@ -76,8 +77,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
 
       environmental: {
-        gwp: 4, // Significantly lower than traditional refrigerants
-        odp: 0, // Ozone-friendly
+        gwp: TECHNICAL_SPECS.GWP_RATING, // Significantly lower than traditional refrigerants
+        odp: TECHNICAL_SPECS.ODP_RATING, // Ozone-friendly
         recyclable: true,
         energyEfficiency: 'A++ Rating (30% less power consumption)',
       },
@@ -105,7 +106,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     images: [
       {
         id: 'main-1',
-        url: 'https://picsum.photos/800/600?random=1',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?random=1`,
         altText: 'Two-Phase Cooling Case Pro - Main View',
         caption: 'Elegant transparent design showcasing advanced cooling technology',
         type: 'main',
@@ -113,7 +114,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
       {
         id: 'gallery-1',
-        url: 'https://picsum.photos/800/600?random=2',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?random=2`,
         altText: 'Two-Phase Cooling Case - Internal Components',
         caption: 'Internal view showing two-phase cooling loops and components',
         type: 'gallery',
@@ -121,7 +122,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
       {
         id: 'gallery-2',
-        url: 'https://picsum.photos/800/600?random=3',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?random=3`,
         altText: 'Two-Phase Cooling Case - Side Profile',
         caption: 'Side profile highlighting compact and efficient design',
         type: 'gallery',
@@ -129,7 +130,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
       {
         id: 'technical-1',
-        url: 'https://picsum.photos/800/600?random=4',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?random=4`,
         altText: 'Technical Diagram - Cooling Loop',
         caption: 'Technical schematic of two-phase cooling loop operation',
         type: 'technical',
@@ -137,7 +138,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
       {
         id: 'gallery-3',
-        url: 'https://picsum.photos/800/600?random=5',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?random=5`,
         altText: 'Two-Phase Cooling Case - Rear Panel',
         caption: 'Rear panel view showing ports and ventilation design',
         type: 'gallery',
@@ -145,7 +146,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
       {
         id: 'technical-2',
-        url: 'https://picsum.photos/800/600?random=6',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?random=6`,
         altText: 'Performance Chart - Temperature Analysis',
         caption: 'Performance comparison chart showing thermal efficiency',
         type: 'technical',
@@ -169,8 +170,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     name: 'Two-Phase Cooling Case Compact',
     slug: 'two-phase-cooling-case-compact',
     sku: 'TPC-CASE-COMPACT-002',
-    price: 899.99,
-    currency: 'USD',
+    price: PRICING.COMPACT_CASE,
+    currency: PRODUCT_CONFIG.DEFAULT_CURRENCY,
     description:
       'Compact two-phase cooling solution perfect for small form factor builds without compromising on cooling performance. Ideal for ITX and mATX systems.',
     shortDescription: 'Compact two-phase cooling system designed for small form factor builds.',
@@ -246,7 +247,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     images: [
       {
         id: 'compact-main-1',
-        url: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=600&fit=crop',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?id=compact-main`,
         altText: 'Two-Phase Cooling Case Compact - Main View',
         caption: 'Compact design perfect for small form factor builds',
         type: 'main',
@@ -254,7 +255,7 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
       },
       {
         id: 'compact-gallery-1',
-        url: 'https://images.unsplash.com/photo-1560472355-a9a6be4a7add?w=800&h=600&fit=crop',
+        url: `${PRODUCT_CONFIG.IMAGE_SERVICE}/800/600?id=compact-gallery`,
         altText: 'Compact Case - Internal Layout',
         caption: 'Efficient internal layout maximizing cooling in compact space',
         type: 'gallery',

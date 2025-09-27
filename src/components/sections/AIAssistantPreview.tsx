@@ -12,6 +12,7 @@ import {
   ArrowRightIcon,
 } from '@heroicons/react/24/outline'
 import { SparklesIcon as RobotIcon } from '@heroicons/react/24/solid'
+import styles from './AIAssistantPreview.module.css'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -74,7 +75,7 @@ const SAMPLE_CONVERSATION: ChatMessage[] = [
 
 const ASSISTANT_CAPABILITIES: AssistantCapability[] = [
   {
-    icon: <CpuChipIcon className='w-6 h-6' />,
+    icon: <CpuChipIcon />,
     title: 'Hardware Compatibility',
     description: 'Analyzes your components for optimal cooling configuration',
     examples: [
@@ -84,7 +85,7 @@ const ASSISTANT_CAPABILITIES: AssistantCapability[] = [
     ],
   },
   {
-    icon: <SparklesIcon className='w-6 h-6' />,
+    icon: <SparklesIcon />,
     title: 'Performance Optimization',
     description: 'Provides data-driven recommendations for maximum efficiency',
     examples: [
@@ -94,7 +95,7 @@ const ASSISTANT_CAPABILITIES: AssistantCapability[] = [
     ],
   },
   {
-    icon: <QuestionMarkCircleIcon className='w-6 h-6' />,
+    icon: <QuestionMarkCircleIcon />,
     title: 'Technical Education',
     description: 'Explains complex thermal concepts in accessible terms',
     examples: [
@@ -174,66 +175,44 @@ export const AIAssistantPreview: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: '#e2e8f0',
-        paddingTop: '1.5rem',
-        paddingBottom: '1rem',
-        width: '100vw',
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
-        borderTop: '12px solid white',
-      }}
-    >
-      <div className='max-w-6xl mx-auto px-6'>
-        <div className='space-y-12'>
+    <div className={styles.aiSection}>
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>
           {/* Section Header */}
-          <div className='text-center space-y-4'>
-            <div className='flex items-center justify-center gap-2'>
-              <ChatBubbleLeftRightIcon className='w-8 h-8 text-primary-600' />
-              <h2
-                id='ai-assistant-heading'
-                className='section-title text-3xl font-bold text-secondary-900'
-              >
+          <div className={styles.header}>
+            <div className={styles.titleWrapper}>
+              <ChatBubbleLeftRightIcon className={styles.titleIcon} />
+              <h2 id='ai-assistant-heading' className={styles.title}>
                 AI Technical Assistant
               </h2>
             </div>
-            <p className='text-lg text-secondary-600 max-w-3xl mx-auto'>
+            <p className={styles.subtitle}>
               Get instant expert guidance on two-phase cooling technology. Our AI assistant helps
               with technical questions, configuration advice, and educational support.
             </p>
           </div>
 
-          <div className='grid lg:grid-cols-2 gap-12 items-start'>
+          <div className={styles.mainGrid}>
             {/* Interactive Chat Demo */}
-            <div className='space-y-6'>
-              <div className='bg-white rounded-equipment shadow-glass border border-secondary-200 overflow-hidden'>
+            <div className={styles.chatDemo}>
+              <div className={styles.chatContainer}>
                 {/* Chat Header */}
-                <div className='bg-gradient-to-r from-primary-500 to-primary-600 p-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <div className='w-10 h-10 bg-white/20 rounded-full flex items-center justify-center'>
-                        <RobotIcon className='w-6 h-6 text-white' />
+                <div className={styles.chatHeader}>
+                  <div className={styles.chatHeaderContent}>
+                    <div className={styles.chatHeaderLeft}>
+                      <div className={styles.chatAvatar}>
+                        <RobotIcon className={styles.chatAvatarIcon} />
                       </div>
-                      <div>
-                        <h3 className='font-semibold text-white'>Thermal AI Assistant</h3>
-                        <div className='text-xs text-primary-100'>Online • Ready to help</div>
+                      <div className={styles.chatHeaderInfo}>
+                        <h3>Thermal AI Assistant</h3>
+                        <div className={styles.chatStatus}>Online • Ready to help</div>
                       </div>
                     </div>
-                    <div className='flex gap-2'>
-                      <button
-                        onClick={pauseDemo}
-                        className='px-3 py-1 bg-white/20 text-white text-xs rounded-technical hover:bg-white/30 transition-colors'
-                      >
+                    <div className={styles.chatControls}>
+                      <button onClick={pauseDemo} className={styles.chatControlButton}>
                         Pause
                       </button>
-                      <button
-                        onClick={resetDemo}
-                        className='px-3 py-1 bg-white/20 text-white text-xs rounded-technical hover:bg-white/30 transition-colors'
-                      >
+                      <button onClick={resetDemo} className={styles.chatControlButton}>
                         Restart
                       </button>
                     </div>
@@ -241,33 +220,33 @@ export const AIAssistantPreview: React.FC = () => {
                 </div>
 
                 {/* Chat Messages */}
-                <div className='h-80 overflow-y-auto p-4 space-y-4 bg-secondary-50'>
+                <div className={styles.chatMessages}>
                   {displayedMessages.map(message => (
                     <div
                       key={message.id}
-                      className={`flex items-start gap-3 ${
-                        message.sender === 'user' ? 'justify-end' : ''
+                      className={`${styles.messageWrapper} ${
+                        message.sender === 'user' ? styles.messageWrapperUser : ''
                       }`}
                     >
                       {message.sender === 'assistant' && (
-                        <div className='w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0'>
-                          <RobotIcon className='w-5 h-5 text-white' />
+                        <div className={`${styles.messageAvatar} ${styles.messageAvatarAssistant}`}>
+                          <RobotIcon className={styles.messageAvatarIcon} />
                         </div>
                       )}
 
                       <div
-                        className={`max-w-xs lg:max-w-sm px-4 py-3 rounded-equipment text-sm ${
+                        className={`${styles.messageContent} ${
                           message.sender === 'user'
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-white text-secondary-900 shadow-sm border border-secondary-200'
+                            ? styles.messageContentUser
+                            : styles.messageContentAssistant
                         }`}
                       >
                         {message.content}
                       </div>
 
                       {message.sender === 'user' && (
-                        <div className='w-8 h-8 bg-secondary-400 rounded-full flex items-center justify-center flex-shrink-0'>
-                          <UserCircleIcon className='w-5 h-5 text-white' />
+                        <div className={`${styles.messageAvatar} ${styles.messageAvatarUser}`}>
+                          <UserCircleIcon className={styles.messageAvatarIcon} />
                         </div>
                       )}
                     </div>
@@ -275,15 +254,15 @@ export const AIAssistantPreview: React.FC = () => {
 
                   {/* Typing Indicator */}
                   {isTyping && (
-                    <div className='flex items-start gap-3'>
-                      <div className='w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0'>
-                        <RobotIcon className='w-5 h-5 text-white' />
+                    <div className={styles.typingIndicator}>
+                      <div className={`${styles.messageAvatar} ${styles.messageAvatarAssistant}`}>
+                        <RobotIcon className={styles.messageAvatarIcon} />
                       </div>
-                      <div className='bg-white px-4 py-3 rounded-equipment border border-secondary-200'>
-                        <div className='flex space-x-1'>
-                          <div className='w-2 h-2 bg-secondary-400 rounded-full animate-bounce' />
-                          <div className='w-2 h-2 bg-secondary-400 rounded-full animate-bounce animate-bounce-delay-1' />
-                          <div className='w-2 h-2 bg-secondary-400 rounded-full animate-bounce animate-bounce-delay-2' />
+                      <div className={styles.typingContent}>
+                        <div className={styles.typingDots}>
+                          <div className={styles.typingDot} />
+                          <div className={styles.typingDot} />
+                          <div className={styles.typingDot} />
                         </div>
                       </div>
                     </div>
@@ -291,30 +270,27 @@ export const AIAssistantPreview: React.FC = () => {
                 </div>
 
                 {/* Input Area */}
-                <div className='p-4 border-t border-secondary-200 bg-white'>
-                  <div className='flex gap-2'>
+                <div className={styles.chatInput}>
+                  <div className={styles.inputWrapper}>
                     <input
                       type='text'
                       placeholder='Ask about two-phase cooling technology...'
-                      className='flex-1 input text-sm'
+                      className={styles.inputField}
                       disabled
                     />
-                    <button className='btn-primary px-4 py-2' disabled>
-                      <ArrowRightIcon className='w-4 h-4' />
+                    <button className={styles.inputButton} disabled>
+                      <ArrowRightIcon className={styles.inputButtonIcon} />
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Suggested Questions */}
-              <div className='space-y-3'>
-                <h4 className='font-semibold text-secondary-900'>Try asking:</h4>
-                <div className='grid grid-cols-1 gap-2'>
+              <div className={styles.suggestedQuestions}>
+                <h4 className={styles.suggestedTitle}>Try asking:</h4>
+                <div className={styles.questionsList}>
                   {SUGGESTED_QUESTIONS.map((question, index) => (
-                    <button
-                      key={index}
-                      className='text-left p-3 bg-white rounded-technical border border-secondary-200 hover:border-primary-300 hover:bg-primary-50 transition-colors text-sm text-secondary-700'
-                    >
+                    <button key={index} className={styles.questionButton}>
                       &ldquo;{question}&rdquo;
                     </button>
                   ))}
@@ -323,48 +299,39 @@ export const AIAssistantPreview: React.FC = () => {
             </div>
 
             {/* Capabilities Overview */}
-            <div className='space-y-8'>
-              <div className='space-y-6'>
-                <h3 className='text-2xl font-bold text-secondary-900'>Assistant Capabilities</h3>
+            <div className={styles.capabilities}>
+              <div className={styles.capabilitiesHeader}>
+                <h3 className={styles.capabilitiesTitle}>Assistant Capabilities</h3>
 
-                <div className='space-y-4'>
+                <div className={styles.capabilityList}>
                   {ASSISTANT_CAPABILITIES.map((capability, index) => (
                     <div
                       key={index}
-                      className={`p-6 rounded-equipment border-2 transition-all cursor-pointer ${
-                        selectedCapability === index
-                          ? 'border-primary-300 bg-primary-50 shadow-lg'
-                          : 'border-secondary-200 bg-white hover:border-primary-200'
+                      className={`${styles.capabilityCard} ${
+                        selectedCapability === index ? styles.capabilityCardActive : ''
                       }`}
                       onClick={() => setSelectedCapability(index)}
                     >
-                      <div className='flex items-start gap-4'>
+                      <div className={styles.capabilityContent}>
                         <div
-                          className={`p-3 rounded-technical ${
-                            selectedCapability === index
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-secondary-100 text-secondary-600'
+                          className={`${styles.capabilityIcon} ${
+                            selectedCapability === index ? styles.capabilityIconActive : ''
                           }`}
                         >
                           {capability.icon}
                         </div>
-                        <div className='flex-1 space-y-3'>
-                          <div>
-                            <h4 className='font-semibold text-secondary-900'>{capability.title}</h4>
-                            <p className='text-sm text-secondary-600 mt-1'>
-                              {capability.description}
-                            </p>
+                        <div className={styles.capabilityDetails}>
+                          <div className={styles.capabilityInfo}>
+                            <h4>{capability.title}</h4>
+                            <p>{capability.description}</p>
                           </div>
 
-                          <div className='space-y-2'>
-                            <div className='text-xs font-medium text-secondary-700'>Examples:</div>
-                            <ul className='space-y-1'>
+                          <div className={styles.capabilityExamples}>
+                            <div className={styles.examplesLabel}>Examples:</div>
+                            <ul className={styles.examplesList}>
                               {capability.examples.map((example, exampleIndex) => (
-                                <li
-                                  key={exampleIndex}
-                                  className='flex items-center gap-2 text-xs text-secondary-600'
-                                >
-                                  <CheckCircleIcon className='w-3 h-3 text-success-600' />
+                                <li key={exampleIndex} className={styles.exampleItem}>
+                                  <CheckCircleIcon className={styles.exampleIcon} />
                                   {example}
                                 </li>
                               ))}
@@ -378,46 +345,44 @@ export const AIAssistantPreview: React.FC = () => {
               </div>
 
               {/* Key Features */}
-              <div className='bg-gradient-to-br from-secondary-50 to-primary-50 rounded-equipment p-6'>
-                <h4 className='font-semibold text-secondary-900 mb-4 flex items-center gap-2'>
-                  <LightBulbIcon className='w-5 h-5 text-accent-600' />
+              <div className={styles.keyFeatures}>
+                <h4 className={styles.featuresTitle}>
+                  <LightBulbIcon className={styles.featuresTitleIcon} />
                   Why Our AI Assistant?
                 </h4>
-                <ul className='space-y-3'>
-                  <li className='flex items-start gap-3'>
-                    <CheckCircleIcon className='w-5 h-5 text-success-600 mt-0.5 flex-shrink-0' />
-                    <div>
-                      <div className='font-medium text-secondary-900'>Expert Knowledge Base</div>
-                      <div className='text-sm text-secondary-600'>
+                <ul className={styles.featuresList}>
+                  <li className={styles.featureItem}>
+                    <CheckCircleIcon className={styles.featureIcon} />
+                    <div className={styles.featureContent}>
+                      <div className={styles.featureTitle}>Expert Knowledge Base</div>
+                      <div className={styles.featureDescription}>
                         Trained on comprehensive thermal dynamics and cooling system data
                       </div>
                     </div>
                   </li>
-                  <li className='flex items-start gap-3'>
-                    <CheckCircleIcon className='w-5 h-5 text-success-600 mt-0.5 flex-shrink-0' />
-                    <div>
-                      <div className='font-medium text-secondary-900'>Real-Time Calculations</div>
-                      <div className='text-sm text-secondary-600'>
+                  <li className={styles.featureItem}>
+                    <CheckCircleIcon className={styles.featureIcon} />
+                    <div className={styles.featureContent}>
+                      <div className={styles.featureTitle}>Real-Time Calculations</div>
+                      <div className={styles.featureDescription}>
                         Instant thermal analysis and performance predictions
                       </div>
                     </div>
                   </li>
-                  <li className='flex items-start gap-3'>
-                    <CheckCircleIcon className='w-5 h-5 text-success-600 mt-0.5 flex-shrink-0' />
-                    <div>
-                      <div className='font-medium text-secondary-900'>
-                        Personalized Recommendations
-                      </div>
-                      <div className='text-sm text-secondary-600'>
+                  <li className={styles.featureItem}>
+                    <CheckCircleIcon className={styles.featureIcon} />
+                    <div className={styles.featureContent}>
+                      <div className={styles.featureTitle}>Personalized Recommendations</div>
+                      <div className={styles.featureDescription}>
                         Tailored advice based on your specific hardware and use case
                       </div>
                     </div>
                   </li>
-                  <li className='flex items-start gap-3'>
-                    <CheckCircleIcon className='w-5 h-5 text-success-600 mt-0.5 flex-shrink-0' />
-                    <div>
-                      <div className='font-medium text-secondary-900'>24/7 Availability</div>
-                      <div className='text-sm text-secondary-600'>
+                  <li className={styles.featureItem}>
+                    <CheckCircleIcon className={styles.featureIcon} />
+                    <div className={styles.featureContent}>
+                      <div className={styles.featureTitle}>24/7 Availability</div>
+                      <div className={styles.featureDescription}>
                         Always ready to help with technical questions and support
                       </div>
                     </div>
@@ -426,14 +391,12 @@ export const AIAssistantPreview: React.FC = () => {
               </div>
 
               {/* CTA */}
-              <div className='text-center'>
-                <button className='btn-primary btn-lg flex items-center gap-2 mx-auto'>
-                  <ChatBubbleLeftRightIcon className='w-5 h-5' />
+              <div className={styles.ctaSection}>
+                <button className={styles.ctaButton}>
+                  <ChatBubbleLeftRightIcon className={styles.ctaButtonIcon} />
                   Start Conversation
                 </button>
-                <p className='text-xs text-secondary-500 mt-2'>
-                  Free technical consultation • No signup required
-                </p>
+                <p className={styles.ctaNote}>Free technical consultation • No signup required</p>
               </div>
             </div>
           </div>

@@ -1,0 +1,191 @@
+/* TechnologyOverview CSS Module */
+
+.technologySection {
+  position: relative;
+  background-color: var(--color-section-background);
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  border-top: 12px solid white;
+}
+
+.container {
+  max-width: 1152px; /* max-w-6xl */
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.titleIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-primary-600);
+}
+
+.title {
+  margin-top: var(--spacing-section-title-top);
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+.featuresGrid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .featuresGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.featureCard {
+  background: white;
+  padding: 0.75rem;
+  border-radius: var(--radius-equipment);
+  box-shadow: var(--shadow-cooling);
+  transition: var(--transition-transform);
+}
+
+.featureCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.featureContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.featureIcon {
+  color: var(--color-primary-600);
+  flex-shrink: 0;
+}
+
+.featureIcon svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.featureDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.featureTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-secondary-900);
+}
+
+.featureDescription {
+  color: var(--color-secondary-600);
+  line-height: 1.625;
+}
+
+.featureHighlight {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary-600);
+}
+
+.comparisonSection {
+  background: var(--color-secondary-50);
+  border-radius: var(--radius-equipment);
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.comparisonTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-secondary-900);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.comparisonTable {
+  width: 100%;
+}
+
+.tableHeader {
+  border-bottom: 1px solid var(--color-secondary-200);
+}
+
+.tableHeaderCell {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+.tableHeaderCellLeft {
+  text-align: left;
+  color: var(--color-secondary-900);
+}
+
+.tableHeaderCellCenter {
+  text-align: center;
+  color: var(--color-secondary-600);
+}
+
+.tableHeaderCellPrimary {
+  text-align: center;
+  color: var(--color-primary-600);
+}
+
+.tableBody {
+  font-size: 0.875rem;
+}
+
+.tableRow {
+  border-bottom: 1px solid var(--color-secondary-200);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableCell {
+  padding: 0.75rem 1rem;
+}
+
+.tableCellLeft {
+  font-weight: 500;
+}
+
+.tableCellCenter {
+  text-align: center;
+  color: var(--color-secondary-600);
+}
+
+.tableCellPrimary {
+  text-align: center;
+  color: var(--color-primary-600);
+  font-weight: 600;
+}

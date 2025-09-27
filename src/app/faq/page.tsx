@@ -1,7 +1,9 @@
 import { Metadata } from 'next'
 import { FAQ_CONTENT } from '@/data/faq-content'
 import { FAQSection } from '@/components/sections/FAQSection'
+import { COMPANY_INFO } from '@/constants'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
+import styles from './faq.module.css'
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions | Two-Phase Cooling Technology',
@@ -30,26 +32,13 @@ export const metadata: Metadata = {
  */
 export default function FAQPage() {
   return (
-    <div className='min-h-screen'>
+    <div className={styles.faqPage}>
       {/* Hero Section */}
-      <div
-        id='hero'
-        className='relative pt-6 pb-12'
-        aria-labelledby='hero-heading'
-        style={{
-          backgroundColor: '#e2e8f0',
-          width: '100vw',
-          position: 'relative',
-          left: '50%',
-          right: '50%',
-          marginLeft: '-50vw',
-          marginRight: '-50vw',
-        }}
-      >
-        <div className='max-w-6xl mx-auto px-6'>
-          <div className='text-center space-y-6 max-w-4xl mx-auto'>
-            <div className='flex items-center justify-center gap-2'>
-              <QuestionMarkCircleIcon className='w-8 h-8 text-primary-600' />
+      <div id='hero' className={styles.heroSection} aria-labelledby='hero-heading'>
+        <div className={styles.container}>
+          <div className={styles.heroContent}>
+            <div className={styles.heroTitle}>
+              <QuestionMarkCircleIcon className={styles.heroIcon} />
               <h1
                 id='hero-heading'
                 className='section-title text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary-900'
@@ -65,19 +54,9 @@ export default function FAQPage() {
       <section
         id='faq-content'
         aria-labelledby='faq-content-heading'
-        style={{
-          backgroundColor: 'var(--color-section-background)',
-          paddingTop: 'var(--spacing-section-top)',
-          paddingBottom: 'var(--spacing-section-bottom)',
-          width: '100vw',
-          position: 'relative',
-          left: '50%',
-          right: '50%',
-          marginLeft: '-50vw',
-          marginRight: '-50vw',
-        }}
+        className={styles.faqContentSection}
       >
-        <div className='max-w-6xl mx-auto px-6'>
+        <div className={styles.container}>
           <FAQSection />
         </div>
       </section>
@@ -86,33 +65,19 @@ export default function FAQPage() {
       <section
         id='contact-support'
         aria-labelledby='contact-heading'
-        style={{
-          backgroundColor: 'var(--color-section-background)',
-          paddingTop: 'var(--spacing-section-top)',
-          paddingBottom: 'var(--spacing-section-bottom)',
-          width: '100vw',
-          position: 'relative',
-          left: '50%',
-          right: '50%',
-          marginLeft: '-50vw',
-          marginRight: '-50vw',
-          borderTop: 'var(--spacing-between-sections) solid white',
-        }}
+        className={styles.contactSection}
       >
-        <div className='max-w-6xl mx-auto px-6'>
-          <div className='text-center space-y-6 max-w-2xl mx-auto'>
-            <h2
-              id='contact-heading'
-              className='section-title text-2xl font-bold text-secondary-900'
-            >
+        <div className={styles.container}>
+          <div className={styles.contactContent}>
+            <h2 id='contact-heading' className={styles.contactTitle}>
               Still have questions?
             </h2>
-            <p className='text-secondary-700'>
+            <p className={styles.contactDescription}>
               Can&apos;t find the answer you&apos;re looking for? Our technical team is here to help
               with any questions about two-phase cooling technology.
             </p>
-            <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-              <a href='#contact' className='btn-primary'>
+            <div className={styles.contactActions}>
+              <a href={`mailto:${COMPANY_INFO.EMAIL}`} className='btn-primary'>
                 Contact Technical Support
               </a>
               <a href='#ai-assistant' className='btn-secondary'>

@@ -8,6 +8,8 @@ import {
   PhoneIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline'
+import { COMPANY_INFO, SOCIAL_MEDIA, TECHNICAL_SPECS } from '@/constants'
+import styles from './Footer.module.css'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -42,20 +44,15 @@ const FOOTER_SECTIONS: FooterSection[] = []
 const SOCIAL_LINKS: SocialLink[] = [
   {
     platform: 'YouTube',
-    href: 'https://youtube.com/thermaledcenter',
+    href: `https://youtube.com/${SOCIAL_MEDIA.YOUTUBE}`,
     icon: '📺',
   },
   {
     platform: 'Twitter',
-    href: 'https://twitter.com/thermaledcenter',
+    href: `https://twitter.com/${SOCIAL_MEDIA.TWITTER}`,
     icon: '🐦',
   },
 ]
-
-const CONTACT_INFO = {
-  email: 'info@thermaledcenter.com',
-  phone: '+1 (555) 123-4567',
-}
 
 // ============================================================================
 // FOOTER COMPONENT
@@ -77,11 +74,11 @@ export const Footer: React.FC = () => {
                 href='/'
                 className='flex items-center gap-3 hover:opacity-80 transition-opacity'
               >
-                <div className='w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-equipment flex items-center justify-center'>
-                  <BeakerIcon className='w-6 h-6 text-white' />
+                <div className={styles.logoContainer}>
+                  <BeakerIcon className={styles.logoIcon} />
                 </div>
                 <div>
-                  <div className='font-bold text-lg'>Thermal Ed Center</div>
+                  <div className='font-bold text-lg'>{COMPANY_INFO.NAME}</div>
                   <div className='text-xs text-secondary-400'>Two-Phase Cooling Innovation</div>
                 </div>
               </Link>
@@ -97,7 +94,7 @@ export const Footer: React.FC = () => {
                 <h4 className='font-semibold text-success-400 mb-2'>Environmental Impact</h4>
                 <div className='grid grid-cols-2 gap-3 text-xs'>
                   <div>
-                    <div className='font-medium text-white'>GWP 20</div>
+                    <div className='font-medium text-white'>GWP {TECHNICAL_SPECS.GWP_RATING}</div>
                     <div className='text-secondary-400'>vs 1400 traditional</div>
                   </div>
                   <div>
@@ -143,21 +140,21 @@ export const Footer: React.FC = () => {
               <h3 className='font-semibold text-white'>Contact</h3>
               <div className='space-y-3 text-sm'>
                 <div className='flex items-start gap-2'>
-                  <EnvelopeIcon className='w-4 h-4 text-primary-400 mt-0.5 flex-shrink-0' />
+                  <EnvelopeIcon className={styles.contactIcon} />
                   <Link
-                    href={`mailto:${CONTACT_INFO.email}`}
+                    href={`mailto:${COMPANY_INFO.EMAIL}`}
                     className='text-secondary-300 hover:text-primary-400 transition-colors'
                   >
-                    {CONTACT_INFO.email}
+                    {COMPANY_INFO.EMAIL}
                   </Link>
                 </div>
                 <div className='flex items-start gap-2'>
-                  <PhoneIcon className='w-4 h-4 text-primary-400 mt-0.5 flex-shrink-0' />
+                  <PhoneIcon className={styles.contactIcon} />
                   <Link
-                    href={`tel:${CONTACT_INFO.phone}`}
+                    href={`tel:${COMPANY_INFO.PHONE}`}
                     className='text-secondary-300 hover:text-primary-400 transition-colors'
                   >
-                    {CONTACT_INFO.phone}
+                    {COMPANY_INFO.PHONE}
                   </Link>
                 </div>
                 {/* Address section removed for simplicity */}
@@ -174,7 +171,7 @@ export const Footer: React.FC = () => {
                     href={social.href}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='w-10 h-10 bg-secondary-800 hover:bg-primary-600 rounded-equipment flex items-center justify-center transition-colors group'
+                    className={styles.socialContainer}
                     title={social.platform}
                   >
                     <span className='text-lg group-hover:scale-110 transition-transform'>
@@ -204,7 +201,7 @@ export const Footer: React.FC = () => {
           <div className='flex flex-col md:flex-row items-center justify-between gap-4'>
             {/* Copyright */}
             <div className='text-sm text-secondary-400'>
-              © {currentYear} Thermal Education Center. All rights reserved.
+              © {currentYear} {COMPANY_INFO.NAME}. All rights reserved.
             </div>
 
             {/* Legal Links */}

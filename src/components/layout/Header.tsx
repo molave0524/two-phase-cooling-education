@@ -11,8 +11,9 @@ import {
   ChatBubbleLeftRightIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
+  ShoppingBagIcon,
 } from '@heroicons/react/24/outline'
-import CartButton from '@/components/cart/CartButton'
+import { useCartStore } from '@/stores/cartStore'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -225,7 +226,14 @@ const DropdownMenu: React.FC<{ item: NavigationItem }> = ({ item }) => {
 
 export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
   const pathname = usePathname()
+  const { itemCount } = useCartStore()
+
+  // Wait for hydration before showing cart count
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   // Handle route changes - simplified for CSS Modules
   useEffect(() => {
@@ -281,14 +289,114 @@ export const Header: React.FC = () => {
                   <MagnifyingGlassIcon className={styles.actionIcon} />
                 </Link>
 
-                {/* Cart Icon - Apple style */}
-                <CartButton />
+                {/* Cart Icon - Working Solution */}
+                <Link
+                  href='/cart'
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '28px',
+                    height: '28px',
+                    backgroundColor: '#f3f4f6',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    color: '#374151',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.backgroundColor = '#3b82f6'
+                    e.currentTarget.style.color = 'white'
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.backgroundColor = '#f3f4f6'
+                    e.currentTarget.style.color = '#374151'
+                  }}
+                  title={`Shopping Cart (${itemCount} items)`}
+                >
+                  🛒
+                  {isHydrated && itemCount > 0 && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                        fontSize: '10px',
+                        fontWeight: 'bold',
+                        borderRadius: '50%',
+                        minWidth: '14px',
+                        height: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px solid white',
+                      }}
+                    >
+                      {itemCount > 99 ? '99+' : itemCount}
+                    </span>
+                  )}
+                </Link>
               </div>
 
               {/* Mobile Menu Button */}
               <div className={styles.mobileActions}>
                 {/* Mobile Cart */}
-                <CartButton />
+                <Link
+                  href='/cart'
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '26px',
+                    height: '26px',
+                    backgroundColor: '#f3f4f6',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    color: '#374151',
+                    textDecoration: 'none',
+                    fontSize: '12px',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.backgroundColor = '#3b82f6'
+                    e.currentTarget.style.color = 'white'
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.backgroundColor = '#f3f4f6'
+                    e.currentTarget.style.color = '#374151'
+                  }}
+                  title={`Shopping Cart (${itemCount} items)`}
+                >
+                  🛒
+                  {isHydrated && itemCount > 0 && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                        fontSize: '8px',
+                        fontWeight: 'bold',
+                        borderRadius: '50%',
+                        minWidth: '12px',
+                        height: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px solid white',
+                      }}
+                    >
+                      {itemCount > 99 ? '99+' : itemCount}
+                    </span>
+                  )}
+                </Link>
 
                 <button
                   onClick={() => setIsMobileMenuOpen(true)}

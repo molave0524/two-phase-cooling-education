@@ -9,12 +9,14 @@ import { stripePromise } from '@/lib/stripe'
 import { ShippingForm } from '@/components/checkout/ShippingForm'
 import { PaymentForm } from '@/components/checkout/PaymentForm'
 import { Order, OrderCustomer, OrderShippingAddress } from '@/lib/orders'
+import { CART_CONFIG } from '@/constants'
 import {
   TruckIcon,
   ShieldCheckIcon,
   ChevronRightIcon,
   LockClosedIcon,
 } from '@heroicons/react/24/outline'
+import styles from './checkout.module.css'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -25,13 +27,19 @@ export default function CheckoutPage() {
   const [isProcessing] = useState(false)
   const [customer, setCustomer] = useState<OrderCustomer | null>(null)
   const [shippingAddress, setShippingAddress] = useState<OrderShippingAddress | null>(null)
+  const [isHydrated, setIsHydrated] = useState(false)
 
-  // Redirect if cart is empty
+  // Wait for hydration before checking cart
   useEffect(() => {
-    if (itemCount === 0) {
+    setIsHydrated(true)
+  }, [])
+
+  // Redirect if cart is empty (only after hydration)
+  useEffect(() => {
+    if (isHydrated && itemCount === 0) {
       router.push('/cart')
     }
-  }, [itemCount, router])
+  }, [isHydrated, itemCount, router])
 
   const handleShippingSubmit = (
     customerData: OrderCustomer,
@@ -77,9 +85,9 @@ export default function CheckoutPage() {
 
   if (itemCount === 0) {
     return (
-      <div className='container mx-auto px-4 py-8'>
-        <div className='text-center'>
-          <h1 className='text-2xl font-bold mb-4'>Your cart is empty</h1>
+      <div className={styles.emptyCartContainer}>
+        <div className={styles.emptyCartContent}>
+          <h1 className={styles.emptyCartTitle}>Your cart is empty</h1>
           <Link href='/products' className='btn btn-primary'>
             Continue Shopping
           </Link>
@@ -89,49 +97,61 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className='min-h-screen bg-secondary-50'>
-      <div className='container mx-auto px-4 py-8'>
+    <div className={styles.checkoutPage}>
+      <div className={styles.container}>
         {/* Header */}
-        <div className='mb-8'>
-          <h1 className='text-3xl font-bold text-secondary-900 mb-2'>Secure Checkout</h1>
-          <div className='flex items-center text-sm text-secondary-600'>
-            <LockClosedIcon className='w-4 h-4 mr-1' />
+        <div className={styles.header}>
+          <h1 className={styles.headerTitle}>Secure Checkout</h1>
+          <div className={styles.securityNotice}>
+            <LockClosedIcon className={styles.securityIcon} />
             SSL Secured • Your information is protected
           </div>
         </div>
 
         {/* Progress Steps */}
-        <div className='mb-8'>
-          <div className='flex items-center justify-center'>
+        <div className={styles.progressSection}>
+          <div className={styles.progressContainer}>
             <div
-              className={`flex items-center ${step === 'shipping' ? 'text-primary-600' : 'text-success-600'}`}
+              className={`${styles.progressStep} ${
+                step === 'shipping' ? styles.progressStepActive : styles.progressStepCompleted
+              }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === 'shipping' ? 'bg-primary-100 border-2 border-primary-600' : 'bg-success-100 border-2 border-success-600'}`}
+                className={`${styles.progressStepIcon} ${
+                  step === 'shipping'
+                    ? styles.progressStepIconActive
+                    : styles.progressStepIconCompleted
+                }`}
               >
                 1
               </div>
-              <span className='ml-2 text-sm font-medium'>Shipping</span>
+              <span className={styles.progressStepLabel}>Shipping</span>
             </div>
 
-            <ChevronRightIcon className='w-5 h-5 mx-4 text-secondary-400' />
+            <ChevronRightIcon className={styles.progressArrow} />
 
             <div
-              className={`flex items-center ${step === 'payment' ? 'text-primary-600' : 'text-secondary-400'}`}
+              className={`${styles.progressStep} ${
+                step === 'payment' ? styles.progressStepActive : styles.progressStepInactive
+              }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === 'payment' ? 'bg-primary-100 border-2 border-primary-600' : 'bg-secondary-200 border-2 border-secondary-400'}`}
+                className={`${styles.progressStepIcon} ${
+                  step === 'payment'
+                    ? styles.progressStepIconActive
+                    : styles.progressStepIconInactive
+                }`}
               >
                 2
               </div>
-              <span className='ml-2 text-sm font-medium'>Payment</span>
+              <span className={styles.progressStepLabel}>Payment</span>
             </div>
           </div>
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+        <div className={styles.mainGrid}>
           {/* Main Content */}
-          <div className='lg:col-span-2'>
+          <div className={styles.mainContent}>
             {step === 'shipping' && (
               <ShippingForm onSubmit={handleShippingSubmit} isLoading={isProcessing} />
             )}
@@ -150,12 +170,11 @@ export default function CheckoutPage() {
             )}
 
             {step === 'payment' && (!customer || !shippingAddress) && (
-              <div className='bg-yellow-50 border border-yellow-200 rounded-md p-4'>
-                <p className='text-yellow-800'>Please complete the shipping information first.</p>
-                <button
-                  onClick={() => setStep('shipping')}
-                  className='mt-2 text-yellow-600 hover:text-yellow-700 font-medium'
-                >
+              <div className={styles.warningCard}>
+                <p className={styles.warningText}>
+                  Please complete the shipping information first.
+                </p>
+                <button onClick={() => setStep('shipping')} className={styles.warningButton}>
                   Go back to shipping
                 </button>
               </div>
@@ -163,18 +182,16 @@ export default function CheckoutPage() {
           </div>
 
           {/* Order Summary Sidebar */}
-          <div className='lg:col-span-1'>
-            <div className='bg-white rounded-lg shadow-sm p-6 sticky top-8'>
-              <h3 className='text-lg font-semibold text-secondary-900 mb-4'>Order Summary</h3>
+          <div>
+            <div className={styles.orderSummary}>
+              <h3 className={styles.orderSummaryTitle}>Order Summary</h3>
 
               {/* Applied Coupon */}
               {appliedCoupon && (
-                <div className='mb-4 p-3 bg-success-50 border border-success-200 rounded-lg'>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-sm font-medium text-success-800'>
-                      Coupon: {appliedCoupon.code}
-                    </span>
-                    <span className='text-sm text-success-700'>
+                <div className={styles.appliedCoupon}>
+                  <div className={styles.appliedCouponContent}>
+                    <span className={styles.appliedCouponCode}>Coupon: {appliedCoupon.code}</span>
+                    <span className={styles.appliedCouponValue}>
                       -
                       {appliedCoupon.type === 'percentage'
                         ? `${appliedCoupon.value}%`
@@ -185,53 +202,54 @@ export default function CheckoutPage() {
               )}
 
               {/* Price Breakdown */}
-              <div className='space-y-2 mb-4'>
-                <div className='flex justify-between text-sm'>
-                  <span className='text-secondary-600'>Subtotal ({itemCount} items):</span>
-                  <span className='text-secondary-900'>${subtotal.toFixed(2)}</span>
+              <div className={styles.priceBreakdown}>
+                <div className={styles.priceRow}>
+                  <span className={styles.priceLabel}>Subtotal ({itemCount} items):</span>
+                  <span className={styles.priceValue}>${subtotal.toFixed(2)}</span>
                 </div>
 
-                <div className='flex justify-between text-sm'>
-                  <span className='text-secondary-600'>Shipping:</span>
-                  <span className='text-secondary-900'>
+                <div className={styles.priceRow}>
+                  <span className={styles.priceLabel}>Shipping:</span>
+                  <span className={styles.priceValue}>
                     {shipping > 0 ? (
                       `$${shipping.toFixed(2)}`
                     ) : (
-                      <span className='text-success-600 font-medium'>FREE</span>
+                      <span className={styles.priceValueFree}>FREE</span>
                     )}
                   </span>
                 </div>
 
-                <div className='flex justify-between text-sm'>
-                  <span className='text-secondary-600'>Tax:</span>
-                  <span className='text-secondary-900'>${tax.toFixed(2)}</span>
+                <div className={styles.priceRow}>
+                  <span className={styles.priceLabel}>Tax:</span>
+                  <span className={styles.priceValue}>${tax.toFixed(2)}</span>
                 </div>
 
-                {subtotal < 500 && (
-                  <div className='text-xs text-secondary-500 mt-2'>
-                    Add ${(500 - subtotal).toFixed(2)} more for free shipping
+                {subtotal < CART_CONFIG.FREE_SHIPPING_THRESHOLD && (
+                  <div className={styles.shippingNotice}>
+                    Add ${(CART_CONFIG.FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} more for free
+                    shipping
                   </div>
                 )}
               </div>
 
               {/* Total */}
-              <div className='flex justify-between items-center py-3 border-t border-secondary-300'>
-                <span className='text-lg font-semibold text-secondary-900'>Total:</span>
-                <span className='text-lg font-bold text-primary-600'>${total.toFixed(2)}</span>
+              <div className={styles.totalRow}>
+                <span className={styles.totalLabel}>Total:</span>
+                <span className={styles.totalValue}>${total.toFixed(2)}</span>
               </div>
 
               {/* Security Features */}
-              <div className='mt-6 space-y-2'>
-                <div className='flex items-center text-sm text-secondary-600'>
-                  <ShieldCheckIcon className='w-4 h-4 mr-2 text-success-500' />
+              <div className={styles.securityFeatures}>
+                <div className={styles.securityFeature}>
+                  <ShieldCheckIcon className={styles.securityFeatureIcon} />
                   SSL Secure Checkout
                 </div>
-                <div className='flex items-center text-sm text-secondary-600'>
-                  <TruckIcon className='w-4 h-4 mr-2 text-success-500' />
+                <div className={styles.securityFeature}>
+                  <TruckIcon className={styles.securityFeatureIcon} />
                   Free Returns
                 </div>
-                <div className='flex items-center text-sm text-secondary-600'>
-                  <ShieldCheckIcon className='w-4 h-4 mr-2 text-success-500' />
+                <div className={styles.securityFeature}>
+                  <ShieldCheckIcon className={styles.securityFeatureIcon} />
                   5-Year Warranty
                 </div>
               </div>

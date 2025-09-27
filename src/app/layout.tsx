@@ -4,6 +4,7 @@ import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
 // Toaster is now handled in Providers
 
 // Apple-style system font stack for optimal performance and Apple look
@@ -12,8 +13,8 @@ import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 // SEO optimized metadata for Two-Phase Cooling Education Center
 export const metadata: Metadata = {
   title: {
-    default: 'Two-Phase Cooling Education Center | Advanced Computer Case Technology',
-    template: '%s | Two-Phase Cooling Education',
+    default: `${COMPANY_INFO.NAME} | Advanced Computer Case Technology`,
+    template: `%s | ${COMPANY_INFO.NAME}`,
   },
   description:
     'Discover the future of computer cooling with our innovative two-phase cooling case. Learn through interactive demonstrations how superior thermal performance revolutionizes high-performance computing.',
@@ -29,16 +30,16 @@ export const metadata: Metadata = {
     'computer hardware',
     'thermal management',
   ],
-  authors: [{ name: 'Two-Phase Cooling Innovation Team' }],
-  creator: 'Two-Phase Cooling Education Center',
-  publisher: 'Two-Phase Cooling Technologies',
+  authors: [{ name: `${COMPANY_INFO.NAME} Innovation Team` }],
+  creator: COMPANY_INFO.NAME,
+  publisher: COMPANY_INFO.NAME,
 
   // Open Graph for social media sharing
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://twophasecooling.com',
-    siteName: 'Two-Phase Cooling Education Center',
+    url: `https://${COMPANY_INFO.DOMAIN}`,
+    siteName: COMPANY_INFO.NAME,
     title: 'Revolutionary Two-Phase Cooling Technology',
     description:
       'Experience the future of computer cooling through interactive demonstrations and educational content.',
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
     title: 'Revolutionary Two-Phase Cooling Technology',
     description: 'Experience the future of computer cooling through interactive demonstrations.',
     images: ['/images/twitter-image.jpg'],
-    creator: '@TwoPhaseCooling',
+    creator: SOCIAL_MEDIA.TWITTER,
   },
 
   // Search engine optimization
@@ -76,8 +77,8 @@ export const metadata: Metadata = {
 
   // Structured data for rich snippets
   other: {
-    'application-name': 'Two-Phase Cooling Education',
-    'apple-mobile-web-app-title': 'Two-Phase Cooling',
+    'application-name': COMPANY_INFO.NAME,
+    'apple-mobile-web-app-title': COMPANY_INFO.NAME,
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'format-detection': 'telephone=no',
@@ -100,17 +101,17 @@ export const metadata: Metadata = {
   // App links for mobile
   appLinks: {
     web: {
-      url: 'https://twophasecooling.com',
+      url: `https://${COMPANY_INFO.DOMAIN}`,
       should_fallback: true,
     },
   },
 
   // Alternate languages (future expansion)
   alternates: {
-    canonical: 'https://twophasecooling.com',
+    canonical: `https://${COMPANY_INFO.DOMAIN}`,
     languages: {
-      'en-US': 'https://twophasecooling.com',
-      'en-CA': 'https://twophasecooling.com/ca',
+      'en-US': `https://${COMPANY_INFO.DOMAIN}`,
+      'en-CA': `https://${COMPANY_INFO.DOMAIN}/ca`,
     },
   },
 

@@ -1,0 +1,209 @@
+/* Call to Action Section CSS Module */
+
+.ctaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+/* Newsletter Signup */
+.newsletterSection {
+  background: linear-gradient(to right, var(--color-primary-600), var(--color-primary-800));
+  border-radius: var(--radius-equipment);
+  padding: var(--space-8);
+  color: white;
+}
+
+.newsletterContainer {
+  max-width: 768px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.newsletterTitle {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+.newsletterDescription {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Newsletter CTA */
+.ctaButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.subscribeButton {
+  padding: var(--space-3) var(--space-6);
+  background: white;
+  color: var(--color-primary-700);
+  border: none;
+  border-radius: var(--radius-equipment);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-colors);
+}
+
+.subscribeButton:hover {
+  background: var(--color-secondary-50);
+  transform: translateY(-1px);
+}
+
+.benefits {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.7);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .benefits {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+/* Newsletter Form */
+.newsletterForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 448px;
+  margin: 0 auto;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.formInput {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-technical);
+  font-size: var(--text-base);
+  color: var(--color-secondary-900);
+  background: white;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.formSelect {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-technical);
+  font-size: var(--text-base);
+  color: var(--color-secondary-900);
+  background: white;
+}
+
+.formSelect:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Interests Section */
+.interestsWrapper {
+  text-align: left;
+}
+
+.interestsLabel {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--space-2);
+}
+
+.interestsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.interestItem {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-sm);
+}
+
+.interestCheckbox {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-primary-300);
+  color: var(--color-primary-600);
+  margin-right: var(--space-2);
+}
+
+.interestCheckbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-500);
+}
+
+.interestLabel {
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.submitButton {
+  flex: 1;
+  padding: var(--space-3) var(--space-6);
+  background: white;
+  color: var(--color-primary-700);
+  border: none;
+  border-radius: var(--radius-technical);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-colors);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--color-secondary-50);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-primary-400);
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border-radius: var(--radius-technical);
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: all var(--transition-colors);
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

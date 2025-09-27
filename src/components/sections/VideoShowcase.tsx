@@ -200,8 +200,8 @@ export const VideoShowcase: React.FC = () => {
         <div className={styles.contentWrapper}>
           {/* Section Header */}
           <div className={styles.header}>
-            <div className='flex items-center justify-center gap-2'>
-              <VideoCameraIcon className='w-8 h-8 text-primary-600' />
+            <div className={styles.titleWrapper}>
+              <VideoCameraIcon className={styles.titleIcon} />
               <h2 id='demonstrations-heading' className={styles.title}>
                 Demos
               </h2>
@@ -233,7 +233,7 @@ export const VideoShowcase: React.FC = () => {
                       </div>
                       <div className={styles.videoMeta}>
                         <div className={styles.metaItem}>
-                          <ClockIcon className='w-4 h-4' />
+                          <ClockIcon className={styles.smallIcon} />
                           <span>{formatDuration(selectedVideo.duration_seconds)}</span>
                         </div>
                       </div>

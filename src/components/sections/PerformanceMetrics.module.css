@@ -1,5 +1,99 @@
 /* Performance Metrics Section - Dedicated CSS Module */
 
+/* Section Wrapper */
+.sectionWrapper {
+  background-color: var(--color-section-background);
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding-top: var(--spacing-section-top);
+  padding-bottom: var(--spacing-section-bottom);
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  border-top: var(--spacing-between-sections) solid white;
+}
+
+/* Container with proper responsive padding */
+.container {
+  max-width: 1152px; /* max-w-6xl */
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Section Header Styles */
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.titleIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-primary-600);
+}
+
+/* Smaller icons for metrics and details */
+.smallIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.tinyIcon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.metricIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.trendIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.checkIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* Content wrapper with spacing */
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Section header */
+.sectionHeader {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 /* Performance Metrics Component using Design Token System */
 .performanceSection {
   /* Use centralized design tokens instead of hardcoded values */

@@ -54,6 +54,18 @@
   --color-danger-800: #991b1b;
   --color-danger-900: #7f1d1d;
 
+  /* Accent Colors - Highlight and Special States */
+  --color-accent-50: #fef3c7;
+  --color-accent-100: #fde68a;
+  --color-accent-200: #fcd34d;
+  --color-accent-300: #fbbf24;
+  --color-accent-400: #f59e0b;
+  --color-accent-500: #d97706;
+  --color-accent-600: #b45309;
+  --color-accent-700: #92400e;
+  --color-accent-800: #78350f;
+  --color-accent-900: #5b2c0f;
+
   /* ============================================================================
    * COMPONENT-SPECIFIC TOKENS
    * ============================================================================ */
@@ -162,6 +174,8 @@
   --radius-md: 0.5rem; /* 8px - standard radius */
   --radius-lg: 0.75rem; /* 12px - equipment panels */
   --radius-full: 9999px; /* pill shape */
+  --radius-technical: var(--radius-sm); /* alias for technical components */
+  --radius-equipment: var(--radius-lg); /* alias for equipment panels */
 
   /* ============================================================================
    * SHADOW TOKENS
@@ -172,6 +186,7 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
   --shadow-cooling: 0 0 0 1px rgb(14 165 233 / 0.1), 0 4px 6px -1px rgb(14 165 233 / 0.1);
   --shadow-thermal: 0 0 0 1px rgb(239 68 68 / 0.1), 0 4px 6px -1px rgb(239 68 68 / 0.1);
+  --shadow-glass: var(--shadow-md); /* alias for glassy component shadows */
 
   /* ============================================================================
    * TRANSITION TOKENS

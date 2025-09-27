@@ -55,7 +55,12 @@
       "mcp__ide__getDiagnostics",
       "Bash(tasklist:*)",
       "Bash(Get-Process -Name node)",
-      "Bash(Stop-Process -Force)"
+      "Bash(Stop-Process -Force)",
+      "Bash(npx next:*)",
+      "Bash(Stop-Process -Id 596 -Force)",
+      "Bash(cmd /c:*)",
+      "Bash(copy \".env.example\" \".env.local\")",
+      "Bash(cp:*)"
     ],
     "deny": [],
     "ask": []

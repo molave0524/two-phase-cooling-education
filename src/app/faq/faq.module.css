@@ -1,0 +1,433 @@
+/* FAQ Page CSS Module */
+
+/* Page wrapper */
+.faqPage {
+  min-height: 100vh;
+}
+
+/* Hero section styling */
+.heroSection {
+  background-color: var(--color-secondary-200);
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding-top: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+/* Section wrapper with proper responsive design */
+.faqContentSection {
+  background-color: var(--color-section-background);
+  padding-top: var(--spacing-section-top);
+  padding-bottom: var(--spacing-section-bottom);
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.contactSection {
+  background-color: var(--color-section-background);
+  padding-top: var(--spacing-section-top);
+  padding-bottom: var(--spacing-section-bottom);
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  border-top: var(--spacing-between-sections) solid white;
+}
+
+/* Container with proper responsive padding */
+.container {
+  max-width: 1152px; /* max-w-6xl */
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Hero content styling */
+.heroContent {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 1024px;
+}
+
+.heroTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.heroIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-primary-600);
+}
+
+/* Contact section styling */
+.contactContent {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 512px;
+}
+
+.contactTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-secondary-900);
+  margin-bottom: 1.5rem;
+}
+
+.contactDescription {
+  color: var(--color-secondary-700);
+  margin-bottom: 1.5rem;
+}
+
+.contactActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .contactActions {
+    flex-direction: row;
+  }
+}
+
+/* FAQ Component Wrapper */
+.faqWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Search and filter controls */
+.searchControls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.searchContainer {
+  position: relative;
+  max-width: 384px;
+  margin: 0 auto;
+}
+
+.searchIconContainer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0.75rem;
+  pointer-events: none;
+}
+
+.searchIcon {
+  height: 0.875rem;
+  width: 0.875rem;
+  color: var(--color-secondary-400);
+}
+
+.searchInput {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-equipment);
+  background-color: white;
+  color: var(--color-secondary-900);
+  font-size: 1rem;
+  transition: var(--transition-colors);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+  color: var(--color-secondary-600);
+}
+
+/* Category filters */
+.categoryFilters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.categoryButton {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-equipment);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.categoryButtonActive {
+  background-color: var(--color-primary-600);
+  color: white;
+}
+
+.categoryButtonInactive {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-700);
+}
+
+.categoryButtonInactive:hover {
+  background-color: var(--color-secondary-200);
+}
+
+/* Expand/Collapse controls */
+.expandControls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.expandButton {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.expandButton:hover {
+  color: var(--color-primary-700);
+}
+
+.expandSeparator {
+  color: var(--color-secondary-400);
+}
+
+/* Results count */
+.resultsCount {
+  text-align: center;
+  color: var(--color-secondary-600);
+  font-size: 0.875rem;
+}
+
+/* FAQ Items */
+.faqContainer {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faqItem {
+  background: white;
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-equipment);
+  box-shadow: var(--shadow-sm);
+  transition: var(--shadow-transition);
+}
+
+.faqItem:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.faqButton {
+  width: 100%;
+  padding: 1.5rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-equipment);
+  transition: var(--transition-colors);
+}
+
+.faqButton:hover {
+  background-color: var(--color-secondary-50);
+}
+
+.faqButtonContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.faqQuestion {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-secondary-900);
+  padding-right: 1rem;
+}
+
+.faqCategoryContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.faqCategoryBadge {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-700);
+}
+
+.faqCategoryTechnology {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+}
+
+.faqCategoryPerformance {
+  background-color: var(--color-success-100);
+  color: var(--color-success-800);
+}
+
+.faqCategoryEnvironmental {
+  background-color: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+
+.faqCategorySupport {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-800);
+}
+
+.faqIcon {
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.faqIcon > svg {
+  height: 1.25rem !important;
+  width: 1.25rem !important;
+  color: var(--color-secondary-400);
+}
+
+.faqAnswer {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.faqAnswerContent {
+  border-top: 1px solid var(--color-secondary-200);
+  padding-top: 1rem;
+}
+
+.faqAnswerText {
+  color: var(--color-secondary-700);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.emptyStateMessage {
+  color: var(--color-secondary-500);
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.emptyStateClearButton {
+  color: var(--color-primary-600);
+  background: none;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.emptyStateClearButton:hover {
+  color: var(--color-primary-700);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faqAnswer {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Focus styles for accessibility */
+.searchInput:focus-visible,
+.categoryButton:focus-visible,
+.expandButton:focus-visible,
+.faqButton:focus-visible,
+.emptyStateClearButton:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .faqItem {
+    border-width: 2px;
+  }
+
+  .faqCategoryBadge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .faqItem,
+  .faqButton,
+  .searchInput,
+  .categoryButton,
+  .expandButton {
+    transition: none;
+  }
+
+  .faqAnswer {
+    animation: none;
+  }
+}

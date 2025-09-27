@@ -189,35 +189,22 @@ export const PerformanceMetrics: React.FC = () => {
   const getTrendIcon = (trend: string): JSX.Element => {
     switch (trend) {
       case 'up':
-        return <ArrowTrendingUpIcon className='w-4 h-4 text-success-600' />
+        return <ArrowTrendingUpIcon className={`${styles.trendIcon} text-success-600`} />
       case 'down':
-        return <ArrowTrendingDownIcon className='w-4 h-4 text-success-600' />
+        return <ArrowTrendingDownIcon className={`${styles.trendIcon} text-success-600`} />
       default:
-        return <div className='w-4 h-4 bg-secondary-300 rounded-full' />
+        return <div className={`${styles.trendIcon} bg-secondary-300 rounded-full`} />
     }
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-section-background)',
-        paddingTop: 'var(--spacing-section-top)',
-        paddingBottom: 'var(--spacing-section-bottom)',
-        width: '100vw',
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
-        borderTop: 'var(--spacing-between-sections) solid white',
-      }}
-    >
-      <div className='max-w-6xl mx-auto px-6'>
-        <div className={`${styles.performanceSection} space-y-4`}>
+    <div className={styles.sectionWrapper}>
+      <div className={styles.container}>
+        <div className={`${styles.performanceSection} ${styles.contentWrapper}`}>
           {/* Section Header */}
-          <div className='text-center space-y-1'>
-            <div className='flex items-center justify-center gap-2'>
-              <ChartBarIcon className='w-8 h-8 text-primary-600' />
+          <div className={styles.sectionHeader}>
+            <div className={styles.titleWrapper}>
+              <ChartBarIcon className={styles.titleIcon} />
               <h2
                 id='performance-heading'
                 className='section-title text-3xl font-bold text-secondary-900'
@@ -301,7 +288,7 @@ export const PerformanceMetrics: React.FC = () => {
 
                     {/* Improvement Badge */}
                     <div className='flex items-center gap-2'>
-                      <CheckCircleIcon className='w-4 h-4 text-success-600' />
+                      <CheckCircleIcon className={`${styles.checkIcon} text-success-600`} />
                       <span className='text-sm font-medium text-success-600'>
                         {improvement}% improvement
                       </span>
@@ -363,7 +350,7 @@ export const PerformanceMetrics: React.FC = () => {
                           className={`flex items-center gap-1 text-xs ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
                         >
                           <ClockIcon
-                            className={`w-3 h-3 ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
+                            className={`${styles.tinyIcon} ${isSelected ? 'text-primary-100' : 'text-secondary-600'}`}
                           />
                           <span>{scenario.duration}</span>
                         </div>
@@ -401,7 +388,7 @@ export const PerformanceMetrics: React.FC = () => {
                   <div className='grid grid-cols-2 gap-4'>
                     <div className='space-y-2'>
                       <div className='flex items-center gap-2'>
-                        <BeakerIcon className='w-4 h-4 text-danger-600' />
+                        <BeakerIcon className={`${styles.metricIcon} text-danger-600`} />
                         <span className='text-sm font-medium text-secondary-700'>
                           Max Temperature
                         </span>
@@ -412,7 +399,7 @@ export const PerformanceMetrics: React.FC = () => {
                     </div>
                     <div className='space-y-2'>
                       <div className='flex items-center gap-2'>
-                        <BeakerIcon className='w-4 h-4 text-accent-600' />
+                        <BeakerIcon className={`${styles.metricIcon} text-accent-600`} />
                         <span className='text-sm font-medium text-secondary-700'>
                           Avg Temperature
                         </span>
@@ -423,7 +410,7 @@ export const PerformanceMetrics: React.FC = () => {
                     </div>
                     <div className='space-y-2'>
                       <div className='flex items-center gap-2'>
-                        <BeakerIcon className='w-4 h-4 text-success-600' />
+                        <BeakerIcon className={`${styles.metricIcon} text-success-600`} />
                         <span className='text-sm font-medium text-secondary-700'>Efficiency</span>
                       </div>
                       <div className='text-lg font-bold text-success-600'>
@@ -432,7 +419,7 @@ export const PerformanceMetrics: React.FC = () => {
                     </div>
                     <div className='space-y-2'>
                       <div className='flex items-center gap-2'>
-                        <div className='w-4 h-4 bg-primary-600 rounded-full' />
+                        <div className={`${styles.metricIcon} bg-primary-600 rounded-full`} />
                         <span className='text-sm font-medium text-secondary-700'>Quietness</span>
                       </div>
                       <div className='text-lg font-bold text-primary-600'>
