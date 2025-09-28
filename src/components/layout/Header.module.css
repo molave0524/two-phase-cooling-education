@@ -57,7 +57,7 @@
 .logoIcon {
   font-size: 1.25rem;
   font-weight: 400;
-  color: #4b5563;
+  color: var(--color-secondary-600);
   letter-spacing: -0.025em;
 }
 
@@ -81,7 +81,7 @@
 .navigationLink {
   font-size: 0.875rem;
   font-weight: 400;
-  color: #000000;
+  color: var(--color-secondary-900);
   text-decoration: none;
   padding: 0.25rem 0.5rem;
   transition: color 200ms ease;
@@ -112,7 +112,7 @@
 }
 
 .actionLink {
-  color: #000000;
+  color: var(--color-secondary-900);
   text-decoration: none;
   transition: color 200ms ease;
 }
@@ -140,12 +140,12 @@
 }
 
 .mobileMenuButton {
-  background: #ff0000;
-  border: 2px solid #000000;
+  background: var(--color-danger-500);
+  border: 2px solid var(--color-secondary-900);
   border-radius: 6px;
   cursor: pointer;
   padding: 0.75rem;
-  color: #ffffff;
+  color: var(--color-secondary-50);
   transition: all 200ms ease;
   display: flex;
   align-items: center;
@@ -184,7 +184,7 @@
 }
 
 .mobileMenu {
-  background-color: #e5e7eb;
+  background-color: var(--color-secondary-200);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 1rem;
@@ -217,7 +217,7 @@
 .mobileNavigationLink {
   font-size: 1rem;
   font-weight: 400;
-  color: #000000;
+  color: var(--color-secondary-900);
   text-decoration: none;
   display: block;
   padding: 0.25rem 0;
@@ -230,11 +230,11 @@
 
 /* Alternative background colors for different states */
 .headerLight {
-  background-color: #f9fafb;
+  background-color: var(--color-secondary-50);
 }
 
 .headerDark {
-  background-color: #1f2937;
+  background-color: var(--color-secondary-800);
 }
 
 .headerTransparent {

@@ -53,7 +53,7 @@
 }
 
 .contentWrapper {
-  color: #000000;
+  color: var(--color-secondary-900);
   margin-top: 0;
   padding-top: 0;
 }
@@ -84,7 +84,7 @@
 .title {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #000000;
+  color: var(--color-secondary-900);
   margin-top: 1rem;
   margin-bottom: 0;
 }
@@ -99,7 +99,7 @@
   font-size: 1.25rem;
   max-width: 42rem;
   margin: 2px auto 0;
-  color: #000000;
+  color: var(--color-secondary-900);
 }
 
 .videoGrid {
@@ -140,7 +140,7 @@
 .videoTitle {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #000000;
+  color: var(--color-secondary-900);
   margin: 0;
 }
 
@@ -149,7 +149,7 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-secondary-500);
 }
 
 .metaItem {
@@ -166,18 +166,18 @@
 }
 
 .difficultyBeginner {
-  color: #059669;
-  background-color: #d1fae5;
+  color: var(--color-success-600);
+  background-color: var(--color-success-100);
 }
 
 .difficultyIntermediate {
-  color: #d97706;
-  background-color: #fed7aa;
+  color: var(--color-accent-500);
+  background-color: var(--color-accent-100);
 }
 
 .difficultyAdvanced {
-  color: #dc2626;
-  background-color: #fecaca;
+  color: var(--color-danger-600);
+  background-color: var(--color-danger-100);
 }
 
 .completionRate {
@@ -186,17 +186,17 @@
 
 .completionLabel {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-secondary-500);
 }
 
 .completionValue {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--color-primary-600);
 }
 
 .videoDescription {
-  color: #000000;
+  color: var(--color-secondary-900);
   line-height: 1.6;
   font-size: 0.875rem;
   margin: 0;
@@ -210,7 +210,7 @@
 .playlistTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #000000;
+  color: var(--color-secondary-900);
   margin-bottom: 4px;
 }
 
@@ -225,20 +225,20 @@
   text-align: left;
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  border: 1px solid var(--color-secondary-200);
+  background-color: var(--color-secondary-50);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .playlistItem:hover {
-  border-color: #3b82f6;
+  border-color: var(--color-primary-500);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .playlistItemSelected {
-  background-color: #eff6ff;
-  border: 2px solid #bfdbfe;
+  background-color: var(--color-primary-50);
+  border: 2px solid var(--color-primary-200);
 }
 
 .playlistItemContent {
@@ -250,7 +250,7 @@
   position: relative;
   width: 5rem;
   height: 3rem;
-  background-color: #e5e7eb;
+  background-color: var(--color-secondary-200);
   border-radius: 0.25rem;
   flex-shrink: 0;
   overflow: hidden;
@@ -260,11 +260,11 @@
 }
 
 .playlistThumbnailSelected {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-success-500) 0%, var(--color-success-600) 100%);
 }
 
 .playlistThumbnailDefault {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
 }
 
 .playIcon {
@@ -279,7 +279,7 @@
   right: 0.25rem;
   width: 0.75rem;
   height: 0.75rem;
-  color: #f59e0b;
+  color: var(--color-accent-400);
   fill: currentColor;
 }
 
@@ -289,7 +289,7 @@
   left: 0.25rem;
   width: 0.5rem;
   height: 0.5rem;
-  background-color: #10b981;
+  background-color: var(--color-success-500);
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
@@ -314,7 +314,7 @@
 
 .playlistItemTitle {
   font-weight: 500;
-  color: #000000;
+  color: var(--color-secondary-900);
   font-size: 0.875rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -328,13 +328,13 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-secondary-500);
   margin: 0;
 }
 
 .playlistItemViews {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-secondary-400);
 }
 
 /* Responsive adjustments */

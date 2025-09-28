@@ -5,7 +5,7 @@
 .videoPlayer {
   position: relative;
   width: 100%;
-  background: #1a1a1a;
+  background: var(--color-secondary-800);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -20,7 +20,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background: #000;
+  background: var(--color-secondary-900);
 }
 
 /* Loading States */
@@ -38,7 +38,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top: 3px solid #3b82f6;
+  border-top: 3px solid var(--color-primary-500);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -96,7 +96,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: #3b82f6;
+  background: var(--color-primary-500);
   transition: width 0.1s ease;
 }
 
@@ -106,7 +106,7 @@
   right: -6px;
   width: 12px;
   height: 12px;
-  background: #3b82f6;
+  background: var(--color-primary-500);
   border-radius: 50%;
   transform: translateY(-50%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -138,7 +138,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: #3b82f6;
+  background: var(--color-primary-500);
   border: none;
   border-radius: 50%;
   color: white;
@@ -147,7 +147,7 @@
 }
 
 .playButton:hover {
-  background: #2563eb;
+  background: var(--color-primary-700);
   transform: scale(1.05);
 }
 
@@ -210,7 +210,7 @@
   appearance: none;
   width: 16px;
   height: 16px;
-  background: #3b82f6;
+  background: var(--color-primary-500);
   border-radius: 50%;
   cursor: pointer;
 }
@@ -218,7 +218,7 @@
 .volumeSlider::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background: #3b82f6;
+  background: var(--color-primary-500);
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -257,7 +257,7 @@
 }
 
 .adaptiveButton.active {
-  background: #3b82f6;
+  background: var(--color-primary-500);
   color: white;
 }
 
@@ -281,19 +281,19 @@
 }
 
 .networkDot.excellent {
-  background: #10b981;
+  background: var(--color-success-500);
 }
 
 .networkDot.good {
-  background: #f59e0b;
+  background: var(--color-accent-400);
 }
 
 .networkDot.fair {
-  background: #f97316;
+  background: var(--color-accent-500);
 }
 
 .networkDot.poor {
-  background: #ef4444;
+  background: var(--color-danger-500);
 }
 
 .progressPercentage {
@@ -337,17 +337,17 @@
 
 .difficultyBadge.beginner {
   background: rgba(34, 197, 94, 0.2);
-  color: #22c55e;
+  color: var(--color-success-500);
 }
 
 .difficultyBadge.intermediate {
   background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+  color: var(--color-accent-400);
 }
 
 .difficultyBadge.advanced {
   background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  color: var(--color-danger-500);
 }
 
 /* ============================================================================ */
@@ -534,7 +534,7 @@
 /* Dark mode optimizations */
 @media (prefers-color-scheme: dark) {
   .videoPlayer {
-    background: #0f0f0f;
+    background: var(--color-secondary-900);
   }
 
   .loadingOverlay {
@@ -546,7 +546,7 @@
   }
 
   .qualitySelect option {
-    background: #0f0f0f;
+    background: var(--color-secondary-900);
   }
 }
 
@@ -569,15 +569,15 @@
 /* High contrast mode */
 @media (prefers-contrast: high) {
   .progressBar {
-    background: #000;
-    border: 1px solid #fff;
+    background: var(--color-secondary-900);
+    border: 1px solid var(--color-secondary-50);
   }
 
   .progressFill {
-    background: #fff;
+    background: var(--color-secondary-50);
   }
 
   .playButton {
-    border: 2px solid #fff;
+    border: 2px solid var(--color-secondary-50);
   }
 }
