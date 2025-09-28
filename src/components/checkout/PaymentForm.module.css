@@ -178,23 +178,6 @@
   }
 }
 
-/* Test Card Notice */
-.testNotice {
-  background: var(--color-warning-50);
-  border: 1px solid var(--color-warning-200);
-  border-radius: var(--radius-technical);
-  padding: var(--space-4);
-}
-
-.testNoticeText {
-  font-size: var(--text-sm);
-  color: var(--color-warning-800);
-}
-
-.testNoticeStrong {
-  font-weight: var(--font-weight-bold);
-}
-
 /* ============================================================================ */
 /* RESPONSIVE DESIGN */
 /* ============================================================================ */

@@ -265,16 +265,6 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
             `Pay ${formatCurrency(order.totals?.total || 0)}`
           )}
         </button>
-
-        {/* Test Card Notice (for development) */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className={styles.testNotice}>
-            <p className={styles.testNoticeText}>
-              <span className={styles.testNoticeStrong}>Test Mode:</span> Use test card 4242 4242
-              4242 4242 with any valid expiry and CVC.
-            </p>
-          </div>
-        )}
       </form>
     </div>
   )
