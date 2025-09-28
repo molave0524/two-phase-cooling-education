@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+// Force deployment to pick up Stripe environment variables
 import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { TechnologyOverview } from '@/components/sections/TechnologyOverview'
