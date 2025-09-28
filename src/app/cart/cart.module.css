@@ -602,3 +602,147 @@
   font-size: 0.75rem;
   color: var(--color-secondary-500);
 }
+
+/* Input field overrides - ensure no gray backgrounds */
+.cartPage input,
+.cartPage textarea,
+.cartPage select,
+.cartPage input[type='text'],
+.cartPage input[type='email'],
+.cartPage input[type='number'],
+.cartPage input[type='tel'],
+.cartPage input[type='search'] {
+  background-color: white !important;
+  background: white !important;
+  color: var(--color-secondary-700) !important;
+}
+
+.cartPage input:focus,
+.cartPage textarea:focus,
+.cartPage select:focus,
+.cartPage input[type='text']:focus,
+.cartPage input[type='email']:focus,
+.cartPage input[type='number']:focus,
+.cartPage input[type='tel']:focus,
+.cartPage input[type='search']:focus {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Override any Tailwind gray backgrounds */
+.cartPage .bg-gray-50,
+.cartPage .bg-gray-100,
+.cartPage .bg-gray-200 {
+  background-color: white !important;
+}
+
+/* Override browser autofill gray backgrounds - NUCLEAR OPTION */
+.cartPage input:-webkit-autofill,
+.cartPage input:-webkit-autofill:hover,
+.cartPage input:-webkit-autofill:focus,
+.cartPage input:-webkit-autofill:active,
+.cartPage textarea:-webkit-autofill,
+.cartPage textarea:-webkit-autofill:hover,
+.cartPage textarea:-webkit-autofill:focus,
+.cartPage textarea:-webkit-autofill:active,
+.cartPage select:-webkit-autofill,
+.cartPage select:-webkit-autofill:hover,
+.cartPage select:-webkit-autofill:focus,
+.cartPage select:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: var(--color-secondary-700) !important;
+  background-color: white !important;
+  background-image: none !important;
+  background: white !important;
+  animation: autofill-white 0s forwards !important;
+}
+
+@keyframes autofill-white {
+  to {
+    background-color: white !important;
+    background: white !important;
+  }
+}
+
+/* Firefox autofill override */
+.cartPage input:-moz-autofill,
+.cartPage textarea:-moz-autofill,
+.cartPage select:-moz-autofill {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Override any event-driven background changes */
+.cartPage input[style*='background'],
+.cartPage textarea[style*='background'],
+.cartPage select[style*='background'] {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Force override for any dynamically added styles */
+.cartPage * {
+  background-color: inherit;
+}
+
+.cartPage input,
+.cartPage textarea,
+.cartPage select {
+  background-color: white !important;
+}
+
+/* Additional specificity for any gray colors */
+.cartPage *[style*='rgb(243, 244, 246)'],
+.cartPage *[style*='#f3f4f6'],
+.cartPage *[style*='rgb(249, 250, 251)'],
+.cartPage *[style*='#f9fafb'] {
+  background-color: white !important;
+}
+
+/* Comprehensive autofill and autocomplete override */
+.cartPage input:autofill,
+.cartPage input:-internal-autofill-selected,
+.cartPage input:-internal-autofill-previewed {
+  background-color: white !important;
+  background: white !important;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
+
+/* Global input override for cart page */
+.cartPage {
+  --input-bg: white;
+}
+
+.cartPage input,
+.cartPage textarea,
+.cartPage select {
+  background: var(--input-bg) !important;
+  background-color: var(--input-bg) !important;
+}
+
+/* Ultra-aggressive autofill override */
+.cartPage input {
+  background-color: white !important;
+  background: white !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.cartPage input:focus {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Force override any possible browser styles */
+.cartPage input[autocomplete],
+.cartPage input[autocomplete='on'],
+.cartPage input[autocomplete='email'],
+.cartPage input[autocomplete='name'],
+.cartPage input[autocomplete='tel'],
+.cartPage input[autocomplete='address-line1'],
+.cartPage input[autocomplete='address-line2'],
+.cartPage input[autocomplete='postal-code'] {
+  background-color: white !important;
+  background: white !important;
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}

@@ -47,7 +47,7 @@ interface ViewMode {
 export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   className = '',
   showFilters = false,
-  maxProducts = 4,
+  maxProducts = 6,
 }) => {
   // Get featured products from new data structure
   const featuredProducts = getFeaturedProducts().slice(0, maxProducts)
@@ -227,16 +227,14 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                     </button>
                   </div>
 
-                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+                  <div className={styles.filtersGrid}>
                     {/* Category Filter */}
-                    <div>
-                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                        Category
-                      </label>
+                    <div className={styles.filterGroup}>
+                      <label className={styles.filterLabel}>Category</label>
                       <select
                         value={filters.category}
                         onChange={e => handleFilterChange({ category: e.target.value })}
-                        className='input w-full'
+                        className={styles.filterSelect}
                       >
                         {categories.map(category => (
                           <option key={category} value={category}>
@@ -247,11 +245,9 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                     </div>
 
                     {/* Price Range */}
-                    <div>
-                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                        Price Range
-                      </label>
-                      <div className='space-y-2'>
+                    <div className={styles.filterGroup}>
+                      <label className={styles.filterLabel}>Price Range</label>
+                      <div className={styles.priceRangeGroup}>
                         <input
                           type='range'
                           min='0'
@@ -262,23 +258,21 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                               priceRange: [filters.priceRange[0], parseInt(e.target.value)],
                             })
                           }
-                          className='w-full'
+                          className={styles.filterInput}
                         />
-                        <div className='text-sm text-secondary-600'>
+                        <div className={styles.priceDisplay}>
                           ${filters.priceRange[0]} - ${filters.priceRange[1]}
                         </div>
                       </div>
                     </div>
 
                     {/* Sort By */}
-                    <div>
-                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                        Sort By
-                      </label>
+                    <div className={styles.filterGroup}>
+                      <label className={styles.filterLabel}>Sort By</label>
                       <select
                         value={filters.sortBy}
                         onChange={e => handleFilterChange({ sortBy: e.target.value as any })}
-                        className='input w-full'
+                        className={styles.filterSelect}
                       >
                         <option value='featured'>Featured</option>
                         <option value='name'>Name A-Z</option>
@@ -289,38 +283,36 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                     </div>
 
                     {/* Stock Filter */}
-                    <div>
-                      <label className='block text-sm font-medium text-secondary-700 mb-2'>
-                        Availability
-                      </label>
-                      <label className='flex items-center'>
+                    <div className={styles.filterGroup}>
+                      <label className={styles.filterLabel}>Availability</label>
+                      <label className={styles.checkboxGroup}>
                         <input
                           type='checkbox'
                           checked={filters.inStock}
                           onChange={e => handleFilterChange({ inStock: e.target.checked })}
-                          className='rounded border-secondary-300 text-primary-600 focus:ring-primary-500'
+                          className={styles.checkboxInput}
                         />
-                        <span className='ml-2 text-sm text-secondary-700'>In Stock Only</span>
+                        <span className={styles.checkboxLabel}>In Stock Only</span>
                       </label>
                     </div>
                   </div>
                 </div>
 
                 {/* View Controls */}
-                <div className='flex items-center gap-4 lg:border-l lg:border-secondary-200 lg:pl-6'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-sm font-medium text-secondary-700'>View:</span>
-                    <div className='flex rounded-technical border border-secondary-300 overflow-hidden'>
+                <div className={styles.viewControls}>
+                  <div className={styles.viewToggle}>
+                    <span className={styles.viewLabel}>View:</span>
+                    <div className={styles.viewButtons}>
                       <button
                         onClick={() => handleViewModeChange({ type: 'grid' })}
-                        className={`p-2 ${viewMode.type === 'grid' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
+                        className={`${styles.viewButton} ${viewMode.type === 'grid' ? styles.active : ''}`}
                         aria-label='Grid view'
                       >
                         <Squares2X2Icon className={styles.smallIcon} />
                       </button>
                       <button
                         onClick={() => handleViewModeChange({ type: 'list' })}
-                        className={`p-2 ${viewMode.type === 'list' ? 'bg-primary-600 text-white' : 'bg-white text-secondary-600'}`}
+                        className={`${styles.viewButton} ${viewMode.type === 'list' ? styles.active : ''}`}
                         aria-label='List view'
                       >
                         <ListBulletIcon className={styles.smallIcon} />
@@ -329,14 +321,14 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                   </div>
 
                   {viewMode.type === 'grid' && (
-                    <div className='flex items-center gap-2'>
-                      <span className='text-sm text-secondary-700'>Columns:</span>
+                    <div className={styles.columnSelect}>
+                      <span className={styles.viewLabel}>Columns:</span>
                       <select
                         value={viewMode.gridCols}
                         onChange={e =>
                           handleViewModeChange({ gridCols: parseInt(e.target.value) as any })
                         }
-                        className='input text-sm py-1'
+                        className={styles.columnSelectInput}
                       >
                         <option value={2}>2</option>
                         <option value={3}>3</option>
@@ -348,8 +340,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               </div>
 
               {/* Results Summary */}
-              <div className='mt-4 pt-4 border-t border-secondary-200'>
-                <p className='text-sm text-secondary-600'>
+              <div className={styles.resultsSummary}>
+                <p className={styles.resultsText}>
                   Showing {filteredProducts.length} of {products.length} products
                 </p>
               </div>
@@ -357,15 +349,15 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           )}
 
           {/* Products Grid/List */}
-          <div className='space-y-6'>
+          <div className={styles.productsSection}>
             {filteredProducts.length === 0 ? (
-              <div className='text-center py-12'>
-                <div className='text-secondary-400 text-6xl mb-4'>🔍</div>
-                <h3 className='text-xl font-semibold text-secondary-900 mb-2'>No products found</h3>
-                <p className='text-secondary-600 mb-4'>
+              <div className={styles.noProducts}>
+                <div className={styles.noProductsIcon}>🔍</div>
+                <h3 className={styles.noProductsTitle}>No products found</h3>
+                <p className={styles.noProductsText}>
                   Try adjusting your filters or search criteria
                 </p>
-                <button onClick={resetFilters} className='btn-primary'>
+                <button onClick={resetFilters} className={styles.noProductsButton}>
                   Reset Filters
                 </button>
               </div>
@@ -374,7 +366,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                 className={
                   viewMode.type === 'grid'
                     ? `${styles.productsGrid} ${styles[`productsGrid${viewMode.gridCols}`] || styles.productsGrid2}`
-                    : 'space-y-4'
+                    : styles.productsList
                 }
               >
                 {filteredProducts.map(product => (
@@ -448,8 +440,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
           {/* View All Products Link */}
           {!showFilters && (
-            <div className='text-center mt-12'>
-              <Link href='/products' className='btn btn-primary btn-lg'>
+            <div className={styles.viewAllSection}>
+              <Link href='/products' className={styles.viewAllButton}>
                 View All Products & Specifications
               </Link>
             </div>

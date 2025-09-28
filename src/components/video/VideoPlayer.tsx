@@ -11,7 +11,14 @@ import { VideoMetadata, VideoSource } from '@/types'
 interface EnhancedVideo extends VideoMetadata {
   // Additional player-specific fields if needed
 }
-import { PlayIcon, PauseIcon, SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/solid'
+import {
+  PlayIcon,
+  PauseIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon,
+} from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'
 import styles from './VideoPlayer.module.css'
 
@@ -399,6 +406,33 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     setVideoState(prev => ({ ...prev, playbackRate: rate }))
   }, [])
 
+  const toggleFullscreen = useCallback(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    if (!document.fullscreenElement) {
+      video
+        .requestFullscreen()
+        .then(() => {
+          setVideoState(prev => ({ ...prev, isFullscreen: true }))
+        })
+        .catch(error => {
+          console.error('Failed to enter fullscreen:', error)
+          toast.error('Failed to enter fullscreen mode')
+        })
+    } else {
+      document
+        .exitFullscreen()
+        .then(() => {
+          setVideoState(prev => ({ ...prev, isFullscreen: false }))
+        })
+        .catch(error => {
+          console.error('Failed to exit fullscreen:', error)
+          toast.error('Failed to exit fullscreen mode')
+        })
+    }
+  }, [])
+
   // ============================================================================
   // ADAPTIVE STREAMING AND QUALITY MANAGEMENT
   // ============================================================================
@@ -583,6 +617,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [videoState.isPlaying, controlsTimeout])
 
+  const handleFullscreenChange = useCallback(() => {
+    setVideoState(prev => ({ ...prev, isFullscreen: !!document.fullscreenElement }))
+  }, [])
+
   // ============================================================================
   // EFFECTS
   // ============================================================================
@@ -600,6 +638,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     video.addEventListener('volumechange', handleVolumeChange)
     video.addEventListener('error', handleError)
 
+    // Add fullscreen event listener
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
     // Cleanup
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
@@ -609,6 +650,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.removeEventListener('seeked', handleSeeked)
       video.removeEventListener('volumechange', handleVolumeChange)
       video.removeEventListener('error', handleError)
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [
     handleLoadedMetadata,
@@ -618,6 +660,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     handleSeeked,
     handleVolumeChange,
     handleError,
+    handleFullscreenChange,
   ])
 
   // Save progress on unmount
@@ -866,6 +909,20 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <div className={styles.progressPercentage}>
               {Math.round((videoState.currentTime / videoState.duration) * 100 || 0)}%
             </div>
+
+            {/* Fullscreen Button */}
+            <button
+              onClick={toggleFullscreen}
+              className={styles.fullscreenButton}
+              aria-label={videoState.isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              title={videoState.isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            >
+              {videoState.isFullscreen ? (
+                <ArrowsPointingInIcon className='w-5 h-5' />
+              ) : (
+                <ArrowsPointingOutIcon className='w-5 h-5' />
+              )}
+            </button>
           </div>
         </div>
       </div>

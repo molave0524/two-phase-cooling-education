@@ -217,7 +217,7 @@ export const VideoShowcase: React.FC = () => {
                     key={selectedVideo.id}
                     video={selectedVideo as any}
                     userId='demo-user'
-                    autoPlay={true}
+                    autoPlay={false}
                     enableAdaptiveStreaming={true}
                     preferredQuality='1080p'
                     onProgress={handleVideoProgress}

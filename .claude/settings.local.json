@@ -60,7 +60,9 @@
       "Bash(Stop-Process -Id 596 -Force)",
       "Bash(cmd /c:*)",
       "Bash(copy \".env.example\" \".env.local\")",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(echo $NEXT_PUBLIC_COMPANY_NAME)",
+      "Bash(npx kill-port:*)"
     ],
     "deny": [],
     "ask": []

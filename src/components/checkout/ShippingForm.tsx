@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { OrderShippingAddress, OrderCustomer } from '@/lib/orders'
+import styles from './ShippingForm.module.css'
 
 interface ShippingFormProps {
   onSubmit: (customer: OrderCustomer, shippingAddress: OrderShippingAddress) => void
@@ -185,22 +186,23 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
     onSubmit(customer, shippingAddress)
   }
 
-  const inputClasses = (fieldName: keyof FormData) =>
-    `mt-1 block w-full rounded-md border ${
-      errors[fieldName] ? 'border-red-300' : 'border-gray-300'
-    } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm`
+  const getFieldClasses = (fieldName: keyof FormData, isSelect = false) => {
+    const baseClass = isSelect ? styles.fieldSelect : styles.fieldInput
+    const errorClass = isSelect ? styles.fieldSelectError : styles.fieldInputError
+    return errors[fieldName] ? `${baseClass} ${errorClass}` : baseClass
+  }
 
   return (
-    <div className='bg-white rounded-lg shadow-lg p-6'>
-      <h3 className='text-lg font-semibold text-gray-900 mb-6'>Contact & Shipping Information</h3>
+    <div className={styles.shippingContainer}>
+      <h3 className={styles.title}>Contact & Shipping Information</h3>
 
-      <form onSubmit={handleSubmit} className='space-y-6'>
+      <form onSubmit={handleSubmit} className={styles.form}>
         {/* Contact Information */}
-        <div>
-          <h4 className='text-md font-medium text-gray-900 mb-4'>Contact Information</h4>
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-            <div>
-              <label htmlFor='firstName' className='block text-sm font-medium text-gray-700'>
+        <div className={styles.formSection}>
+          <h4 className={styles.sectionHeader}>Contact Information</h4>
+          <div className={styles.gridTwoColumns}>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='firstName' className={styles.fieldLabel}>
                 First Name *
               </label>
               <input
@@ -209,14 +211,14 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='firstName'
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className={inputClasses('firstName')}
+                className={getFieldClasses('firstName')}
                 disabled={isLoading}
               />
-              {errors.firstName && <p className='mt-1 text-sm text-red-600'>{errors.firstName}</p>}
+              {errors.firstName && <p className={styles.fieldError}>{errors.firstName}</p>}
             </div>
 
-            <div>
-              <label htmlFor='lastName' className='block text-sm font-medium text-gray-700'>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='lastName' className={styles.fieldLabel}>
                 Last Name *
               </label>
               <input
@@ -225,14 +227,14 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='lastName'
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className={inputClasses('lastName')}
+                className={getFieldClasses('lastName')}
                 disabled={isLoading}
               />
-              {errors.lastName && <p className='mt-1 text-sm text-red-600'>{errors.lastName}</p>}
+              {errors.lastName && <p className={styles.fieldError}>{errors.lastName}</p>}
             </div>
 
-            <div>
-              <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='email' className={styles.fieldLabel}>
                 Email Address *
               </label>
               <input
@@ -241,14 +243,14 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='email'
                 value={formData.email}
                 onChange={handleInputChange}
-                className={inputClasses('email')}
+                className={getFieldClasses('email')}
                 disabled={isLoading}
               />
-              {errors.email && <p className='mt-1 text-sm text-red-600'>{errors.email}</p>}
+              {errors.email && <p className={styles.fieldError}>{errors.email}</p>}
             </div>
 
-            <div>
-              <label htmlFor='phone' className='block text-sm font-medium text-gray-700'>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='phone' className={styles.fieldLabel}>
                 Phone Number
               </label>
               <input
@@ -257,20 +259,20 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='phone'
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={inputClasses('phone')}
+                className={getFieldClasses('phone')}
                 disabled={isLoading}
               />
-              {errors.phone && <p className='mt-1 text-sm text-red-600'>{errors.phone}</p>}
+              {errors.phone && <p className={styles.fieldError}>{errors.phone}</p>}
             </div>
           </div>
         </div>
 
         {/* Shipping Address */}
-        <div>
-          <h4 className='text-md font-medium text-gray-900 mb-4'>Shipping Address</h4>
-          <div className='space-y-4'>
-            <div>
-              <label htmlFor='company' className='block text-sm font-medium text-gray-700'>
+        <div className={styles.formSection}>
+          <h4 className={styles.sectionHeader}>Shipping Address</h4>
+          <div className={styles.formSection}>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='company' className={styles.fieldLabel}>
                 Company (Optional)
               </label>
               <input
@@ -279,13 +281,13 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='company'
                 value={formData.company}
                 onChange={handleInputChange}
-                className={inputClasses('company')}
+                className={getFieldClasses('company')}
                 disabled={isLoading}
               />
             </div>
 
-            <div>
-              <label htmlFor='addressLine1' className='block text-sm font-medium text-gray-700'>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='addressLine1' className={styles.fieldLabel}>
                 Address Line 1 *
               </label>
               <input
@@ -294,16 +296,14 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='addressLine1'
                 value={formData.addressLine1}
                 onChange={handleInputChange}
-                className={inputClasses('addressLine1')}
+                className={getFieldClasses('addressLine1')}
                 disabled={isLoading}
               />
-              {errors.addressLine1 && (
-                <p className='mt-1 text-sm text-red-600'>{errors.addressLine1}</p>
-              )}
+              {errors.addressLine1 && <p className={styles.fieldError}>{errors.addressLine1}</p>}
             </div>
 
-            <div>
-              <label htmlFor='addressLine2' className='block text-sm font-medium text-gray-700'>
+            <div className={styles.fieldWrapper}>
+              <label htmlFor='addressLine2' className={styles.fieldLabel}>
                 Address Line 2 (Optional)
               </label>
               <input
@@ -312,14 +312,14 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                 name='addressLine2'
                 value={formData.addressLine2}
                 onChange={handleInputChange}
-                className={inputClasses('addressLine2')}
+                className={getFieldClasses('addressLine2')}
                 disabled={isLoading}
               />
             </div>
 
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-              <div>
-                <label htmlFor='city' className='block text-sm font-medium text-gray-700'>
+            <div className={styles.gridThreeColumns}>
+              <div className={styles.fieldWrapper}>
+                <label htmlFor='city' className={styles.fieldLabel}>
                   City *
                 </label>
                 <input
@@ -328,14 +328,14 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                   name='city'
                   value={formData.city}
                   onChange={handleInputChange}
-                  className={inputClasses('city')}
+                  className={getFieldClasses('city')}
                   disabled={isLoading}
                 />
-                {errors.city && <p className='mt-1 text-sm text-red-600'>{errors.city}</p>}
+                {errors.city && <p className={styles.fieldError}>{errors.city}</p>}
               </div>
 
-              <div>
-                <label htmlFor='state' className='block text-sm font-medium text-gray-700'>
+              <div className={styles.fieldWrapper}>
+                <label htmlFor='state' className={styles.fieldLabel}>
                   State *
                 </label>
                 <select
@@ -343,7 +343,7 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                   name='state'
                   value={formData.state}
                   onChange={handleInputChange}
-                  className={inputClasses('state')}
+                  className={getFieldClasses('state', true)}
                   disabled={isLoading}
                 >
                   <option value=''>Select State</option>
@@ -353,11 +353,11 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                     </option>
                   ))}
                 </select>
-                {errors.state && <p className='mt-1 text-sm text-red-600'>{errors.state}</p>}
+                {errors.state && <p className={styles.fieldError}>{errors.state}</p>}
               </div>
 
-              <div>
-                <label htmlFor='zipCode' className='block text-sm font-medium text-gray-700'>
+              <div className={styles.fieldWrapper}>
+                <label htmlFor='zipCode' className={styles.fieldLabel}>
                   ZIP Code *
                 </label>
                 <input
@@ -366,28 +366,28 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                   name='zipCode'
                   value={formData.zipCode}
                   onChange={handleInputChange}
-                  className={inputClasses('zipCode')}
+                  className={getFieldClasses('zipCode')}
                   disabled={isLoading}
                 />
-                {errors.zipCode && <p className='mt-1 text-sm text-red-600'>{errors.zipCode}</p>}
+                {errors.zipCode && <p className={styles.fieldError}>{errors.zipCode}</p>}
               </div>
             </div>
           </div>
         </div>
 
         {/* Options */}
-        <div className='space-y-3'>
-          <div className='flex items-center'>
+        <div className={styles.optionsSection}>
+          <div className={styles.checkboxWrapper}>
             <input
               id='subscribeToNewsletter'
               name='subscribeToNewsletter'
               type='checkbox'
               checked={formData.subscribeToNewsletter}
               onChange={handleInputChange}
-              className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+              className={styles.checkbox}
               disabled={isLoading}
             />
-            <label htmlFor='subscribeToNewsletter' className='ml-2 block text-sm text-gray-700'>
+            <label htmlFor='subscribeToNewsletter' className={styles.checkboxLabel}>
               Subscribe to our newsletter for product updates and cooling technology insights
             </label>
           </div>
@@ -397,22 +397,20 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
         <button
           type='submit'
           disabled={isLoading}
-          className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
-            isLoading
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white'
+          className={`${styles.submitButton} ${
+            isLoading ? styles.submitButtonDisabled : styles.submitButtonEnabled
           }`}
         >
           {isLoading ? (
-            <div className='flex items-center justify-center'>
+            <div className={styles.submitButtonContent}>
               <svg
-                className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
+                className={styles.loadingSpinner}
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
                 viewBox='0 0 24 24'
               >
                 <circle
-                  className='opacity-25'
+                  className={styles.spinnerCircle}
                   cx='12'
                   cy='12'
                   r='10'
@@ -420,7 +418,7 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
                   strokeWidth='4'
                 ></circle>
                 <path
-                  className='opacity-75'
+                  className={styles.spinnerPath}
                   fill='currentColor'
                   d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
                 ></path>

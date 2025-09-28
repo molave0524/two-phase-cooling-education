@@ -5,15 +5,16 @@ import Link from 'next/link'
 import { PRODUCTS } from '@/data/products'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
+import styles from './products.module.css'
 
 export default function ProductsPage() {
   return (
-    <div className='min-h-screen bg-secondary-50'>
+    <div className={styles.pageContainer}>
       {/* Header Section */}
-      <div className='bg-gradient-to-b from-primary-600 to-primary-700 text-white py-16 pt-24'>
-        <div className='container mx-auto px-4 max-w-7xl'>
-          <h1 className='text-4xl md:text-5xl font-bold mb-4'>Two-Phase Cooling Systems</h1>
-          <p className='text-xl text-primary-100 max-w-3xl'>
+      <div className={styles.headerSection}>
+        <div className={styles.headerContainer}>
+          <h1 className={styles.headerTitle}>Two-Phase Cooling Systems</h1>
+          <p className={styles.headerDescription}>
             Discover our revolutionary cooling technology that delivers unmatched performance,
             whisper-quiet operation, and environmental sustainability.
           </p>
@@ -21,8 +22,8 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Grid */}
-      <div className='container mx-auto px-4 max-w-7xl py-16'>
-        <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
+      <div className={styles.productsContainer}>
+        <div className={styles.productsGrid}>
           {PRODUCTS.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -45,21 +46,19 @@ function ProductCard({ product }: { product: TwoPhaseCoolingProduct }) {
   }
 
   return (
-    <div className='bg-white rounded-equipment shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300'>
+    <div className={styles.productCard}>
       {/* Product Image */}
-      <div className='relative aspect-[4/3] overflow-hidden'>
+      <div className={styles.imageContainer}>
         <img
           src={mainImage?.url || '/placeholder-product.jpg'}
           alt={mainImage?.altText || product.name}
-          className='w-full h-full object-cover hover:scale-105 transition-transform duration-300'
+          className={styles.productImage}
         />
 
         {/* Stock Status Badge */}
-        <div className='absolute top-4 left-4'>
+        <div className={styles.stockBadge}>
           <span
-            className={`px-3 py-1 text-xs font-semibold rounded-full ${
-              product.inStock ? 'bg-success-100 text-success-700' : 'bg-danger-100 text-danger-700'
-            }`}
+            className={product.inStock ? styles.stockBadgeInStock : styles.stockBadgeOutOfStock}
           >
             {product.inStock ? 'In Stock' : 'Out of Stock'}
           </span>
@@ -67,28 +66,23 @@ function ProductCard({ product }: { product: TwoPhaseCoolingProduct }) {
 
         {/* Sale Badge */}
         {isOnSale && (
-          <div className='absolute top-4 right-4'>
-            <span className='bg-accent-500 text-white px-3 py-1 text-xs font-semibold rounded-full'>
-              Sale
-            </span>
+          <div className={styles.saleBadge}>
+            <span className={styles.saleBadge}>Sale</span>
           </div>
         )}
       </div>
 
       {/* Product Info */}
-      <div className='p-6'>
-        <h3 className='text-xl font-semibold text-secondary-900 mb-2'>{product.name}</h3>
+      <div className={styles.cardContent}>
+        <h3 className={styles.productTitle}>{product.name}</h3>
 
-        <p className='text-secondary-600 mb-4 line-clamp-3'>{product.shortDescription}</p>
+        <p className={styles.productDescription}>{product.shortDescription}</p>
 
         {/* Key Features */}
-        <div className='mb-4'>
-          <div className='flex flex-wrap gap-2 mb-3'>
+        <div className={styles.featuresSection}>
+          <div className={styles.featuresContainer}>
             {product.features.slice(0, 3).map((feature, index) => (
-              <span
-                key={index}
-                className='inline-flex items-center px-2.5 py-0.5 text-xs font-medium bg-primary-100 text-primary-800 rounded-full'
-              >
+              <span key={index} className={styles.featureTag}>
                 {feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
               </span>
             ))}
@@ -96,43 +90,41 @@ function ProductCard({ product }: { product: TwoPhaseCoolingProduct }) {
         </div>
 
         {/* Pricing */}
-        <div className='mb-4'>
-          <div className='flex items-center gap-2'>
-            <span className='text-2xl font-bold text-primary-600'>
-              ${product.price.toLocaleString()}
-            </span>
+        <div className={styles.pricingSection}>
+          <div className={styles.priceContainer}>
+            <span className={styles.currentPrice}>${product.price.toLocaleString()}</span>
             {isOnSale && (
-              <span className='text-lg text-secondary-400 line-through'>
+              <span className={styles.originalPrice}>
                 ${product.originalPrice?.toLocaleString()}
               </span>
             )}
           </div>
-          <p className='text-sm text-secondary-500'>Free shipping • {product.estimatedShipping}</p>
+          <p className={styles.shippingInfo}>Free shipping • {product.estimatedShipping}</p>
         </div>
 
         {/* Key Specs */}
-        <div className='mb-6 p-3 bg-secondary-50 rounded-lg'>
-          <div className='grid grid-cols-2 gap-2 text-sm'>
+        <div className={styles.specsSection}>
+          <div className={styles.specsGrid}>
             <div>
-              <span className='font-medium text-secondary-700'>Cooling:</span>
-              <p className='text-secondary-600'>{product.specifications.cooling.capacity}</p>
+              <span className={styles.specLabel}>Cooling:</span>
+              <p className={styles.specValue}>{product.specifications.cooling.capacity}</p>
             </div>
             <div>
-              <span className='font-medium text-secondary-700'>Noise:</span>
-              <p className='text-secondary-600'>{product.specifications.performance.noiseLevel}</p>
+              <span className={styles.specLabel}>Noise:</span>
+              <p className={styles.specValue}>{product.specifications.performance.noiseLevel}</p>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className='flex flex-col gap-2'>
-          <Link href={`/products/${product.slug}`} className='btn btn-primary btn-lg w-full'>
+        <div className={styles.actionsContainer}>
+          <Link href={`/products/${product.slug}`} className={styles.primaryButton}>
             View Details & Specifications
           </Link>
 
           <button
             onClick={handleAddToCart}
-            className='btn btn-secondary w-full'
+            className={styles.secondaryButton}
             disabled={!product.inStock}
           >
             {product.inStock ? 'Add to Cart' : 'Out of Stock'}

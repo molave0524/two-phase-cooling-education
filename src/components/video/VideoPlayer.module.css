@@ -175,6 +175,28 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+.fullscreenButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreenButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.fullscreenButton:active {
+  transform: scale(0.95);
+}
+
 .volumeSlider {
   width: 80px;
   height: 4px;

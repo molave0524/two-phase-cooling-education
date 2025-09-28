@@ -7,19 +7,6 @@ import { ProductShowcase } from '@/components/sections/ProductShowcase'
 import { CallToAction } from '@/components/sections/CallToAction'
 
 // Dynamic imports for performance optimization with enhanced loading states
-const PerformanceMetrics = dynamic(() => import('@/components/sections/PerformanceMetrics'), {
-  loading: () => (
-    <div className='py-section-bottom bg-section-bg'>
-      <div className='max-w-6xl mx-auto px-6'>
-        <div className='text-center space-y-4'>
-          <div className='w-8 h-8 mx-auto border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin'></div>
-          <p className='text-secondary-600'>Loading performance metrics...</p>
-        </div>
-      </div>
-    </div>
-  ),
-})
-
 const AIAssistantPreview = dynamic(() => import('@/components/sections/AIAssistantPreview'), {
   loading: () => (
     <div
@@ -91,12 +78,11 @@ export const metadata: Metadata = {
  *
  * Section Flow:
  * 1. Hero - Immediate visual impact and value proposition
- * 2. Technology Overview - Educational foundation
- * 3. Video Showcase - Core demo content
- * 4. Performance Metrics - Data-driven proof
- * 5. AI Assistant Preview - Interactive learning
- * 6. Product Showcase - Natural transition to purchase
- * 7. Call to Action - Clear next steps
+ * 2. Video Showcase - Core demo content
+ * 3. Technology Overview - Educational foundation
+ * 4. AI Assistant Preview - Interactive learning
+ * 5. Product Showcase - Natural transition to purchase
+ * 6. Call to Action - Clear next steps
  */
 export default function HomePage() {
   return (
@@ -114,11 +100,6 @@ export default function HomePage() {
       {/* Technology Overview - Educational Foundation */}
       <section id='technology' aria-labelledby='technology-heading'>
         <TechnologyOverview />
-      </section>
-
-      {/* Performance Metrics - Data-Driven Validation */}
-      <section id='performance' aria-labelledby='performance-heading'>
-        <PerformanceMetrics />
       </section>
 
       {/* AI Assistant Preview - Interactive Learning */}

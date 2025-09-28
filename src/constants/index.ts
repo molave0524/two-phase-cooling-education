@@ -103,7 +103,7 @@ export const ROUTES = {
 
 // Company information from environment variables
 export const COMPANY_INFO = {
-  NAME: process.env.NEXT_PUBLIC_COMPANY_NAME || 'Thermal Education Center',
+  NAME: process.env.NEXT_PUBLIC_COMPANY_NAME || 'Two-Phase Cooling Technologies',
   EMAIL: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@example.com',
   PHONE: process.env.NEXT_PUBLIC_CONTACT_PHONE || '+1 (555) 123-4567',
   DOMAIN: process.env.NEXT_PUBLIC_DOMAIN || 'example.com',
