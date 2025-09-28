@@ -62,7 +62,10 @@
       "Bash(copy \".env.example\" \".env.local\")",
       "Bash(cp:*)",
       "Bash(echo $NEXT_PUBLIC_COMPANY_NAME)",
-      "Bash(npx kill-port:*)"
+      "Bash(npx kill-port:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(echo $NEXT_PUBLIC_DEMO_MODE)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []
