@@ -2,13 +2,8 @@
 
 import React from 'react'
 import Link from 'next/link'
-import {
-  BeakerIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  ArrowTopRightOnSquareIcon,
-} from '@heroicons/react/24/outline'
-import { COMPANY_INFO, SOCIAL_MEDIA, TECHNICAL_SPECS } from '@/constants'
+import { EnvelopeIcon, PhoneIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
 import styles from './Footer.module.css'
 
 // ============================================================================
@@ -66,46 +61,6 @@ export const Footer: React.FC = () => {
       {/* Main Footer Content */}
       <div className='container-max py-12'>
         <div className='grid lg:grid-cols-5 gap-8'>
-          {/* Company Info */}
-          <div className='lg:col-span-1 space-y-6'>
-            <div className='space-y-4'>
-              {/* Logo */}
-              <Link
-                href='/'
-                className='flex items-center gap-3 hover:opacity-80 transition-opacity'
-              >
-                <div className={styles.logoContainer}>
-                  <BeakerIcon className={styles.logoIcon} />
-                </div>
-                <div>
-                  <div className='font-bold text-lg'>{COMPANY_INFO.NAME}</div>
-                  <div className='text-xs text-secondary-400'>Two-Phase Cooling Innovation</div>
-                </div>
-              </Link>
-
-              {/* Mission Statement */}
-              <p className='text-sm text-secondary-300 leading-relaxed'>
-                Advancing thermal management through innovative two-phase cooling technology,
-                educational excellence, and environmental responsibility.
-              </p>
-
-              {/* Environmental Impact */}
-              <div className='bg-secondary-800 rounded-equipment p-4'>
-                <h4 className='font-semibold text-success-400 mb-2'>Environmental Impact</h4>
-                <div className='grid grid-cols-2 gap-3 text-xs'>
-                  <div>
-                    <div className='font-medium text-white'>GWP {TECHNICAL_SPECS.GWP_RATING}</div>
-                    <div className='text-secondary-400'>vs 1400 traditional</div>
-                  </div>
-                  <div>
-                    <div className='font-medium text-white'>Zero ODP</div>
-                    <div className='text-secondary-400'>Ozone safe</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Footer Sections */}
           <div className='lg:col-span-3 grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
             {FOOTER_SECTIONS.map(section => (

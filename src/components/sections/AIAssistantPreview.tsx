@@ -7,8 +7,6 @@ import {
   UserCircleIcon,
   CpuChipIcon,
   QuestionMarkCircleIcon,
-  LightBulbIcon,
-  CheckCircleIcon,
   ArrowRightIcon,
 } from '@heroicons/react/24/outline'
 import { SparklesIcon as RobotIcon } from '@heroicons/react/24/solid'
@@ -121,7 +119,7 @@ export const AIAssistantPreview: React.FC = () => {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const [isTyping, setIsTyping] = useState(false)
   const [displayedMessages, setDisplayedMessages] = useState<ChatMessage[]>([])
-  const [selectedCapability, setSelectedCapability] = useState<number>(0)
+  const [, setSelectedCapability] = useState<number>(0)
   const [autoPlay, setAutoPlay] = useState(true)
 
   // Auto-play conversation demo
@@ -183,7 +181,7 @@ export const AIAssistantPreview: React.FC = () => {
             <div className={styles.titleWrapper}>
               <ChatBubbleLeftRightIcon className={styles.titleIcon} />
               <h2 id='ai-assistant-heading' className={styles.title}>
-                AI Technical Assistant
+                AI Assistant
               </h2>
             </div>
           </div>
