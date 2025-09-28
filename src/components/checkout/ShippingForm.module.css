@@ -1,0 +1,264 @@
+/* ============================================================================ */
+/* SHIPPING FORM STYLES */
+/* ============================================================================ */
+
+.shippingContainer {
+  background: white;
+  border-radius: var(--radius-equipment);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-900);
+  margin-bottom: var(--space-6);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Section Headers */
+.sectionHeader {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-900);
+  margin-bottom: var(--space-4);
+}
+
+/* Form Grid Layouts */
+.gridTwoColumns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .gridTwoColumns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.gridThreeColumns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .gridThreeColumns {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Form Fields */
+.fieldWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-700);
+}
+
+.fieldInput {
+  margin-top: var(--space-1);
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-technical);
+  border: 1px solid var(--color-secondary-300);
+  padding: var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-sm);
+  background: white;
+  color: var(--color-secondary-700);
+  transition: border-color var(--transition-colors);
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.fieldInputError {
+  border-color: var(--color-error-300);
+}
+
+.fieldSelect {
+  margin-top: var(--space-1);
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-technical);
+  border: 1px solid var(--color-secondary-300);
+  padding: var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-sm);
+  background: white;
+  color: var(--color-secondary-700);
+  transition: border-color var(--transition-colors);
+}
+
+.fieldSelect:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.fieldSelectError {
+  border-color: var(--color-error-300);
+}
+
+.fieldError {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-error-600);
+}
+
+/* Disabled States */
+.fieldInput:disabled,
+.fieldSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Checkbox Options */
+.optionsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox {
+  height: var(--space-4);
+  width: var(--space-4);
+  color: var(--color-primary-600);
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-colors);
+}
+
+.checkbox:focus {
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.checkbox:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.checkboxLabel {
+  margin-left: var(--space-2);
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--color-secondary-700);
+}
+
+/* Submit Button */
+.submitButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-technical);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-colors);
+  border: none;
+  cursor: pointer;
+}
+
+.submitButtonEnabled {
+  background: var(--color-primary-600);
+  color: white;
+}
+
+.submitButtonEnabled:hover {
+  background: var(--color-primary-700);
+}
+
+.submitButtonDisabled {
+  background: var(--color-secondary-300);
+  color: var(--color-secondary-500);
+  cursor: not-allowed;
+}
+
+.submitButtonContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingSpinner {
+  animation: spin 1s linear infinite;
+  margin-left: -1rem;
+  margin-right: var(--space-3);
+  height: var(--space-5);
+  width: var(--space-5);
+  color: white;
+}
+
+.spinnerCircle {
+  opacity: 0.25;
+}
+
+.spinnerPath {
+  opacity: 0.75;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================================================ */
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .shippingContainer {
+    padding: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--text-base);
+  }
+
+  .sectionHeader {
+    font-size: var(--text-sm);
+  }
+}
+
+/* Touch-friendly targets for mobile */
+@media (max-width: 767px) {
+  .checkbox {
+    height: 20px;
+    width: 20px;
+  }
+
+  .fieldInput,
+  .fieldSelect,
+  .submitButton {
+    min-height: 44px; /* iOS recommended touch target size */
+  }
+}

@@ -1,0 +1,264 @@
+/* Products Page CSS Module */
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: var(--color-secondary-50);
+}
+
+/* Header Section */
+.headerSection {
+  background: linear-gradient(to bottom, var(--color-primary-600), var(--color-primary-700));
+  color: white;
+  padding: 4rem 0 4rem 0;
+  padding-top: 6rem;
+}
+
+.headerContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.headerTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .headerTitle {
+    font-size: 3rem;
+  }
+}
+
+.headerDescription {
+  font-size: 1.25rem;
+  color: var(--color-primary-100);
+  max-width: 48rem;
+}
+
+/* Products Grid Section */
+.productsContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .productsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Product Card Styles */
+.productCard {
+  background: white;
+  border-radius: var(--radius-equipment);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transition: var(--transition-all);
+}
+
+.productCard:hover {
+  box-shadow: var(--shadow-cooling);
+}
+
+.imageContainer {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-transform);
+}
+
+.productImage:hover {
+  transform: scale(1.05);
+}
+
+.stockBadge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.stockBadgeInStock {
+  background: var(--color-success-100);
+  color: var(--color-success-700);
+}
+
+.stockBadgeOutOfStock {
+  background: var(--color-danger-100);
+  color: var(--color-danger-700);
+}
+
+.saleBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--color-accent-500);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.cardContent {
+  padding: 1.5rem;
+}
+
+.productTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-secondary-900);
+  margin-bottom: 0.5rem;
+}
+
+.productDescription {
+  color: var(--color-secondary-600);
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.featuresSection {
+  margin-bottom: 1rem;
+}
+
+.featuresContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.featureTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--color-primary-100);
+  color: var(--color-primary-800);
+  border-radius: 9999px;
+}
+
+.pricingSection {
+  margin-bottom: 1rem;
+}
+
+.priceContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.currentPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+}
+
+.originalPrice {
+  font-size: 1.125rem;
+  color: var(--color-secondary-400);
+  text-decoration: line-through;
+}
+
+.shippingInfo {
+  font-size: 0.875rem;
+  color: var(--color-secondary-500);
+}
+
+.specsSection {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  background: var(--color-secondary-50);
+  border-radius: var(--radius-lg);
+}
+
+.specsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.specLabel {
+  font-weight: 500;
+  color: var(--color-secondary-700);
+}
+
+.specValue {
+  color: var(--color-secondary-600);
+}
+
+.actionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.primaryButton {
+  width: 100%;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-primary-600);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 1.125rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.primaryButton:hover {
+  background: var(--color-primary-700);
+}
+
+.secondaryButton {
+  width: 100%;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-secondary-50);
+  color: var(--color-secondary-700);
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.secondaryButton:hover {
+  background: var(--color-secondary-100);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

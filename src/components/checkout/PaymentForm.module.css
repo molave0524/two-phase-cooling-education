@@ -1,0 +1,210 @@
+/* ============================================================================ */
+/* PAYMENT FORM STYLES */
+/* ============================================================================ */
+
+.paymentContainer {
+  background: white;
+  border-radius: var(--radius-equipment);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-900);
+  margin-bottom: var(--space-6);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Order Summary Section */
+.orderSummary {
+  border-bottom: 1px solid var(--color-secondary-200);
+  padding-bottom: var(--space-4);
+}
+
+.summaryTitle {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-900);
+  margin-bottom: var(--space-3);
+}
+
+.summaryContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.summaryLabel {
+  color: var(--color-secondary-600);
+}
+
+.summaryValue {
+  font-weight: var(--font-weight-medium);
+}
+
+.discountRow {
+  color: var(--color-success-600);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  border-top: 1px solid var(--color-secondary-200);
+  padding-top: var(--space-2);
+}
+
+/* Card Information Section */
+.cardSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cardLabel {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-700);
+  margin-bottom: var(--space-2);
+}
+
+.cardElementContainer {
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-technical);
+  padding: var(--space-3);
+  background: var(--color-secondary-50);
+  color: var(--color-secondary-700);
+}
+
+.cardError {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-error-600);
+}
+
+/* Security Notice */
+.securityNotice {
+  background: var(--color-secondary-50);
+  border-radius: var(--radius-technical);
+  padding: var(--space-4);
+}
+
+.securityContent {
+  display: flex;
+  align-items: center;
+}
+
+.securityIcon {
+  height: var(--space-5);
+  width: var(--space-5);
+  color: var(--color-success-500);
+  margin-right: var(--space-2);
+}
+
+.securityText {
+  font-size: var(--text-sm);
+  color: var(--color-secondary-600);
+}
+
+/* Submit Button */
+.submitButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-technical);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-colors);
+  border: none;
+  cursor: pointer;
+}
+
+.submitButtonEnabled {
+  background: var(--color-primary-600);
+  color: white;
+}
+
+.submitButtonEnabled:hover {
+  background: var(--color-primary-700);
+}
+
+.submitButtonDisabled {
+  background: var(--color-secondary-300);
+  color: var(--color-secondary-500);
+  cursor: not-allowed;
+}
+
+.submitButtonContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingSpinner {
+  animation: spin 1s linear infinite;
+  margin-left: -1rem;
+  margin-right: var(--space-3);
+  height: var(--space-5);
+  width: var(--space-5);
+  color: white;
+}
+
+.spinnerCircle {
+  opacity: 0.25;
+}
+
+.spinnerPath {
+  opacity: 0.75;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Test Card Notice */
+.testNotice {
+  background: var(--color-warning-50);
+  border: 1px solid var(--color-warning-200);
+  border-radius: var(--radius-technical);
+  padding: var(--space-4);
+}
+
+.testNoticeText {
+  font-size: var(--text-sm);
+  color: var(--color-warning-800);
+}
+
+.testNoticeStrong {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ============================================================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================================================ */
+
+@media (min-width: 768px) {
+  .summaryContent {
+    font-size: var(--text-base);
+  }
+
+  .totalRow {
+    font-size: var(--text-xl);
+  }
+}
