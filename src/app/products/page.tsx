@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { PRODUCTS } from '@/data/products'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
@@ -49,9 +50,11 @@ function ProductCard({ product }: { product: TwoPhaseCoolingProduct }) {
     <div className={styles.productCard}>
       {/* Product Image */}
       <div className={styles.imageContainer}>
-        <img
+        <Image
           src={mainImage?.url || '/placeholder-product.jpg'}
           alt={mainImage?.altText || product.name}
+          width={400}
+          height={300}
           className={styles.productImage}
         />
 

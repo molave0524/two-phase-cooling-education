@@ -111,75 +111,75 @@
 }
 
 /* High specificity selectors to override Tailwind - using CSS module class names */
-.performanceSection .filterButton:not(.active) {
-  color: rgb(209 213 219) !important; /* text-gray-300 - even lighter font for disabled state */
-  font-weight: 300 !important; /* lighter font weight */
+.performanceSection.performanceSection .filterButton:not(.active) {
+  color: rgb(209 213 219); /* text-gray-300 - even lighter font for disabled state */
+  font-weight: 300; /* lighter font weight */
   transition: all 0.2s ease;
 }
 
-.performanceSection .filterButton.active {
-  color: var(--filter-active) !important;
-  background-color: var(--filter-bg-active) !important;
+.performanceSection.performanceSection .filterButton.active {
+  color: var(--filter-active);
+  background-color: var(--filter-bg-active);
 }
 
-.performanceSection .filterButton:hover:not(.active) {
-  color: var(--filter-hover) !important;
-  background-color: var(--filter-bg-hover) !important;
+.performanceSection.performanceSection .filterButton:hover:not(.active) {
+  color: var(--filter-hover);
+  background-color: var(--filter-bg-hover);
 }
 
 /* Hour labels and scenario text - using CSS module class names */
-.performanceSection .scenarioBox.selected .hourLabel {
-  color: rgb(199 210 254) !important; /* text-primary-100 equivalent */
+.performanceSection.performanceSection .scenarioBox.selected .hourLabel {
+  color: rgb(199 210 254); /* text-primary-100 equivalent */
 }
 
-.performanceSection .scenarioBox.selected .hourIcon {
-  color: rgb(199 210 254) !important; /* text-primary-100 equivalent */
-  fill: rgb(199 210 254) !important;
+.performanceSection.performanceSection .scenarioBox.selected .hourIcon {
+  color: rgb(199 210 254); /* text-primary-100 equivalent */
+  fill: rgb(199 210 254);
 }
 
-.performanceSection .scenarioBox.selected .scenarioText {
-  color: rgb(199 210 254) !important; /* text-primary-100 equivalent */
+.performanceSection.performanceSection .scenarioBox.selected .scenarioText {
+  color: rgb(199 210 254); /* text-primary-100 equivalent */
 }
 
-.performanceSection .scenarioBox.selected .scenarioHeading {
-  color: white !important;
+.performanceSection.performanceSection .scenarioBox.selected .scenarioHeading {
+  color: white;
 }
 
-.performanceSection .scenarioBox:not(.selected) .scenarioText {
-  color: rgb(75 85 99) !important; /* text-secondary-600 equivalent */
+.performanceSection.performanceSection .scenarioBox:not(.selected) .scenarioText {
+  color: rgb(75 85 99); /* text-secondary-600 equivalent */
 }
 
-.performanceSection .scenarioBox:not(.selected) .hourLabel {
-  color: rgb(75 85 99) !important; /* text-secondary-600 equivalent */
+.performanceSection.performanceSection .scenarioBox:not(.selected) .hourLabel {
+  color: rgb(75 85 99); /* text-secondary-600 equivalent */
 }
 
 /* Legacy filter button styles - replaced by high-specificity selectors above */
 
 /* Test Scenario Styling - high-specificity selectors to override Tailwind AND globals.css */
-.performanceSection .scenarioBox {
-  cursor: pointer !important;
-  transition: none !important; /* Disable all transitions */
-  pointer-events: auto !important;
+.performanceSection.performanceSection .scenarioBox.scenarioBox {
+  cursor: pointer;
+  transition: none; /* Disable all transitions */
+  pointer-events: auto;
   /* Override globals.css disabled button styling */
-  opacity: 1 !important;
-  display: block !important;
-  visibility: visible !important;
+  opacity: 1;
+  display: block;
+  visibility: visible;
 }
 
-.performanceSection .scenarioBox:not(.selected) {
-  background-color: white !important;
-  color: var(--secondary-900) !important;
-  border: 1px solid var(--secondary-200) !important;
+.performanceSection.performanceSection .scenarioBox.scenarioBox:not(.selected) {
+  background-color: white;
+  color: var(--secondary-900);
+  border: 1px solid var(--secondary-200);
 }
 
 /* Removed hover effect - only click should trigger selection */
 
-.performanceSection .scenarioBox.selected {
-  background-color: var(--primary-600) !important;
-  color: white !important;
+.performanceSection.performanceSection .scenarioBox.scenarioBox.selected {
+  background-color: var(--primary-600);
+  color: white;
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Animation styles for metric cards */

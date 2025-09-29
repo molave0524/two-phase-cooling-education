@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import {
   CheckCircleIcon,
@@ -110,13 +111,12 @@ function OrderConfirmationContent() {
                     key={item.id}
                     className='flex gap-4 py-4 border-b border-secondary-200 last:border-b-0'
                   >
-                    <img
-                      src={item.image}
+                    <Image
+                      src={item.image || '/images/placeholder-product.jpg'}
                       alt={item.name}
+                      width={64}
+                      height={64}
                       className='w-16 h-16 object-cover rounded-lg'
-                      onError={e => {
-                        e.currentTarget.src = '/images/placeholder-product.jpg'
-                      }}
                     />
                     <div className='flex-1'>
                       <h4 className='font-medium text-secondary-900'>{item.name}</h4>

@@ -65,7 +65,8 @@
       "Bash(npx kill-port:*)",
       "Bash(git rev-parse:*)",
       "Bash(echo $NEXT_PUBLIC_DEMO_MODE)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(ccusage)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { ProductImage } from '@/types/product'
 import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
@@ -47,9 +48,11 @@ export default function ProductImageGallery({ images }: Pick<ProductImageGallery
     <div className='space-y-4'>
       {/* Main Image Display */}
       <div className='relative aspect-square bg-secondary-50 rounded-equipment overflow-hidden group'>
-        <img
+        <Image
           src={selectedImage.url}
           alt={selectedImage.altText}
+          width={500}
+          height={500}
           className={`w-full h-full object-cover transition-transform duration-300 ${
             isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
           }`}
@@ -109,7 +112,13 @@ export default function ProductImageGallery({ images }: Pick<ProductImageGallery
                   : 'border-secondary-200 hover:border-secondary-300'
               }`}
             >
-              <img src={image.url} alt={image.altText} className='w-full h-full object-cover' />
+              <Image
+                src={image.url}
+                alt={image.altText}
+                width={80}
+                height={80}
+                className='w-full h-full object-cover'
+              />
             </button>
           ))}
         </div>

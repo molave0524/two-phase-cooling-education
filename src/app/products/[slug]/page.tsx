@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getProductBySlug } from '@/data/products'
 import { useCartStore } from '@/stores/cartStore'
@@ -111,19 +112,14 @@ export default function ProductPage({ params }: ProductPageProps) {
               border: '1px solid #e2e8f0',
             }}
           >
-            <img
+            <Image
               src={
                 filteredImages[selectedImageIndex]?.url ||
                 'https://via.placeholder.com/600x600/f1f5f9/64748b?text=Product+Image'
               }
               alt={filteredImages[selectedImageIndex]?.altText || product.name}
-              onError={e => {
-                const target = e.target as HTMLImageElement
-                if (!target.src.startsWith('data:')) {
-                  target.src =
-                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDYwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjMwMCIgeT0iMzAwIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjNjQ3NDhiIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPlByb2R1Y3QgSW1hZ2U8L3RleHQ+Cjwvc3ZnPg=='
-                }
-              }}
+              width={600}
+              height={600}
               style={{
                 width: '100%',
                 height: '100%',
@@ -218,16 +214,11 @@ export default function ProductPage({ params }: ProductPageProps) {
                           transition: 'border-color 0.2s ease',
                         }}
                       >
-                        <img
-                          src={image.url}
+                        <Image
+                          src={image.url || '/placeholder-product.jpg'}
                           alt={image.altText}
-                          onError={e => {
-                            const target = e.target as HTMLImageElement
-                            if (!target.src.startsWith('data:')) {
-                              target.src =
-                                'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMjAwIiBmb250LWZhbWlseT0ic3lzdGVtLXVpLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjQ3NDhiIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPkltYWdlPC90ZXh0Pgo8L3N2Zz4='
-                            }
-                          }}
+                          width={100}
+                          height={100}
                           style={{
                             width: '100%',
                             height: '100%',

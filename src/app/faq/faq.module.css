@@ -5,18 +5,7 @@
   min-height: 100vh;
 }
 
-/* Hero section styling */
-.heroSection {
-  background-color: var(--color-secondary-200);
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  padding-top: 1.5rem;
-  padding-bottom: 3rem;
-}
+/* Hero section styling removed - no longer needed */
 
 /* Section wrapper with proper responsive design */
 .faqContentSection {
@@ -29,6 +18,7 @@
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
+  /* No border-top since this is now the first section */
 }
 
 .contactSection {
@@ -84,43 +74,55 @@
   }
 }
 
-/* Hero content styling */
-.heroContent {
+/* Section header styling to match other sections */
+.sectionHeader {
   text-align: center;
-  margin: 0 auto;
-  max-width: 1024px;
+  margin-bottom: 2rem;
 }
 
-.heroTitle {
+.titleWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
 }
 
-.heroIcon {
+.titleIcon {
   width: 1.5rem;
   height: 1.5rem;
   color: var(--color-primary-600);
 }
 
-.heroHeading {
-  font-size: 1.875rem; /* text-3xl */
-  font-weight: 700; /* font-bold */
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--color-secondary-900);
-}
-
-@media (min-width: 640px) {
-  .heroHeading {
-    font-size: 2.25rem; /* sm:text-4xl */
-  }
+  margin-top: 1rem;
+  margin-bottom: 0;
 }
 
 @media (min-width: 1024px) {
-  .heroHeading {
-    font-size: 3rem; /* lg:text-5xl */
+  .sectionTitle {
+    font-size: 1.875rem;
   }
 }
+
+/* Mobile responsive spacing */
+@media (max-width: 768px) {
+  .faqContentSection {
+    padding-top: var(--spacing-section-top-mobile);
+    padding-bottom: var(--spacing-section-bottom-mobile);
+    /* No border since this is the first section */
+  }
+
+  .contactSection {
+    padding-top: var(--spacing-section-top-mobile);
+    padding-bottom: var(--spacing-section-bottom-mobile);
+    border-top-width: calc(var(--spacing-between-sections) * 0.75);
+  }
+}
+
+/* Hero content styling removed - no longer needed */
 
 /* Contact section styling */
 .contactContent {
@@ -421,9 +423,9 @@
   margin-left: 1rem;
 }
 
-.faqIcon > svg {
-  height: 1.25rem !important;
-  width: 1.25rem !important;
+.faqIcon.faqIcon > svg {
+  height: 1.25rem;
+  width: 1.25rem;
   color: var(--color-secondary-400);
 }
 

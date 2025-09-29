@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCartStore } from '@/stores/cartStore'
 import { CartItem } from '@/types/cart'
 import { CART_CONFIG } from '@/constants'
@@ -45,7 +46,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className={styles.cartPage}>
+    <div className={`${styles.cartPage} input-autofill-override`}>
       {/* Hero Section */}
       <div id='hero' className={styles.heroSection} aria-labelledby='hero-heading'>
         <div className={styles.container}>
@@ -256,9 +257,11 @@ function CartItemRow({
         {/* Product Image */}
         <div className={styles.cartItemImage}>
           <Link href={`/products/${item.product.slug}`} className={styles.cartItemImageLink}>
-            <img
-              src={mainImage?.url}
+            <Image
+              src={mainImage?.url || '/placeholder-product.jpg'}
               alt={mainImage?.altText || item.product.name}
+              width={120}
+              height={120}
               className={styles.cartItemImg}
             />
           </Link>

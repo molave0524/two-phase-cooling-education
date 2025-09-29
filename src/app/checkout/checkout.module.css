@@ -393,78 +393,36 @@
 /* ============================================================================ */
 
 /* Input field overrides - ensure no gray backgrounds */
-.checkoutPage input,
-.checkoutPage textarea,
-.checkoutPage select,
-.checkoutPage input[type='text'],
-.checkoutPage input[type='email'],
-.checkoutPage input[type='number'],
-.checkoutPage input[type='tel'],
-.checkoutPage input[type='search'] {
-  background-color: white !important;
-  background: white !important;
-  color: var(--color-secondary-700) !important;
+.checkoutPage.checkoutPage input,
+.checkoutPage.checkoutPage textarea,
+.checkoutPage.checkoutPage select,
+.checkoutPage.checkoutPage input[type='text'],
+.checkoutPage.checkoutPage input[type='email'],
+.checkoutPage.checkoutPage input[type='number'],
+.checkoutPage.checkoutPage input[type='tel'],
+.checkoutPage.checkoutPage input[type='search'] {
+  background-color: white;
+  background: white;
+  color: var(--color-secondary-700);
 }
 
-.checkoutPage input:focus,
-.checkoutPage textarea:focus,
-.checkoutPage select:focus,
-.checkoutPage input[type='text']:focus,
-.checkoutPage input[type='email']:focus,
-.checkoutPage input[type='number']:focus,
-.checkoutPage input[type='tel']:focus,
-.checkoutPage input[type='search']:focus {
-  background-color: white !important;
-  background: white !important;
+.checkoutPage.checkoutPage input:focus,
+.checkoutPage.checkoutPage textarea:focus,
+.checkoutPage.checkoutPage select:focus,
+.checkoutPage.checkoutPage input[type='text']:focus,
+.checkoutPage.checkoutPage input[type='email']:focus,
+.checkoutPage.checkoutPage input[type='number']:focus,
+.checkoutPage.checkoutPage input[type='tel']:focus,
+.checkoutPage.checkoutPage input[type='search']:focus {
+  background-color: white;
+  background: white;
 }
 
 /* Override any Tailwind gray backgrounds */
-.checkoutPage .bg-gray-50,
-.checkoutPage .bg-gray-100,
-.checkoutPage .bg-gray-200 {
-  background-color: white !important;
+.checkoutPage.checkoutPage .bg-gray-50,
+.checkoutPage.checkoutPage .bg-gray-100,
+.checkoutPage.checkoutPage .bg-gray-200 {
+  background-color: white;
 }
 
-/* Override browser autofill gray backgrounds - NUCLEAR OPTION */
-.checkoutPage input:-webkit-autofill,
-.checkoutPage input:-webkit-autofill:hover,
-.checkoutPage input:-webkit-autofill:focus,
-.checkoutPage input:-webkit-autofill:active,
-.checkoutPage textarea:-webkit-autofill,
-.checkoutPage textarea:-webkit-autofill:hover,
-.checkoutPage textarea:-webkit-autofill:focus,
-.checkoutPage textarea:-webkit-autofill:active,
-.checkoutPage select:-webkit-autofill,
-.checkoutPage select:-webkit-autofill:hover,
-.checkoutPage select:-webkit-autofill:focus,
-.checkoutPage select:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-  -webkit-text-fill-color: var(--color-secondary-700) !important;
-  background-color: white !important;
-  background-image: none !important;
-  background: white !important;
-}
-
-/* Firefox autofill override */
-.checkoutPage input:-moz-autofill,
-.checkoutPage textarea:-moz-autofill,
-.checkoutPage select:-moz-autofill {
-  background-color: white !important;
-  background: white !important;
-}
-
-/* Comprehensive autofill and autocomplete override */
-.checkoutPage input:autofill,
-.checkoutPage input:-internal-autofill-selected,
-.checkoutPage input:-internal-autofill-previewed {
-  background-color: white !important;
-  background: white !important;
-  -webkit-box-shadow: 0 0 0 1000px white inset !important;
-}
-
-/* Force override for any dynamically added styles */
-.checkoutPage input,
-.checkoutPage textarea,
-.checkoutPage select {
-  background-color: white !important;
-}
+/* Autofill overrides now handled by input-autofill-override utility class in globals.css */

@@ -33,20 +33,6 @@ export const metadata: Metadata = {
 export default function FAQPage() {
   return (
     <div className={styles.faqPage}>
-      {/* Hero Section */}
-      <div id='hero' className={styles.heroSection} aria-labelledby='hero-heading'>
-        <div className={styles.container}>
-          <div className={styles.heroContent}>
-            <div className={styles.heroTitle}>
-              <QuestionMarkCircleIcon className={styles.heroIcon} />
-              <h1 id='hero-heading' className={styles.heroHeading}>
-                FAQ
-              </h1>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* FAQ Content */}
       <section
         id='faq-content'
@@ -54,6 +40,15 @@ export default function FAQPage() {
         className={styles.faqContentSection}
       >
         <div className={styles.faqContentContainer}>
+          {/* Section Header */}
+          <div className={styles.sectionHeader}>
+            <div className={styles.titleWrapper}>
+              <QuestionMarkCircleIcon className={styles.titleIcon} />
+              <h2 id='faq-content-heading' className={styles.sectionTitle}>
+                Frequently Asked Questions
+              </h2>
+            </div>
+          </div>
           <FAQSection />
         </div>
       </section>

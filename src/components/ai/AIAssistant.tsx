@@ -197,6 +197,45 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     }
   }, [conversation.context.type, fallbackMode, onConversationStart])
 
+  const saveConversation = useCallback(
+    async (satisfaction?: number) => {
+      if (!conversation.id || conversation.messages.length === 0) return
+
+      try {
+        const conversationData = {
+          id: conversation.id,
+          title: conversation.messages[1]?.content.slice(0, 50) + '...' || 'Untitled Conversation',
+          context_type: conversation.context.type,
+          context_data: conversation.context.data,
+          total_messages: conversation.totalMessages,
+          avg_response_time: Math.round(conversation.averageResponseTime),
+          fallback_count: conversation.fallbackCount,
+          satisfaction_rating: satisfaction,
+          started_at: conversation.sessionStartTime,
+          ended_at: new Date(),
+          messages: conversation.messages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+            message_type: msg.role === 'user' ? 'question' : 'answer',
+            is_fallback: msg.isFallback || false,
+            confidence_score: msg.confidence,
+            user_feedback: msg.helpfulnessRating,
+            created_at: msg.timestamp,
+          })),
+        }
+
+        await fetch('/api/ai/conversations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(conversationData),
+        })
+      } catch (error) {
+        console.error('Failed to save conversation:', error)
+      }
+    },
+    [conversation]
+  )
+
   const endConversation = useCallback(
     async (satisfaction?: number) => {
       if (!conversation.id) return
@@ -221,7 +260,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [conversation.id, onConversationEnd]
+    [conversation.id, onConversationEnd, saveConversation]
   )
 
   // ============================================================================
@@ -441,45 +480,6 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         return "Hi! I'm your AI assistant for two-phase cooling technology. I can help you understand concepts, answer technical questions, and guide you through our educational content. What would you like to learn about?"
     }
   }
-
-  const saveConversation = useCallback(
-    async (satisfaction?: number) => {
-      if (!conversation.id || conversation.messages.length === 0) return
-
-      try {
-        const conversationData = {
-          id: conversation.id,
-          title: conversation.messages[1]?.content.slice(0, 50) + '...' || 'Untitled Conversation',
-          context_type: conversation.context.type,
-          context_data: conversation.context.data,
-          total_messages: conversation.totalMessages,
-          avg_response_time: Math.round(conversation.averageResponseTime),
-          fallback_count: conversation.fallbackCount,
-          satisfaction_rating: satisfaction,
-          started_at: conversation.sessionStartTime,
-          ended_at: new Date(),
-          messages: conversation.messages.map(msg => ({
-            role: msg.role,
-            content: msg.content,
-            message_type: msg.role === 'user' ? 'question' : 'answer',
-            is_fallback: msg.isFallback || false,
-            confidence_score: msg.confidence,
-            user_feedback: msg.helpfulnessRating,
-            created_at: msg.timestamp,
-          })),
-        }
-
-        await fetch('/api/ai/conversations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(conversationData),
-        })
-      } catch (error) {
-        console.error('Failed to save conversation:', error)
-      }
-    },
-    [conversation]
-  )
 
   // ============================================================================
   // RENDER

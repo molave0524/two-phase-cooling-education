@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCartStore } from '@/stores/cartStore'
 import { CartItem } from '@/types/cart'
 import {
@@ -201,9 +202,11 @@ function CartItemComponent({
       {/* Product Image */}
       <div className='flex-shrink-0'>
         <Link href={`/products/${item.product.slug}`}>
-          <img
-            src={mainImage?.url}
+          <Image
+            src={mainImage?.url || '/placeholder-product.jpg'}
             alt={mainImage?.altText || item.product.name}
+            width={80}
+            height={80}
             className='w-20 h-20 object-cover rounded-lg border border-secondary-200'
           />
         </Link>

@@ -97,7 +97,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className={styles.checkoutPage}>
+    <div className={`${styles.checkoutPage} input-autofill-override`}>
       <div className={styles.container}>
         {/* Header */}
         <div className={styles.header}>
