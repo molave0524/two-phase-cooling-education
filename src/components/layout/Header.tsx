@@ -9,7 +9,6 @@ import { useCartStore } from '@/stores/cartStore'
 const MAIN_NAVIGATION = [
   { label: 'Videos', href: '/#videos' },
   { label: 'Technology', href: '/#technology' },
-  { label: 'AI Assistant', href: '/#ai-assistant' },
   { label: 'Products', href: '/#product' },
   { label: 'FAQ', href: '/faq' },
 ]
@@ -203,7 +202,6 @@ export const Header: React.FC = () => {
           >
             2PC
           </div>
-          <span>Two-Phase Cooling</span>
         </Link>
 
         {/* Desktop Navigation - Centered */}

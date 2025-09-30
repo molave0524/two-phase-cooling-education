@@ -308,6 +308,12 @@ export const useCartStore = create<CartStore>()(
         appliedCoupon: state.appliedCoupon,
         // Don't persist UI state like isOpen
       }),
+      onRehydrateStorage: () => state => {
+        // Recalculate totals after rehydration to ensure itemCount is correct
+        if (state) {
+          state.calculateTotals()
+        }
+      },
     }
   )
 )

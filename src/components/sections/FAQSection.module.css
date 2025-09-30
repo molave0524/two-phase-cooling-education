@@ -14,21 +14,24 @@
 }
 
 /* Search Bar */
-.searchWrapper {
+.searchContainer {
   position: relative;
   max-width: 448px;
   margin: 0 auto;
 }
 
-.searchIcon {
+.searchIconContainer {
   position: absolute;
   top: 50%;
   left: var(--space-3);
   transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.searchIcon {
   width: 20px;
   height: 20px;
   color: var(--color-secondary-400);
-  pointer-events: none;
 }
 
 .searchInput {
