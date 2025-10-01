@@ -8,6 +8,7 @@ import { db, products } from '@/db'
 import { eq } from 'drizzle-orm'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
 
