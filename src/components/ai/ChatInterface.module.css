@@ -1,0 +1,129 @@
+/* Chat Interface Component Styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messagesArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.messagesEnd {
+  height: 1px;
+}
+
+.inputArea {
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-secondary-200);
+  background: white;
+}
+
+.inputForm {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  background: white;
+  color: var(--color-secondary-900);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.input:disabled {
+  background: var(--color-secondary-100);
+  cursor: not-allowed;
+}
+
+.sendButton {
+  padding: var(--space-2);
+  background: var(--color-primary-600);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: var(--color-primary-700);
+}
+
+.sendButton:disabled {
+  background: var(--color-secondary-400);
+  cursor: not-allowed;
+}
+
+.sendButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.typingIndicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  color: var(--color-secondary-600);
+  font-size: var(--text-sm);
+}
+
+.typingDots {
+  display: flex;
+  gap: 4px;
+}
+
+.typingDot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-secondary-400);
+  border-radius: 50%;
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.typingDot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typingDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typingDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}

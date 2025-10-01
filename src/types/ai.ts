@@ -48,3 +48,63 @@ export interface AIResponseMetadata {
   suggestedActions?: string[]
   relatedTopics?: string[]
 }
+
+// Provider system types
+export interface AIResponse {
+  message: string
+  suggestedQuestions?: string[]
+  cartActions?: CartAction[]
+  confidence?: number
+  metadata?: AIResponseMetadata
+}
+
+export interface CartAction {
+  type: 'add' | 'remove' | 'update_quantity'
+  productId: string
+  quantity?: number
+  requiresConfirmation: boolean
+  description: string
+}
+
+export interface AIContext {
+  currentVideo?: {
+    slug: string
+    title: string
+    category: string
+    duration: number
+    currentTime: number
+  }
+  cartItems?: Array<{
+    id: string
+    productName: string
+    quantity: number
+    price: number
+  }>
+  userHardware?: {
+    cpu?: string
+    gpu?: string
+    motherboard?: string
+    coolingSystem?: string
+  }
+  recentQuestions?: string[]
+  sessionId: string
+}
+
+export interface AIProvider {
+  name: string
+  initialize(): Promise<void>
+  generateResponse(messages: ChatMessage[], context: AIContext): Promise<AIResponse>
+  isAvailable(): boolean
+  getCostEstimate?(messages: ChatMessage[]): number
+}
+
+export type AIProviderType = 'mock' | 'openai' | 'gemini' | 'local'
+
+export interface AIConfiguration {
+  provider: AIProviderType
+  apiKey?: string
+  model?: string
+  temperature?: number
+  maxTokens?: number
+  endpoint?: string
+}

@@ -4,6 +4,7 @@ import { Providers } from './providers'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import { FloatingAIButton } from '@/components/ai/FloatingAIButton'
 import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
 // Toaster is now handled in Providers
 
@@ -190,6 +191,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             {/* Site footer */}
             <Footer />
+
+            {/* Floating AI Assistant Button */}
+            <FloatingAIButton />
           </ErrorBoundary>
 
           {/* Toast notifications handled in Providers */}

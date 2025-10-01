@@ -63,7 +63,7 @@ export default function CartDrawer() {
 
         {/* Cart Content - Scrollable */}
         <div
-          className='absolute left-0 right-0 overflow-y-scroll border-2 border-red-500'
+          className='absolute left-0 right-0 overflow-y-auto'
           style={{
             top: '88px',
             height: items.length > 0 ? 'calc(100vh - 88px - 300px)' : 'calc(100vh - 88px)',
@@ -81,7 +81,7 @@ export default function CartDrawer() {
               </Link>
             </div>
           ) : (
-            // Cart Items with forced content
+            // Cart Items
             <div className='p-6 space-y-6'>
               {items.map(item => (
                 <CartItemComponent
@@ -90,15 +90,6 @@ export default function CartDrawer() {
                   onQuantityChange={handleQuantityChange}
                   onRemove={handleRemoveItem}
                 />
-              ))}
-              {/* Force scrollable content */}
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div key={`test-${i}`} className='bg-blue-50 border border-blue-200 p-4 rounded'>
-                  <p className='text-blue-800'>Test scroll item {i + 1}</p>
-                  <p className='text-sm text-blue-600'>
-                    This should be scrollable if the fix works
-                  </p>
-                </div>
               ))}
             </div>
           )}

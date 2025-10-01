@@ -417,12 +417,6 @@
   transition: all var(--transition-colors);
 }
 
-.capabilityIcon svg {
-  width: 24px;
-  height: 24px;
-  display: block;
-}
-
 .capabilityIconActive {
   background: var(--color-primary-600);
   color: white;
@@ -572,12 +566,6 @@
   background: var(--color-primary-700);
 }
 
-.ctaButton svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
 .ctaButtonIcon {
   width: 20px;
   height: 20px;
@@ -587,70 +575,4 @@
   font-size: var(--text-xs);
   color: var(--color-secondary-500);
   margin: var(--space-2) 0 0 0;
-}
-
-/* Try It Section */
-.tryItSection {
-  text-align: center;
-  padding: var(--space-6);
-}
-
-.tryItContent {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  align-items: center;
-}
-
-.tryItTitle {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-900);
-  margin: 0;
-}
-
-.tryItDescription {
-  font-size: var(--text-base);
-  color: var(--color-secondary-600);
-  max-width: 600px;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.tryItButton {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  background: var(--color-primary-600);
-  color: white;
-  border: none;
-  border-radius: var(--radius-equipment);
-  font-size: var(--text-base);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: background-color var(--transition-colors);
-}
-
-.tryItButton:hover {
-  background: var(--color-primary-700);
-}
-
-.tryItButton svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-/* Capabilities Grid */
-.capabilitiesGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-}
-
-@media (min-width: 768px) {
-  .capabilitiesGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }

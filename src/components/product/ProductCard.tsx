@@ -3,34 +3,8 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-// Mock type for demo mode
-interface Products {
-  id: string
-  name: string
-  description: string
-  price: number
-  price_cents: number
-  currency?: string
-  compare_at_price?: number
-  stock_quantity: number
-  image: string
-  images: string[]
-  category: string
-  slug: string
-  sku?: string
-  is_featured?: boolean
-  specifications?: {
-    cooling?: {
-      gwpRating?: string
-      type?: string
-    }
-    formFactor?: string
-    compatibility?: {
-      motherboard?: string[]
-    }
-  }
-  features?: string[]
-}
+import { TwoPhaseCoolingProduct } from '@/types/product'
+import { useCartStore } from '@/stores/cartStore'
 import {
   ShoppingCartIcon,
   HeartIcon,
@@ -46,11 +20,10 @@ import { toast } from 'react-hot-toast'
 // ============================================================================
 
 interface ProductCardProps {
-  product: Products
+  product: TwoPhaseCoolingProduct
   variant?: 'default' | 'featured' | 'compact'
   showQuickAdd?: boolean
-  onAddToCart?: (product: Products) => void
-  onAddToWishlist?: (product: Products) => void
+  onAddToWishlist?: (product: TwoPhaseCoolingProduct) => void
   className?: string
 }
 
@@ -68,7 +41,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   variant = 'default',
   showQuickAdd = true,
-  onAddToCart,
   onAddToWishlist,
   className = '',
 }) => {
@@ -77,6 +49,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
+  // Cart store
+  const { addItem } = useCartStore()
+
   // ============================================================================
   // COMPUTED VALUES
   // ============================================================================
@@ -84,24 +59,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: product.currency || 'USD',
-  }).format(product.price_cents / 100)
+  }).format(product.price)
 
-  const formattedComparePrice = product.compare_at_price
+  const formattedComparePrice = product.originalPrice
     ? new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: product.currency || 'USD',
-      }).format(product.compare_at_price / 100)
+      }).format(product.originalPrice)
     : null
 
-  const discountPercentage = product.compare_at_price
-    ? Math.round(
-        ((product.compare_at_price - product.price_cents) / product.compare_at_price) * 100
-      )
+  const discountPercentage = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
 
   const isOnSale = discountPercentage > 0
-  const isOutOfStock = product.stock_quantity <= 0
-  const isLowStock = product.stock_quantity <= 5 && product.stock_quantity > 0
+  const isOutOfStock = product.stockQuantity <= 0
+  const isLowStock = product.stockQuantity <= 5 && product.stockQuantity > 0
 
   // Extract key features from specifications
   const keyFeatures: ProductFeature[] = [
@@ -112,15 +85,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     },
     {
       icon: <CheckIcon className='w-4 h-4' />,
-      text: `${product.specifications?.cooling?.gwpRating || 'Low'} GWP Rating`,
+      text: `GWP: ${product.specifications.environmental.gwp} (Low Impact)`,
     },
     {
       icon: <CheckIcon className='w-4 h-4' />,
-      text: `${product.specifications?.formFactor || 'ATX'} Compatible`,
+      text: `${product.specifications.cooling.efficiency}`,
     },
     {
       icon: <FireIcon className='w-4 h-4' />,
-      text: 'Superior Thermal Performance',
+      text: product.specifications.performance.noiseLevel,
       highlight: true,
     },
   ]
@@ -143,10 +116,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     }
 
     try {
-      if (onAddToCart) {
-        await onAddToCart(product)
-        toast.success('Added to cart! 🛒')
-      }
+      addItem(product, 1)
+      // The cart store already shows success toast
     } catch (error) {
       toast.error('Failed to add to cart')
     }
@@ -184,7 +155,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {/* Compact Image */}
               <div className='relative w-20 h-20 flex-shrink-0'>
                 <Image
-                  src={product.images[0] || '/images/products/placeholder.jpg'}
+                  src={product.images[0]?.url || '/images/products/placeholder.jpg'}
                   alt={product.name}
                   fill
                   className='object-cover rounded-technical'
@@ -249,7 +220,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               Save {discountPercentage}%
             </div>
           )}
-          {product.is_featured && (
+          {product.tags.includes('featured') && (
             <div className='bg-primary-600 text-white text-sm px-2 py-1 rounded-technical font-medium flex items-center gap-1'>
               <SparklesIcon className='w-3 h-3' />
               Featured
@@ -283,8 +254,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Product Image */}
         <div className='relative aspect-square bg-secondary-100'>
           <Image
-            src={product.images[currentImageIndex] || '/images/products/placeholder.jpg'}
-            alt={product.name}
+            src={product.images[currentImageIndex]?.url || '/images/products/placeholder.jpg'}
+            alt={product.images[currentImageIndex]?.altText || product.name}
             fill
             className={`object-cover transition-opacity duration-300 ${
               isImageLoading ? 'opacity-0' : 'opacity-100'
@@ -330,7 +301,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Product Category */}
           <div className='flex items-center justify-between mb-2'>
             <span className='text-sm text-primary-600 font-medium uppercase tracking-wide'>
-              {product.category}
+              {product.categories[0]}
             </span>
             {/* Rating */}
             <div className='flex items-center gap-1'>
@@ -391,7 +362,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <div className='text-danger-600 text-sm font-medium'>Out of Stock</div>
             ) : isLowStock ? (
               <div className='text-accent-600 text-sm font-medium'>
-                Only {product.stock_quantity} left in stock
+                Only {product.stockQuantity} left in stock
               </div>
             ) : (
               <div className='text-success-600 text-sm font-medium'>In Stock</div>

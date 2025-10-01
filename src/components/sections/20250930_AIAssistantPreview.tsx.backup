@@ -19,7 +19,7 @@ interface AssistantCapability {
 
 const ASSISTANT_CAPABILITIES: AssistantCapability[] = [
   {
-    icon: <CpuChipIcon />,
+    icon: <CpuChipIcon className="w-6 h-6" />,
     title: 'Hardware Compatibility',
     description: 'Analyzes your components for optimal cooling configuration',
     examples: [
@@ -29,7 +29,7 @@ const ASSISTANT_CAPABILITIES: AssistantCapability[] = [
     ],
   },
   {
-    icon: <SparklesIcon />,
+    icon: <SparklesIcon className="w-6 h-6" />,
     title: 'Performance Optimization',
     description: 'Provides data-driven recommendations for maximum efficiency',
     examples: [
@@ -39,7 +39,7 @@ const ASSISTANT_CAPABILITIES: AssistantCapability[] = [
     ],
   },
   {
-    icon: <QuestionMarkCircleIcon />,
+    icon: <QuestionMarkCircleIcon className="w-6 h-6" />,
     title: 'Technical Education',
     description: 'Explains complex thermal concepts in accessible terms',
     examples: [
@@ -66,8 +66,7 @@ export const AIAssistantPreview: React.FC = () => {
               </h2>
             </div>
             <p className={styles.subtitle}>
-              Get instant help with two-phase cooling technology, product recommendations, and
-              technical questions.
+              Get instant help with two-phase cooling technology, product recommendations, and technical questions.
             </p>
           </div>
 
@@ -76,7 +75,9 @@ export const AIAssistantPreview: React.FC = () => {
             <div className={styles.capabilitiesGrid}>
               {ASSISTANT_CAPABILITIES.map((capability, index) => (
                 <div key={index} className={styles.capabilityCard}>
-                  <div className={styles.capabilityIcon}>{capability.icon}</div>
+                  <div className={styles.capabilityIcon}>
+                    {capability.icon}
+                  </div>
                   <h3 className={styles.capabilityTitle}>{capability.title}</h3>
                   <p className={styles.capabilityDescription}>{capability.description}</p>
                   <ul className={styles.capabilityExamples}>
@@ -93,11 +94,14 @@ export const AIAssistantPreview: React.FC = () => {
               <div className={styles.tryItContent}>
                 <h3 className={styles.tryItTitle}>Ready to Get Help?</h3>
                 <p className={styles.tryItDescription}>
-                  Our AI assistant is trained on all our technical documentation, FAQ, and product
-                  specifications. Ask anything about two-phase cooling technology!
+                  Our AI assistant is trained on all our technical documentation, FAQ, and product specifications.
+                  Ask anything about two-phase cooling technology!
                 </p>
-                <button onClick={() => setIsAIOpen(true)} className={styles.tryItButton}>
-                  <ChatBubbleLeftRightIcon />
+                <button
+                  onClick={() => setIsAIOpen(true)}
+                  className={styles.tryItButton}
+                >
+                  <ChatBubbleLeftRightIcon className="w-5 h-5" />
                   Start Conversation
                 </button>
               </div>
@@ -105,7 +109,11 @@ export const AIAssistantPreview: React.FC = () => {
           </div>
 
           {/* Live AI Assistant */}
-          <AIAssistant isOpen={isAIOpen} onToggle={() => setIsAIOpen(!isAIOpen)} context={{}} />
+          <AIAssistant
+            isOpen={isAIOpen}
+            onToggle={() => setIsAIOpen(!isAIOpen)}
+            context={{}}
+          />
         </div>
       </div>
     </div>
