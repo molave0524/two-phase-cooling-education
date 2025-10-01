@@ -1,4 +1,5 @@
 import { AIProvider, ChatMessage, AIContext, AIResponse } from '@/types/ai'
+import { apiFetch } from '@/lib/api-client'
 
 export class GeminiAIProvider implements AIProvider {
   public readonly name = 'Google Gemini'
@@ -8,8 +9,8 @@ export class GeminiAIProvider implements AIProvider {
     console.log('[Gemini] Initializing provider (server-side API)...')
 
     try {
-      // Test if server-side API is available
-      const response = await fetch('/api/ai/chat', {
+      // Test if server-side API is available (using CSRF-protected client)
+      const response = await apiFetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -41,8 +42,8 @@ export class GeminiAIProvider implements AIProvider {
     try {
       console.log('[Gemini] Sending request to server API...')
 
-      // Call server-side API instead of exposing API key
-      const response = await fetch('/api/ai/chat', {
+      // Call server-side API with CSRF protection
+      const response = await apiFetch('/api/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

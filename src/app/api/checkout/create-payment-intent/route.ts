@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createPaymentIntent, createCustomer, handleStripeError } from '@/lib/stripe'
 import { createOrder, validateOrderInventory, reserveInventory } from '@/lib/orders'
+import { sanitizeCustomerData, sanitizeAddressData } from '@/lib/sanitize'
 import { z } from 'zod'
 
 const CreatePaymentIntentSchema = z.object({
@@ -46,7 +47,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = CreatePaymentIntentSchema.parse(body)
 
-    const { customer, shippingAddress, order } = validatedData
+    // Sanitize input data to prevent XSS
+    const sanitizedCustomer = sanitizeCustomerData(validatedData.customer)
+    const sanitizedAddress = sanitizeAddressData({
+      addressLine1: validatedData.shippingAddress.addressLine1,
+      addressLine2: validatedData.shippingAddress.addressLine2,
+      city: validatedData.shippingAddress.city,
+      state: validatedData.shippingAddress.state,
+      zipCode: validatedData.shippingAddress.zipCode,
+      country: validatedData.shippingAddress.country,
+    })
+
+    const customer = sanitizedCustomer
+    const shippingAddress = {
+      ...sanitizedAddress,
+      firstName: validatedData.shippingAddress.firstName,
+      lastName: validatedData.shippingAddress.lastName,
+      company: validatedData.shippingAddress.company,
+      phone: validatedData.shippingAddress.phone,
+    }
+    const order = validatedData.order
 
     // Get cart items (in a real app, this would come from session/database)
     // For now, we'll use the order data passed in

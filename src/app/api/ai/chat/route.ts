@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { knowledgeBase } from '@/services/ai/KnowledgeBase'
+import { sanitizeChatMessage } from '@/lib/sanitize'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -43,14 +44,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No user message found' }, { status: 400 })
     }
 
+    // Sanitize user input to prevent XSS
+    const userQuestion = sanitizeChatMessage(lastMessage.content)
+
     // Initialize knowledge base
     await ensureKnowledgeBase()
 
     // Initialize Gemini
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
-
-    const userQuestion = lastMessage.content
 
     // Search knowledge base
     const knowledgeResults = knowledgeBase.search(userQuestion, {

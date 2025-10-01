@@ -259,6 +259,46 @@ export async function updatePaymentStatus(
   return order
 }
 
+/**
+ * Update order payment status from webhook
+ * Used by Stripe webhooks to update order state
+ */
+export async function updateOrderPaymentStatus(
+  orderId: string,
+  update: {
+    status: 'paid' | 'payment_failed' | 'cancelled'
+    paymentIntentId?: string
+    paidAt?: Date
+  }
+): Promise<Order | null> {
+  const order = orders.get(orderId)
+  if (!order) return null
+
+  // Update payment intent if provided
+  if (update.paymentIntentId) {
+    order.paymentIntentId = update.paymentIntentId
+  }
+
+  // Update payment status based on webhook status
+  if (update.status === 'paid') {
+    order.paymentStatus = 'succeeded'
+    order.status = 'processing'
+    order.paidAt = update.paidAt || new Date()
+  } else if (update.status === 'payment_failed') {
+    order.paymentStatus = 'failed'
+    order.status = 'failed'
+  } else if (update.status === 'cancelled') {
+    order.paymentStatus = 'failed'
+    order.status = 'cancelled'
+  }
+
+  order.updatedAt = new Date()
+  orders.set(orderId, order)
+
+  console.log(`Order ${order.orderNumber} updated from webhook: ${update.status}`)
+  return order
+}
+
 // Order tracking
 export async function addOrderTracking(
   orderId: string,

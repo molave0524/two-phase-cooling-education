@@ -5,6 +5,7 @@ import { useStripe, useElements, CardElement, CardElementProps } from '@stripe/r
 import { toast } from 'react-hot-toast'
 import { Order, OrderCustomer, OrderShippingAddress } from '@/lib/orders'
 import { PRODUCT_CONFIG } from '@/constants'
+import { apiFetch } from '@/lib/api-client'
 import styles from './PaymentForm.module.css'
 
 interface PaymentFormProps {
@@ -79,8 +80,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     setCardError(null)
 
     try {
-      // Create payment intent on server
-      const response = await fetch('/api/checkout/create-payment-intent', {
+      // Create payment intent on server (with CSRF protection)
+      const response = await apiFetch('/api/checkout/create-payment-intent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,8 +124,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       }
 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Update order status on server
-        const updateResponse = await fetch('/api/orders/update-payment', {
+        // Update order status on server (with CSRF protection)
+        const updateResponse = await apiFetch('/api/orders/update-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
