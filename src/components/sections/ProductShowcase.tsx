@@ -420,7 +420,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       {product.features && (
                         <div className={styles.productFeatures}>
                           <div className={styles.featuresContainer}>
-                            {product.features.slice(0, 2).map((feature, index) => (
+                            {product.features.slice(0, 2).map((feature: string, index: number) => (
                               <span key={index} className={styles.featureTag}>
                                 {feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
                               </span>

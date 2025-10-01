@@ -12,7 +12,6 @@ import {
   integer,
   real,
   jsonb,
-  varchar,
 } from 'drizzle-orm/pg-core'
 
 // ============================================================================

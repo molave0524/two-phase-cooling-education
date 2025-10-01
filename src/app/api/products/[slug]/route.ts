@@ -9,7 +9,10 @@ import { eq } from 'drizzle-orm'
 
 const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     const { slug } = await params
 
