@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db, products } from '@/db'
 import { eq } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
 
 export async function GET(
