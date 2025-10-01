@@ -41,12 +41,22 @@ export const FAQSection: React.FC = () => {
       }
 
       try {
-        const results = knowledgeBase.search(searchQuery, {
+        const searchOptions: {
+          type: 'faq'
+          category?: string
+          maxResults: number
+          minScore: number
+        } = {
           type: 'faq',
-          category: selectedCategory !== 'all' ? selectedCategory : undefined,
           maxResults: 10,
           minScore: 0.1,
-        })
+        }
+
+        if (selectedCategory !== 'all') {
+          searchOptions.category = selectedCategory
+        }
+
+        const results = knowledgeBase.search(searchQuery, searchOptions)
         setSmartSearchResults(results)
       } catch (error) {
         console.error('Smart search failed:', error)
