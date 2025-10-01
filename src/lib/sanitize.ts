@@ -86,16 +86,36 @@ export function sanitizeCustomerData(data: {
   firstName: string
   lastName: string
   email: string
+  phone?: string | undefined
+  company?: string | undefined
+}): {
+  firstName: string
+  lastName: string
+  email: string
   phone?: string
   company?: string
-}) {
-  return {
+} {
+  const result: {
+    firstName: string
+    lastName: string
+    email: string
+    phone?: string
+    company?: string
+  } = {
     firstName: sanitizeName(data.firstName),
     lastName: sanitizeName(data.lastName),
     email: sanitizeEmail(data.email),
-    phone: data.phone ? sanitizePhone(data.phone) : undefined,
-    company: data.company ? sanitizeText(data.company) : undefined,
   }
+
+  if (data.phone !== undefined) {
+    result.phone = sanitizePhone(data.phone)
+  }
+
+  if (data.company !== undefined) {
+    result.company = sanitizeText(data.company)
+  }
+
+  return result
 }
 
 /**
@@ -103,20 +123,39 @@ export function sanitizeCustomerData(data: {
  */
 export function sanitizeAddressData(data: {
   addressLine1: string
+  addressLine2?: string | undefined
+  city: string
+  state: string
+  zipCode: string
+  country: string
+}): {
+  addressLine1: string
   addressLine2?: string
   city: string
   state: string
   zipCode: string
   country: string
-}) {
-  return {
+} {
+  const result: {
+    addressLine1: string
+    addressLine2?: string
+    city: string
+    state: string
+    zipCode: string
+    country: string
+  } = {
     addressLine1: sanitizeAddress(data.addressLine1),
-    addressLine2: data.addressLine2 ? sanitizeAddress(data.addressLine2) : undefined,
     city: sanitizeAddress(data.city),
     state: sanitizeAddress(data.state),
     zipCode: sanitizeText(data.zipCode).replace(/[^a-zA-Z0-9\s-]/g, ''),
     country: sanitizeAddress(data.country),
   }
+
+  if (data.addressLine2 !== undefined) {
+    result.addressLine2 = sanitizeAddress(data.addressLine2)
+  }
+
+  return result
 }
 
 /**

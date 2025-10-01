@@ -53,7 +53,7 @@ export async function middleware(request: NextRequest) {
     const csrfTokenFromHeader = request.headers.get('x-csrf-token')
 
     // Get CSRF token from cookie
-    const csrfTokenFromCookie = request.cookies.get('csrf-token')?.value
+    const csrfTokenFromCookie = request.cookies.get('csrf-token')?.value ?? null
 
     // Verify tokens match
     if (!verifyToken(csrfTokenFromHeader, csrfTokenFromCookie)) {
