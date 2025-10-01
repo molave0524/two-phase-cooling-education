@@ -6,7 +6,9 @@ import { Footer } from '@/components/layout/Footer'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { FloatingAIButton } from '@/components/ai/FloatingAIButton'
 import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
-// Toaster is now handled in Providers
+
+// Check if we're in development mode
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 // Apple-style system font stack for optimal performance and Apple look
 // Using system fonts to match Apple's approach
@@ -90,10 +92,11 @@ export const metadata: Metadata = {
   },
 
   // Verification codes for search engines
+  // Note: These are optional and should be added to .env if needed
   verification: {
-    google: process.env.GOOGLE_VERIFICATION_CODE || null,
-    yandex: process.env.YANDEX_VERIFICATION_CODE || null,
-    yahoo: process.env.YAHOO_VERIFICATION_CODE || null,
+    google: null,
+    yandex: null,
+    yahoo: null,
   },
 
   // Categories for app stores
@@ -200,7 +203,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Providers>
 
         {/* Development-only performance monitoring */}
-        {process.env.NODE_ENV === 'development' && (
+        {isDevelopment && (
           <script
             dangerouslySetInnerHTML={{
               __html: `

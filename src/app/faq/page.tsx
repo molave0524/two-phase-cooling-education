@@ -72,9 +72,6 @@ export default function FAQPage() {
               <a href={`mailto:${COMPANY_INFO.EMAIL}`} className={styles.primaryButton}>
                 Contact Technical Support
               </a>
-              <a href='/' className={styles.secondaryButton}>
-                Ask AI Assistant
-              </a>
             </div>
           </div>
         </div>

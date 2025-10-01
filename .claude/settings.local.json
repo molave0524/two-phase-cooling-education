@@ -68,7 +68,8 @@
       "Bash(echo:*)",
       "Bash(ccusage)",
       "Bash(copy:*)",
-      "WebFetch(domain:ai.google.dev)"
+      "WebFetch(domain:ai.google.dev)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []
