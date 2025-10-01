@@ -1,18 +1,15 @@
 'use client'
 
 import React from 'react'
-import { AIContext } from '@/types/ai'
 import styles from './SuggestedQuestions.module.css'
 
 interface SuggestedQuestionsProps {
   onQuestionClick: (question: string) => void
-  context: AIContext
   className?: string
 }
 
 export const SuggestedQuestions: React.FC<SuggestedQuestionsProps> = ({
   onQuestionClick,
-  context,
   className = '',
 }) => {
   const questions = [
