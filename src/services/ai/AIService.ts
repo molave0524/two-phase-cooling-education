@@ -165,32 +165,6 @@ class AIService {
   }
 
   /**
-   * Validate configuration for provider type
-   */
-  private validateConfig(config: AIConfiguration): void {
-    switch (config.provider) {
-      case 'openai':
-        if (!config.apiKey) {
-          throw new Error('OpenAI provider requires an API key')
-        }
-        break
-
-      case 'local':
-        if (!config.endpoint) {
-          throw new Error('Local LLM provider requires an endpoint URL')
-        }
-        break
-
-      case 'mock':
-        // Mock provider requires no special configuration
-        break
-
-      default:
-        throw new Error(`Invalid provider type: ${config.provider}`)
-    }
-  }
-
-  /**
    * Cleanup resources
    */
   async cleanup(): Promise<void> {
