@@ -1,28 +1,50 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
-import { getProductBySlug } from '@/data/products'
+import { notFound, useParams } from 'next/navigation'
 import { useCartStore } from '@/stores/cartStore'
+import { TwoPhaseCoolingProduct } from '@/types/product'
 
-interface ProductPageProps {
-  params: { slug: string }
-}
+export default function ProductPage() {
+  const params = useParams()
+  const slug = params.slug as string
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = getProductBySlug(params.slug)
-
-  if (!product) {
-    notFound()
-  }
-
+  const [product, setProduct] = useState<TwoPhaseCoolingProduct | null>(null)
+  const [loading, setLoading] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0)
   const [selectedImageType, setSelectedImageType] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const { addItem } = useCartStore()
+
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const response = await fetch(`/api/products/${slug}`)
+        if (!response.ok) {
+          notFound()
+        }
+        const data = await response.json()
+        setProduct(data)
+      } catch (error) {
+        console.error('Failed to fetch product:', error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProduct()
+  }, [slug])
+
+  if (loading) {
+    return <div className='container mx-auto px-4 py-8'>Loading...</div>
+  }
+
+  if (!product) {
+    notFound()
+  }
 
   // Filter images based on selected type
   const filteredImages = selectedImageType

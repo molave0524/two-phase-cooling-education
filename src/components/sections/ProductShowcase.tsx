@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getFeaturedProducts } from '@/data/products'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
 import {
@@ -49,8 +48,29 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   showFilters = false,
   maxProducts = 6,
 }) => {
-  // Get featured products from new data structure
-  const featuredProducts = getFeaturedProducts().slice(0, maxProducts)
+  // State for fetched products
+  const [featuredProducts, setFeaturedProducts] = useState<TwoPhaseCoolingProduct[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch products from database
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products')
+        const data = await response.json()
+        // Get only featured products (complete-cases category) and limit
+        const featured = data
+          .filter((p: TwoPhaseCoolingProduct) => p.categories.includes('complete-cases'))
+          .slice(0, maxProducts)
+        setFeaturedProducts(featured)
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProducts()
+  }, [maxProducts])
 
   // Legacy conversion for backward compatibility
   const convertToLegacyFormat = (products: TwoPhaseCoolingProduct[]) => {
@@ -93,8 +113,14 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   }
 
   // Component state
-  const [products] = useState(convertToLegacyFormat(featuredProducts))
-  const [filteredProducts, setFilteredProducts] = useState(products)
+  const [products, setProducts] = useState<any[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
+
+  // Update products when featuredProducts changes
+  useEffect(() => {
+    const converted = convertToLegacyFormat(featuredProducts)
+    setProducts(converted)
+  }, [featuredProducts])
 
   // Filter and view state
   const [filters, setFilters] = useState<FilterState>({
@@ -350,7 +376,9 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
           {/* Products Grid/List */}
           <div className={styles.productsSection}>
-            {filteredProducts.length === 0 ? (
+            {loading ? (
+              <div className={styles.loadingState}>Loading products...</div>
+            ) : filteredProducts.length === 0 ? (
               <div className={styles.noProducts}>
                 <div className={styles.noProductsIcon}>🔍</div>
                 <h3 className={styles.noProductsTitle}>No products found</h3>

@@ -1,14 +1,31 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { PRODUCTS } from '@/data/products'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
 import styles from './products.module.css'
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<TwoPhaseCoolingProduct[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products')
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProducts()
+  }, [])
+
   return (
     <div className={styles.pageContainer}>
       {/* Header Section */}
@@ -24,11 +41,15 @@ export default function ProductsPage() {
 
       {/* Products Grid */}
       <div className={styles.productsContainer}>
-        <div className={styles.productsGrid}>
-          {PRODUCTS.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <div className='text-center py-8'>Loading products...</div>
+        ) : (
+          <div className={styles.productsGrid}>
+            {products.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

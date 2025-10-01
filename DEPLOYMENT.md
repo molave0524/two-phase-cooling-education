@@ -1,158 +1,191 @@
-# Deployment Guide: Two-Phase Cooling Education Center
+# Deployment Guide - Vercel Postgres Setup
 
-## ✅ Build Status
-The project has been successfully prepared for deployment:
-- ✅ All TypeScript errors fixed
-- ✅ All missing dependencies resolved
-- ✅ Demo mode providers implemented
-- ✅ Build completes successfully
-- ✅ Vercel configuration ready
+This guide walks you through setting up PostgreSQL for production on Vercel using **Neon**.
 
-## 🚀 Deployment Options
+## Architecture
 
-### Option 1: Vercel CLI (Recommended)
+- **Local Development**: SQLite database (`.data/app.db`)
+- **Production (Vercel)**: PostgreSQL database (Neon)
 
-1. **Install Vercel CLI** (if not already installed):
-   ```bash
-   npm i -g vercel
-   ```
+The application automatically detects which database to use based on environment variables.
 
-2. **Login to Vercel**:
-   ```bash
-   vercel login
-   ```
-   Follow the browser authentication flow.
+## Why Neon?
 
-3. **Deploy**:
-   ```bash
-   vercel --prod
-   ```
+We chose **Neon** for production because:
 
-### Option 2: Vercel Dashboard
+- ✅ Native Vercel integration (seamless setup)
+- ✅ Serverless Postgres (scales to zero when idle)
+- ✅ Automatic scaling (cost-effective)
+- ✅ Works perfectly with Drizzle ORM
+- ✅ Free tier: 0.5 GB storage
 
-1. **Push to GitHub**:
-   ```bash
-   git add .
-   git commit -m "Ready for deployment - demo version"
-   git push origin main
-   ```
+**Not using authentication** - The app doesn't require user accounts yet (cart uses localStorage). Authentication can be added later when needed.
 
-2. **Connect to Vercel**:
-   - Go to [vercel.com](https://vercel.com)
-   - Click "Add New Project"
-   - Import your GitHub repository
-   - Vercel will auto-detect Next.js settings
+## Step 1: Create Neon Postgres Database
 
-3. **Deploy**: Click "Deploy" - it will use the existing `vercel.json` configuration.
+1. Go to your Vercel dashboard
+2. Select your project
+3. Navigate to the **Storage** tab
+4. Click **Create Database**
+5. Select **Neon** (recommended)
+6. Choose a database name (e.g., `two-phase-cooling-db`)
+7. Select your preferred region (choose closest to your users)
+8. **Authentication**: Keep it **OFF** (we don't need it yet)
+9. Click **Create**
 
-### Option 3: Alternative Platforms
+## Step 2: Connect Database to Project
 
-- **Netlify**: Upload the `.next` build folder
-- **Railway**: Connect GitHub repo and deploy
-- **DigitalOcean App Platform**: Connect GitHub repo
+Vercel will automatically add these environment variables to your project:
 
-## 📋 What's Deployed
-
-### Demo Features Enabled:
-- ✅ Two-Phase Cooling Education Center homepage
-- ✅ Interactive technology overview
-- ✅ Performance metrics with sample data
-- ✅ Video showcase (demo videos)
-- ✅ Product catalog with sample products
-- ✅ AI Assistant (demo responses)
-- ✅ Shopping cart functionality
-- ✅ Responsive design
-
-### Production-Ready Components:
-- Next.js 14 with App Router
-- TypeScript with full type safety
-- Tailwind CSS for styling
-- React Hot Toast for notifications
-- Zustand for state management
-- Hero Icons for UI elements
-
-## ⚙️ Environment Configuration
-
-The `vercel.json` includes demo environment variables:
-```json
-{
-  "NEXT_PUBLIC_DEMO_MODE": "true",
-  "NEXT_PUBLIC_USE_SAMPLE_DATA": "true",
-  "NEXT_PUBLIC_ENABLE_AI_ASSISTANT": "true",
-  "NEXT_PUBLIC_ENABLE_ECOMMERCE": "true",
-  "NEXT_PUBLIC_ENABLE_VIDEO_STREAMING": "true"
-}
+```
+POSTGRES_URL
+POSTGRES_PRISMA_URL
+POSTGRES_URL_NO_SSL
+POSTGRES_URL_NON_POOLING
+POSTGRES_USER
+POSTGRES_HOST
+POSTGRES_PASSWORD
+POSTGRES_DATABASE
 ```
 
-## 🔧 Post-Deployment Setup
+The app uses `POSTGRES_URL` to detect and connect to PostgreSQL.
 
-1. **Custom Domain** (Optional):
-   - In Vercel dashboard: Settings → Domains
-   - Add your custom domain
-   - Configure DNS settings
+## Step 3: Get Database Connection String
 
-2. **Analytics** (Optional):
-   - Enable Vercel Analytics in project settings
-   - Add Google Analytics if needed
+1. After creating the database, Vercel shows environment variables
+2. Copy the `POSTGRES_URL` value (starts with `postgres://`)
+3. This URL is already automatically added to your Vercel project
 
-3. **Performance Monitoring**:
-   - Vercel provides built-in performance monitoring
-   - View metrics in the dashboard
+## Step 4: Push Database Schema
 
-## 📊 Expected Performance
+Initialize the database schema from your local machine:
 
-- **Build Time**: ~2-3 minutes
-- **Bundle Size**: ~123KB First Load JS
-- **Performance Score**: 90+ (Lighthouse)
-- **SEO Ready**: Meta tags and Open Graph configured
+```bash
+# Windows (Command Prompt)
+set POSTGRES_URL=postgres://your-connection-string
+npm run db:push
 
-## 🚨 Troubleshooting
+# Windows (PowerShell)
+$env:POSTGRES_URL="postgres://your-connection-string"
+npm run db:push
 
-### Common Issues:
+# Mac/Linux
+export POSTGRES_URL="postgres://your-connection-string"
+npm run db:push
+```
 
-1. **Build Fails**:
-   ```bash
-   npm run build
-   ```
-   Check for any new TypeScript errors.
+This creates all the tables in your Neon database.
 
-2. **Missing Images**:
-   - Demo images are referenced but not included
-   - Replace with actual images or placeholder services
+## Step 5: Seed the Database
 
-3. **Environment Variables**:
-   - Production environment variables can be set in Vercel dashboard
-   - Go to Project Settings → Environment Variables
+Populate the database with your 11 products:
 
-## 📝 Next Steps for Production
+```bash
+# Same environment variable from Step 4
+npm run db:seed
+```
 
-To convert from demo to production:
+You should see:
 
-1. **Database Setup**:
-   - Set up PostgreSQL database
-   - Configure Prisma connection
-   - Run migrations
+```
+🌱 Seeding database...
+📦 Using PostgreSQL
+✓ Cleared existing products
+✓ Inserted product: Two-Phase Cooling Case Pro
+✓ Inserted product: Two-Phase Cooling Case Compact
+...
+🎉 Successfully seeded 11 products!
+```
 
-2. **AI Integration**:
-   - Set up OpenAI API key
-   - Configure AI service endpoints
+## Step 6: Verify Production Database
 
-3. **Video Content**:
-   - Upload actual educational videos
-   - Configure video streaming service
+### Option A: Vercel Dashboard (Easiest)
 
-4. **Payment Processing**:
-   - Integrate Stripe for payments
-   - Set up webhook endpoints
+1. Go to Vercel Dashboard → Storage → Your Database
+2. Click the **Data** tab
+3. Click on `products` table
+4. You should see all 11 products listed
 
-5. **Content Management**:
-   - Add admin interface
-   - Set up content editing capabilities
+### Option B: Drizzle Studio (Local GUI)
 
-## 🎯 Current Demo URL
-Once deployed, your site will be available at:
-`https://your-project-name.vercel.app`
+```bash
+# Windows (PowerShell)
+$env:POSTGRES_URL="postgres://your-connection-string"
+npm run db:studio
 
----
+# Mac/Linux
+export POSTGRES_URL="postgres://your-connection-string"
+npm run db:studio
+```
 
-**Note**: This is a fully functional demo showcasing the Two-Phase Cooling Education Center. All interactive features work with sample data, providing a complete preview of the final product.
+Opens a web UI at http://localhost:4983
+
+### Option C: Check Your Live Site
+
+1. Trigger a new deployment (or wait for auto-deploy)
+2. Visit your production URL
+3. Products should load from Neon Postgres
+
+## Checking Production Data
+
+After deployment, you can verify data using:
+
+1. **Vercel Dashboard**: Storage → Database → Data → products table
+2. **Drizzle Studio**: Set `POSTGRES_URL` and run `npm run db:studio`
+3. **Your Live Site**: Products should display on homepage and /products page
+
+## Troubleshooting
+
+### Products not showing after deployment?
+
+1. **Check database has data**: Vercel Dashboard → Storage → Data → products table
+2. **Verify environment variables**: Vercel Dashboard → Settings → Environment Variables (should have `POSTGRES_URL`)
+3. **Check deployment logs**: Vercel Dashboard → Deployments → Latest → View Logs
+4. **Re-seed if empty**: Run `npm run db:seed` with `POSTGRES_URL` set
+
+### How to reset/re-seed the database?
+
+```bash
+# Windows (PowerShell)
+$env:POSTGRES_URL="postgres://your-connection-string"
+npm run db:push   # Recreates tables
+npm run db:seed   # Adds products
+
+# Mac/Linux
+export POSTGRES_URL="postgres://your-connection-string"
+npm run db:push
+npm run db:seed
+```
+
+### "Module not found" or build errors?
+
+The Postgres migration requires these packages (already installed):
+
+- `@vercel/postgres`
+- `pg`
+- `drizzle-orm@latest`
+
+If errors occur, run: `npm install`
+
+### Still using SQLite in production?
+
+Check that `POSTGRES_URL` environment variable exists in Vercel. The app logs will show either:
+
+- `💾 Using SQLite database` (local development)
+- `🐘 Using PostgreSQL database` (production)
+
+## Adding Authentication Later
+
+The database schema includes `users` and `sessions` tables ready for authentication. When you need user accounts:
+
+1. Enable authentication in Vercel Storage settings
+2. Install auth package (NextAuth, Clerk, etc.)
+3. Update cart to sync with user accounts
+4. The tables are already there!
+
+## Summary
+
+✅ **Local**: SQLite (automatic, no setup needed)
+✅ **Production**: Neon Postgres (Vercel Storage)
+✅ **No Authentication** (keep cart in localStorage for now)
+✅ **11 Products** seeded and ready to display

@@ -102,6 +102,13 @@ jspm_packages/
 prisma/migrations/
 !prisma/migrations/.gitkeep
 
+# Drizzle
+drizzle/sqlite/
+.data/
+*.db
+*.db-shm
+*.db-wal
+
 # Testing
 coverage/
 .nyc_output
