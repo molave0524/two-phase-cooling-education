@@ -4,7 +4,7 @@
  */
 
 export { ProductCard } from './ProductCard'
-export { ProductComparison } from './ProductComparison'
-export { ProductImageGallery } from './ProductImageGallery'
-export { ProductPurchase } from './ProductPurchase'
-export { ProductSpecifications } from './ProductSpecifications'
+export { default as ProductComparison } from './ProductComparison'
+export { default as ProductImageGallery } from './ProductImageGallery'
+export { default as ProductPurchase } from './ProductPurchase'
+export { default as ProductSpecifications } from './ProductSpecifications'

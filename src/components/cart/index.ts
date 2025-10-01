@@ -3,5 +3,5 @@
  * Centralized export for all cart-related components
  */
 
-export { CartButton } from './CartButton'
-export { CartDrawer } from './CartDrawer'
+export { default as CartButton } from './CartButton'
+export { default as CartDrawer } from './CartDrawer'

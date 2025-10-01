@@ -3,6 +3,6 @@
  * Centralized export for all video-related components
  */
 
-export { MultiAngleVideoPlayer } from './MultiAngleVideoPlayer'
-export { ThermalComparisonPlayer } from './ThermalComparisonPlayer'
-export { VideoPlayer } from './VideoPlayer'
+export { default as MultiAngleVideoPlayer } from './MultiAngleVideoPlayer'
+export { default as ThermalComparisonPlayer } from './ThermalComparisonPlayer'
+export { default as VideoPlayer } from './VideoPlayer'

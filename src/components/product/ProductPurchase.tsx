@@ -80,8 +80,14 @@ export default function ProductPurchase({ product }: ProductPurchaseProps) {
       {/* Variants Selection (if available) */}
       {product.variants && product.variants.length > 0 && (
         <div>
-          <label className='block text-sm font-medium text-secondary-700 mb-2'>Configuration</label>
+          <label
+            htmlFor='variant-select'
+            className='block text-sm font-medium text-secondary-700 mb-2'
+          >
+            Configuration
+          </label>
           <select
+            id='variant-select'
             value={selectedVariant}
             onChange={e => setSelectedVariant(e.target.value)}
             className='w-full p-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500'
@@ -97,7 +103,12 @@ export default function ProductPurchase({ product }: ProductPurchaseProps) {
 
       {/* Quantity Selector */}
       <div>
-        <label className='block text-sm font-medium text-secondary-700 mb-2'>Quantity</label>
+        <label
+          htmlFor='quantity-input'
+          className='block text-sm font-medium text-secondary-700 mb-2'
+        >
+          Quantity
+        </label>
         <div className='flex items-center gap-4'>
           <div className='flex items-center border border-secondary-300 rounded-lg'>
             <button
@@ -108,6 +119,7 @@ export default function ProductPurchase({ product }: ProductPurchaseProps) {
               −
             </button>
             <input
+              id='quantity-input'
               type='number'
               value={quantity}
               onChange={e => handleQuantityChange(parseInt(e.target.value) || 1)}
