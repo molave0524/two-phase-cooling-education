@@ -4,7 +4,6 @@ import { TechnologyOverview } from '@/components/sections/TechnologyOverview'
 import { VideoShowcase } from '@/components/sections/VideoShowcase'
 import { ProductShowcase } from '@/components/sections/ProductShowcase'
 import { CallToAction } from '@/components/sections/CallToAction'
-import { AIAssistantPreview } from '@/components/sections/AIAssistantPreview'
 
 // Page metadata for SEO optimization
 export const metadata: Metadata = {
