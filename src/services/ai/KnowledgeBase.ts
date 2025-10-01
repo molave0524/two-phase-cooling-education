@@ -272,7 +272,7 @@ class KnowledgeBase {
       'way',
     ]
 
-    return [...new Set(words.filter(word => !commonWords.includes(word)))]
+    return Array.from(new Set(words.filter(word => !commonWords.includes(word))))
   }
 
   /**
