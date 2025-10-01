@@ -77,7 +77,7 @@ A: ${result.item.content}
     const cartContext =
       context.cartItems && context.cartItems.length > 0
         ? `\n\nCurrent Shopping Cart:
-${context.cartItems.map(item => `- ${item.name} (Qty: ${item.quantity}, Price: $${item.price})`).join('\n')}
+${context.cartItems.map(item => `- ${item.productName} (Qty: ${item.quantity}, Price: $${item.price})`).join('\n')}
 Total Items: ${context.cartItems.length}
 Total Value: $${context.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}
 `
