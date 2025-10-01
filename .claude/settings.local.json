@@ -66,7 +66,9 @@
       "Bash(git rev-parse:*)",
       "Bash(echo $NEXT_PUBLIC_DEMO_MODE)",
       "Bash(echo:*)",
-      "Bash(ccusage)"
+      "Bash(ccusage)",
+      "Bash(copy:*)",
+      "WebFetch(domain:ai.google.dev)"
     ],
     "deny": [],
     "ask": []

@@ -136,18 +136,24 @@ ${messages
 
       // Generate suggested questions based on FAQ category
       const suggestedQuestions =
-        knowledgeResults.length > 0
+        knowledgeResults.length > 0 && knowledgeResults[0]
           ? this.getSuggestedQuestions(knowledgeResults[0].item.category)
           : this.getDefaultSuggestedQuestions()
 
       console.log('[Gemini] ✓ Response generated successfully')
       return {
         message: text,
-        confidence: knowledgeResults.length > 0 ? knowledgeResults[0].relevanceScore : 0.5,
+        confidence:
+          knowledgeResults.length > 0 && knowledgeResults[0]
+            ? knowledgeResults[0].relevanceScore
+            : 0.5,
         suggestedQuestions,
         cartActions,
         metadata: {
-          model: 'gemini-2.5-flash',
+          confidence:
+            knowledgeResults.length > 0 && knowledgeResults[0]
+              ? knowledgeResults[0].relevanceScore
+              : 0.5,
           sources: knowledgeResults.length > 0 ? ['Knowledge Base'] : ['General Knowledge'],
           relatedTopics: knowledgeResults
             .map(r => r.item.category)

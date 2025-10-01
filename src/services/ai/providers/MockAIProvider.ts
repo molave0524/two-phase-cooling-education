@@ -33,7 +33,7 @@ export class MockAIProvider implements AIProvider {
 
     // Knowledge base search
     const knowledgeResults = knowledgeBase.search(userQuestion, { maxResults: 3, minScore: 0.2 })
-    if (knowledgeResults.length > 0) {
+    if (knowledgeResults.length > 0 && knowledgeResults[0]) {
       const bestResult = knowledgeResults[0]
       return {
         message: bestResult.item.content,
@@ -70,7 +70,7 @@ export class MockAIProvider implements AIProvider {
     return this.generateDefaultResponse(userQuestion, context)
   }
 
-  private findProductMatch(question: string, context: AIContext): AIResponse | null {
+  private findProductMatch(question: string, _context: AIContext): AIResponse | null {
     const productKeywords = ['product', 'buy', 'price', 'cost', 'purchase', 'spec', 'specification']
 
     if (!productKeywords.some(keyword => question.includes(keyword))) {
@@ -98,6 +98,10 @@ export class MockAIProvider implements AIProvider {
     }
 
     const topProduct = relevantProducts[0]
+    if (!topProduct) {
+      return null
+    }
+
     return {
       message: `I recommend the ${topProduct.name} for $${topProduct.price}. ${topProduct.shortDescription} Would you like me to add it to your cart or tell you more about its specifications?`,
       suggestedQuestions: [
@@ -140,7 +144,7 @@ export class MockAIProvider implements AIProvider {
     return null
   }
 
-  private generateCartResponse(question: string, context: AIContext): AIResponse {
+  private generateCartResponse(_question: string, context: AIContext): AIResponse {
     const cartCount = context.cartItems?.length || 0
 
     if (cartCount === 0) {
@@ -170,7 +174,7 @@ export class MockAIProvider implements AIProvider {
     }
   }
 
-  private generateDefaultResponse(question: string, context: AIContext): AIResponse {
+  private generateDefaultResponse(_question: string, _context: AIContext): AIResponse {
     const responses = [
       "I'm here to help you with two-phase cooling systems! What specific information are you looking for?",
       'I can assist with product recommendations, technical questions, or troubleshooting. What would you like to know?',
@@ -178,8 +182,10 @@ export class MockAIProvider implements AIProvider {
       "I'd be happy to help you find the right cooling solution. What are your specific requirements?",
     ]
 
+    const randomIndex = Math.floor(Math.random() * responses.length)
+    const selectedResponse = responses[randomIndex] ?? responses[0] ?? ''
     return {
-      message: responses[Math.floor(Math.random() * responses.length)],
+      message: selectedResponse,
       suggestedQuestions: [
         'How does two-phase cooling work?',
         "What's the best cooling system for my setup?",
@@ -214,7 +220,7 @@ export class MockAIProvider implements AIProvider {
       ],
     }
 
-    return suggestions[category] || suggestions.technology
+    return suggestions[category] ?? suggestions.technology ?? []
   }
 
   private isCartRelated(question: string): boolean {
@@ -232,31 +238,7 @@ export class MockAIProvider implements AIProvider {
     return commonWords.length / Math.max(words1.length, words2.length)
   }
 
-  private calculateKeywordMatch(question: string, target: string): number {
-    const importantKeywords = [
-      'cooling',
-      'temperature',
-      'thermal',
-      'heat',
-      'performance',
-      'efficiency',
-      'noise',
-      'installation',
-      'maintenance',
-      'compatibility',
-      'overclocking',
-    ]
-
-    const questionKeywords = importantKeywords.filter(keyword => question.includes(keyword))
-    const targetKeywords = importantKeywords.filter(keyword => target.includes(keyword))
-
-    if (questionKeywords.length === 0 && targetKeywords.length === 0) return 0
-
-    const commonKeywords = questionKeywords.filter(keyword => targetKeywords.includes(keyword))
-    return commonKeywords.length / Math.max(questionKeywords.length, targetKeywords.length, 1)
-  }
-
-  getCostEstimate(messages: ChatMessage[]): number {
+  getCostEstimate(_messages: ChatMessage[]): number {
     // Mock provider is free
     return 0
   }
