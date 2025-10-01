@@ -105,7 +105,7 @@ class KnowledgeBase {
    */
   getCategories(type?: KnowledgeItem['type']): string[] {
     const items = type ? this.getByType(type) : this.items
-    return [...new Set(items.map(item => item.category))]
+    return Array.from(new Set(items.map(item => item.category)))
   }
 
   /**
