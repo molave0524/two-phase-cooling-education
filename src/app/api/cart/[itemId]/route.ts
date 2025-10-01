@@ -39,7 +39,7 @@ export async function PUT(
 
 // DELETE /api/cart/[itemId] - Remove item
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
