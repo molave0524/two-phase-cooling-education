@@ -5,6 +5,8 @@
 
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { CartItem } from '@/types/cart'
+import { db, orders as ordersTable, orderItems as orderItemsTable } from '@/db'
+import { eq, and, gte, lte, like, or, desc, count, sum } from 'drizzle-orm'
 
 // Order types and interfaces
 export type OrderStatus =
@@ -122,8 +124,148 @@ export interface CreateOrderParams {
   metadata?: Record<string, any>
 }
 
-// In-memory order store (replace with database in production)
-const orders: Map<string, Order> = new Map()
+// Helper function to convert database order to Order interface
+function dbOrderToOrder(dbOrder: any, dbOrderItems: any[]): Order {
+  const orderItems: OrderItem[] = dbOrderItems.map(item => ({
+    id: item.id.toString(),
+    productId: item.productId,
+    product: {
+      // Product details are stored in orderItem for historical record
+      id: item.productId,
+      name: item.productName,
+      slug: item.productId.toLowerCase().replace(/\s+/g, '-'),
+      sku: item.productId,
+      price: item.price,
+      currency: 'USD',
+      description: '',
+      shortDescription: '',
+      features: [],
+      inStock: true,
+      stockQuantity: 0,
+      estimatedShipping: '',
+      specifications: {
+        cooling: {
+          capacity: '',
+          efficiency: '',
+          operatingRange: { min: 0, max: 0 },
+          fluidType: '',
+          fluidVolume: '',
+        },
+        compatibility: {
+          cpuSockets: [],
+          gpuSupport: [],
+          caseCompatibility: '',
+          motherboardClearance: '',
+        },
+        dimensions: { length: '', width: '', height: '', weight: '' },
+        environmental: { noiseLevel: '', powerConsumption: '', mtbf: '' },
+        performance: { heatPipes: 0, fanSpeed: '', airflow: '', staticPressure: '' },
+        materials: { radiator: '', block: '', tubing: '' },
+        warranty: { duration: '', coverage: '' },
+      },
+      images: [item.productImage],
+      categories: [],
+      tags: [],
+      variants: [],
+      relatedProducts: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as unknown as TwoPhaseCoolingProduct,
+    quantity: item.quantity,
+    unitPrice: item.price,
+    totalPrice: item.price * item.quantity,
+    selectedVariantId: item.variantId || undefined,
+  }))
+
+  const customer =
+    typeof dbOrder.customer === 'string' ? JSON.parse(dbOrder.customer) : dbOrder.customer
+
+  const shippingAddress =
+    typeof dbOrder.shippingAddress === 'string'
+      ? JSON.parse(dbOrder.shippingAddress)
+      : dbOrder.shippingAddress
+
+  const billingAddress = dbOrder.billingAddress
+    ? typeof dbOrder.billingAddress === 'string'
+      ? JSON.parse(dbOrder.billingAddress)
+      : dbOrder.billingAddress
+    : shippingAddress
+
+  const metadata = dbOrder.metadata
+    ? typeof dbOrder.metadata === 'string'
+      ? JSON.parse(dbOrder.metadata)
+      : dbOrder.metadata
+    : {}
+
+  const totals: OrderTotals = {
+    subtotal: dbOrder.subtotal,
+    tax: dbOrder.tax,
+    taxRate: dbOrder.taxRate,
+    shipping: dbOrder.shipping,
+    shippingMethod: dbOrder.shippingMethod,
+    discount: dbOrder.discount,
+    discountCode: dbOrder.discountCode || undefined,
+    total: dbOrder.total,
+  }
+
+  const order: Order = {
+    id: dbOrder.id.toString(),
+    orderNumber: dbOrder.orderNumber,
+    status: dbOrder.status as OrderStatus,
+    paymentStatus: dbOrder.paymentStatus as PaymentStatus,
+    customer,
+    shippingAddress,
+    billingAddress,
+    items: orderItems,
+    totals,
+    metadata,
+    createdAt: new Date(dbOrder.createdAt * 1000),
+    updatedAt: new Date(dbOrder.updatedAt * 1000),
+  }
+
+  // Add optional fields only if they exist
+  if (dbOrder.stripePaymentIntentId) {
+    order.paymentIntentId = dbOrder.stripePaymentIntentId
+  }
+  if (dbOrder.stripeCustomerId) {
+    order.stripeCustomerId = dbOrder.stripeCustomerId
+  }
+  if (dbOrder.notes) {
+    order.notes = dbOrder.notes
+  }
+  if (dbOrder.internalNotes) {
+    order.internalNotes = dbOrder.internalNotes
+  }
+  if (dbOrder.paidAt) {
+    order.paidAt = new Date(dbOrder.paidAt * 1000)
+  }
+  if (dbOrder.shippedAt) {
+    order.shippedAt = new Date(dbOrder.shippedAt * 1000)
+  }
+  if (dbOrder.deliveredAt) {
+    order.deliveredAt = new Date(dbOrder.deliveredAt * 1000)
+  }
+
+  // Add tracking if available
+  if (dbOrder.trackingNumber) {
+    order.tracking = {
+      carrier: dbOrder.shippingCarrier || '',
+      trackingNumber: dbOrder.trackingNumber,
+      trackingUrl: dbOrder.trackingUrl || '',
+      shippedAt: dbOrder.shippedAt ? new Date(dbOrder.shippedAt * 1000) : new Date(),
+    }
+
+    if (dbOrder.estimatedDelivery) {
+      order.tracking.estimatedDelivery = new Date(dbOrder.estimatedDelivery * 1000)
+    }
+
+    if (dbOrder.deliveredAt) {
+      order.tracking.actualDelivery = new Date(dbOrder.deliveredAt * 1000)
+    }
+  }
+
+  return order
+}
 
 // Order number generation
 export function generateOrderNumber(): string {
@@ -134,75 +276,131 @@ export function generateOrderNumber(): string {
 
 // Order creation
 export async function createOrder(params: CreateOrderParams): Promise<Order> {
-  const orderId = crypto.randomUUID()
   const orderNumber = generateOrderNumber()
+  const now = Math.floor(Date.now() / 1000)
 
-  // Convert cart items to order items
-  const orderItems: OrderItem[] = params.items.map(cartItem => ({
-    id: crypto.randomUUID(),
-    productId: cartItem.productId,
-    product: cartItem.product,
-    quantity: cartItem.quantity,
-    unitPrice: cartItem.selectedVariantId
-      ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.price ||
-        cartItem.product.price
-      : cartItem.product.price,
-    totalPrice:
-      (cartItem.selectedVariantId
+  // Insert order into database
+  const [dbOrder] = await db
+    .insert(ordersTable)
+    .values({
+      orderNumber,
+      status: 'pending',
+      paymentStatus: 'pending',
+      customer: JSON.stringify(params.customer),
+      shippingAddress: JSON.stringify(params.shippingAddress),
+      billingAddress: params.billingAddress ? JSON.stringify(params.billingAddress) : null,
+      subtotal: params.totals.subtotal,
+      tax: params.totals.tax,
+      taxRate: params.totals.taxRate,
+      shipping: params.totals.shipping,
+      shippingMethod: params.totals.shippingMethod,
+      discount: params.totals.discount,
+      discountCode: params.totals.discountCode || null,
+      total: params.totals.total,
+      paymentMethod: 'card',
+      stripePaymentIntentId: params.paymentIntentId || null,
+      stripeCustomerId: params.stripeCustomerId || null,
+      notes: params.notes || null,
+      metadata: params.metadata ? JSON.stringify(params.metadata) : null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning()
+
+  // Insert order items into database
+  const dbOrderItems = await Promise.all(
+    params.items.map(async cartItem => {
+      const unitPrice = cartItem.selectedVariantId
         ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.price ||
           cartItem.product.price
-        : cartItem.product.price) * cartItem.quantity,
-    selectedVariantId: cartItem.selectedVariantId || '',
-  }))
+        : cartItem.product.price
 
-  const order: Order = {
-    id: orderId,
-    orderNumber,
-    status: 'pending',
-    paymentStatus: 'pending',
-    customer: params.customer,
-    shippingAddress: params.shippingAddress,
-    billingAddress: params.billingAddress || params.shippingAddress,
-    items: orderItems,
-    totals: params.totals,
-    paymentIntentId: params.paymentIntentId || '',
-    stripeCustomerId: params.stripeCustomerId || '',
-    notes: params.notes || '',
-    metadata: params.metadata || {},
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
+      const [item] = await db
+        .insert(orderItemsTable)
+        .values({
+          orderId: dbOrder.id,
+          productId: cartItem.productId,
+          productName: cartItem.product.name,
+          productImage: cartItem.product.images[0] || '',
+          variantId: cartItem.selectedVariantId || null,
+          variantName: cartItem.selectedVariantId
+            ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.name ||
+              null
+            : null,
+          quantity: cartItem.quantity,
+          price: unitPrice,
+          createdAt: now,
+        })
+        .returning()
 
-  orders.set(orderId, order)
+      return item
+    })
+  )
 
-  console.log(`Order created: ${orderNumber} (ID: ${orderId})`)
+  const order = dbOrderToOrder(dbOrder, dbOrderItems)
+
+  console.log(`Order created: ${orderNumber} (ID: ${order.id})`)
   return order
 }
 
 // Order retrieval
 export async function getOrder(orderId: string): Promise<Order | null> {
-  return orders.get(orderId) || null
+  const orderIdNum = parseInt(orderId, 10)
+  if (isNaN(orderIdNum)) return null
+
+  const [dbOrder] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.id, orderIdNum))
+    .limit(1)
+
+  if (!dbOrder) return null
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderIdNum))
+
+  return dbOrderToOrder(dbOrder, dbOrderItems)
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
-  const orderArray = Array.from(orders.values())
-  for (const order of orderArray) {
-    if (order.orderNumber === orderNumber) {
-      return order
-    }
-  }
-  return null
+  const [dbOrder] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.orderNumber, orderNumber))
+    .limit(1)
+
+  if (!dbOrder) return null
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, dbOrder.id))
+
+  return dbOrderToOrder(dbOrder, dbOrderItems)
 }
 
 export async function getOrdersByCustomer(customerEmail: string): Promise<Order[]> {
+  // Query orders where customer JSON contains the email
+  const dbOrders = await db
+    .select()
+    .from(ordersTable)
+    .where(like(ordersTable.customer, `%"email":"${customerEmail}"%`))
+    .orderBy(desc(ordersTable.createdAt))
+
+  // Fetch order items for all orders
   const customerOrders: Order[] = []
-  const orderArray = Array.from(orders.values())
-  for (const order of orderArray) {
-    if (order.customer.email === customerEmail) {
-      customerOrders.push(order)
-    }
+  for (const dbOrder of dbOrders) {
+    const dbOrderItems = await db
+      .select()
+      .from(orderItemsTable)
+      .where(eq(orderItemsTable.orderId, dbOrder.id))
+
+    customerOrders.push(dbOrderToOrder(dbOrder, dbOrderItems))
   }
-  return customerOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+
+  return customerOrders
 }
 
 // Order status updates
@@ -211,29 +409,51 @@ export async function updateOrderStatus(
   status: OrderStatus,
   notes?: string
 ): Promise<Order | null> {
-  const order = orders.get(orderId)
-  if (!order) return null
+  const orderIdNum = parseInt(orderId, 10)
+  if (isNaN(orderIdNum)) return null
 
-  order.status = status
-  order.updatedAt = new Date()
+  // First, get the current order to access its internalNotes
+  const [currentOrder] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.id, orderIdNum))
+    .limit(1)
 
+  if (!currentOrder) return null
+
+  const now = Math.floor(Date.now() / 1000)
+  const updateData: any = {
+    status,
+    updatedAt: now,
+  }
+
+  // Update internal notes if provided
   if (notes) {
-    order.internalNotes = order.internalNotes
-      ? `${order.internalNotes}\n${new Date().toISOString()}: ${notes}`
+    const existingNotes = currentOrder.internalNotes || ''
+    updateData.internalNotes = existingNotes
+      ? `${existingNotes}\n${new Date().toISOString()}: ${notes}`
       : notes
   }
 
   // Set timestamps for specific status changes
-  switch (status) {
-    case 'shipped':
-      if (!order.shippedAt) order.shippedAt = new Date()
-      break
-    case 'delivered':
-      if (!order.deliveredAt) order.deliveredAt = new Date()
-      break
+  if (status === 'shipped' && !currentOrder.shippedAt) {
+    updateData.shippedAt = now
+  } else if (status === 'delivered' && !currentOrder.deliveredAt) {
+    updateData.deliveredAt = now
   }
 
-  orders.set(orderId, order)
+  const [updatedDbOrder] = await db
+    .update(ordersTable)
+    .set(updateData)
+    .where(eq(ordersTable.id, orderIdNum))
+    .returning()
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderIdNum))
+
+  const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
   console.log(`Order ${order.orderNumber} status updated to: ${status}`)
   return order
 }
@@ -242,19 +462,46 @@ export async function updatePaymentStatus(
   orderId: string,
   paymentStatus: PaymentStatus
 ): Promise<Order | null> {
-  const order = orders.get(orderId)
-  if (!order) return null
+  const orderIdNum = parseInt(orderId, 10)
+  if (isNaN(orderIdNum)) return null
 
-  order.paymentStatus = paymentStatus
-  order.updatedAt = new Date()
-
-  if (paymentStatus === 'succeeded' && !order.paidAt) {
-    order.paidAt = new Date()
-    // Automatically update order status to processing when payment succeeds
-    order.status = 'processing'
+  const now = Math.floor(Date.now() / 1000)
+  const updateData: any = {
+    paymentStatus,
+    updatedAt: now,
   }
 
-  orders.set(orderId, order)
+  if (paymentStatus === 'succeeded') {
+    // Get current order to check if paidAt is already set
+    const [currentOrder] = await db
+      .select()
+      .from(ordersTable)
+      .where(eq(ordersTable.id, orderIdNum))
+      .limit(1)
+
+    if (!currentOrder) return null
+
+    if (!currentOrder.paidAt) {
+      updateData.paidAt = now
+    }
+    // Automatically update order status to processing when payment succeeds
+    updateData.status = 'processing'
+  }
+
+  const [updatedDbOrder] = await db
+    .update(ordersTable)
+    .set(updateData)
+    .where(eq(ordersTable.id, orderIdNum))
+    .returning()
+
+  if (!updatedDbOrder) return null
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderIdNum))
+
+  const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
   console.log(`Order ${order.orderNumber} payment status updated to: ${paymentStatus}`)
   return order
 }
@@ -271,30 +518,46 @@ export async function updateOrderPaymentStatus(
     paidAt?: Date
   }
 ): Promise<Order | null> {
-  const order = orders.get(orderId)
-  if (!order) return null
+  const orderIdNum = parseInt(orderId, 10)
+  if (isNaN(orderIdNum)) return null
+
+  const now = Math.floor(Date.now() / 1000)
+  const updateData: any = {
+    updatedAt: now,
+  }
 
   // Update payment intent if provided
   if (update.paymentIntentId) {
-    order.paymentIntentId = update.paymentIntentId
+    updateData.stripePaymentIntentId = update.paymentIntentId
   }
 
   // Update payment status based on webhook status
   if (update.status === 'paid') {
-    order.paymentStatus = 'succeeded'
-    order.status = 'processing'
-    order.paidAt = update.paidAt || new Date()
+    updateData.paymentStatus = 'succeeded'
+    updateData.status = 'processing'
+    updateData.paidAt = update.paidAt ? Math.floor(update.paidAt.getTime() / 1000) : now
   } else if (update.status === 'payment_failed') {
-    order.paymentStatus = 'failed'
-    order.status = 'failed'
+    updateData.paymentStatus = 'failed'
+    updateData.status = 'failed'
   } else if (update.status === 'cancelled') {
-    order.paymentStatus = 'failed'
-    order.status = 'cancelled'
+    updateData.paymentStatus = 'failed'
+    updateData.status = 'cancelled'
   }
 
-  order.updatedAt = new Date()
-  orders.set(orderId, order)
+  const [updatedDbOrder] = await db
+    .update(ordersTable)
+    .set(updateData)
+    .where(eq(ordersTable.id, orderIdNum))
+    .returning()
 
+  if (!updatedDbOrder) return null
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderIdNum))
+
+  const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
   console.log(`Order ${order.orderNumber} updated from webhook: ${update.status}`)
   return order
 }
@@ -304,18 +567,36 @@ export async function addOrderTracking(
   orderId: string,
   tracking: Omit<OrderTracking, 'shippedAt'>
 ): Promise<Order | null> {
-  const order = orders.get(orderId)
-  if (!order) return null
+  const orderIdNum = parseInt(orderId, 10)
+  if (isNaN(orderIdNum)) return null
 
-  order.tracking = {
-    ...tracking,
-    shippedAt: new Date(),
+  const now = Math.floor(Date.now() / 1000)
+  const updateData: any = {
+    trackingNumber: tracking.trackingNumber,
+    shippingCarrier: tracking.carrier,
+    trackingUrl: tracking.trackingUrl,
+    shippedAt: now,
+    estimatedDelivery: tracking.estimatedDelivery
+      ? Math.floor(tracking.estimatedDelivery.getTime() / 1000)
+      : null,
+    status: 'shipped',
+    updatedAt: now,
   }
-  order.status = 'shipped'
-  order.shippedAt = new Date()
-  order.updatedAt = new Date()
 
-  orders.set(orderId, order)
+  const [updatedDbOrder] = await db
+    .update(ordersTable)
+    .set(updateData)
+    .where(eq(ordersTable.id, orderIdNum))
+    .returning()
+
+  if (!updatedDbOrder) return null
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderIdNum))
+
+  const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
   console.log(`Tracking added to order ${order.orderNumber}: ${tracking.trackingNumber}`)
   return order
 }
@@ -370,21 +651,50 @@ export async function releaseInventory(items: OrderItem[]): Promise<void> {
 
 // Order analytics and reporting
 export async function getOrderStats(dateRange?: { start: Date; end: Date }) {
-  const allOrders = Array.from(orders.values())
-  const filteredOrders = dateRange
-    ? allOrders.filter(
-        order => order.createdAt >= dateRange.start && order.createdAt <= dateRange.end
-      )
-    : allOrders
+  // Build the where condition for date range
+  let whereCondition
+  if (dateRange) {
+    const startTimestamp = Math.floor(dateRange.start.getTime() / 1000)
+    const endTimestamp = Math.floor(dateRange.end.getTime() / 1000)
+    whereCondition = and(
+      gte(ordersTable.createdAt, startTimestamp),
+      lte(ordersTable.createdAt, endTimestamp)
+    )
+  }
 
-  const totalOrders = filteredOrders.length
-  const totalRevenue = filteredOrders
-    .filter(order => order.paymentStatus === 'succeeded')
-    .reduce((sum, order) => sum + order.totals.total, 0)
+  // Get total orders count
+  const [totalOrdersResult] = await db
+    .select({ count: count() })
+    .from(ordersTable)
+    .where(whereCondition)
 
-  const ordersByStatus = filteredOrders.reduce(
-    (acc, order) => {
-      acc[order.status] = (acc[order.status] || 0) + 1
+  const totalOrders = totalOrdersResult?.count || 0
+
+  // Get total revenue (only succeeded payments)
+  const [revenueResult] = await db
+    .select({ total: sum(ordersTable.total) })
+    .from(ordersTable)
+    .where(
+      whereCondition
+        ? and(whereCondition, eq(ordersTable.paymentStatus, 'succeeded'))
+        : eq(ordersTable.paymentStatus, 'succeeded')
+    )
+
+  const totalRevenue = Number(revenueResult?.total || 0)
+
+  // Get orders by status
+  const statusResults = await db
+    .select({
+      status: ordersTable.status,
+      count: count(),
+    })
+    .from(ordersTable)
+    .where(whereCondition)
+    .groupBy(ordersTable.status)
+
+  const ordersByStatus = statusResults.reduce(
+    (acc: Record<OrderStatus, number>, row: { status: string; count: number }) => {
+      acc[row.status as OrderStatus] = row.count
       return acc
     },
     {} as Record<OrderStatus, number>
@@ -415,72 +725,120 @@ export interface OrderFilters {
 export async function searchOrders(
   filters: OrderFilters = {}
 ): Promise<{ orders: Order[]; total: number }> {
-  let filteredOrders = Array.from(orders.values())
+  // Build where conditions
+  const conditions: any[] = []
 
-  // Apply filters
-  if (filters.status) {
-    filteredOrders = filteredOrders.filter(order => filters.status!.includes(order.status))
+  if (filters.status && filters.status.length > 0) {
+    conditions.push(or(...filters.status.map(status => eq(ordersTable.status, status))))
   }
 
-  if (filters.paymentStatus) {
-    filteredOrders = filteredOrders.filter(order =>
-      filters.paymentStatus!.includes(order.paymentStatus)
+  if (filters.paymentStatus && filters.paymentStatus.length > 0) {
+    conditions.push(
+      or(...filters.paymentStatus.map(status => eq(ordersTable.paymentStatus, status)))
     )
   }
 
   if (filters.customerEmail) {
-    filteredOrders = filteredOrders.filter(order =>
-      order.customer.email.toLowerCase().includes(filters.customerEmail!.toLowerCase())
-    )
+    conditions.push(like(ordersTable.customer, `%"email":"${filters.customerEmail}"%`))
   }
 
   if (filters.orderNumber) {
-    filteredOrders = filteredOrders.filter(order =>
-      order.orderNumber.toLowerCase().includes(filters.orderNumber!.toLowerCase())
-    )
+    conditions.push(like(ordersTable.orderNumber, `%${filters.orderNumber}%`))
   }
 
   if (filters.dateRange) {
-    filteredOrders = filteredOrders.filter(
-      order =>
-        order.createdAt >= filters.dateRange!.start && order.createdAt <= filters.dateRange!.end
+    const startTimestamp = Math.floor(filters.dateRange.start.getTime() / 1000)
+    const endTimestamp = Math.floor(filters.dateRange.end.getTime() / 1000)
+    conditions.push(
+      and(gte(ordersTable.createdAt, startTimestamp), lte(ordersTable.createdAt, endTimestamp))
     )
   }
 
-  // Sort by creation date (newest first)
-  filteredOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+  const whereCondition = conditions.length > 0 ? and(...conditions) : undefined
 
-  const total = filteredOrders.length
+  // Get total count
+  const [totalResult] = await db.select({ count: count() }).from(ordersTable).where(whereCondition)
 
-  // Apply pagination
-  if (filters.offset !== undefined && filters.limit !== undefined) {
-    filteredOrders = filteredOrders.slice(filters.offset, filters.offset + filters.limit)
-  } else if (filters.limit !== undefined) {
-    filteredOrders = filteredOrders.slice(0, filters.limit)
+  const total = totalResult?.count || 0
+
+  // Get filtered orders with pagination
+  let query = db
+    .select()
+    .from(ordersTable)
+    .where(whereCondition)
+    .orderBy(desc(ordersTable.createdAt))
+
+  if (filters.limit !== undefined) {
+    query = query.limit(filters.limit) as any
   }
 
-  return { orders: filteredOrders, total }
+  if (filters.offset !== undefined) {
+    query = query.offset(filters.offset) as any
+  }
+
+  const dbOrders = await query
+
+  // Fetch order items for each order
+  const ordersWithItems: Order[] = []
+  for (const dbOrder of dbOrders) {
+    const dbOrderItems = await db
+      .select()
+      .from(orderItemsTable)
+      .where(eq(orderItemsTable.orderId, dbOrder.id))
+
+    ordersWithItems.push(dbOrderToOrder(dbOrder, dbOrderItems))
+  }
+
+  return { orders: ordersWithItems, total }
 }
 
 // Order cancellation and refunds
 export async function cancelOrder(orderId: string, reason: string): Promise<Order | null> {
-  const order = orders.get(orderId)
-  if (!order) return null
+  const orderIdNum = parseInt(orderId, 10)
+  if (isNaN(orderIdNum)) return null
 
-  if (order.status === 'shipped' || order.status === 'delivered') {
+  // Get current order to check status
+  const [currentOrder] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.id, orderIdNum))
+    .limit(1)
+
+  if (!currentOrder) return null
+
+  if (currentOrder.status === 'shipped' || currentOrder.status === 'delivered') {
     throw new Error('Cannot cancel order that has already been shipped')
   }
 
-  order.status = 'cancelled'
-  order.updatedAt = new Date()
-  order.internalNotes = order.internalNotes
-    ? `${order.internalNotes}\n${new Date().toISOString()}: Cancelled - ${reason}`
-    : `Cancelled - ${reason}`
+  const now = Math.floor(Date.now() / 1000)
+  const existingNotes = currentOrder.internalNotes || ''
+  const cancelNote = `Cancelled - ${reason}`
+  const updatedNotes = existingNotes
+    ? `${existingNotes}\n${new Date().toISOString()}: ${cancelNote}`
+    : cancelNote
+
+  const [updatedDbOrder] = await db
+    .update(ordersTable)
+    .set({
+      status: 'cancelled',
+      updatedAt: now,
+      internalNotes: updatedNotes,
+    })
+    .where(eq(ordersTable.id, orderIdNum))
+    .returning()
+
+  if (!updatedDbOrder) return null
+
+  const dbOrderItems = await db
+    .select()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, orderIdNum))
+
+  const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
 
   // Release reserved inventory
   await releaseInventory(order.items)
 
-  orders.set(orderId, order)
   console.log(`Order ${order.orderNumber} cancelled: ${reason}`)
   return order
 }

@@ -122,26 +122,51 @@ export const orders = sqliteTable('orders', {
   userId: integer('user_id').references(() => users.id),
   cartId: integer('cart_id').references(() => carts.id),
   status: text('status').notNull().default('pending'), // pending, processing, shipped, delivered, cancelled
+
+  // Customer information
+  customer: text('customer', { mode: 'json' }).notNull(), // OrderCustomer JSON object
+
+  // Order totals
   subtotal: real('subtotal').notNull(),
   tax: real('tax').notNull(),
+  taxRate: real('tax_rate').notNull(),
   shipping: real('shipping').notNull(),
+  shippingMethod: text('shipping_method').notNull(),
   discount: real('discount').notNull().default(0),
+  discountCode: text('discount_code'),
   total: real('total').notNull(),
-  couponCode: text('coupon_code'),
+
+  // Addresses
   shippingAddress: text('shipping_address', { mode: 'json' }).notNull(), // JSON object
-  billingAddress: text('billing_address', { mode: 'json' }).notNull(), // JSON object
+  billingAddress: text('billing_address', { mode: 'json' }), // JSON object
+
+  // Payment information
   paymentMethod: text('payment_method').notNull(),
-  paymentStatus: text('payment_status').notNull().default('pending'), // pending, paid, failed, refunded
+  paymentStatus: text('payment_status').notNull().default('pending'), // pending, succeeded, failed, refunded
   stripePaymentIntentId: text('stripe_payment_intent_id'),
+  stripeCustomerId: text('stripe_customer_id'),
+
+  // Shipping and tracking
   trackingNumber: text('tracking_number'),
   shippingCarrier: text('shipping_carrier'),
+  trackingUrl: text('tracking_url'),
+  estimatedDelivery: integer('estimated_delivery', { mode: 'timestamp' }),
+
+  // Notes and metadata
   notes: text('notes'),
+  internalNotes: text('internal_notes'),
+  metadata: text('metadata', { mode: 'json' }), // JSON object for additional data
+
+  // Timestamps
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
+  paidAt: integer('paid_at', { mode: 'timestamp' }),
+  shippedAt: integer('shipped_at', { mode: 'timestamp' }),
+  deliveredAt: integer('delivered_at', { mode: 'timestamp' }),
 })
 
 // ============================================================================
