@@ -34,15 +34,30 @@ function verifyToken(token: string | null, cookieToken: string | null): boolean 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip CSRF for GET, HEAD, OPTIONS (safe methods)
-  if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
-    return NextResponse.next()
-  }
-
   // Skip CSRF for exempt routes (webhooks with their own verification)
   const isExemptRoute = CSRF_EXEMPT_ROUTES.some(route => pathname.startsWith(route))
   if (isExemptRoute) {
     return NextResponse.next()
+  }
+
+  // For all requests, ensure CSRF cookie exists
+  const existingCsrfToken = request.cookies.get('csrf-token')?.value
+  let response = NextResponse.next()
+
+  if (!existingCsrfToken) {
+    const token = generateToken()
+    response.cookies.set('csrf-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60 * 24, // 24 hours
+    })
+  }
+
+  // Skip CSRF validation for GET, HEAD, OPTIONS (safe methods)
+  if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
+    return response
   }
 
   // Check if this is a protected API route
@@ -62,26 +77,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // For GET requests to pages, ensure CSRF cookie exists
-  if (request.method === 'GET' && !pathname.startsWith('/api/')) {
-    const response = NextResponse.next()
-
-    // Set CSRF cookie if it doesn't exist
-    if (!request.cookies.get('csrf-token')) {
-      const token = generateToken()
-      response.cookies.set('csrf-token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-        maxAge: 60 * 60 * 24, // 24 hours
-      })
-    }
-
-    return response
-  }
-
-  return NextResponse.next()
+  return response
 }
 
 // Configure which routes use this middleware
