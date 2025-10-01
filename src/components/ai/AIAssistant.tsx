@@ -265,10 +265,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
           {/* Suggested Questions */}
           {messages.length <= 1 && (
             <div className={styles.suggestedQuestionsContainer}>
-              <SuggestedQuestions
-                onQuestionClick={handleSuggestedQuestion}
-                context={buildContext()}
-              />
+              <SuggestedQuestions onQuestionClick={handleSuggestedQuestion} />
             </div>
           )}
         </>
