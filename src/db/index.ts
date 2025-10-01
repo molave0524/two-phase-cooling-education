@@ -15,6 +15,7 @@ const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.starts
 let db: any
 let schema: any
 
+// Initialize database connection
 if (usePostgres) {
   // Production: Use Vercel Postgres
   console.log('🐘 Using PostgreSQL database')
