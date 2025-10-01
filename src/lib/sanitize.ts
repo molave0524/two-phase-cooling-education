@@ -3,13 +3,49 @@
  * Prevents XSS attacks by sanitizing user input
  */
 
-import DOMPurify from 'isomorphic-dompurify'
+// Dynamic import to avoid SSR issues
+let DOMPurify: any = null
+
+// Initialize DOMPurify lazily
+function getDOMPurify() {
+  if (DOMPurify) return DOMPurify
+
+  // Server-side: use a minimal sanitizer
+  if (typeof window === 'undefined') {
+    DOMPurify = {
+      sanitize: (dirty: string) => {
+        // Basic server-side sanitization - remove all HTML tags
+        return String(dirty).replace(/<[^>]*>/g, '')
+      },
+    }
+  } else {
+    // Client-side: use full DOMPurify (will be imported when needed)
+    try {
+      DOMPurify = require('isomorphic-dompurify')
+    } catch {
+      // Fallback if import fails
+      DOMPurify = {
+        sanitize: (dirty: string) => String(dirty).replace(/<[^>]*>/g, ''),
+      }
+    }
+  }
+
+  return DOMPurify
+}
 
 /**
  * Sanitize HTML content to prevent XSS attacks
  */
 export function sanitizeHtml(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
+  const purify = getDOMPurify()
+
+  // Server-side or fallback
+  if (typeof window === 'undefined') {
+    return purify.sanitize(dirty)
+  }
+
+  // Client-side with full DOMPurify
+  return purify.sanitize(dirty, {
     ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],
     ALLOW_DATA_ATTR: false,
@@ -20,7 +56,15 @@ export function sanitizeHtml(dirty: string): string {
  * Sanitize plain text (remove all HTML)
  */
 export function sanitizeText(text: string): string {
-  return DOMPurify.sanitize(text, { ALLOWED_TAGS: [] })
+  const purify = getDOMPurify()
+
+  // Server-side or fallback - already removes all HTML
+  if (typeof window === 'undefined') {
+    return purify.sanitize(text)
+  }
+
+  // Client-side with full DOMPurify
+  return purify.sanitize(text, { ALLOWED_TAGS: [] })
 }
 
 /**
