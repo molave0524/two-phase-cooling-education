@@ -73,7 +73,8 @@
       "Bash(npm run:*)",
       "Bash($env:POSTGRES_URL=\"postgresql://neondb_owner:npg_q6TDRXvgUo9h@ep-damp-fire-ad4x3c36-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require\")",
       "Bash(set POSTGRES_URL=postgresql://neondb_owner:npg_q6TDRXvgUo9h@ep-damp-fire-ad4x3c36-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require)",
-      "Bash(npx cross-env:*)"
+      "Bash(npx cross-env:*)",
+      "Bash(set)"
     ],
     "deny": [],
     "ask": []
