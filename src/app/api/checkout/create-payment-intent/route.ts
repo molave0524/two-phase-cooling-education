@@ -44,7 +44,7 @@ const CreatePaymentIntentSchema = z.object({
     .optional(),
 })
 
-async function handlePOST(request: NextRequest) {
+async function handlePOST(request: Request | NextRequest) {
   try {
     const body = await request.json()
     const validatedData = CreatePaymentIntentSchema.parse(body)

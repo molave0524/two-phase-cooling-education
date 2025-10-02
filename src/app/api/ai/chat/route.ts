@@ -23,7 +23,7 @@ async function ensureKnowledgeBase() {
   }
 }
 
-async function handlePOST(request: NextRequest) {
+async function handlePOST(request: Request | NextRequest) {
   try {
     // Get server-side API key (not exposed to client)
     const apiKey = process.env.GEMINI_API_KEY
