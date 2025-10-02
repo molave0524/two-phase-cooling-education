@@ -43,12 +43,15 @@ export class GeminiAIProvider implements AIProvider {
         }),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'AI request failed')
+      const result = await response.json()
+
+      // Handle new standardized API response format
+      if (!result.success || !result.data) {
+        const errorMessage = result.error?.message || 'AI request failed'
+        throw new Error(errorMessage)
       }
 
-      const data = await response.json()
+      const data = result.data
 
       logger.debug('Gemini response generated successfully')
 
