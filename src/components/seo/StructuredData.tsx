@@ -1,4 +1,4 @@
-import { COMPANY_INFO } from '@/constants'
+import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
 
 interface ProductStructuredDataProps {
   product: {
@@ -56,13 +56,10 @@ export function OrganizationStructuredData() {
     name: COMPANY_INFO.NAME,
     url: `https://${COMPANY_INFO.DOMAIN}`,
     logo: `https://${COMPANY_INFO.DOMAIN}/images/logo.png`,
-    sameAs: [
-      COMPANY_INFO.SOCIAL_MEDIA?.twitter || '',
-      COMPANY_INFO.SOCIAL_MEDIA?.linkedin || '',
-    ].filter(Boolean),
+    sameAs: [SOCIAL_MEDIA.TWITTER || '', SOCIAL_MEDIA.YOUTUBE || ''].filter(Boolean),
     contactPoint: {
       '@type': 'ContactPoint',
-      email: COMPANY_INFO.SUPPORT_EMAIL,
+      email: COMPANY_INFO.EMAIL,
       contactType: 'Customer Support',
     },
   }
