@@ -4,6 +4,7 @@
  */
 
 import { OrderShippingAddress, Order } from './orders'
+import { logger } from '@/lib/logger'
 
 // Shipping provider types
 export type ShippingProvider = 'ups' | 'fedex' | 'usps' | 'dhl'
@@ -119,7 +120,11 @@ export async function getShippingRates(
   destination: OrderShippingAddress,
   packageInfo: { weight: number; dimensions: { length: number; width: number; height: number } }
 ): Promise<ShippingRate[]> {
-  console.log(`Getting shipping rates for ${destination.city}, ${destination.state}`)
+  logger.debug('Getting shipping rates', {
+    city: destination.city,
+    state: destination.state,
+    weight: packageInfo.weight,
+  })
 
   // In production, this would make API calls to UPS, FedEx, etc.
   // For now, return mock rates based on package info and destination
@@ -290,7 +295,10 @@ export async function createShippingLabel(
   order: Order,
   shippingRate: ShippingRate
 ): Promise<ShippingLabel> {
-  console.log(`Creating ${shippingRate.provider} shipping label for order ${order.orderNumber}`)
+  logger.info('Creating shipping label', {
+    provider: shippingRate.provider,
+    orderNumber: order.orderNumber,
+  })
 
   // In production, this would call the shipping provider's API
   const trackingNumber = generateTrackingNumber(shippingRate.provider)
@@ -306,7 +314,7 @@ export async function createShippingLabel(
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
   }
 
-  console.log(`Shipping label created: ${trackingNumber}`)
+  logger.info('Shipping label created', { trackingNumber, provider: shippingRate.provider })
   return label
 }
 
@@ -333,7 +341,7 @@ export async function trackPackage(
   trackingNumber: string,
   provider?: ShippingProvider
 ): Promise<TrackingInfo | null> {
-  console.log(`Tracking package: ${trackingNumber}`)
+  logger.debug('Tracking package', { trackingNumber, provider })
 
   // Determine provider from tracking number if not provided
   if (!provider) {
@@ -341,7 +349,7 @@ export async function trackPackage(
   }
 
   if (!provider) {
-    console.error(`Unable to determine provider for tracking number: ${trackingNumber}`)
+    logger.error('Unable to determine provider for tracking number', null, { trackingNumber })
     return null
   }
 

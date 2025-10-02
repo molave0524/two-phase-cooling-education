@@ -9,6 +9,7 @@ import {
   ChevronUpIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger'
 import styles from './FAQSection.module.css'
 
 export const FAQSection: React.FC = () => {
@@ -26,7 +27,7 @@ export const FAQSection: React.FC = () => {
         await knowledgeBase.initialize()
         setIsKnowledgeBaseReady(true)
       } catch (error) {
-        console.error('Failed to initialize knowledge base:', error)
+        logger.error('Failed to initialize knowledge base', error)
       }
     }
     initKB()
@@ -59,7 +60,7 @@ export const FAQSection: React.FC = () => {
         const results = knowledgeBase.search(searchQuery, searchOptions)
         setSmartSearchResults(results)
       } catch (error) {
-        console.error('Smart search failed:', error)
+        logger.error('Smart search failed', error, { query: searchQuery })
         setSmartSearchResults([])
       }
     }

@@ -3,6 +3,8 @@
  * Automatically includes CSRF tokens in API requests
  */
 
+import { logger } from '@/lib/logger'
+
 // Cache for CSRF token
 let csrfToken: string | null = null
 
@@ -29,7 +31,7 @@ async function getCsrfToken(): Promise<string> {
     csrfToken = token
     return token
   } catch (error) {
-    console.error('[CSRF] Failed to get token:', error)
+    logger.error('Failed to get CSRF token', error)
     throw error
   }
 }
@@ -50,7 +52,7 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
         'x-csrf-token': token,
       }
     } catch (error) {
-      console.error('[CSRF] Failed to add token to request:', error)
+      logger.error('Failed to add CSRF token to request', error, { method, url })
     }
   }
 

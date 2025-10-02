@@ -4,6 +4,7 @@
  */
 
 import { VideoMetadata, VideoListResponse, FilterParams } from '@/types'
+import { logger } from '@/lib/logger'
 
 // Enhanced video interface with CDN sources
 export interface EnhancedVideoMetadata extends VideoMetadata {
@@ -96,7 +97,7 @@ export class VideoService {
       const data = await response.json()
       return this.enhanceVideoData(data)
     } catch (error) {
-      console.error('Error fetching videos:', error)
+      logger.error('Error fetching videos', error)
       return this.getFallbackVideoData(filters)
     }
   }
@@ -113,7 +114,7 @@ export class VideoService {
       const video = await response.json()
       return video as EnhancedVideoMetadata
     } catch (error) {
-      console.error('Error fetching video:', error)
+      logger.error('Error fetching video', error)
       return this.getFallbackVideoById(id)
     }
   }
@@ -123,7 +124,7 @@ export class VideoService {
       // For now, return mock data with multiple camera angles
       return this.getMockVideoCollection(id)
     } catch (error) {
-      console.error('Error fetching video collection:', error)
+      logger.error('Error fetching video collection', error)
       return null
     }
   }

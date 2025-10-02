@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db, products } from '@/db'
 import { eq } from 'drizzle-orm'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -42,7 +43,7 @@ export async function GET(
 
     return NextResponse.json(parsedProduct)
   } catch (error) {
-    console.error('Product GET error:', error)
+    logger.error('Failed to fetch product', error)
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
   }
 }

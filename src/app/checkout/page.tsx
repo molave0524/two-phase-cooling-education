@@ -16,6 +16,7 @@ import {
   ChevronRightIcon,
   LockClosedIcon,
 } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger'
 import styles from './checkout.module.css'
 
 export default function CheckoutPage() {
@@ -56,7 +57,7 @@ export default function CheckoutPage() {
   }
 
   const handlePaymentError = (error: string) => {
-    console.error('Payment error:', error)
+    logger.error('Payment error', new Error(error))
     // Error is already displayed in the PaymentForm component
   }
 

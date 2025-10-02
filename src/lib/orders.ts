@@ -7,6 +7,7 @@ import { TwoPhaseCoolingProduct } from '@/types/product'
 import { CartItem } from '@/types/cart'
 import { db, orders as ordersTable, orderItems as orderItemsTable } from '@/db'
 import { eq, and, gte, lte, like, or, desc, count, sum } from 'drizzle-orm'
+import { logger } from '@/lib/logger'
 
 // Order types and interfaces
 export type OrderStatus =
@@ -339,7 +340,7 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
 
   const order = dbOrderToOrder(dbOrder, dbOrderItems)
 
-  console.log(`Order created: ${orderNumber} (ID: ${order.id})`)
+  logger.info('Order created', { orderNumber, orderId: order.id })
   return order
 }
 
@@ -454,7 +455,7 @@ export async function updateOrderStatus(
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
   const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
-  console.log(`Order ${order.orderNumber} status updated to: ${status}`)
+  logger.info('Order status updated', { orderNumber: order.orderNumber, status })
   return order
 }
 
@@ -502,7 +503,7 @@ export async function updatePaymentStatus(
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
   const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
-  console.log(`Order ${order.orderNumber} payment status updated to: ${paymentStatus}`)
+  logger.info('Order payment status updated', { orderNumber: order.orderNumber, paymentStatus })
   return order
 }
 
@@ -558,7 +559,10 @@ export async function updateOrderPaymentStatus(
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
   const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
-  console.log(`Order ${order.orderNumber} updated from webhook: ${update.status}`)
+  logger.info('Order updated from webhook', {
+    orderNumber: order.orderNumber,
+    webhookStatus: update.status,
+  })
   return order
 }
 
@@ -597,7 +601,10 @@ export async function addOrderTracking(
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
   const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
-  console.log(`Tracking added to order ${order.orderNumber}: ${tracking.trackingNumber}`)
+  logger.info('Tracking added to order', {
+    orderNumber: order.orderNumber,
+    trackingNumber: tracking.trackingNumber,
+  })
   return order
 }
 
@@ -628,25 +635,23 @@ export async function validateOrderInventory(
 export async function reserveInventory(items: OrderItem[]): Promise<void> {
   // In production, this would update database inventory
   // For now, we'll just log the reservation
-  console.log(
-    'Inventory reserved for order items:',
-    items.map(item => ({
+  logger.debug('Inventory reserved', {
+    items: items.map(item => ({
       productId: item.productId,
       quantity: item.quantity,
-    }))
-  )
+    })),
+  })
 }
 
 export async function releaseInventory(items: OrderItem[]): Promise<void> {
   // In production, this would restore database inventory
   // For now, we'll just log the release
-  console.log(
-    'Inventory released for order items:',
-    items.map(item => ({
+  logger.debug('Inventory released', {
+    items: items.map(item => ({
       productId: item.productId,
       quantity: item.quantity,
-    }))
-  )
+    })),
+  })
 }
 
 // Order analytics and reporting
@@ -839,6 +844,6 @@ export async function cancelOrder(orderId: string, reason: string): Promise<Orde
   // Release reserved inventory
   await releaseInventory(order.items)
 
-  console.log(`Order ${order.orderNumber} cancelled: ${reason}`)
+  logger.info('Order cancelled', { orderNumber: order.orderNumber, reason })
   return order
 }

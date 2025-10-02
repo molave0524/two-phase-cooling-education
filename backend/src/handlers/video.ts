@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
+import { logger } from '../lib/logger.js'
 
 export const videoRouter = Router()
 
@@ -186,7 +187,7 @@ export const handler = async (
       }),
     }
   } catch (error) {
-    console.error('Video handler error:', error)
+    logger.error('Video handler error', error)
 
     return {
       statusCode: 500,

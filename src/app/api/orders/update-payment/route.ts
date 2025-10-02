@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updatePaymentStatus, getOrder } from '@/lib/orders'
 import { z } from 'zod'
+import { logger } from '@/lib/logger'
 
 const UpdatePaymentSchema = z.object({
   orderId: z.string().uuid(),
@@ -21,9 +22,11 @@ export async function POST(request: NextRequest) {
 
     // Verify payment intent matches
     if (existingOrder.paymentIntentId !== paymentIntentId) {
-      console.error(
-        `Payment intent mismatch for order ${orderId}: expected ${existingOrder.paymentIntentId}, got ${paymentIntentId}`
-      )
+      logger.error('Payment intent mismatch', undefined, {
+        orderId,
+        expected: existingOrder.paymentIntentId,
+        received: paymentIntentId,
+      })
       return NextResponse.json({ error: 'Payment intent mismatch' }, { status: 400 })
     }
 
@@ -33,13 +36,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to update order payment status' }, { status: 500 })
     }
 
-    console.log(`Order ${updatedOrder.orderNumber} payment status updated to: ${status}`)
+    logger.info('Order payment status updated', {
+      orderNumber: updatedOrder.orderNumber,
+      status,
+    })
 
     // TODO: Send confirmation email when payment succeeds
     if (status === 'succeeded') {
-      console.log(
-        `Payment confirmed for order ${updatedOrder.orderNumber}. Email notification should be sent.`
-      )
+      logger.info('Payment confirmed - email notification should be sent', {
+        orderNumber: updatedOrder.orderNumber,
+      })
       // This would trigger email notification in a real implementation
     }
 
@@ -48,7 +54,7 @@ export async function POST(request: NextRequest) {
       message: 'Payment status updated successfully',
     })
   } catch (error) {
-    console.error('Update payment status error:', error)
+    logger.error('Failed to update payment status', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -80,7 +86,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ order })
   } catch (error) {
-    console.error('Get order error:', error)
+    logger.error('Failed to retrieve order', error)
     return NextResponse.json({ error: 'Failed to retrieve order' }, { status: 500 })
   }
 }

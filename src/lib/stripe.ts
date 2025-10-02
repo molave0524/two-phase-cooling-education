@@ -5,17 +5,18 @@
 
 import Stripe from 'stripe'
 import { loadStripe } from '@stripe/stripe-js'
+import { logger } from '@/lib/logger'
 
 // Environment variables validation
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
 const STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
 if (!STRIPE_SECRET_KEY && typeof window === 'undefined') {
-  console.warn('Missing STRIPE_SECRET_KEY - Payment processing will not work')
+  logger.warn('Missing STRIPE_SECRET_KEY - Payment processing will not work')
 }
 
 if (!STRIPE_PUBLISHABLE_KEY) {
-  console.warn(
+  logger.warn(
     'Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY - Client-side payment processing will not work'
   )
 }
@@ -81,7 +82,7 @@ export async function createPaymentIntent(
 
     return paymentIntent
   } catch (error) {
-    console.error('Failed to create payment intent:', error)
+    logger.error('Failed to create payment intent', error)
     throw new Error('Failed to create payment intent')
   }
 }
@@ -114,7 +115,7 @@ export async function createCustomer(params: CreateCustomerParams): Promise<Stri
 
     return customer
   } catch (error) {
-    console.error('Failed to create customer:', error)
+    logger.error('Failed to create customer', error)
     throw new Error('Failed to create customer')
   }
 }
@@ -124,7 +125,7 @@ export async function getCustomer(customerId: string): Promise<Stripe.Customer |
     const customer = await stripe.customers.retrieve(customerId)
     return customer as Stripe.Customer
   } catch (error) {
-    console.error('Failed to get customer:', error)
+    logger.error('Failed to get customer', error, { customerId })
     return null
   }
 }
@@ -141,7 +142,7 @@ export async function attachPaymentMethodToCustomer(
 
     return paymentMethod
   } catch (error) {
-    console.error('Failed to attach payment method:', error)
+    logger.error('Failed to attach payment method', error, { paymentMethodId, customerId })
     throw new Error('Failed to attach payment method')
   }
 }
@@ -155,7 +156,7 @@ export function verifyWebhookSignature(
   try {
     return stripe.webhooks.constructEvent(payload, signature, endpointSecret)
   } catch (error) {
-    console.error('Webhook signature verification failed:', error)
+    logger.error('Webhook signature verification failed', error)
     throw new Error('Webhook signature verification failed')
   }
 }

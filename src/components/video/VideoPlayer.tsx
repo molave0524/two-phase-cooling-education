@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { useProgress } from '@/app/providers'
+import { logger } from '@/lib/logger'
 // import { updateUserProgress } from '@/lib/services/progress-service'
 // import { Video } from '@prisma/client'
 
@@ -293,7 +294,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const handleError = useCallback(
     (error: Event) => {
-      console.error('Video playback error:', error)
+      logger.error('Video playback error', error, { videoId: video.id })
       setVideoState(prev => ({ ...prev, isError: true, isLoading: false }))
 
       const errorMessage = 'Failed to load video. Please check your connection and try again.'
@@ -303,7 +304,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onError(errorMessage)
       }
     },
-    [onError]
+    [onError, video.id]
   )
 
   // ============================================================================
@@ -316,7 +317,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     try {
       // Demo mode - no saved progress to load
     } catch (error) {
-      console.error('Failed to load saved progress:', error)
+      logger.error('Failed to load saved progress', error, { videoId: video.id, userId })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, video.id])
@@ -328,7 +329,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       // Demo mode - use simplified progress update
       progressStore.updateProgress()
     } catch (error) {
-      console.error('Failed to save progress:', error)
+      logger.error('Failed to save progress', error, { videoId: video.id, userId })
       toast.error('Failed to save progress')
     }
   }, [userId, progressStore])
@@ -360,7 +361,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.pause()
     } else {
       video.play().catch(error => {
-        console.error('Play failed:', error)
+        logger.error('Play failed', error, { videoId: video.id })
         toast.error('Failed to play video')
       })
     }
@@ -417,7 +418,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           setVideoState(prev => ({ ...prev, isFullscreen: true }))
         })
         .catch(error => {
-          console.error('Failed to enter fullscreen:', error)
+          logger.error('Failed to enter fullscreen', error, { videoId: video.id })
           toast.error('Failed to enter fullscreen mode')
         })
     } else {
@@ -427,7 +428,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           setVideoState(prev => ({ ...prev, isFullscreen: false }))
         })
         .catch(error => {
-          console.error('Failed to exit fullscreen:', error)
+          logger.error('Failed to exit fullscreen', error, { videoId: video.id })
           toast.error('Failed to exit fullscreen mode')
         })
     }
@@ -474,7 +475,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const handleLoadedMetadata = () => {
         videoElement.currentTime = currentTime
         if (wasPlaying) {
-          videoElement.play().catch(console.error)
+          videoElement
+            .play()
+            .catch(err =>
+              logger.error('Failed to resume playback after quality change', err, {
+                videoId: video.id,
+                quality,
+              })
+            )
         }
         videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
       }
@@ -719,14 +727,20 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const handleLoadedMetadata = () => {
         videoElement.currentTime = currentTime
         if (wasPlaying) {
-          videoElement.play().catch(console.error)
+          videoElement
+            .play()
+            .catch(err =>
+              logger.error('Failed to resume playback after source change', err, {
+                videoId: video.id,
+              })
+            )
         }
         videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
       }
 
       videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
     }
-  }, [getCurrentVideoSource])
+  }, [getCurrentVideoSource, video.id])
 
   // ============================================================================
   // RENDER

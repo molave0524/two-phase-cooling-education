@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 
 // Routes that require CSRF protection (state-changing operations)
 const PROTECTED_API_ROUTES = [
@@ -72,7 +73,7 @@ export async function middleware(request: NextRequest) {
 
     // Verify tokens match
     if (!verifyToken(csrfTokenFromHeader, csrfTokenFromCookie)) {
-      console.warn(`[CSRF] Token mismatch for ${pathname}`)
+      logger.warn('CSRF token mismatch', { pathname })
       return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 })
     }
   }

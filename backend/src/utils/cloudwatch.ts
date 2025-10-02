@@ -1,4 +1,5 @@
 import { CloudWatchClient, PutMetricDataCommand } from '@aws-sdk/client-cloudwatch'
+import { logger } from '../lib/logger.js'
 
 const cloudwatch = new CloudWatchClient({
   region: process.env.AWS_REGION || 'us-east-1',
@@ -38,9 +39,12 @@ export class CloudWatchLogger {
       })
 
       await cloudwatch.send(command)
-      console.log(`Metric sent: ${metric.MetricName} = ${metric.Value}`)
+      logger.info('Metric sent to CloudWatch', {
+        metricName: metric.MetricName,
+        value: metric.Value,
+      })
     } catch (error) {
-      console.error('Failed to send metric to CloudWatch:', error)
+      logger.error('Failed to send metric to CloudWatch', error)
     }
   }
 

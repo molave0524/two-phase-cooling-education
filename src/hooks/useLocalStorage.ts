@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { logger } from '@/lib/logger'
 
 /**
  * Custom hook for managing localStorage with React state
@@ -17,7 +18,7 @@ export function useLocalStorage<T>(
       return item ? JSON.parse(item) : initialValue
     } catch (error) {
       // If error also return initialValue
-      console.warn(`Error reading localStorage key "${key}":`, error)
+      logger.warn(`Error reading localStorage key "${key}"`, { error, key })
       return initialValue
     }
   })
@@ -34,7 +35,7 @@ export function useLocalStorage<T>(
       window.localStorage.setItem(key, JSON.stringify(valueToStore))
     } catch (error) {
       // A more advanced implementation would handle the error case
-      console.error(`Error setting localStorage key "${key}":`, error)
+      logger.error(`Error setting localStorage key "${key}"`, error, { key })
     }
   }
 

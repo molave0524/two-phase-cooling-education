@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { PlayIcon, ClockIcon, StarIcon, VideoCameraIcon } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger'
 import styles from './VideoShowcase.module.css'
 
 // Dynamic import for performance optimization
@@ -185,12 +186,12 @@ export const VideoShowcase: React.FC = () => {
 
   const handleVideoProgress = (progress: any) => {
     // Handle video progress updates
-    console.log('Video progress:', progress)
+    logger.debug('Video progress', { progress, videoId: selectedVideo?.id })
   }
 
   const handleVideoComplete = () => {
     // Handle video completion
-    console.log('Video completed!')
+    logger.debug('Video completed', { videoId: selectedVideo?.id })
   }
 
   // Component render

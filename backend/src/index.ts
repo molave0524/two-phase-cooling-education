@@ -6,6 +6,7 @@ import { healthRouter } from './handlers/health.js'
 import { videoRouter } from './handlers/video.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { requestLogger } from './middleware/requestLogger.js'
+import { logger } from './lib/logger.js'
 
 const app = express()
 
@@ -31,6 +32,6 @@ export const handler = serverless(app)
 if (process.env.NODE_ENV !== 'production') {
   const port = process.env.PORT || 3001
   app.listen(port, () => {
-    console.log(`🚀 Backend server running on port ${port}`)
+    logger.info(`Backend server running on port ${port}`)
   })
 }

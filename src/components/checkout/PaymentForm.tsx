@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast'
 import { Order, OrderCustomer, OrderShippingAddress } from '@/lib/orders'
 import { PRODUCT_CONFIG } from '@/constants'
 import { apiFetch } from '@/lib/api-client'
+import { logger } from '@/lib/logger'
 import styles from './PaymentForm.module.css'
 
 interface PaymentFormProps {
@@ -147,7 +148,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         onSuccess(updatedOrder)
       }
     } catch (error: any) {
-      console.error('Payment error:', error)
+      logger.error('Payment error', error, { orderId: order.id })
       const errorMessage = error.message || 'Payment failed. Please try again.'
       setCardError(errorMessage)
       onError(errorMessage)

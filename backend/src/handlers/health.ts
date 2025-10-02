@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
+import { logger } from '../lib/logger.js'
 
 export const healthRouter = Router()
 
@@ -49,7 +50,7 @@ export const handler = async (
       body: JSON.stringify(healthStatus),
     }
   } catch (error) {
-    console.error('Health check failed:', error)
+    logger.error('Health check failed', error)
 
     return {
       statusCode: 500,

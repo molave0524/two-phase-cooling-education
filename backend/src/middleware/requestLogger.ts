@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+import { logger } from '../lib/logger.js'
 
 export const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
   const timestamp = new Date().toISOString()
@@ -7,14 +8,14 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
   const userAgent = req.get('User-Agent') || 'Unknown'
   const ip = req.ip || req.connection.remoteAddress || 'Unknown'
 
-  console.log(`[${timestamp}] ${method} ${url} - IP: ${ip} - UA: ${userAgent}`)
+  logger.info('Request received', { method, url, ip, userAgent })
 
   const startTime = Date.now()
 
   res.on('finish', () => {
     const duration = Date.now() - startTime
     const statusCode = res.statusCode
-    console.log(`[${timestamp}] ${method} ${url} - ${statusCode} - ${duration}ms`)
+    logger.info('Request completed', { method, url, statusCode, duration })
 
     if (process.env.STAGE && process.env.STAGE !== 'dev') {
       const logData = {
@@ -27,7 +28,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
         userAgent,
       }
 
-      console.log('REQUEST_LOG:', JSON.stringify(logData))
+      logger.info('REQUEST_LOG', logData)
     }
   })
 

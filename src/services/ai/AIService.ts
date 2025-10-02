@@ -8,6 +8,7 @@ import {
 } from '@/types/ai'
 import { MockAIProvider } from './providers/MockAIProvider'
 import { GeminiAIProvider } from './providers/GeminiAIProvider'
+import { logger } from '@/lib/logger'
 
 class AIService {
   private currentProvider: AIProvider | null = null
@@ -31,7 +32,7 @@ class AIService {
 
       // If Gemini provider failed to initialize (no API key), fallback to Mock
       if (!this.currentProvider.isAvailable() && this.config.provider === 'gemini') {
-        console.warn(
+        logger.warn(
           'Gemini provider not available (likely missing API key). Falling back to Mock provider.'
         )
         this.config.provider = 'mock'
@@ -39,11 +40,11 @@ class AIService {
         await this.currentProvider.initialize()
       }
 
-      console.log(`AI Service initialized with provider: ${this.currentProvider.name}`)
+      logger.info('AI Service initialized', { provider: this.currentProvider.name })
     } catch (error) {
-      console.error('Failed to initialize AI provider:', error)
+      logger.error('Failed to initialize AI provider', error)
       // Fallback to mock on any error
-      console.warn('Falling back to Mock provider due to initialization error')
+      logger.warn('Falling back to Mock provider due to initialization error')
       this.config.provider = 'mock'
       this.currentProvider = this.createProvider('mock')
       await this.currentProvider.initialize()
@@ -85,11 +86,11 @@ class AIService {
     try {
       return await this.currentProvider.generateResponse(messages, context)
     } catch (error) {
-      console.error('AI Provider error:', error)
+      logger.error('AI Provider error', error)
 
       // Fallback to mock provider if current provider fails
       if (this.config.provider !== 'mock') {
-        console.warn('Falling back to mock provider due to error')
+        logger.warn('Falling back to mock provider due to error')
         await this.switchProvider('mock')
         return await this.currentProvider!.generateResponse(messages, context)
       }

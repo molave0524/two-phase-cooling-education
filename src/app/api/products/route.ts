@@ -5,6 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { db, products } from '@/db'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -29,7 +30,7 @@ export async function GET() {
 
     return NextResponse.json(parsedProducts)
   } catch (error) {
-    console.error('Products GET error:', error)
+    logger.error('Failed to fetch products', error)
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
   }
 }

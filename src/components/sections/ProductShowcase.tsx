@@ -11,6 +11,7 @@ import {
   Squares2X2Icon,
   ListBulletIcon,
 } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger'
 import styles from './ProductShowcase.module.css'
 
 // ============================================================================
@@ -64,7 +65,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           .slice(0, maxProducts)
         setFeaturedProducts(featured)
       } catch (error) {
-        console.error('Failed to fetch products:', error)
+        logger.error('Failed to fetch products', error)
       } finally {
         setLoading(false)
       }

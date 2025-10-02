@@ -4,6 +4,7 @@
  */
 
 import { Order, OrderStatus } from './orders'
+import { logger } from '@/lib/logger'
 
 // Email template types
 export type EmailTemplate =
@@ -232,18 +233,17 @@ export function generateShippingNotificationEmail(
 
 // Email sending function (implementation depends on provider)
 export async function sendEmail(emailData: EmailData): Promise<boolean> {
-  console.log(`Sending ${emailData.template} email to ${emailData.to}`)
+  logger.info('Sending email', { template: emailData.template, to: emailData.to })
 
   try {
     switch (EMAIL_CONFIG.provider) {
       case 'console':
         // Development/testing mode - just log the email
-        console.log('--- EMAIL PREVIEW ---')
-        console.log(`To: ${emailData.to}`)
-        console.log(`Subject: ${emailData.subject}`)
-        console.log('--- EMAIL CONTENT ---')
-        console.log(emailData.data.htmlContent || emailData.data)
-        console.log('--- END EMAIL ---')
+        logger.debug('Email preview', {
+          to: emailData.to,
+          subject: emailData.subject,
+          htmlContent: emailData.data.htmlContent || emailData.data,
+        })
         return true
 
       case 'ses':
@@ -258,7 +258,7 @@ export async function sendEmail(emailData: EmailData): Promise<boolean> {
         throw new Error(`Unknown email provider: ${EMAIL_CONFIG.provider}`)
     }
   } catch (error) {
-    console.error(`Failed to send ${emailData.template} email:`, error)
+    logger.error('Failed to send email', error, { template: emailData.template, to: emailData.to })
     return false
   }
 }
@@ -291,7 +291,9 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
 
 export async function sendShippingNotificationEmail(order: Order): Promise<boolean> {
   if (!order.tracking) {
-    console.error('Cannot send shipping notification - no tracking information available')
+    logger.error('Cannot send shipping notification - no tracking information available', null, {
+      orderNumber: order.orderNumber,
+    })
     return false
   }
 

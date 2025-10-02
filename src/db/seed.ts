@@ -6,17 +6,18 @@
 
 import { db, products } from './index'
 import { PRODUCTS } from '@/data/products'
+import { logger } from '@/lib/logger'
 
 const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
 
 async function seed() {
-  console.log('🌱 Seeding database...')
-  console.log(`📦 Using ${usePostgres ? 'PostgreSQL' : 'SQLite'}`)
+  logger.info('Seeding database...')
+  logger.info(`Using database: ${usePostgres ? 'PostgreSQL' : 'SQLite'}`)
 
   try {
     // Clear existing products
     await db.delete(products)
-    console.log('✓ Cleared existing products')
+    logger.info('Cleared existing products')
 
     // Insert products from catalog
     for (const product of PRODUCTS) {
@@ -47,13 +48,13 @@ async function seed() {
       }
 
       await db.insert(products).values(productData)
-      console.log(`✓ Inserted product: ${product.name}`)
+      logger.info('Inserted product', { name: product.name })
     }
 
-    console.log(`\n🎉 Successfully seeded ${PRODUCTS.length} products!`)
+    logger.info(`Successfully seeded ${PRODUCTS.length} products!`)
     process.exit(0)
   } catch (error) {
-    console.error('❌ Seed failed:', error)
+    logger.error('Seed failed', error)
     process.exit(1)
   }
 }

@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { SparklesIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'
+import { logger } from '@/lib/logger'
 import styles from './AIAssistant.module.css'
 interface AIAssistantProps {
   isOpen: boolean
@@ -56,7 +57,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         }
         setMessages([welcomeMessage])
       } catch (error) {
-        console.error('Failed to initialize AI assistant:', error)
+        logger.error('Failed to initialize AI assistant', error)
         setError('Failed to initialize AI assistant')
       }
     }
@@ -115,7 +116,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         await handleCartActions(response.cartActions)
       }
     } catch (error) {
-      console.error('Failed to get AI response:', error)
+      logger.error('Failed to get AI response', error, { messageContent: content })
       setError('Sorry, I encountered an error. Please try again.')
 
       // Add error message
@@ -166,7 +167,10 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
             break
         }
       } catch (error) {
-        console.error('Cart action failed:', error)
+        logger.error('Cart action failed', error, {
+          actionType: action.type,
+          productId: action.productId,
+        })
         toast.error(`Failed to ${action.type} item`)
       }
     }

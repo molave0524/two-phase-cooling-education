@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { useCartStore } from '@/stores/cartStore'
+import { logger } from '@/lib/logger'
 import styles from './products.module.css'
 
 export default function ProductsPage() {
@@ -18,7 +19,7 @@ export default function ProductsPage() {
         const data = await response.json()
         setProducts(data)
       } catch (error) {
-        console.error('Failed to fetch products:', error)
+        logger.error('Failed to fetch products', error)
       } finally {
         setLoading(false)
       }

@@ -1,20 +1,21 @@
 import { AIProvider, ChatMessage, AIContext, AIResponse } from '@/types/ai'
 import { apiFetch } from '@/lib/api-client'
+import { logger } from '@/lib/logger'
 
 export class GeminiAIProvider implements AIProvider {
   public readonly name = 'Google Gemini'
   private isInitialized = false
 
   async initialize(): Promise<void> {
-    console.log('[Gemini] Initializing provider (server-side API)...')
+    logger.debug('Initializing Gemini provider (server-side API)')
 
     try {
       // Server-side API handles all API key validation
       // Client just needs to make requests to /api/ai/chat
       this.isInitialized = true
-      console.log('[Gemini] ✓ Provider initialized successfully (using server API)')
+      logger.info('Gemini provider initialized successfully (using server API)')
     } catch (error) {
-      console.error('[Gemini] Failed to initialize provider:', error)
+      logger.error('Failed to initialize Gemini provider', error)
     }
   }
 
@@ -28,7 +29,7 @@ export class GeminiAIProvider implements AIProvider {
     }
 
     try {
-      console.log('[Gemini] Sending request to server API...')
+      logger.debug('Sending request to Gemini server API')
 
       // Call server-side API with CSRF protection
       const response = await apiFetch('/api/ai/chat', {
@@ -49,7 +50,7 @@ export class GeminiAIProvider implements AIProvider {
 
       const data = await response.json()
 
-      console.log('[Gemini] ✓ Response generated successfully')
+      logger.debug('Gemini response generated successfully')
 
       return {
         message: data.message,
@@ -63,7 +64,7 @@ export class GeminiAIProvider implements AIProvider {
         },
       }
     } catch (error) {
-      console.error('[Gemini] API error:', error)
+      logger.error('Gemini API error', error)
       throw new Error(
         `Failed to generate response from Gemini: ${error instanceof Error ? error.message : 'Unknown error'}`
       )

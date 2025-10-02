@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+import { logger } from '../lib/logger.js'
 
 export interface AppError extends Error {
   statusCode?: number
@@ -15,7 +16,7 @@ export const errorHandler = (
   let { statusCode = 500, message } = err
 
   if (process.env.NODE_ENV === 'development') {
-    console.error('Error details:', err)
+    logger.error('Error details', err)
   }
 
   if (statusCode === 500) {

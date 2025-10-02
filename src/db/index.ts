@@ -8,6 +8,7 @@ import { drizzle as drizzleSqlite } from 'drizzle-orm/better-sqlite3'
 import { sql as vercelSql } from '@vercel/postgres'
 import Database from 'better-sqlite3'
 import { join } from 'path'
+import { logger } from '@/lib/logger'
 
 // Determine which database to use based on environment
 const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
@@ -18,12 +19,12 @@ let schema: any
 // Initialize database connection
 if (usePostgres) {
   // Production: Use Vercel Postgres
-  console.log('🐘 Using PostgreSQL database')
+  logger.info('Using PostgreSQL database')
   schema = require('./schema-pg')
   db = drizzlePg(vercelSql, { schema })
 } else {
   // Development: Use SQLite
-  console.log('💾 Using SQLite database')
+  logger.info('Using SQLite database')
   schema = require('./schema')
   const dbPath = process.env.DATABASE_PATH || join(process.cwd(), '.data', 'app.db')
 

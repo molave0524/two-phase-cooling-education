@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { notFound, useParams } from 'next/navigation'
 import { useCartStore } from '@/stores/cartStore'
 import { TwoPhaseCoolingProduct } from '@/types/product'
+import { logger } from '@/lib/logger'
 
 export default function ProductPage() {
   const params = useParams()
@@ -29,7 +30,7 @@ export default function ProductPage() {
         const data = await response.json()
         setProduct(data)
       } catch (error) {
-        console.error('Failed to fetch product:', error)
+        logger.error('Failed to fetch product', error, { slug })
         notFound()
       } finally {
         setLoading(false)

@@ -7,9 +7,6 @@ import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { FloatingAIButton } from '@/components/ai/FloatingAIButton'
 import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
 
-// Check if we're in development mode
-const isDevelopment = process.env.NODE_ENV === 'development'
-
 // Apple-style system font stack for optimal performance and Apple look
 // Using system fonts to match Apple's approach
 
@@ -202,30 +199,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Toast notifications handled in Providers */}
         </Providers>
 
-        {/* Development-only performance monitoring */}
-        {isDevelopment && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                // Development performance monitoring
-                window.addEventListener('load', function() {
-                  setTimeout(function() {
-                    const paintTimings = performance.getEntriesByType('paint');
-                    const fcp = paintTimings.find(entry => entry.name === 'first-contentful-paint');
-                    const lcp = paintTimings.find(entry => entry.name === 'largest-contentful-paint');
-
-                    console.group('🎯 Performance Metrics');
-                    console.log('First Contentful Paint:', fcp ? fcp.startTime.toFixed(2) + 'ms' : 'Not available');
-                    console.log('Largest Contentful Paint:', lcp ? lcp.startTime.toFixed(2) + 'ms' : 'Not available');
-                    console.log('DOM Content Loaded:', (performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart) + 'ms');
-                    console.log('Page Load Complete:', (performance.timing.loadEventEnd - performance.timing.navigationStart) + 'ms');
-                    console.groupEnd();
-                  }, 1000);
-                });
-              `,
-            }}
-          />
-        )}
+        {/* Development-only performance monitoring - handled by browser DevTools */}
 
         {/* Service Worker disabled for demo */}
       </body>

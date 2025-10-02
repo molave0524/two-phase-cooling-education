@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { logger } from '@/lib/logger'
 import styles from './PerformanceMetrics.module.css'
 import {
   ChartBarIcon,
@@ -314,7 +315,10 @@ export const PerformanceMetrics: React.FC = () => {
                     <div
                       key={scenario.id}
                       onClick={() => {
-                        console.log('Scenario clicked:', scenario.name)
+                        logger.debug('Scenario clicked', {
+                          scenarioName: scenario.name,
+                          scenarioId: scenario.id,
+                        })
                         setSelectedScenario(scenario)
                       }}
                       className={`
