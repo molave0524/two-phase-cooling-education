@@ -6,7 +6,7 @@ const BASE_URL = `https://${COMPANY_INFO.DOMAIN}`
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all products from database
-  const allProducts = await db.select().from(products)
+  const allProducts = await (db.select() as any).from(products)
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
