@@ -16,7 +16,8 @@ async function seed() {
 
   try {
     // Clear existing products
-    await db.delete(products)
+    // Type assertion needed due to dual-database union type incompatibility
+    await (db.delete as any)(products)
     logger.info('Cleared existing products')
 
     // Insert products from catalog
@@ -47,7 +48,8 @@ async function seed() {
         updatedAt: product.updatedAt,
       }
 
-      await db.insert(products).values(productData)
+      // Type assertion needed due to dual-database union type incompatibility
+      await (db.insert as any)(products).values(productData)
       logger.info('Inserted product', { name: product.name })
     }
 
