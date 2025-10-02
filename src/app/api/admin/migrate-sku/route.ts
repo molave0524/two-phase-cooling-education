@@ -5,7 +5,6 @@
 
 import { NextResponse } from 'next/server'
 import { products } from '@/db'
-import { sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
