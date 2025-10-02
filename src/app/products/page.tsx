@@ -109,6 +109,19 @@ function ProductCard({ product }: { product: TwoPhaseCoolingProduct }) {
       {/* Product Info */}
       <div className={styles.cardContent}>
         <h3 className={styles.productTitle}>{product.name}</h3>
+        {product.sku && (
+          <p
+            style={{
+              fontSize: '12px',
+              color: '#64748b',
+              fontFamily: 'monospace',
+              marginTop: '4px',
+              marginBottom: '8px',
+            }}
+          >
+            SKU: {product.sku}
+          </p>
+        )}
 
         <p className={styles.productDescription}>{product.shortDescription}</p>
 
