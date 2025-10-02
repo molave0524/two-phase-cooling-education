@@ -3,12 +3,13 @@
  * Verifies webhook signatures and processes payment events
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { updateOrderPaymentStatus } from '@/lib/orders'
 import { logger } from '@/lib/logger'
 import Stripe from 'stripe'
+import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
 
 // Disable body parsing for webhook signature verification
 export const runtime = 'nodejs'
@@ -20,13 +21,13 @@ export async function POST(request: NextRequest) {
 
     if (!signature) {
       logger.error('Stripe webhook missing signature header')
-      return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Missing signature', { status: 400 })
     }
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
     if (!webhookSecret) {
       logger.error('Stripe webhook secret not configured')
-      return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
+      return apiInternalError('Webhook not configured')
     }
 
     // Verify webhook signature
@@ -35,11 +36,10 @@ export async function POST(request: NextRequest) {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err) {
       logger.error('Stripe webhook signature verification failed', { error: err })
-      return NextResponse.json(
-        {
-          error: `Webhook signature verification failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
-        },
-        { status: 400 }
+      return apiError(
+        ERROR_CODES.INVALID_INPUT,
+        `Webhook signature verification failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        { status: 400, error: err }
       )
     }
 
@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
         logger.debug('Unhandled Stripe webhook event type', { eventType: event.type })
     }
 
-    return NextResponse.json({ received: true })
+    return apiSuccess({ received: true })
   } catch (error) {
     logger.error('Stripe webhook processing failed', { error })
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
+    return apiInternalError('Webhook processing failed', { error })
   }
 }
 

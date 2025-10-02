@@ -3,10 +3,10 @@
  * GET - Fetch all products from database
  */
 
-import { NextResponse } from 'next/server'
 import { db, products } from '@/db'
 import type { Product } from '@/db/schema'
 import { logger } from '@/lib/logger'
+import { apiSuccess, apiInternalError } from '@/lib/api-response'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -30,9 +30,11 @@ export async function GET() {
           tags: JSON.parse(product.tags as string),
         }))
 
-    return NextResponse.json(parsedProducts)
+    return apiSuccess(parsedProducts, {
+      meta: { count: parsedProducts.length },
+    })
   } catch (error) {
     logger.error('Failed to fetch products', error)
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
+    return apiInternalError('Failed to fetch products', { error })
   }
 }

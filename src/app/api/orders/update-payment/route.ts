@@ -1,7 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { updatePaymentStatus, getOrder } from '@/lib/orders'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
+import {
+  apiSuccess,
+  apiError,
+  apiNotFound,
+  apiInternalError,
+  apiValidationError,
+  ERROR_CODES,
+} from '@/lib/api-response'
 
 const UpdatePaymentSchema = z.object({
   orderId: z.string().uuid(),
@@ -17,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Get the order to verify it exists
     const existingOrder = await getOrder(orderId)
     if (!existingOrder) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      return apiNotFound('Order')
     }
 
     // Verify payment intent matches
@@ -27,13 +35,13 @@ export async function POST(request: NextRequest) {
         expected: existingOrder.paymentIntentId,
         received: paymentIntentId,
       })
-      return NextResponse.json({ error: 'Payment intent mismatch' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Payment intent mismatch', { status: 400 })
     }
 
     // Update payment status
     const updatedOrder = await updatePaymentStatus(orderId, status)
     if (!updatedOrder) {
-      return NextResponse.json({ error: 'Failed to update order payment status' }, { status: 500 })
+      return apiInternalError('Failed to update order payment status')
     }
 
     logger.info('Order payment status updated', {
@@ -49,7 +57,7 @@ export async function POST(request: NextRequest) {
       // This would trigger email notification in a real implementation
     }
 
-    return NextResponse.json({
+    return apiSuccess({
       order: updatedOrder,
       message: 'Payment status updated successfully',
     })
@@ -57,16 +65,10 @@ export async function POST(request: NextRequest) {
     logger.error('Failed to update payment status', error)
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
-      )
+      return apiValidationError(error)
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update payment status. Please try again.' },
-      { status: 500 }
-    )
+    return apiInternalError('Failed to update payment status. Please try again.', { error })
   }
 }
 
@@ -76,17 +78,17 @@ export async function GET(request: NextRequest) {
     const orderId = searchParams.get('orderId')
 
     if (!orderId) {
-      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Order ID is required', { status: 400 })
     }
 
     const order = await getOrder(orderId)
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      return apiNotFound('Order')
     }
 
-    return NextResponse.json({ order })
+    return apiSuccess({ order })
   } catch (error) {
     logger.error('Failed to retrieve order', error)
-    return NextResponse.json({ error: 'Failed to retrieve order' }, { status: 500 })
+    return apiInternalError('Failed to retrieve order', { error })
   }
 }

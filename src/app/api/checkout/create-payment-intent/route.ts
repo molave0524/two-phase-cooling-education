@@ -1,10 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createPaymentIntent, createCustomer, handleStripeError } from '@/lib/stripe'
 import { createOrder, validateOrderInventory, reserveInventory } from '@/lib/orders'
 import { sanitizeCustomerData, sanitizeAddressData } from '@/lib/sanitize'
 import { withRateLimit } from '@/lib/with-rate-limit'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import {
+  apiSuccess,
+  apiError,
+  apiInternalError,
+  apiValidationError,
+  ERROR_CODES,
+} from '@/lib/api-response'
 
 const CreatePaymentIntentSchema = z.object({
   customer: z.object({
@@ -76,8 +83,9 @@ async function handlePOST(request: Request | NextRequest) {
     const totals = order?.totals
 
     if (!totals || !cartItems.length) {
-      return NextResponse.json(
-        { error: 'Invalid order data. Cart is empty or totals are missing.' },
+      return apiError(
+        ERROR_CODES.INVALID_INPUT,
+        'Invalid order data. Cart is empty or totals are missing.',
         { status: 400 }
       )
     }
@@ -85,10 +93,10 @@ async function handlePOST(request: Request | NextRequest) {
     // Validate inventory availability
     const inventoryValidation = await validateOrderInventory(cartItems)
     if (!inventoryValidation.valid) {
-      return NextResponse.json(
-        { error: 'Inventory validation failed', details: inventoryValidation.errors },
-        { status: 400 }
-      )
+      return apiError(ERROR_CODES.INSUFFICIENT_INVENTORY, 'Inventory validation failed', {
+        status: 400,
+        details: inventoryValidation.errors,
+      })
     }
 
     // Create or get Stripe customer
@@ -175,7 +183,7 @@ async function handlePOST(request: Request | NextRequest) {
       paymentIntentId: paymentIntent.id,
     })
 
-    return NextResponse.json({
+    return apiSuccess({
       clientSecret: paymentIntent.client_secret,
       orderId: newOrder.id,
       orderNumber: newOrder.orderNumber,
@@ -184,10 +192,7 @@ async function handlePOST(request: Request | NextRequest) {
     logger.error('Create payment intent error', { error })
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
-        { status: 400 }
-      )
+      return apiValidationError(error)
     }
 
     // Handle Stripe-specific errors
@@ -199,13 +204,13 @@ async function handlePOST(request: Request | NextRequest) {
       error.type.startsWith('Stripe')
     ) {
       const stripeError = handleStripeError(error)
-      return NextResponse.json({ error: stripeError.message }, { status: 400 })
+      return apiError(ERROR_CODES.PAYMENT_PROVIDER_ERROR, stripeError.message, {
+        status: 400,
+        error,
+      })
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create payment intent. Please try again.' },
-      { status: 500 }
-    )
+    return apiInternalError('Failed to create payment intent. Please try again.', { error })
   }
 }
 

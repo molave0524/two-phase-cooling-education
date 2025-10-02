@@ -96,14 +96,23 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     async function fetchProducts() {
       try {
         const response = await fetch('/api/products')
-        const data = await response.json()
-        // Get only featured products (complete-cases category) and limit
-        const featured = data
-          .filter((p: TwoPhaseCoolingProduct) => p.categories.includes('complete-cases'))
-          .slice(0, maxProducts)
-        setFeaturedProducts(featured)
+        const result = await response.json()
+
+        // Handle new standardized response format
+        if (result.success && result.data) {
+          // Get only featured products (complete-cases category) and limit
+          const featured = result.data
+            .filter((p: TwoPhaseCoolingProduct) => p.categories.includes('complete-cases'))
+            .slice(0, maxProducts)
+          setFeaturedProducts(featured)
+        } else {
+          // Handle error response
+          logger.error('Failed to fetch products', result.error)
+          setFeaturedProducts([])
+        }
       } catch (error) {
         logger.error('Failed to fetch products', error)
+        setFeaturedProducts([])
       } finally {
         setLoading(false)
       }

@@ -27,8 +27,16 @@ export default function ProductPage() {
         if (!response.ok) {
           notFound()
         }
-        const data = await response.json()
-        setProduct(data)
+        const result = await response.json()
+
+        // Handle new standardized response format
+        if (result.success && result.data) {
+          setProduct(result.data)
+        } else {
+          // Handle error response
+          logger.error('Failed to fetch product', result.error, { slug })
+          notFound()
+        }
       } catch (error) {
         logger.error('Failed to fetch product', error, { slug })
         notFound()

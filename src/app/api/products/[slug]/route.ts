@@ -3,10 +3,11 @@
  * GET - Fetch product by slug
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db, products } from '@/db'
 import { eq } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
+import { apiSuccess, apiNotFound, apiInternalError } from '@/lib/api-response'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -26,7 +27,7 @@ export async function GET(
     })
 
     if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+      return apiNotFound('Product', { details: { slug } })
     }
 
     // Parse JSON fields if using SQLite (Postgres stores them natively)
@@ -41,9 +42,9 @@ export async function GET(
           tags: JSON.parse(product.tags as string),
         }
 
-    return NextResponse.json(parsedProduct)
+    return apiSuccess(parsedProduct)
   } catch (error) {
     logger.error('Failed to fetch product', error)
-    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
+    return apiInternalError('Failed to fetch product', { error })
   }
 }

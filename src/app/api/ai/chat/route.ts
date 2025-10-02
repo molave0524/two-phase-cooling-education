@@ -3,12 +3,13 @@
  * Handles AI chat requests with server-side API key protection
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { knowledgeBase } from '@/services/ai/KnowledgeBase'
 import { sanitizeChatMessage } from '@/lib/sanitize'
 import { withRateLimit } from '@/lib/with-rate-limit'
 import { logger } from '@/lib/logger'
+import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -30,7 +31,7 @@ async function handlePOST(request: Request | NextRequest) {
 
     if (!apiKey) {
       logger.error('Gemini API key not configured', { context: 'AI API' })
-      return NextResponse.json({ error: 'AI service not configured' }, { status: 500 })
+      return apiInternalError('AI service not configured')
     }
 
     const body = await request.json()
@@ -38,12 +39,12 @@ async function handlePOST(request: Request | NextRequest) {
 
     // Validate input
     if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: 'Invalid messages format' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Invalid messages format', { status: 400 })
     }
 
     const lastMessage = messages[messages.length - 1]
     if (!lastMessage || lastMessage.role !== 'user') {
-      return NextResponse.json({ error: 'No user message found' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'No user message found', { status: 400 })
     }
 
     // Sanitize user input to prevent XSS
@@ -139,7 +140,7 @@ ${messages
     const confidence =
       knowledgeResults.length > 0 && knowledgeResults[0] ? knowledgeResults[0].relevanceScore : 0.5
 
-    return NextResponse.json({
+    return apiSuccess({
       message: text,
       confidence,
       suggestedQuestions,
@@ -153,13 +154,7 @@ ${messages
     })
   } catch (error) {
     logger.error('Failed to generate AI response', { context: 'AI API', error })
-    return NextResponse.json(
-      {
-        error: 'Failed to generate AI response',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    return apiInternalError('Failed to generate AI response', { error })
   }
 }
 

@@ -16,10 +16,19 @@ export default function ProductsPage() {
     async function fetchProducts() {
       try {
         const response = await fetch('/api/products')
-        const data = await response.json()
-        setProducts(data)
+        const result = await response.json()
+
+        // Handle new standardized response format
+        if (result.success && result.data) {
+          setProducts(result.data)
+        } else {
+          // Handle error response
+          logger.error('Failed to fetch products', result.error)
+          setProducts([])
+        }
       } catch (error) {
         logger.error('Failed to fetch products', error)
+        setProducts([])
       } finally {
         setLoading(false)
       }
