@@ -325,6 +325,7 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
           orderId: dbOrder.id,
           productId: cartItem.productId,
           productName: cartItem.product.name,
+          productSku: cartItem.product.sku || '', // SKU at time of order
           productImage: cartItem.product.images[0] || '',
           variantId: cartItem.selectedVariantId || null,
           variantName: cartItem.selectedVariantId

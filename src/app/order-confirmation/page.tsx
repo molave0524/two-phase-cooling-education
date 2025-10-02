@@ -15,6 +15,7 @@ import {
 interface OrderItem {
   id: string
   name: string
+  sku: string
   price: number
   quantity: number
   image: string
@@ -49,38 +50,60 @@ function OrderConfirmationContent() {
   const [orderData, setOrderData] = useState<OrderData | null>(null)
 
   useEffect(() => {
-    // In a real app, this would fetch order details from API
-    if (orderId) {
-      const mockOrderData = {
-        id: orderId,
-        email: 'customer@example.com',
-        orderDate: new Date().toLocaleDateString(),
-        estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        items: [
-          {
-            id: '1',
-            name: 'Two-Phase Cooling Case Pro',
-            price: 1299.0,
-            quantity: 1,
-            image: '/images/case-pro.jpg',
-          },
-        ],
-        subtotal: 1299.0,
-        tax: 103.92,
-        shipping: 0,
-        total: 1402.92,
-        shippingAddress: {
-          firstName: 'John',
-          lastName: 'Doe',
-          address: '123 Main St',
-          city: 'San Francisco',
-          state: 'CA',
-          zipCode: '94105',
-          country: 'USA',
-        },
+    async function fetchOrder() {
+      if (!orderId) return
+
+      try {
+        const response = await fetch(`/api/orders/update-payment?orderId=${orderId}`)
+        const result = await response.json()
+
+        if (result.success && result.data?.order) {
+          const order = result.data.order
+          const customer =
+            typeof order.customer === 'string' ? JSON.parse(order.customer) : order.customer
+          const shippingAddr =
+            typeof order.shippingAddress === 'string'
+              ? JSON.parse(order.shippingAddress)
+              : order.shippingAddress
+
+          setOrderData({
+            id: order.orderNumber,
+            email: customer.email,
+            orderDate: new Date(order.createdAt * 1000).toLocaleDateString(),
+            estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+            items: order.items.map((item: any) => ({
+              id: item.id,
+              name: item.product.name,
+              sku: item.product.sku || '',
+              price: item.unitPrice,
+              quantity: item.quantity,
+              image:
+                typeof item.product.images === 'string'
+                  ? item.product.images
+                  : item.product.images?.[0] || '/images/placeholder-product.jpg',
+            })),
+            subtotal: order.totals.subtotal,
+            tax: order.totals.tax,
+            shipping: order.totals.shipping,
+            total: order.totals.total,
+            shippingAddress: {
+              firstName: shippingAddr.firstName,
+              lastName: shippingAddr.lastName,
+              address: shippingAddr.addressLine1,
+              city: shippingAddr.city,
+              state: shippingAddr.state,
+              zipCode: shippingAddr.zipCode,
+              country: shippingAddr.country,
+            },
+          })
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch order:', error)
       }
-      setOrderData(mockOrderData)
     }
+
+    fetchOrder()
   }, [orderId])
 
   if (!orderId || !orderData) {
@@ -151,6 +174,18 @@ function OrderConfirmationContent() {
                     />
                     <div className='flex-1'>
                       <h4 className='font-medium text-secondary-900'>{item.name}</h4>
+                      {item.sku && (
+                        <p
+                          style={{
+                            fontSize: '12px',
+                            color: '#64748b',
+                            fontFamily: 'monospace',
+                            marginTop: '2px',
+                          }}
+                        >
+                          SKU: {item.sku}
+                        </p>
+                      )}
                       <p className='text-sm text-secondary-600'>Quantity: {item.quantity}</p>
                     </div>
                     <div className='text-right'>

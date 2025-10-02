@@ -30,7 +30,9 @@ export const users = sqliteTable('users', {
 // ============================================================================
 
 export const accounts = sqliteTable('accounts', {
-  id: text('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   userId: integer('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
@@ -51,7 +53,9 @@ export const accounts = sqliteTable('accounts', {
 // ============================================================================
 
 export const sessions = sqliteTable('sessions', {
-  id: text('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   sessionToken: text('session_token').notNull().unique(),
   userId: integer('user_id')
     .notNull()
@@ -210,6 +214,7 @@ export const orderItems = sqliteTable('order_items', {
     .references(() => orders.id, { onDelete: 'cascade' }),
   productId: text('product_id').notNull(),
   productName: text('product_name').notNull(),
+  productSku: text('product_sku').notNull(), // SKU at time of order
   productImage: text('product_image').notNull(),
   variantId: text('variant_id'),
   variantName: text('variant_name'),
