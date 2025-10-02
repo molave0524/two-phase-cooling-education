@@ -52,30 +52,43 @@ function detectCartActions(
   )
 
   if (hasAddIntent) {
-    // Try to find product mentions in the conversation
-    PRODUCTS.forEach(product => {
-      const productKeywords = [
-        product.name.toLowerCase(),
-        product.slug.toLowerCase(),
-        'cooling case',
-        'two-phase cooling',
-        'pro case',
-      ]
-
-      const isProductMentioned = productKeywords.some(
-        keyword => lowerResponse.includes(keyword) || lowerQuestion.includes(keyword)
-      )
-
-      if (isProductMentioned) {
-        actions.push({
-          type: 'add',
-          productId: product.id,
-          quantity: 1,
-          description: `Add ${product.name} to cart`,
-          requiresConfirmation: true,
-        })
-      }
+    // Try to find specific product mentions in the conversation
+    // First, try to match exact product names (most specific)
+    let matchedProduct = PRODUCTS.find(product => {
+      const productName = product.name.toLowerCase()
+      return lowerQuestion.includes(productName) || lowerResponse.includes(productName)
     })
+
+    // If no exact match, try matching by slug
+    if (!matchedProduct) {
+      matchedProduct = PRODUCTS.find(product => {
+        const productSlug = product.slug.toLowerCase()
+        return lowerQuestion.includes(productSlug) || lowerResponse.includes(productSlug)
+      })
+    }
+
+    // If still no match, try matching key distinguishing words
+    if (!matchedProduct) {
+      // Look for distinguishing words like "pro", "elite", "basic"
+      if (lowerQuestion.includes('elite') || lowerResponse.includes('elite')) {
+        matchedProduct = PRODUCTS.find(p => p.name.toLowerCase().includes('elite'))
+      } else if (lowerQuestion.includes('pro') || lowerResponse.includes('pro')) {
+        matchedProduct = PRODUCTS.find(p => p.name.toLowerCase().includes('pro'))
+      } else if (lowerQuestion.includes('basic') || lowerResponse.includes('basic')) {
+        matchedProduct = PRODUCTS.find(p => p.name.toLowerCase().includes('basic'))
+      }
+    }
+
+    // If we found a specific product, add only that one
+    if (matchedProduct) {
+      actions.push({
+        type: 'add',
+        productId: matchedProduct.id,
+        quantity: 1,
+        description: `Add ${matchedProduct.name} to cart`,
+        requiresConfirmation: true,
+      })
+    }
   }
 
   // Detect "remove from cart" intent
