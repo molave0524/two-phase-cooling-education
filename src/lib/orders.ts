@@ -284,8 +284,8 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
   const now = Math.floor(Date.now() / 1000)
 
   // Insert order into database
-  const [dbOrder] = await db
-    .insert(ordersTable)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [dbOrder] = await (db.insert as any)(ordersTable)
     .values({
       orderNumber,
       status: 'pending',
@@ -319,8 +319,8 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
           cartItem.product.price
         : cartItem.product.price
 
-      const [item] = await db
-        .insert(orderItemsTable)
+      // Type assertion needed due to dual-database union type incompatibility
+      const [item] = await (db.insert as any)(orderItemsTable)
         .values({
           orderId: dbOrder.id,
           productId: cartItem.productId,
@@ -352,16 +352,16 @@ export async function getOrder(orderId: string): Promise<Order | null> {
   const orderIdNum = parseInt(orderId, 10)
   if (isNaN(orderIdNum)) return null
 
-  const [dbOrder] = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const [dbOrder] = await (db.select as any)()
     .from(ordersTable)
     .where(eq(ordersTable.id, orderIdNum))
     .limit(1)
 
   if (!dbOrder) return null
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
@@ -369,16 +369,16 @@ export async function getOrder(orderId: string): Promise<Order | null> {
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
-  const [dbOrder] = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const [dbOrder] = await (db.select as any)()
     .from(ordersTable)
     .where(eq(ordersTable.orderNumber, orderNumber))
     .limit(1)
 
   if (!dbOrder) return null
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, dbOrder.id))
 
@@ -387,8 +387,8 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
 
 export async function getOrdersByCustomer(customerEmail: string): Promise<Order[]> {
   // Query orders where customer JSON contains the email
-  const dbOrders = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrders = await (db.select as any)()
     .from(ordersTable)
     .where(like(ordersTable.customer, `%"email":"${customerEmail}"%`))
     .orderBy(desc(ordersTable.createdAt))
@@ -396,8 +396,8 @@ export async function getOrdersByCustomer(customerEmail: string): Promise<Order[
   // Fetch order items for all orders
   const customerOrders: Order[] = []
   for (const dbOrder of dbOrders) {
-    const dbOrderItems = await db
-      .select()
+    // Type assertion needed due to dual-database union type incompatibility
+    const dbOrderItems = await (db.select as any)()
       .from(orderItemsTable)
       .where(eq(orderItemsTable.orderId, dbOrder.id))
 
@@ -417,8 +417,8 @@ export async function updateOrderStatus(
   if (isNaN(orderIdNum)) return null
 
   // First, get the current order to access its internalNotes
-  const [currentOrder] = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const [currentOrder] = await (db.select as any)()
     .from(ordersTable)
     .where(eq(ordersTable.id, orderIdNum))
     .limit(1)
@@ -446,14 +446,14 @@ export async function updateOrderStatus(
     updateData.deliveredAt = now
   }
 
-  const [updatedDbOrder] = await db
-    .update(ordersTable)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [updatedDbOrder] = await (db.update as any)(ordersTable)
     .set(updateData)
     .where(eq(ordersTable.id, orderIdNum))
     .returning()
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
@@ -477,8 +477,8 @@ export async function updatePaymentStatus(
 
   if (paymentStatus === 'succeeded') {
     // Get current order to check if paidAt is already set
-    const [currentOrder] = await db
-      .select()
+    // Type assertion needed due to dual-database union type incompatibility
+    const [currentOrder] = await (db.select as any)()
       .from(ordersTable)
       .where(eq(ordersTable.id, orderIdNum))
       .limit(1)
@@ -492,16 +492,16 @@ export async function updatePaymentStatus(
     updateData.status = 'processing'
   }
 
-  const [updatedDbOrder] = await db
-    .update(ordersTable)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [updatedDbOrder] = await (db.update as any)(ordersTable)
     .set(updateData)
     .where(eq(ordersTable.id, orderIdNum))
     .returning()
 
   if (!updatedDbOrder) return null
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
@@ -548,16 +548,16 @@ export async function updateOrderPaymentStatus(
     updateData.status = 'cancelled'
   }
 
-  const [updatedDbOrder] = await db
-    .update(ordersTable)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [updatedDbOrder] = await (db.update as any)(ordersTable)
     .set(updateData)
     .where(eq(ordersTable.id, orderIdNum))
     .returning()
 
   if (!updatedDbOrder) return null
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
@@ -590,16 +590,16 @@ export async function addOrderTracking(
     updatedAt: now,
   }
 
-  const [updatedDbOrder] = await db
-    .update(ordersTable)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [updatedDbOrder] = await (db.update as any)(ordersTable)
     .set(updateData)
     .where(eq(ordersTable.id, orderIdNum))
     .returning()
 
   if (!updatedDbOrder) return null
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
@@ -671,16 +671,16 @@ export async function getOrderStats(dateRange?: { start: Date; end: Date }) {
   }
 
   // Get total orders count
-  const [totalOrdersResult] = await db
-    .select({ count: count() })
+  // Type assertion needed due to dual-database union type incompatibility
+  const [totalOrdersResult] = await (db.select as any)({ count: count() })
     .from(ordersTable)
     .where(whereCondition)
 
   const totalOrders = totalOrdersResult?.count || 0
 
   // Get total revenue (only succeeded payments)
-  const [revenueResult] = await db
-    .select({ total: sum(ordersTable.total) })
+  // Type assertion needed due to dual-database union type incompatibility
+  const [revenueResult] = await (db.select as any)({ total: sum(ordersTable.total) })
     .from(ordersTable)
     .where(
       whereCondition
@@ -691,11 +691,11 @@ export async function getOrderStats(dateRange?: { start: Date; end: Date }) {
   const totalRevenue = Number(revenueResult?.total || 0)
 
   // Get orders by status
-  const statusResults = await db
-    .select({
-      status: ordersTable.status,
-      count: count(),
-    })
+  // Type assertion needed due to dual-database union type incompatibility
+  const statusResults = await (db.select as any)({
+    status: ordersTable.status,
+    count: count(),
+  })
     .from(ordersTable)
     .where(whereCondition)
     .groupBy(ordersTable.status)
@@ -766,13 +766,16 @@ export async function searchOrders(
   const whereCondition = conditions.length > 0 ? and(...conditions) : undefined
 
   // Get total count
-  const [totalResult] = await db.select({ count: count() }).from(ordersTable).where(whereCondition)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [totalResult] = await (db.select as any)({ count: count() })
+    .from(ordersTable)
+    .where(whereCondition)
 
   const total = totalResult?.count || 0
 
   // Get filtered orders with pagination
-  let query = db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  let query = (db.select as any)()
     .from(ordersTable)
     .where(whereCondition)
     .orderBy(desc(ordersTable.createdAt))
@@ -790,8 +793,8 @@ export async function searchOrders(
   // Fetch order items for each order
   const ordersWithItems: Order[] = []
   for (const dbOrder of dbOrders) {
-    const dbOrderItems = await db
-      .select()
+    // Type assertion needed due to dual-database union type incompatibility
+    const dbOrderItems = await (db.select as any)()
       .from(orderItemsTable)
       .where(eq(orderItemsTable.orderId, dbOrder.id))
 
@@ -807,8 +810,8 @@ export async function cancelOrder(orderId: string, reason: string): Promise<Orde
   if (isNaN(orderIdNum)) return null
 
   // Get current order to check status
-  const [currentOrder] = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const [currentOrder] = await (db.select as any)()
     .from(ordersTable)
     .where(eq(ordersTable.id, orderIdNum))
     .limit(1)
@@ -826,8 +829,8 @@ export async function cancelOrder(orderId: string, reason: string): Promise<Orde
     ? `${existingNotes}\n${new Date().toISOString()}: ${cancelNote}`
     : cancelNote
 
-  const [updatedDbOrder] = await db
-    .update(ordersTable)
+  // Type assertion needed due to dual-database union type incompatibility
+  const [updatedDbOrder] = await (db.update as any)(ordersTable)
     .set({
       status: 'cancelled',
       updatedAt: now,
@@ -838,8 +841,8 @@ export async function cancelOrder(orderId: string, reason: string): Promise<Orde
 
   if (!updatedDbOrder) return null
 
-  const dbOrderItems = await db
-    .select()
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
     .from(orderItemsTable)
     .where(eq(orderItemsTable.orderId, orderIdNum))
 
