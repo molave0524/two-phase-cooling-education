@@ -10,6 +10,8 @@ import { sanitizeChatMessage } from '@/lib/sanitize'
 import { withRateLimit } from '@/lib/with-rate-limit'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
+import { CartAction, AIContext } from '@/types/ai'
+import { PRODUCTS } from '@/data/products'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -22,6 +24,100 @@ async function ensureKnowledgeBase() {
     await knowledgeBase.initialize()
     isKnowledgeBaseInitialized = true
   }
+}
+
+/**
+ * Detect cart actions from AI response and user question
+ */
+function detectCartActions(
+  aiResponse: string,
+  userQuestion: string,
+  context?: AIContext
+): CartAction[] {
+  const actions: CartAction[] = []
+  const lowerResponse = aiResponse.toLowerCase()
+  const lowerQuestion = userQuestion.toLowerCase()
+
+  // Detect "add to cart" intent
+  const addPatterns = [
+    /add.*to.*cart/i,
+    /I'll add/i,
+    /adding.*to.*cart/i,
+    /put.*in.*cart/i,
+    /would you like.*add/i,
+  ]
+
+  const hasAddIntent = addPatterns.some(
+    pattern => pattern.test(lowerResponse) || pattern.test(lowerQuestion)
+  )
+
+  if (hasAddIntent) {
+    // Try to find product mentions in the conversation
+    PRODUCTS.forEach(product => {
+      const productKeywords = [
+        product.name.toLowerCase(),
+        product.slug.toLowerCase(),
+        'cooling case',
+        'two-phase cooling',
+        'pro case',
+      ]
+
+      const isProductMentioned = productKeywords.some(
+        keyword => lowerResponse.includes(keyword) || lowerQuestion.includes(keyword)
+      )
+
+      if (isProductMentioned) {
+        actions.push({
+          type: 'add',
+          productId: product.id,
+          quantity: 1,
+          description: `Add ${product.name} to cart`,
+          requiresConfirmation: true,
+        })
+      }
+    })
+  }
+
+  // Detect "remove from cart" intent
+  const removePatterns = [
+    /remove.*from.*cart/i,
+    /delete.*from.*cart/i,
+    /take.*out.*of.*cart/i,
+    /clear.*cart/i,
+  ]
+
+  const hasRemoveIntent = removePatterns.some(
+    pattern => pattern.test(lowerResponse) || pattern.test(lowerQuestion)
+  )
+
+  if (hasRemoveIntent && context?.cartItems && context.cartItems.length > 0) {
+    // If user mentions specific product, remove it
+    context.cartItems.forEach(item => {
+      const productName = item.productName?.toLowerCase() || ''
+      if (lowerQuestion.includes(productName) || lowerResponse.includes(productName)) {
+        actions.push({
+          type: 'remove',
+          productId: item.id,
+          description: `Remove ${item.productName} from cart`,
+          requiresConfirmation: true,
+        })
+      }
+    })
+
+    // If no specific product mentioned and "clear cart", remove all
+    if (actions.length === 0 && /clear.*cart/i.test(lowerQuestion)) {
+      context.cartItems.forEach(item => {
+        actions.push({
+          type: 'remove',
+          productId: item.id,
+          description: `Remove ${item.productName} from cart`,
+          requiresConfirmation: true,
+        })
+      })
+    }
+  }
+
+  return actions
 }
 
 async function handlePOST(request: Request | NextRequest) {
@@ -140,10 +236,14 @@ ${messages
     const confidence =
       knowledgeResults.length > 0 && knowledgeResults[0] ? knowledgeResults[0].relevanceScore : 0.5
 
+    // Detect cart actions from AI response and user question
+    const cartActions = detectCartActions(text, userQuestion, context)
+
     return apiSuccess({
       message: text,
       confidence,
       suggestedQuestions,
+      cartActions,
       metadata: {
         confidence,
         sources: knowledgeResults.length > 0 ? ['Knowledge Base'] : ['General Knowledge'],

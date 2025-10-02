@@ -144,13 +144,20 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       try {
         switch (action.type) {
           case 'add':
-            // Find product by ID
-            const product = await import('@/data/products').then(m =>
-              m.PRODUCTS.find(p => p.id === action.productId)
-            )
-            if (product) {
-              cartStore.addItem(product, action.quantity || 1)
-              toast.success(`Added ${product.name} to cart`)
+            // Fetch product from API
+            try {
+              const response = await fetch(`/api/products/${action.productId}`)
+              const result = await response.json()
+
+              if (result.success && result.data) {
+                cartStore.addItem(result.data, action.quantity || 1)
+                toast.success(`Added ${result.data.name} to cart`)
+              } else {
+                toast.error('Product not found')
+              }
+            } catch (fetchError) {
+              logger.error('Failed to fetch product', fetchError, { productId: action.productId })
+              toast.error('Failed to load product')
             }
             break
 

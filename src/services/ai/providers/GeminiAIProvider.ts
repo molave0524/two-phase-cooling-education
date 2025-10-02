@@ -59,7 +59,7 @@ export class GeminiAIProvider implements AIProvider {
         message: data.message,
         confidence: data.confidence || 0.5,
         suggestedQuestions: data.suggestedQuestions || [],
-        cartActions: [], // Cart actions handled separately
+        cartActions: data.cartActions || [],
         metadata: data.metadata || {
           confidence: data.confidence || 0.5,
           sources: ['Server API'],
