@@ -232,6 +232,14 @@ export default function ProductPage() {
                       <div
                         key={image.id}
                         onClick={() => setSelectedImageIndex(actualIndex)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            setSelectedImageIndex(actualIndex)
+                          }
+                        }}
+                        role='button'
+                        tabIndex={0}
                         style={{
                           aspectRatio: '1',
                           backgroundColor: '#f8fafc',
@@ -415,6 +423,7 @@ export default function ProductPage() {
             }}
           >
             <label
+              htmlFor='quantity-input'
               style={{
                 fontSize: '16px',
                 fontWeight: '500',
@@ -434,6 +443,7 @@ export default function ProductPage() {
             >
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                aria-label='Decrease quantity'
                 style={{
                   padding: '8px 12px',
                   backgroundColor: 'transparent',
@@ -447,6 +457,9 @@ export default function ProductPage() {
                 −
               </button>
               <span
+                id='quantity-input'
+                role='status'
+                aria-live='polite'
                 style={{
                   padding: '8px 16px',
                   fontSize: '16px',
@@ -461,6 +474,7 @@ export default function ProductPage() {
               <button
                 onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}
                 disabled={quantity >= product.stockQuantity}
+                aria-label='Increase quantity'
                 style={{
                   padding: '8px 12px',
                   backgroundColor: 'transparent',

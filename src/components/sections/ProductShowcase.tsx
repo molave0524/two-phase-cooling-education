@@ -304,8 +304,11 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                   <div className={styles.filtersGrid}>
                     {/* Category Filter */}
                     <div className={styles.filterGroup}>
-                      <label className={styles.filterLabel}>Category</label>
+                      <label htmlFor='category-filter' className={styles.filterLabel}>
+                        Category
+                      </label>
                       <select
+                        id='category-filter'
                         value={filters.category}
                         onChange={e => handleFilterChange({ category: e.target.value })}
                         className={styles.filterSelect}
@@ -320,9 +323,12 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
                     {/* Price Range */}
                     <div className={styles.filterGroup}>
-                      <label className={styles.filterLabel}>Price Range</label>
+                      <label htmlFor='price-range-filter' className={styles.filterLabel}>
+                        Price Range
+                      </label>
                       <div className={styles.priceRangeGroup}>
                         <input
+                          id='price-range-filter'
                           type='range'
                           min='0'
                           max={maxPrice}
@@ -333,6 +339,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                             })
                           }
                           className={styles.filterInput}
+                          aria-label='Maximum price'
                         />
                         <div className={styles.priceDisplay}>
                           ${filters.priceRange[0]} - ${filters.priceRange[1]}
@@ -342,8 +349,11 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
                     {/* Sort By */}
                     <div className={styles.filterGroup}>
-                      <label className={styles.filterLabel}>Sort By</label>
+                      <label htmlFor='sort-by-filter' className={styles.filterLabel}>
+                        Sort By
+                      </label>
                       <select
+                        id='sort-by-filter'
                         value={filters.sortBy}
                         onChange={e =>
                           handleFilterChange({ sortBy: e.target.value as FilterState['sortBy'] })
@@ -360,9 +370,12 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
                     {/* Stock Filter */}
                     <div className={styles.filterGroup}>
-                      <label className={styles.filterLabel}>Availability</label>
-                      <label className={styles.checkboxGroup}>
+                      <label htmlFor='stock-filter' className={styles.filterLabel}>
+                        Availability
+                      </label>
+                      <label htmlFor='stock-filter-checkbox' className={styles.checkboxGroup}>
                         <input
+                          id='stock-filter-checkbox'
                           type='checkbox'
                           checked={filters.inStock}
                           onChange={e => handleFilterChange({ inStock: e.target.checked })}

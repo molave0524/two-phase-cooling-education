@@ -124,7 +124,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   })
 
   // Progress tracking state
-  const [progressData, setProgressData] = useState<ProgressUpdateData>({
+  const [_progressData, setProgressData] = useState<ProgressUpdateData>({
     videoId: video.id,
     userId: userId || '',
     currentPosition: 0,
@@ -147,12 +147,64 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Session tracking
   // const [sessionStartTime] = useState<number>(Date.now())
-  const [lastProgressUpdate, setLastProgressUpdate] = useState<number>(0)
+  const [_lastProgressUpdate, setLastProgressUpdate] = useState<number>(0)
   // const [totalWatchTime, setTotalWatchTime] = useState<number>(0)
 
   // UI state
   const [showControls, setShowControls] = useState(true)
   const [controlsTimeout, setControlsTimeout] = useState<NodeJS.Timeout | null>(null)
+
+  // ============================================================================
+  // PROGRESS MANAGEMENT
+  // ============================================================================
+
+  const loadSavedProgress = useCallback(async () => {
+    if (!userId) return
+
+    try {
+      // Demo mode - no saved progress to load
+    } catch (error) {
+      logger.error('Failed to load saved progress', error, { videoId: video.id, userId })
+    }
+  }, [userId, video.id])
+
+  const saveProgressToStore = useCallback(async () => {
+    if (!userId) return
+
+    try {
+      // Demo mode - use simplified progress update
+      progressStore.updateProgress()
+    } catch (error) {
+      logger.error('Failed to save progress', error, { videoId: video.id, userId })
+      toast.error('Failed to save progress')
+    }
+  }, [userId, progressStore, video.id])
+
+  const handleVideoComplete = useCallback(() => {
+    if (onComplete) {
+      onComplete()
+    }
+
+    // Save completion progress
+    if (userId) {
+      setProgressData(prev => ({ ...prev, percentage: 100 }))
+      saveProgressToStore()
+    }
+
+    toast.success('Video completed! 🎉')
+  }, [onComplete, userId, saveProgressToStore])
+
+  // ============================================================================
+  // UI HELPERS
+  // ============================================================================
+
+  const getBufferedPercentage = useCallback((): number => {
+    const video = videoRef.current
+    if (!video || !video.buffered.length || !video.duration) return 0
+
+    const buffered = video.buffered.end(video.buffered.length - 1)
+    return (buffered / video.duration) * 100
+  }, [])
 
   // ============================================================================
   // VIDEO EVENT HANDLERS
@@ -227,14 +279,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setHasCompleted(true)
       handleVideoComplete()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     videoState.isPlaying,
-    lastProgressUpdate,
-    progressData.percentage,
+    videoState.volume,
     userId,
     onProgress,
     hasCompleted,
+    getBufferedPercentage,
+    saveProgressToStore,
+    handleVideoComplete,
   ])
 
   const handlePlay = useCallback(() => {
@@ -258,8 +311,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (userId) {
       saveProgressToStore()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId])
+  }, [userId, saveProgressToStore])
 
   const handleSeeked = useCallback(() => {
     const video = videoRef.current
@@ -306,48 +358,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     },
     [onError, video.id]
   )
-
-  // ============================================================================
-  // PROGRESS MANAGEMENT
-  // ============================================================================
-
-  const loadSavedProgress = useCallback(async () => {
-    if (!userId) return
-
-    try {
-      // Demo mode - no saved progress to load
-    } catch (error) {
-      logger.error('Failed to load saved progress', error, { videoId: video.id, userId })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, video.id])
-
-  const saveProgressToStore = useCallback(async () => {
-    if (!userId) return
-
-    try {
-      // Demo mode - use simplified progress update
-      progressStore.updateProgress()
-    } catch (error) {
-      logger.error('Failed to save progress', error, { videoId: video.id, userId })
-      toast.error('Failed to save progress')
-    }
-  }, [userId, progressStore])
-
-  const handleVideoComplete = useCallback(() => {
-    if (onComplete) {
-      onComplete()
-    }
-
-    // Save completion progress
-    if (userId) {
-      setProgressData(prev => ({ ...prev, percentage: 100 }))
-      saveProgressToStore()
-    }
-
-    toast.success('Video completed! 🎉')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onComplete, userId])
 
   // ============================================================================
   // PLAYBACK CONTROLS
@@ -493,7 +503,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onQualityChange(quality)
       }
     },
-    [video.sources, onQualityChange]
+    [video.sources, video.id, onQualityChange]
   )
 
   const detectNetworkQuality = useCallback(() => {
@@ -571,18 +581,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       ...prev,
       adaptiveStreamingEnabled: !prev.adaptiveStreamingEnabled,
     }))
-  }, [])
-
-  // ============================================================================
-  // UI HELPERS
-  // ============================================================================
-
-  const getBufferedPercentage = useCallback((): number => {
-    const video = videoRef.current
-    if (!video || !video.buffered.length || !video.duration) return 0
-
-    const buffered = video.buffered.end(video.buffered.length - 1)
-    return (buffered / video.duration) * 100
   }, [])
 
   const formatTime = useCallback((seconds: number): string => {
@@ -814,7 +812,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               />
             ))
           : video.file_url && <source src={video.file_url} type='video/mp4' />}
-        {/* Captions disabled for demo */}
+        <track kind='captions' srcLang='en' label='English' />
         Your browser does not support the video tag.
       </video>
 
@@ -829,7 +827,23 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <div className={`${styles.videoControls} ${showControls ? '' : styles.hidden}`}>
         {/* Progress Bar */}
         <div className={styles.progressContainer}>
-          <div ref={progressBarRef} className={styles.progressBar} onClick={handleProgressBarClick}>
+          <div
+            ref={progressBarRef}
+            className={styles.progressBar}
+            onClick={handleProgressBarClick}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleProgressBarClick(e as unknown as React.MouseEvent<HTMLDivElement>)
+              }
+            }}
+            role='slider'
+            tabIndex={0}
+            aria-label='Video progress'
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round((videoState.currentTime / videoState.duration) * 100 || 0)}
+          >
             {/* Buffer Bar */}
             <div
               className={styles.progressBuffer}

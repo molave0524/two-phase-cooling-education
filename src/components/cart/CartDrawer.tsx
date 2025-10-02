@@ -41,7 +41,18 @@ export default function CartDrawer() {
   return (
     <>
       {/* Backdrop */}
-      <div className='fixed inset-0 bg-black/50 z-40 lg:z-50' onClick={closeCart} />
+      <div
+        className='fixed inset-0 bg-black/50 z-40 lg:z-50'
+        onClick={closeCart}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            closeCart()
+          }
+        }}
+        role='button'
+        tabIndex={0}
+        aria-label='Close cart'
+      />
 
       {/* Cart Drawer */}
       <div className='fixed top-0 right-0 h-screen w-full max-w-md bg-white shadow-2xl z-50'>

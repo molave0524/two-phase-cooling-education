@@ -321,6 +321,19 @@ export const PerformanceMetrics: React.FC = () => {
                         })
                         setSelectedScenario(scenario)
                       }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          logger.debug('Scenario selected via keyboard', {
+                            scenarioName: scenario.name,
+                            scenarioId: scenario.id,
+                          })
+                          setSelectedScenario(scenario)
+                        }
+                      }}
+                      role='button'
+                      tabIndex={0}
+                      aria-pressed={isSelected}
                       className={`
                     cursor-pointer p-4 rounded-equipment text-left
                     ${

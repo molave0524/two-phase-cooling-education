@@ -137,10 +137,15 @@ export const CallToAction: React.FC = () => {
                 </select>
 
                 <div className={styles.interestsWrapper}>
-                  <label className={styles.interestsLabel}>
+                  <label htmlFor='interests-group' className={styles.interestsLabel}>
                     Interests (select all that apply):
                   </label>
-                  <div className={styles.interestsGrid}>
+                  <div
+                    id='interests-group'
+                    className={styles.interestsGrid}
+                    role='group'
+                    aria-labelledby='interests-group'
+                  >
                     {[
                       'Performance Benchmarks',
                       'Educational Content',

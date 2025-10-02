@@ -200,8 +200,10 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
 
         {/* Card Information */}
         <div className={styles.cardSection}>
-          <label className={styles.cardLabel}>Card Information</label>
-          <div className={styles.cardElementContainer}>
+          <label htmlFor='card-element' className={styles.cardLabel}>
+            Card Information
+          </label>
+          <div id='card-element' className={styles.cardElementContainer}>
             <CardElement options={cardElementOptions} onChange={handleCardChange} />
           </div>
           {cardError && (
