@@ -74,7 +74,8 @@
       "Bash(npx cross-env:*)",
       "Bash(set)",
       "Bash(if exist nul del nul)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx drizzle-kit:*)"
     ],
     "deny": [],
     "ask": []
