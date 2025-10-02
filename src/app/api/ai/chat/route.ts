@@ -11,7 +11,8 @@ import { withRateLimit } from '@/lib/with-rate-limit'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
 import { CartAction, AIContext } from '@/types/ai'
-import { PRODUCTS } from '@/data/products'
+import { TwoPhaseCoolingProduct } from '@/types/product'
+import { getAllProducts } from '@/lib/products'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -32,6 +33,7 @@ async function ensureKnowledgeBase() {
 function detectCartActions(
   aiResponse: string,
   userQuestion: string,
+  products: TwoPhaseCoolingProduct[],
   context?: AIContext
 ): CartAction[] {
   const actions: CartAction[] = []
@@ -54,14 +56,14 @@ function detectCartActions(
   if (hasAddIntent) {
     // Try to find specific product mentions in the conversation
     // First, try to match exact product names (most specific)
-    let matchedProduct = PRODUCTS.find(product => {
+    let matchedProduct = products.find(product => {
       const productName = product.name.toLowerCase()
       return lowerQuestion.includes(productName) || lowerResponse.includes(productName)
     })
 
     // If no exact match, try matching by slug
     if (!matchedProduct) {
-      matchedProduct = PRODUCTS.find(product => {
+      matchedProduct = products.find(product => {
         const productSlug = product.slug.toLowerCase()
         return lowerQuestion.includes(productSlug) || lowerResponse.includes(productSlug)
       })
@@ -71,11 +73,11 @@ function detectCartActions(
     if (!matchedProduct) {
       // Look for distinguishing words like "pro", "elite", "basic"
       if (lowerQuestion.includes('elite') || lowerResponse.includes('elite')) {
-        matchedProduct = PRODUCTS.find(p => p.name.toLowerCase().includes('elite'))
+        matchedProduct = products.find(p => p.name.toLowerCase().includes('elite'))
       } else if (lowerQuestion.includes('pro') || lowerResponse.includes('pro')) {
-        matchedProduct = PRODUCTS.find(p => p.name.toLowerCase().includes('pro'))
+        matchedProduct = products.find(p => p.name.toLowerCase().includes('pro'))
       } else if (lowerQuestion.includes('basic') || lowerResponse.includes('basic')) {
-        matchedProduct = PRODUCTS.find(p => p.name.toLowerCase().includes('basic'))
+        matchedProduct = products.find(p => p.name.toLowerCase().includes('basic'))
       }
     }
 
@@ -249,8 +251,11 @@ ${messages
     const confidence =
       knowledgeResults.length > 0 && knowledgeResults[0] ? knowledgeResults[0].relevanceScore : 0.5
 
+    // Fetch products from database for cart action detection
+    const products = await getAllProducts()
+
     // Detect cart actions from AI response and user question
-    const cartActions = detectCartActions(text, userQuestion, context)
+    const cartActions = detectCartActions(text, userQuestion, products, context)
 
     return apiSuccess({
       message: text,
