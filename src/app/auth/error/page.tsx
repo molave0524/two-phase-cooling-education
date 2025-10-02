@@ -56,7 +56,7 @@ export default function AuthErrorPage() {
     },
   }
 
-  const currentError = errorMessages[error || 'Default'] || errorMessages.Default
+  const currentError = (error && errorMessages[error]) || errorMessages.Default
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
