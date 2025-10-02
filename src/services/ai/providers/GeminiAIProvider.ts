@@ -9,18 +9,10 @@ export class GeminiAIProvider implements AIProvider {
     console.log('[Gemini] Initializing provider (server-side API)...')
 
     try {
-      // Check if API key is configured by making a simple request
-      // We'll assume it's available if the environment is set up correctly
-      // The actual validation happens on first real request
-      const apiKeyConfigured = typeof window !== 'undefined'
-
-      if (apiKeyConfigured) {
-        this.isInitialized = true
-        console.log('[Gemini] ✓ Provider initialized successfully (using server API)')
-      } else {
-        console.warn('[Gemini] Server-side only - will initialize on first request')
-        this.isInitialized = true
-      }
+      // Server-side API handles all API key validation
+      // Client just needs to make requests to /api/ai/chat
+      this.isInitialized = true
+      console.log('[Gemini] ✓ Provider initialized successfully (using server API)')
     } catch (error) {
       console.error('[Gemini] Failed to initialize provider:', error)
     }

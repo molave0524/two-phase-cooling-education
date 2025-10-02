@@ -92,7 +92,6 @@ const serverEnvSchema = z.object({
 // NOTE: Next.js inlines these at BUILD TIME. Restart dev server after .env changes!
 const clientEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().optional().default('http://localhost:3000'),
-  NEXT_PUBLIC_GEMINI_API_KEY: z.string().optional(),
 
   // Stripe public key
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
