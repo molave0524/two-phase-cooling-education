@@ -24,12 +24,21 @@ interface ThermalComparisonVideo extends VideoMetadata {
   avg_temp_difference: number
 }
 
+interface VideoProgress {
+  currentTime: number
+  duration: number
+  percentage: number
+  buffered: number
+  isPlaying: boolean
+  volume: number
+}
+
 interface ThermalComparisonPlayerProps {
   video: ThermalComparisonVideo
   userId?: string
   autoPlay?: boolean
   className?: string
-  onProgress?: (progress: any) => void
+  onProgress?: (progress: VideoProgress) => void
   onComplete?: () => void
 }
 
@@ -50,7 +59,7 @@ export const ThermalComparisonPlayer: React.FC<ThermalComparisonPlayerProps> = (
   const [showMetrics, setShowMetrics] = useState(true)
 
   // Update thermal data based on video progress
-  const handleVideoProgress = (progress: any) => {
+  const handleVideoProgress = (progress: VideoProgress) => {
     const currentTime = progress.currentTime
 
     // Find thermal data for current timestamp
@@ -65,10 +74,7 @@ export const ThermalComparisonPlayer: React.FC<ThermalComparisonPlayerProps> = (
 
     // Call parent progress handler
     if (onProgress) {
-      onProgress({
-        ...progress,
-        thermal_data: thermalPoint,
-      })
+      onProgress(progress)
     }
   }
 

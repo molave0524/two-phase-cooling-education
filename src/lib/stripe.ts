@@ -201,7 +201,16 @@ export class StripeError extends Error {
   }
 }
 
-export function handleStripeError(error: any): StripeError {
+export function handleStripeError(error: unknown): StripeError {
+  // Type guard for Stripe errors
+  const isStripeError = (err: unknown): err is Stripe.errors.StripeError => {
+    return typeof err === 'object' && err !== null && 'type' in err
+  }
+
+  if (!isStripeError(error)) {
+    return new StripeError('An unexpected error occurred')
+  }
+
   if (error.type === 'StripeCardError') {
     return new StripeError(`Payment failed: ${error.message}`, error)
   }

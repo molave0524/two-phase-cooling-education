@@ -69,7 +69,7 @@ export const useCartStore = create<CartStore>()(
       tax: 0,
       shipping: 0,
       total: 0,
-      appliedCoupon: null as any,
+      appliedCoupon: undefined,
       estimatedDelivery: '5-7 business days',
 
       // Actions
@@ -176,7 +176,7 @@ export const useCartStore = create<CartStore>()(
       clearCart: () => {
         set({
           items: [],
-          appliedCoupon: null as any,
+          appliedCoupon: undefined,
           isOpen: false,
         })
         get().calculateTotals()
@@ -259,7 +259,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       removeCoupon: () => {
-        set({ appliedCoupon: null as any })
+        set({ appliedCoupon: undefined })
         get().calculateTotals()
         toast.success('Coupon removed')
       },

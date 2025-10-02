@@ -3,7 +3,7 @@
  * Apply rate limiting to API routes
  */
 
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { checkRateLimit, getIPAddress } from './rate-limit'
 import { logger } from './logger'
 
@@ -17,7 +17,7 @@ export interface RateLimitConfig {
   /**
    * Custom identifier function (defaults to IP address)
    */
-  getIdentifier?: (request: Request) => string
+  getIdentifier?: (request: Request | NextRequest) => string
 }
 
 /**
@@ -34,11 +34,10 @@ export interface RateLimitConfig {
  * )
  * ```
  */
-export function withRateLimit<T extends (...args: any[]) => Promise<Response>>(
-  config: RateLimitConfig,
-  handler: T
-): T {
-  return (async (request: Request, ...args: any[]) => {
+export function withRateLimit<
+  T extends (request: Request | NextRequest, ...args: unknown[]) => Promise<Response>,
+>(config: RateLimitConfig, handler: T): T {
+  return (async (request: Request | NextRequest, ...args: unknown[]) => {
     try {
       // Get identifier (IP address by default)
       const identifier = config.getIdentifier

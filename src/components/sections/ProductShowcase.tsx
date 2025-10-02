@@ -36,6 +36,44 @@ interface ViewMode {
   gridCols: 2 | 3 | 4
 }
 
+// Legacy product format for backwards compatibility
+interface LegacyProduct {
+  id: string
+  name: string
+  slug: string
+  description: string
+  price: number
+  price_cents: number
+  currency: string
+  compare_at_price: number | undefined
+  stock_quantity: number
+  image: string
+  images: string[]
+  category: string
+  sku: string
+  is_featured: boolean
+  is_digital: boolean
+  is_active: boolean
+  sort_order: number
+  meta_title: string | undefined
+  meta_description: string | undefined
+  created_at: Date | undefined
+  updated_at: Date | undefined
+  specifications: {
+    cooling: {
+      gwpRating: string
+      type: string
+    }
+    formFactor: string
+    compatibility: {
+      motherboard: string[]
+    }
+    contents: string[]
+    educational: boolean
+  }
+  features: string[]
+}
+
 // ============================================================================
 // LEGACY SAMPLE DATA (keeping for backwards compatibility)
 // ============================================================================
@@ -74,7 +112,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   }, [maxProducts])
 
   // Legacy conversion for backward compatibility
-  const convertToLegacyFormat = (products: TwoPhaseCoolingProduct[]) => {
+  const convertToLegacyFormat = (products: TwoPhaseCoolingProduct[]): LegacyProduct[] => {
     return products.map(product => ({
       id: product.id,
       name: product.name,
@@ -114,8 +152,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   }
 
   // Component state
-  const [products, setProducts] = useState<any[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<LegacyProduct[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<LegacyProduct[]>([])
 
   // Update products when featuredProducts changes
   useEffect(() => {
@@ -205,7 +243,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
   const { addItem } = useCartStore()
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: LegacyProduct) => {
     // Convert legacy format back to TwoPhaseCoolingProduct for cart
     const originalProduct = featuredProducts.find(p => p.id === product.id)
     if (originalProduct) {
@@ -298,7 +336,9 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       <label className={styles.filterLabel}>Sort By</label>
                       <select
                         value={filters.sortBy}
-                        onChange={e => handleFilterChange({ sortBy: e.target.value as any })}
+                        onChange={e =>
+                          handleFilterChange({ sortBy: e.target.value as FilterState['sortBy'] })
+                        }
                         className={styles.filterSelect}
                       >
                         <option value='featured'>Featured</option>
@@ -353,7 +393,9 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       <select
                         value={viewMode.gridCols}
                         onChange={e =>
-                          handleViewModeChange({ gridCols: parseInt(e.target.value) as any })
+                          handleViewModeChange({
+                            gridCols: parseInt(e.target.value) as ViewMode['gridCols'],
+                          })
                         }
                         className={styles.columnSelectInput}
                       >

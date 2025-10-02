@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useStripe, useElements, CardElement, CardElementProps } from '@stripe/react-stripe-js'
+import type { StripeCardElementChangeEvent } from '@stripe/stripe-js'
 import { toast } from 'react-hot-toast'
 import { Order, OrderCustomer, OrderShippingAddress } from '@/lib/orders'
 import { PRODUCT_CONFIG } from '@/constants'
@@ -55,7 +56,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
     }).format(amount)
   }
 
-  const handleCardChange = (event: any) => {
+  const handleCardChange = (event: StripeCardElementChangeEvent) => {
     if (event.error) {
       setCardError(event.error.message)
     } else {
@@ -147,9 +148,10 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         toast.success('Payment successful!')
         onSuccess(updatedOrder)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Payment error', error, { orderId: order.id })
-      const errorMessage = error.message || 'Payment failed. Please try again.'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Payment failed. Please try again.'
       setCardError(errorMessage)
       onError(errorMessage)
       toast.error(errorMessage)

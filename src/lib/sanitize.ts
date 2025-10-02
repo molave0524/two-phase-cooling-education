@@ -4,7 +4,14 @@
  */
 
 // Dynamic import to avoid SSR issues
-let DOMPurify: any = null
+interface DOMPurifyAPI {
+  sanitize: (
+    dirty: string,
+    config?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; ALLOW_DATA_ATTR?: boolean }
+  ) => string
+}
+
+let DOMPurify: DOMPurifyAPI | null = null
 
 // Initialize DOMPurify lazily
 function getDOMPurify() {
@@ -39,6 +46,10 @@ function getDOMPurify() {
 export function sanitizeHtml(dirty: string): string {
   const purify = getDOMPurify()
 
+  if (!purify) {
+    return String(dirty).replace(/<[^>]*>/g, '')
+  }
+
   // Server-side or fallback
   if (typeof window === 'undefined') {
     return purify.sanitize(dirty)
@@ -57,6 +68,10 @@ export function sanitizeHtml(dirty: string): string {
  */
 export function sanitizeText(text: string): string {
   const purify = getDOMPurify()
+
+  if (!purify) {
+    return String(text).replace(/<[^>]*>/g, '')
+  }
 
   // Server-side or fallback - already removes all HTML
   if (typeof window === 'undefined') {

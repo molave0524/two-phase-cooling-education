@@ -475,14 +475,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const handleLoadedMetadata = () => {
         videoElement.currentTime = currentTime
         if (wasPlaying) {
-          videoElement
-            .play()
-            .catch(err =>
-              logger.error('Failed to resume playback after quality change', err, {
-                videoId: video.id,
-                quality,
-              })
-            )
+          videoElement.play().catch(err =>
+            logger.error('Failed to resume playback after quality change', err, {
+              videoId: video.id,
+              quality,
+            })
+          )
         }
         videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
       }
@@ -499,10 +497,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   )
 
   const detectNetworkQuality = useCallback(() => {
-    const connection =
-      (navigator as any).connection ||
-      (navigator as any).mozConnection ||
-      (navigator as any).webkitConnection
+    // Network Information API types
+    interface NetworkInformation extends EventTarget {
+      downlink?: number
+      effectiveType?: '4g' | '3g' | '2g' | 'slow-2g'
+      rtt?: number
+      saveData?: boolean
+    }
+
+    interface NavigatorWithConnection extends Navigator {
+      connection?: NetworkInformation
+      mozConnection?: NetworkInformation
+      webkitConnection?: NetworkInformation
+    }
+
+    const nav = navigator as NavigatorWithConnection
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection
 
     if (!connection) {
       return 'good' // Default if Network Information API not available
@@ -510,9 +520,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     const { downlink, effectiveType } = connection
 
-    if (effectiveType === '4g' && downlink > 10) return 'excellent'
-    if (effectiveType === '4g' && downlink > 5) return 'good'
-    if (effectiveType === '3g' || (effectiveType === '4g' && downlink > 1)) return 'fair'
+    if (effectiveType === '4g' && downlink && downlink > 10) return 'excellent'
+    if (effectiveType === '4g' && downlink && downlink > 5) return 'good'
+    if (effectiveType === '3g' || (effectiveType === '4g' && downlink && downlink > 1))
+      return 'fair'
     return 'poor'
   }, [])
 
@@ -695,8 +706,23 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (enableAdaptiveStreaming) {
       adaptQualityToNetwork()
 
+      // Network Information API types
+      interface NetworkInformation extends EventTarget {
+        downlink?: number
+        effectiveType?: '4g' | '3g' | '2g' | 'slow-2g'
+        rtt?: number
+        saveData?: boolean
+      }
+
+      interface NavigatorWithConnection extends Navigator {
+        connection?: NetworkInformation
+        mozConnection?: NetworkInformation
+        webkitConnection?: NetworkInformation
+      }
+
       // Monitor network changes
-      const connection = (navigator as any).connection
+      const nav = navigator as NavigatorWithConnection
+      const connection = nav.connection
       if (connection) {
         const handleNetworkChange = () => adaptQualityToNetwork()
         connection.addEventListener('change', handleNetworkChange)
@@ -727,13 +753,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       const handleLoadedMetadata = () => {
         videoElement.currentTime = currentTime
         if (wasPlaying) {
-          videoElement
-            .play()
-            .catch(err =>
-              logger.error('Failed to resume playback after source change', err, {
-                videoId: video.id,
-              })
-            )
+          videoElement.play().catch(err =>
+            logger.error('Failed to resume playback after source change', err, {
+              videoId: video.id,
+            })
+          )
         }
         videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
       }

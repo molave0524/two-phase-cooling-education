@@ -24,7 +24,7 @@ export interface CartState {
   tax: number
   shipping: number
   total: number
-  appliedCoupon?: CouponCode
+  appliedCoupon: CouponCode | undefined
   estimatedDelivery: string
 }
 

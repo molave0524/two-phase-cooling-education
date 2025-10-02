@@ -12,10 +12,41 @@ import {
   ShareIcon,
 } from '@heroicons/react/24/outline'
 
+interface OrderItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  image: string
+}
+
+interface ShippingAddress {
+  firstName: string
+  lastName: string
+  address: string
+  city: string
+  state: string
+  zipCode: string
+  country: string
+}
+
+interface OrderData {
+  id: string
+  email: string
+  orderDate: string
+  estimatedDelivery: string
+  items: OrderItem[]
+  subtotal: number
+  tax: number
+  shipping: number
+  total: number
+  shippingAddress: ShippingAddress
+}
+
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get('id')
-  const [orderData, setOrderData] = useState<any>(null)
+  const [orderData, setOrderData] = useState<OrderData | null>(null)
 
   useEffect(() => {
     // In a real app, this would fetch order details from API
@@ -106,7 +137,7 @@ function OrderConfirmationContent() {
             <div className='mb-6'>
               <h3 className='font-semibold text-secondary-900 mb-4'>Items Ordered</h3>
               <div className='space-y-4'>
-                {orderData.items.map((item: any) => (
+                {orderData.items.map(item => (
                   <div
                     key={item.id}
                     className='flex gap-4 py-4 border-b border-secondary-200 last:border-b-0'

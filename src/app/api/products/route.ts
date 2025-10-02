@@ -5,6 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { db, products } from '@/db'
+import type { Product } from '@/db/schema'
 import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
@@ -19,7 +20,7 @@ export async function GET() {
     // Parse JSON fields if using SQLite (Postgres stores them natively)
     const parsedProducts = usePostgres
       ? allProducts
-      : allProducts.map((product: any) => ({
+      : allProducts.map((product: Product) => ({
           ...product,
           features: JSON.parse(product.features as string),
           specifications: JSON.parse(product.specifications as string),

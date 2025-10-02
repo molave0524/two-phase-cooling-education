@@ -77,9 +77,9 @@ A: ${result.item.content}
     const cartContext =
       context?.cartItems && context.cartItems.length > 0
         ? `\n\nCurrent Shopping Cart:
-${context.cartItems.map((item: any) => `- ${item.productName} (Qty: ${item.quantity}, Price: $${item.price})`).join('\n')}
+${context.cartItems.map((item: { productName: string; quantity: number; price: number }) => `- ${item.productName} (Qty: ${item.quantity}, Price: $${item.price})`).join('\n')}
 Total Items: ${context.cartItems.length}
-Total Value: $${context.cartItems.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0).toFixed(2)}
+Total Value: $${context.cartItems.reduce((sum: number, item: { productName: string; quantity: number; price: number }) => sum + item.price * item.quantity, 0).toFixed(2)}
 `
         : '\n\nShopping cart is currently empty.'
 
@@ -107,7 +107,10 @@ ${cartContext}
 Conversation History:
 ${messages
   .slice(0, -1)
-  .map((m: any) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+  .map(
+    (m: { role: string; content: string }) =>
+      `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`
+  )
   .join('\n')}
 `
 

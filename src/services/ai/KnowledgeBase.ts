@@ -1,5 +1,6 @@
 import { FAQ_CONTENT } from '@/data/faq-content'
 import { PRODUCTS } from '@/data/products'
+import type { TwoPhaseCoolingProduct } from '@/types/product'
 
 export interface KnowledgeItem {
   id: string
@@ -298,7 +299,7 @@ class KnowledgeBase {
   /**
    * Determine product priority based on features
    */
-  private getProductPriority(product: any): number {
+  private getProductPriority(product: TwoPhaseCoolingProduct): number {
     let priority = 5 // base priority
 
     if (product.tags.includes('featured')) {

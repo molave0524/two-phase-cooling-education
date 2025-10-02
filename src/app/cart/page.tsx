@@ -349,7 +349,11 @@ function CartItemRow({
 }
 
 // Coupon Section Component
-function CouponSection({ appliedCoupon }: { appliedCoupon?: any }) {
+function CouponSection({
+  appliedCoupon,
+}: {
+  appliedCoupon: { code: string; type: 'percentage' | 'fixed'; value: number } | undefined
+}) {
   // This would integrate with actual coupon system
   return (
     <div className={styles.couponSection}>

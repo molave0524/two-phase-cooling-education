@@ -102,7 +102,7 @@ export interface Order {
   // Metadata
   notes?: string
   internalNotes?: string
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
 
   // Timestamps
   createdAt: Date
@@ -122,11 +122,14 @@ export interface CreateOrderParams {
   paymentIntentId?: string
   stripeCustomerId?: string
   notes?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 // Helper function to convert database order to Order interface
-function dbOrderToOrder(dbOrder: any, dbOrderItems: any[]): Order {
+function dbOrderToOrder(
+  dbOrder: typeof ordersTable.$inferSelect,
+  dbOrderItems: Array<typeof orderItemsTable.$inferSelect>
+): Order {
   const orderItems: OrderItem[] = dbOrderItems.map(item => ({
     id: item.id.toString(),
     productId: item.productId,
@@ -423,7 +426,7 @@ export async function updateOrderStatus(
   if (!currentOrder) return null
 
   const now = Math.floor(Date.now() / 1000)
-  const updateData: any = {
+  const updateData: Partial<typeof ordersTable.$inferInsert> = {
     status,
     updatedAt: now,
   }
@@ -467,7 +470,7 @@ export async function updatePaymentStatus(
   if (isNaN(orderIdNum)) return null
 
   const now = Math.floor(Date.now() / 1000)
-  const updateData: any = {
+  const updateData: Partial<typeof ordersTable.$inferInsert> = {
     paymentStatus,
     updatedAt: now,
   }
@@ -523,7 +526,7 @@ export async function updateOrderPaymentStatus(
   if (isNaN(orderIdNum)) return null
 
   const now = Math.floor(Date.now() / 1000)
-  const updateData: any = {
+  const updateData: Partial<typeof ordersTable.$inferInsert> = {
     updatedAt: now,
   }
 
@@ -575,7 +578,7 @@ export async function addOrderTracking(
   if (isNaN(orderIdNum)) return null
 
   const now = Math.floor(Date.now() / 1000)
-  const updateData: any = {
+  const updateData: Partial<typeof ordersTable.$inferInsert> = {
     trackingNumber: tracking.trackingNumber,
     shippingCarrier: tracking.carrier,
     trackingUrl: tracking.trackingUrl,
@@ -731,7 +734,8 @@ export async function searchOrders(
   filters: OrderFilters = {}
 ): Promise<{ orders: Order[]; total: number }> {
   // Build where conditions
-  const conditions: any[] = []
+  const conditions: Array<ReturnType<typeof eq> | ReturnType<typeof or> | ReturnType<typeof and>> =
+    []
 
   if (filters.status && filters.status.length > 0) {
     conditions.push(or(...filters.status.map(status => eq(ordersTable.status, status))))
@@ -774,11 +778,11 @@ export async function searchOrders(
     .orderBy(desc(ordersTable.createdAt))
 
   if (filters.limit !== undefined) {
-    query = query.limit(filters.limit) as any
+    query = query.limit(filters.limit)
   }
 
   if (filters.offset !== undefined) {
-    query = query.offset(filters.offset) as any
+    query = query.offset(filters.offset)
   }
 
   const dbOrders = await query

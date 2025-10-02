@@ -54,7 +54,7 @@ export function isInRange(value: number, min: number, max: number): boolean {
 /**
  * Check if value is a valid positive number
  */
-export function isPositiveNumber(value: any): boolean {
+export function isPositiveNumber(value: unknown): boolean {
   const num = Number(value)
   return !isNaN(num) && isFinite(num) && num > 0
 }
@@ -67,7 +67,7 @@ export interface ValidationRule {
   minLength?: number
   maxLength?: number
   pattern?: RegExp
-  custom?: (value: any) => boolean
+  custom?: (value: unknown) => boolean
   message: string
 }
 
@@ -80,7 +80,10 @@ export interface ValidationResult {
   errors: Record<string, string>
 }
 
-export function validateForm(data: Record<string, any>, rules: ValidationRules): ValidationResult {
+export function validateForm(
+  data: Record<string, unknown>,
+  rules: ValidationRules
+): ValidationResult {
   const errors: Record<string, string> = {}
 
   for (const [field, fieldRules] of Object.entries(rules)) {

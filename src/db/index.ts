@@ -9,12 +9,26 @@ import { sql as vercelSql } from '@vercel/postgres'
 import Database from 'better-sqlite3'
 import { join } from 'path'
 import { logger } from '@/lib/logger'
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
+import type { VercelPgDatabase } from 'drizzle-orm/vercel-postgres'
 
 // Determine which database to use based on environment
 const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
 
-let db: any
-let schema: any
+// Type for the database instance (union of both possible types)
+// Note: Using Record<string, any> here as the schema is dynamically determined at runtime
+// between PostgreSQL and SQLite schemas. This is a necessary trade-off for the
+// dual-database architecture. The `any` type is acceptable here because:
+// 1. The schema structure varies between SQLite and PostgreSQL implementations
+// 2. Drizzle ORM provides runtime type safety through its query builders
+// 3. This allows the codebase to support both databases without duplication
+type DatabaseInstance =
+  | BetterSQLite3Database<Record<string, any>>
+  | VercelPgDatabase<Record<string, any>>
+type SchemaType = Record<string, any>
+
+let db: DatabaseInstance
+let schema: SchemaType
 
 // Initialize database connection
 if (usePostgres) {

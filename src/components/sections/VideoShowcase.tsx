@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { PlayIcon, ClockIcon, StarIcon, VideoCameraIcon } from '@heroicons/react/24/outline'
+import { VideoMetadata } from '@/types'
 import { logger } from '@/lib/logger'
 import styles from './VideoShowcase.module.css'
 
@@ -184,7 +185,16 @@ export const VideoShowcase: React.FC = () => {
     setSelectedVideo(video)
   }
 
-  const handleVideoProgress = (progress: any) => {
+  interface VideoProgress {
+    currentTime: number
+    duration: number
+    percentage: number
+    buffered: number
+    isPlaying: boolean
+    volume: number
+  }
+
+  const handleVideoProgress = (progress: VideoProgress) => {
     // Handle video progress updates
     logger.debug('Video progress', { progress, videoId: selectedVideo?.id })
   }
@@ -216,7 +226,7 @@ export const VideoShowcase: React.FC = () => {
                 <div className={styles.videoInfo}>
                   <VideoPlayer
                     key={selectedVideo.id}
-                    video={selectedVideo as any}
+                    video={selectedVideo as VideoMetadata}
                     userId='demo-user'
                     autoPlay={false}
                     enableAdaptiveStreaming={true}

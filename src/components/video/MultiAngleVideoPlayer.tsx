@@ -25,13 +25,22 @@ interface VideoSource {
   bitrate?: number
 }
 
+interface VideoProgress {
+  currentTime: number
+  duration: number
+  percentage: number
+  buffered: number
+  isPlaying: boolean
+  volume: number
+}
+
 interface MultiAngleVideoPlayerProps {
   primaryVideo: VideoMetadata & { file_url?: string; sources?: VideoSource[] }
   cameraAngles: CameraAngle[]
   userId?: string
   className?: string
   onAngleChange?: (angleId: string) => void
-  onProgress?: (angleId: string, progress: any) => void
+  onProgress?: (angleId: string, progress: VideoProgress) => void
 }
 
 // ============================================================================
@@ -92,7 +101,7 @@ export const MultiAngleVideoPlayer: React.FC<MultiAngleVideoPlayerProps> = ({
 
   // Handle video progress for synchronization
   const handleMainVideoProgress = useCallback(
-    (progress: any) => {
+    (progress: VideoProgress) => {
       if (onProgress) {
         onProgress(activeMainAngle, progress)
       }
