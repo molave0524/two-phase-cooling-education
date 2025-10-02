@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createPaymentIntent, createCustomer, handleStripeError } from '@/lib/stripe'
 import { createOrder, validateOrderInventory, reserveInventory } from '@/lib/orders'
 import { sanitizeCustomerData, sanitizeAddressData } from '@/lib/sanitize'
+import { withRateLimit } from '@/lib/with-rate-limit'
 import { z } from 'zod'
 
 const CreatePaymentIntentSchema = z.object({
@@ -42,7 +43,7 @@ const CreatePaymentIntentSchema = z.object({
     .optional(),
 })
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const body = await request.json()
     const validatedData = CreatePaymentIntentSchema.parse(body)
@@ -203,3 +204,5 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+export const POST = withRateLimit({ id: 'checkout-payment-intent' }, handlePOST)

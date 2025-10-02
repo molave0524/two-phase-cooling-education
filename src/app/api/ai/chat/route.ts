@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { knowledgeBase } from '@/services/ai/KnowledgeBase'
 import { sanitizeChatMessage } from '@/lib/sanitize'
+import { withRateLimit } from '@/lib/with-rate-limit'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -21,7 +22,7 @@ async function ensureKnowledgeBase() {
   }
 }
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     // Get server-side API key (not exposed to client)
     const apiKey = process.env.GEMINI_API_KEY
@@ -193,3 +194,5 @@ function getDefaultSuggestedQuestions(): string[] {
     'How much does it cost?',
   ]
 }
+
+export const POST = withRateLimit({ id: 'ai-chat' }, handlePOST)
