@@ -22,23 +22,55 @@ export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   email: text('email').notNull().unique(),
   name: text('name'),
+  image: text('image'), // Profile picture URL
   hashedPassword: text('hashed_password'),
-  emailVerified: boolean('email_verified').default(false),
+  emailVerified: timestamp('email_verified'), // NextAuth compatibility
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
 // ============================================================================
-// SESSIONS TABLE (for authentication)
+// ACCOUNTS TABLE (for OAuth providers - NextAuth)
 // ============================================================================
 
-export const sessions = pgTable('sessions', {
+export const accounts = pgTable('accounts', {
   id: text('id').primaryKey(),
   userId: integer('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  expiresAt: timestamp('expires_at').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
+  type: text('type').notNull(), // oauth, email, credentials
+  provider: text('provider').notNull(), // google, github, credentials, etc
+  providerAccountId: text('provider_account_id').notNull(),
+  refresh_token: text('refresh_token'),
+  access_token: text('access_token'),
+  expires_at: integer('expires_at'),
+  token_type: text('token_type'),
+  scope: text('scope'),
+  id_token: text('id_token'),
+  session_state: text('session_state'),
+})
+
+// ============================================================================
+// SESSIONS TABLE (for authentication - NextAuth)
+// ============================================================================
+
+export const sessions = pgTable('sessions', {
+  id: text('id').primaryKey(),
+  sessionToken: text('session_token').notNull().unique(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  expires: timestamp('expires').notNull(),
+})
+
+// ============================================================================
+// VERIFICATION TOKENS TABLE (for email verification - NextAuth)
+// ============================================================================
+
+export const verificationTokens = pgTable('verification_tokens', {
+  identifier: text('identifier').notNull(),
+  token: text('token').notNull().unique(),
+  expires: timestamp('expires').notNull(),
 })
 
 // ============================================================================
@@ -132,3 +164,34 @@ export const orderItems = pgTable('order_items', {
   price: real('price').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
+
+// ============================================================================
+// TYPE EXPORTS
+// ============================================================================
+
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert
+
+export type Account = typeof accounts.$inferSelect
+export type NewAccount = typeof accounts.$inferInsert
+
+export type Session = typeof sessions.$inferSelect
+export type NewSession = typeof sessions.$inferInsert
+
+export type VerificationToken = typeof verificationTokens.$inferSelect
+export type NewVerificationToken = typeof verificationTokens.$inferInsert
+
+export type Cart = typeof carts.$inferSelect
+export type NewCart = typeof carts.$inferInsert
+
+export type CartItem = typeof cartItems.$inferSelect
+export type NewCartItem = typeof cartItems.$inferInsert
+
+export type Order = typeof orders.$inferSelect
+export type NewOrder = typeof orders.$inferInsert
+
+export type OrderItem = typeof orderItems.$inferSelect
+export type NewOrderItem = typeof orderItems.$inferInsert
+
+export type Product = typeof products.$inferSelect
+export type NewProduct = typeof products.$inferInsert
