@@ -4,8 +4,10 @@
  */
 
 import { NextResponse } from 'next/server'
-import { db, products } from '@/db'
+import { products } from '@/db'
 import { sql } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -15,7 +17,12 @@ export async function GET() {
     // Add SKU column if it doesn't exist (Postgres only)
     if (process.env.POSTGRES_URL) {
       try {
-        await db.execute(sql`
+        // Create a direct postgres connection for raw SQL
+        const client = postgres(process.env.POSTGRES_URL)
+        const db = drizzle(client)
+
+        // Add SKU column if it doesn't exist
+        await client`
           DO $$
           BEGIN
               IF NOT EXISTS (
@@ -25,21 +32,17 @@ export async function GET() {
                   ALTER TABLE products ADD COLUMN sku TEXT NOT NULL DEFAULT '';
               END IF;
           END $$;
-        `)
+        `
 
         // Update existing products with SKU values
-        await db.execute(
-          sql`UPDATE products SET sku = 'TPC-CASE-PRO-001' WHERE slug = 'thermosphere-pro-pc-case'`
-        )
-        await db.execute(
-          sql`UPDATE products SET sku = 'TPC-GPU-ELITE-001' WHERE slug = 'cryoflow-elite-gpu-cooler'`
-        )
-        await db.execute(
-          sql`UPDATE products SET sku = 'TPC-CPU-BASIC-001' WHERE slug = 'quantum-freeze-cpu-cooler'`
-        )
+        await client`UPDATE products SET sku = 'TPC-CASE-PRO-001' WHERE slug = 'thermosphere-pro-pc-case'`
+        await client`UPDATE products SET sku = 'TPC-GPU-ELITE-001' WHERE slug = 'cryoflow-elite-gpu-cooler'`
+        await client`UPDATE products SET sku = 'TPC-CPU-BASIC-001' WHERE slug = 'quantum-freeze-cpu-cooler'`
 
         // Verify the changes
         const allProducts = await db.select().from(products)
+
+        await client.end()
 
         return NextResponse.json({
           success: true,
