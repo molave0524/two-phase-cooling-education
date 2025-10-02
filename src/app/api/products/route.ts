@@ -15,7 +15,8 @@ const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.starts
 
 export async function GET() {
   try {
-    const allProducts = await db.select().from(products)
+    // Type assertion needed due to dual-database union type incompatibility
+    const allProducts = await (db.select() as any).from(products)
 
     // Parse JSON fields if using SQLite (Postgres stores them natively)
     const parsedProducts = usePostgres
