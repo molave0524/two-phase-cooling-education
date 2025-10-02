@@ -12,12 +12,11 @@ import { db } from '@/db'
 import { users, accounts, sessions, verificationTokens } from '@/db/schema'
 
 export const authOptions: NextAuthOptions = {
-  // @ts-expect-error - Drizzle adapter types compatibility
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
+  adapter: DrizzleAdapter(db as any, {
+    usersTable: users as any,
+    accountsTable: accounts as any,
+    sessionsTable: sessions as any,
+    verificationTokensTable: verificationTokens as any,
   }),
 
   providers: [
@@ -44,6 +43,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
+        // @ts-expect-error - Extending default session user type
         session.user.id = token.sub
       }
       return session

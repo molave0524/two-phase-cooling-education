@@ -56,7 +56,8 @@ export default function AuthErrorPage() {
     },
   }
 
-  const currentError = (error && errorMessages[error]) || errorMessages.Default
+  const currentError =
+    error && error in errorMessages ? errorMessages[error] : errorMessages.Default
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
@@ -78,9 +79,9 @@ export default function AuthErrorPage() {
             </svg>
           </div>
           <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-            {currentError.title}
+            {currentError?.title}
           </h2>
-          <p className='mt-2 text-center text-sm text-gray-600'>{currentError.description}</p>
+          <p className='mt-2 text-center text-sm text-gray-600'>{currentError?.description}</p>
         </div>
         <div className='mt-8'>
           <Link
