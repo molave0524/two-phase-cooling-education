@@ -281,7 +281,7 @@ export function generateOrderNumber(): string {
 // Order creation
 export async function createOrder(params: CreateOrderParams): Promise<Order> {
   const orderNumber = generateOrderNumber()
-  const now = Math.floor(Date.now() / 1000)
+  const now = new Date()
 
   // Insert order into database
   // Type assertion needed due to dual-database union type incompatibility
