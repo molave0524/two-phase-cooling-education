@@ -8,6 +8,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { knowledgeBase } from '@/services/ai/KnowledgeBase'
 import { sanitizeChatMessage } from '@/lib/sanitize'
 import { withRateLimit } from '@/lib/with-rate-limit'
+import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -28,7 +29,7 @@ async function handlePOST(request: NextRequest) {
     const apiKey = process.env.GEMINI_API_KEY
 
     if (!apiKey) {
-      console.error('[AI API] Gemini API key not configured')
+      logger.error('Gemini API key not configured', { context: 'AI API' })
       return NextResponse.json({ error: 'AI service not configured' }, { status: 500 })
     }
 
@@ -148,7 +149,7 @@ ${messages
       },
     })
   } catch (error) {
-    console.error('[AI API] Error:', error)
+    logger.error('Failed to generate AI response', { context: 'AI API', error })
     return NextResponse.json(
       {
         error: 'Failed to generate AI response',

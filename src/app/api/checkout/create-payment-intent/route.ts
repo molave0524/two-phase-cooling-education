@@ -3,6 +3,7 @@ import { createPaymentIntent, createCustomer, handleStripeError } from '@/lib/st
 import { createOrder, validateOrderInventory, reserveInventory } from '@/lib/orders'
 import { sanitizeCustomerData, sanitizeAddressData } from '@/lib/sanitize'
 import { withRateLimit } from '@/lib/with-rate-limit'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const CreatePaymentIntentSchema = z.object({
@@ -110,7 +111,7 @@ async function handlePOST(request: NextRequest) {
         },
       })
     } catch (error) {
-      console.error('Failed to create Stripe customer:', error)
+      logger.warn('Failed to create Stripe customer, continuing with guest payment', { error })
       // Continue without customer - Stripe can handle guest payments
     }
 
@@ -169,7 +170,10 @@ async function handlePOST(request: NextRequest) {
     // Update order with payment intent ID
     newOrder.paymentIntentId = paymentIntent.id
 
-    console.log(`Payment intent created for order ${newOrder.orderNumber}: ${paymentIntent.id}`)
+    logger.info('Payment intent created', {
+      orderNumber: newOrder.orderNumber,
+      paymentIntentId: paymentIntent.id,
+    })
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
@@ -177,7 +181,7 @@ async function handlePOST(request: NextRequest) {
       orderNumber: newOrder.orderNumber,
     })
   } catch (error) {
-    console.error('Create payment intent error:', error)
+    logger.error('Create payment intent error', { error })
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

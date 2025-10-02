@@ -5,6 +5,7 @@
 
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
+import { logger } from './logger'
 
 // In-memory store for development
 const inMemoryStore = new Map<string, { count: number; reset: number }>()
@@ -27,9 +28,11 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
     prefix: 'ratelimit',
   })
 
-  console.log('✓ Rate limiting: Using Upstash Redis')
+  logger.info('Rate limiting initialized with Upstash Redis')
 } else {
-  console.warn('⚠ Rate limiting: Using in-memory store (development only)')
+  logger.warn(
+    'Rate limiting using in-memory store (development only - not suitable for production)'
+  )
 }
 
 /**
@@ -108,7 +111,7 @@ export async function checkRateLimit(
         reset: new Date(result.reset),
       }
     } catch (error) {
-      console.error('[Rate Limit] Upstash error, falling back to in-memory:', error)
+      logger.error('Upstash rate limit error, falling back to in-memory', { error })
       return checkRateLimitInMemory(identifier)
     }
   }

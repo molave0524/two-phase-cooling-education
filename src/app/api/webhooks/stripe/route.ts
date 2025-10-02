@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { updateOrderPaymentStatus } from '@/lib/orders'
+import { logger } from '@/lib/logger'
 import Stripe from 'stripe'
 
 // Disable body parsing for webhook signature verification
@@ -18,13 +19,13 @@ export async function POST(request: NextRequest) {
     const signature = headers().get('stripe-signature')
 
     if (!signature) {
-      console.error('[Stripe Webhook] Missing signature header')
+      logger.error('Stripe webhook missing signature header')
       return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
     }
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
     if (!webhookSecret) {
-      console.error('[Stripe Webhook] Missing webhook secret in environment')
+      logger.error('Stripe webhook secret not configured')
       return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
     }
 
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err) {
-      console.error('[Stripe Webhook] Signature verification failed:', err)
+      logger.error('Stripe webhook signature verification failed', { error: err })
       return NextResponse.json(
         {
           error: `Webhook signature verification failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`[Stripe Webhook] Received event: ${event.type}`)
+    logger.info('Stripe webhook received', { eventType: event.type })
 
     // Handle different event types
     switch (event.type) {
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
 
       case 'charge.succeeded': {
         const charge = event.data.object as Stripe.Charge
-        console.log(`[Stripe Webhook] Charge succeeded: ${charge.id}`)
+        logger.info('Stripe charge succeeded', { chargeId: charge.id })
         // Additional charge processing can go here
         break
       }
@@ -78,12 +79,12 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`)
+        logger.debug('Unhandled Stripe webhook event type', { eventType: event.type })
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('[Stripe Webhook] Error processing webhook:', error)
+    logger.error('Stripe webhook processing failed', { error })
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 }
@@ -95,7 +96,9 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
   const orderId = paymentIntent.metadata.orderId
 
   if (!orderId) {
-    console.warn('[Stripe Webhook] Payment intent missing orderId in metadata')
+    logger.warn('Payment intent missing orderId in metadata', {
+      paymentIntentId: paymentIntent.id,
+    })
     return
   }
 
@@ -106,12 +109,15 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       paidAt: new Date(),
     })
 
-    console.log(`[Stripe Webhook] ✓ Order ${orderId} marked as paid`)
+    logger.info('Order marked as paid', {
+      orderId,
+      paymentIntentId: paymentIntent.id,
+    })
 
     // TODO: Send confirmation email
     // TODO: Trigger fulfillment process
   } catch (error) {
-    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error)
+    logger.error('Failed to update order payment status', { orderId, error })
   }
 }
 
@@ -122,7 +128,9 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   const orderId = paymentIntent.metadata.orderId
 
   if (!orderId) {
-    console.warn('[Stripe Webhook] Payment intent missing orderId in metadata')
+    logger.warn('Payment intent missing orderId in metadata', {
+      paymentIntentId: paymentIntent.id,
+    })
     return
   }
 
@@ -132,12 +140,15 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       paymentIntentId: paymentIntent.id,
     })
 
-    console.log(`[Stripe Webhook] Order ${orderId} marked as payment failed`)
+    logger.info('Order marked as payment failed', {
+      orderId,
+      paymentIntentId: paymentIntent.id,
+    })
 
     // TODO: Send payment failed email
     // TODO: Release inventory
   } catch (error) {
-    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error)
+    logger.error('Failed to update order payment status', { orderId, error })
   }
 }
 
@@ -148,7 +159,9 @@ async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) 
   const orderId = paymentIntent.metadata.orderId
 
   if (!orderId) {
-    console.warn('[Stripe Webhook] Payment intent missing orderId in metadata')
+    logger.warn('Payment intent missing orderId in metadata', {
+      paymentIntentId: paymentIntent.id,
+    })
     return
   }
 
@@ -158,11 +171,14 @@ async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) 
       paymentIntentId: paymentIntent.id,
     })
 
-    console.log(`[Stripe Webhook] Order ${orderId} marked as cancelled`)
+    logger.info('Order marked as cancelled', {
+      orderId,
+      paymentIntentId: paymentIntent.id,
+    })
 
     // TODO: Release inventory
   } catch (error) {
-    console.error(`[Stripe Webhook] Failed to update order ${orderId}:`, error)
+    logger.error('Failed to update order payment status', { orderId, error })
   }
 }
 
@@ -173,19 +189,19 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   const paymentIntentId = charge.payment_intent as string
 
   if (!paymentIntentId) {
-    console.warn('[Stripe Webhook] Charge missing payment_intent')
+    logger.warn('Charge missing payment_intent', { chargeId: charge.id })
     return
   }
 
   try {
     // Find order by payment intent ID
     // TODO: Implement findOrderByPaymentIntentId
-    console.log(`[Stripe Webhook] Charge refunded for payment intent: ${paymentIntentId}`)
+    logger.info('Charge refunded', { paymentIntentId, chargeId: charge.id })
 
     // TODO: Update order status to refunded
     // TODO: Restore inventory
     // TODO: Send refund confirmation email
   } catch (error) {
-    console.error(`[Stripe Webhook] Failed to handle refund for ${paymentIntentId}:`, error)
+    logger.error('Failed to handle refund', { paymentIntentId, error })
   }
 }

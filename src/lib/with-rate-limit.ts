@@ -5,6 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { checkRateLimit, getIPAddress } from './rate-limit'
+import { logger } from './logger'
 
 export interface RateLimitConfig {
   /**
@@ -52,7 +53,11 @@ export function withRateLimit<T extends (...args: any[]) => Promise<Response>>(
 
       if (!success) {
         // Rate limit exceeded
-        console.warn(`[Rate Limit] Exceeded for ${config.id}: ${identifier}`)
+        logger.warn('Rate limit exceeded', {
+          routeId: config.id,
+          identifier,
+          resetTime: reset.toISOString(),
+        })
 
         return NextResponse.json(
           {
@@ -80,7 +85,10 @@ export function withRateLimit<T extends (...args: any[]) => Promise<Response>>(
 
       return response
     } catch (error) {
-      console.error('[Rate Limit] Error:', error)
+      logger.error('Rate limit middleware error, allowing request through', {
+        routeId: config.id,
+        error,
+      })
       // On error, allow the request through (fail open)
       return handler(request, ...args)
     }
