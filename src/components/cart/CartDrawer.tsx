@@ -224,6 +224,18 @@ function CartItemComponent({
             >
               {item.product.name}
             </Link>
+            {item.product.sku && (
+              <p
+                style={{
+                  fontSize: '12px',
+                  color: '#64748b',
+                  fontFamily: 'monospace',
+                  marginTop: '4px',
+                }}
+              >
+                SKU: {item.product.sku}
+              </p>
+            )}
             {item.selectedVariantId && (
               <p className='text-xs text-secondary-600'>
                 Variant: {item.product.variants?.find(v => v.id === item.selectedVariantId)?.name}

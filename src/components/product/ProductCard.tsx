@@ -171,6 +171,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {/* Compact Content */}
               <div className='flex-1 min-w-0'>
                 <h3 className='font-semibold text-secondary-900 truncate'>{product.name}</h3>
+                {product.sku && (
+                  <p className='text-xs text-secondary-500 font-mono'>SKU: {product.sku}</p>
+                )}
                 <p className='text-sm text-secondary-600 line-clamp-2 mt-1'>
                   {product.description}
                 </p>

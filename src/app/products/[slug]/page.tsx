@@ -339,6 +339,16 @@ export default function ProductPage() {
           </h1>
           <p
             style={{
+              fontSize: '14px',
+              color: '#64748b',
+              marginBottom: '16px',
+              fontFamily: 'monospace',
+            }}
+          >
+            SKU: {product.sku}
+          </p>
+          <p
+            style={{
               fontSize: '20px',
               color: '#475569',
               marginBottom: '24px',

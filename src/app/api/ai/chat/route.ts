@@ -99,6 +99,14 @@ function detectCartActions(
       })
     }
 
+    // If still no match, try matching by SKU
+    if (!matchedProduct) {
+      matchedProduct = products.find(product => {
+        const productSKU = product.sku.toLowerCase()
+        return lowerQuestion.includes(productSKU) || lowerResponse.includes(productSKU)
+      })
+    }
+
     // If still no match, try matching key distinguishing words
     if (!matchedProduct) {
       // Look for distinguishing words like "pro", "elite", "basic"

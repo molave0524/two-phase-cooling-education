@@ -479,6 +479,19 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                     {/* Product Info */}
                     <div className={styles.productInfo}>
                       <h3 className={styles.productTitle}>{product.name}</h3>
+                      {product.sku && (
+                        <p
+                          style={{
+                            fontSize: '12px',
+                            color: '#64748b',
+                            fontFamily: 'monospace',
+                            marginTop: '4px',
+                            marginBottom: '8px',
+                          }}
+                        >
+                          SKU: {product.sku}
+                        </p>
+                      )}
                       <p className={styles.productDescription}>{product.description}</p>
 
                       {/* Key Features */}

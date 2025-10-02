@@ -276,6 +276,19 @@ function CartItemRow({
                 {item.product.name}
               </Link>
 
+              {item.product.sku && (
+                <p
+                  style={{
+                    fontSize: '12px',
+                    color: '#64748b',
+                    fontFamily: 'monospace',
+                    marginTop: '4px',
+                  }}
+                >
+                  SKU: {item.product.sku}
+                </p>
+              )}
+
               {item.selectedVariantId && (
                 <div className={styles.cartItemVariant}>
                   <span className={styles.cartItemVariantBadge}>
