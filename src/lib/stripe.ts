@@ -6,6 +6,7 @@
 import Stripe from 'stripe'
 import { loadStripe } from '@stripe/stripe-js'
 import { logger } from '@/lib/logger'
+import { clientEnv } from '@/lib/env'
 
 // Environment variables validation
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
@@ -55,7 +56,7 @@ export async function createPaymentIntent(
 ): Promise<Stripe.PaymentIntent> {
   const {
     amount,
-    currency = 'usd',
+    currency = clientEnv.NEXT_PUBLIC_STRIPE_CURRENCY,
     customerId,
     metadata = {},
     description,
@@ -162,8 +163,11 @@ export function verifyWebhookSignature(
 }
 
 // Price formatting utilities
-export function formatPrice(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
+export function formatPrice(
+  amount: number,
+  currency: string = clientEnv.NEXT_PUBLIC_STRIPE_CURRENCY.toUpperCase()
+): string {
+  return new Intl.NumberFormat(clientEnv.NEXT_PUBLIC_STRIPE_LOCALE, {
     style: 'currency',
     currency,
   }).format(amount / 100) // Convert from cents
@@ -247,17 +251,17 @@ export const STRIPE_TEST_CARDS = {
   REQUIRES_AUTHENTICATION: '4000002500003155',
 } as const
 
-// Default configuration for development
+// Stripe UI configuration from environment variables
 export const STRIPE_CONFIG = {
-  currency: 'usd',
-  locale: 'en-US',
+  currency: clientEnv.NEXT_PUBLIC_STRIPE_CURRENCY,
+  locale: clientEnv.NEXT_PUBLIC_STRIPE_LOCALE,
   appearance: {
-    theme: 'stripe' as const,
+    theme: clientEnv.NEXT_PUBLIC_STRIPE_THEME,
     variables: {
-      colorPrimary: '#0070f3',
-      colorBackground: '#ffffff',
-      colorText: '#000000',
-      borderRadius: '8px',
+      colorPrimary: clientEnv.NEXT_PUBLIC_STRIPE_COLOR_PRIMARY,
+      colorBackground: clientEnv.NEXT_PUBLIC_STRIPE_COLOR_BACKGROUND,
+      colorText: clientEnv.NEXT_PUBLIC_STRIPE_COLOR_TEXT,
+      borderRadius: clientEnv.NEXT_PUBLIC_STRIPE_BORDER_RADIUS,
     },
   },
-} as const
+}

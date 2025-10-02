@@ -140,6 +140,15 @@ const clientEnvSchema = z.object({
   // Performance
   NEXT_PUBLIC_IMAGE_QUALITY: z.string().optional().default('85'),
   NEXT_PUBLIC_IMAGE_FORMATS: z.string().optional().default('avif,webp'),
+
+  // Stripe UI Configuration
+  NEXT_PUBLIC_STRIPE_CURRENCY: z.string().optional().default('usd'),
+  NEXT_PUBLIC_STRIPE_LOCALE: z.string().optional().default('en-US'),
+  NEXT_PUBLIC_STRIPE_THEME: z.enum(['stripe', 'night', 'flat']).optional().default('stripe'),
+  NEXT_PUBLIC_STRIPE_COLOR_PRIMARY: z.string().optional().default('#0070f3'),
+  NEXT_PUBLIC_STRIPE_COLOR_BACKGROUND: z.string().optional().default('#ffffff'),
+  NEXT_PUBLIC_STRIPE_COLOR_TEXT: z.string().optional().default('#000000'),
+  NEXT_PUBLIC_STRIPE_BORDER_RADIUS: z.string().optional().default('8px'),
 })
 
 /**
