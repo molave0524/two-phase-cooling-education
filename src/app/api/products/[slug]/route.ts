@@ -21,7 +21,7 @@ export async function GET(
   try {
     const { slug } = await params
 
-    const product = await db.query.products.findFirst({
+    const product = await db.query.products?.findFirst({
       where: eq(products.slug, slug),
     })
 
