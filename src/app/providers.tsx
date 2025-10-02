@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode } from 'react'
+import { SessionProvider } from 'next-auth/react'
 import { Toaster } from 'react-hot-toast'
 
 // ============================================================================
@@ -29,7 +30,7 @@ export const useAI = () => useContext(AIContext)
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <>
+    <SessionProvider>
       {children}
       <Toaster
         position='bottom-right'
@@ -57,6 +58,6 @@ export function Providers({ children }: { children: ReactNode }) {
           },
         }}
       />
-    </>
+    </SessionProvider>
   )
 }
