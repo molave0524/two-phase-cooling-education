@@ -283,33 +283,46 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
   const orderNumber = generateOrderNumber()
   const now = new Date()
 
-  // Insert order into database
-  // Type assertion needed due to dual-database union type incompatibility
-  const [dbOrder] = await (db.insert as any)(ordersTable)
-    .values({
-      orderNumber,
-      status: 'pending',
-      paymentStatus: 'pending',
-      customer: JSON.stringify(params.customer),
-      shippingAddress: JSON.stringify(params.shippingAddress),
-      billingAddress: params.billingAddress ? JSON.stringify(params.billingAddress) : null,
-      subtotal: params.totals.subtotal,
-      tax: params.totals.tax,
-      taxRate: params.totals.taxRate,
-      shipping: params.totals.shipping,
-      shippingMethod: params.totals.shippingMethod,
-      discount: params.totals.discount,
-      discountCode: params.totals.discountCode || null,
-      total: params.totals.total,
-      paymentMethod: 'card',
-      stripePaymentIntentId: params.paymentIntentId || null,
-      stripeCustomerId: params.stripeCustomerId || null,
-      notes: params.notes || null,
-      metadata: params.metadata ? JSON.stringify(params.metadata) : null,
-      createdAt: now,
-      updatedAt: now,
+  let dbOrder
+  try {
+    // Insert order into database
+    // Type assertion needed due to dual-database union type incompatibility
+    const result = await (db.insert as any)(ordersTable)
+      .values({
+        orderNumber,
+        status: 'pending',
+        paymentStatus: 'pending',
+        customer: JSON.stringify(params.customer),
+        shippingAddress: JSON.stringify(params.shippingAddress),
+        billingAddress: params.billingAddress ? JSON.stringify(params.billingAddress) : null,
+        subtotal: params.totals.subtotal,
+        tax: params.totals.tax,
+        taxRate: params.totals.taxRate,
+        shipping: params.totals.shipping,
+        shippingMethod: params.totals.shippingMethod,
+        discount: params.totals.discount,
+        discountCode: params.totals.discountCode || null,
+        total: params.totals.total,
+        paymentMethod: 'card',
+        stripePaymentIntentId: params.paymentIntentId || null,
+        stripeCustomerId: params.stripeCustomerId || null,
+        notes: params.notes || null,
+        metadata: params.metadata ? JSON.stringify(params.metadata) : null,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning()
+    dbOrder = result[0]
+  } catch (error: any) {
+    logger.error('Database insert error:', {
+      message: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      stack: error.stack,
     })
-    .returning()
+    throw error
+  }
 
   // Insert order items into database
   const dbOrderItems = await Promise.all(
