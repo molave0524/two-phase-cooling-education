@@ -331,6 +331,7 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
         ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.price ||
           cartItem.product.price
         : cartItem.product.price
+      const totalPrice = unitPrice * cartItem.quantity
 
       // Type assertion needed due to dual-database union type incompatibility
       const [item] = await (db.insert as any)(orderItemsTable)
@@ -339,15 +340,9 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
           productId: cartItem.productId,
           productName: cartItem.product.name,
           productSku: cartItem.product.sku || '', // SKU at time of order
-          productImage: cartItem.product.images[0] || '',
-          variantId: cartItem.selectedVariantId || null,
-          variantName: cartItem.selectedVariantId
-            ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.name ||
-              null
-            : null,
           quantity: cartItem.quantity,
-          price: unitPrice,
-          createdAt: now,
+          unitPrice: unitPrice,
+          totalPrice: totalPrice,
         })
         .returning()
 
