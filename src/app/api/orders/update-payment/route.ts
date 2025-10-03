@@ -108,10 +108,10 @@ export async function GET(request: NextRequest) {
     // Allow access if:
     // 1. Valid access token is provided (for guest checkout)
     // 2. User is authenticated AND their email matches the order's customer email
-    // 3. User is an admin
+    // 3. User is an admin (if you have admin role implemented)
     const hasValidToken = token && verifyOrderToken(orderId, customerData.email, token)
     const isCustomer = session?.user?.email === customerData.email
-    const isAdmin = session?.user?.role === 'admin'
+    const isAdmin = (session?.user as any)?.role === 'admin' // Type assertion for optional role field
 
     if (!hasValidToken && !isCustomer && !isAdmin) {
       logger.warn('Unauthorized order access attempt', {
