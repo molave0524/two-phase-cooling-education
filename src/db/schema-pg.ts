@@ -137,13 +137,51 @@ export const cartItems = pgTable('cart_items', {
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id),
   orderNumber: text('order_number').notNull().unique(),
+  userId: integer('user_id').references(() => users.id),
+  cartId: integer('cart_id'),
   status: text('status').notNull().default('pending'),
-  totalAmount: real('total_amount').notNull(),
-  currency: text('currency').notNull().default('USD'),
-  shippingAddress: jsonb('shipping_address'),
+
+  // Customer information
+  customer: jsonb('customer').notNull(),
+
+  // Shipping and billing
+  shippingAddress: jsonb('shipping_address').notNull(),
   billingAddress: jsonb('billing_address'),
+
+  // Order totals
+  subtotal: real('subtotal').notNull(),
+  tax: real('tax').notNull(),
+  taxRate: real('tax_rate').notNull(),
+  shipping: real('shipping').notNull(),
+  shippingMethod: text('shipping_method').notNull(),
+  discount: real('discount').notNull().default(0),
+  discountCode: text('discount_code'),
+  total: real('total').notNull(),
+
+  // Payment information
+  paymentMethod: text('payment_method').notNull(),
+  paymentStatus: text('payment_status').notNull().default('pending'),
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
+  stripeCustomerId: text('stripe_customer_id'),
+
+  // Shipping tracking
+  trackingNumber: text('tracking_number'),
+  shippingCarrier: text('shipping_carrier'),
+  trackingUrl: text('tracking_url'),
+  estimatedDelivery: timestamp('estimated_delivery'),
+
+  // Additional information
+  notes: text('notes'),
+  internalNotes: text('internal_notes'),
+  metadata: jsonb('metadata'),
+
+  // Timestamps
+  paidAt: timestamp('paid_at'),
+  shippedAt: timestamp('shipped_at'),
+  deliveredAt: timestamp('delivered_at'),
+  cancelledAt: timestamp('cancelled_at'),
+  cancellationReason: text('cancellation_reason'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
@@ -157,12 +195,12 @@ export const orderItems = pgTable('order_items', {
   orderId: integer('order_id')
     .notNull()
     .references(() => orders.id, { onDelete: 'cascade' }),
-  productId: text('product_id')
-    .notNull()
-    .references(() => products.id),
-  quantity: integer('quantity').notNull().default(1),
-  price: real('price').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
+  productId: text('product_id').notNull(),
+  productName: text('product_name').notNull(),
+  productSku: text('product_sku').notNull(),
+  quantity: integer('quantity').notNull(),
+  unitPrice: real('unit_price').notNull(),
+  totalPrice: real('total_price').notNull(),
 })
 
 // ============================================================================
