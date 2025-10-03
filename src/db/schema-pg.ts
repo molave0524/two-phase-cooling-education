@@ -139,7 +139,6 @@ export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   orderNumber: text('order_number').notNull().unique(),
   userId: integer('user_id').references(() => users.id),
-  cartId: integer('cart_id'),
   status: text('status').notNull().default('pending'),
 
   // Customer information
