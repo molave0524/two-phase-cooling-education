@@ -197,9 +197,12 @@ export const orderItems = pgTable('order_items', {
   productId: text('product_id').notNull(),
   productName: text('product_name').notNull(),
   productSku: text('product_sku').notNull(),
+  productImage: text('product_image').notNull(),
+  variantId: text('variant_id'),
+  variantName: text('variant_name'),
   quantity: integer('quantity').notNull(),
-  unitPrice: real('unit_price').notNull(),
-  totalPrice: real('total_price').notNull(),
+  price: real('price').notNull(), // Price per unit
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 
 // ============================================================================
