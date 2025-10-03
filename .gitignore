@@ -112,3 +112,8 @@ drizzle/sqlite/
 # Testing
 coverage/
 .nyc_output
+# Temp migration files
+run-account-migration.js
+fix-billing-address.js
+migrate-orders-schema.js
+*.sql
