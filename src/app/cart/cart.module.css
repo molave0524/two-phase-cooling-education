@@ -597,6 +597,21 @@
   gap: 0.75rem;
 }
 
+/* Make checkout button match product buttons - blue background with white text */
+.checkoutActions :global(.btn-primary) {
+  background: var(--color-primary-600) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  transition: var(--transition-colors) !important;
+  border-radius: var(--radius-lg) !important;
+  text-align: center !important;
+  display: block !important;
+}
+
+.checkoutActions :global(.btn-primary):hover {
+  background: var(--color-primary-700) !important;
+}
+
 .secureNotice {
   text-align: center;
   font-size: 0.75rem;
