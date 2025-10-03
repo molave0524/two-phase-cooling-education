@@ -51,9 +51,12 @@ export default function CheckoutPage() {
     setStep('payment')
   }
 
-  const handlePaymentSuccess = (order: Order) => {
+  const handlePaymentSuccess = (order: Order, accessToken?: string) => {
     clearCart()
-    router.push(`/order-confirmation?id=${order.id}`)
+    // Include access token in URL for secure guest access
+    const redirectUrl = `/order-confirmation?id=${order.id}${accessToken ? `&token=${accessToken}` : ''}`
+    // Use window.location.href for more reliable redirect after payment
+    window.location.href = redirectUrl
   }
 
   const handlePaymentError = (error: string) => {

@@ -14,7 +14,7 @@ interface PaymentFormProps {
   order: Partial<Order>
   customer: OrderCustomer
   shippingAddress: OrderShippingAddress
-  onSuccess: (order: Order) => void
+  onSuccess: (order: Order, accessToken?: string) => void
   onError: (error: string) => void
   isLoading?: boolean
 }
@@ -95,10 +95,19 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         }),
       })
 
-      const { clientSecret, orderId, error } = await response.json()
+      const responseData = await response.json()
 
-      if (error) {
-        throw new Error(error)
+      // Handle error response
+      if (!responseData.success) {
+        const errorMessage = responseData.error?.message || 'Payment failed'
+        throw new Error(errorMessage)
+      }
+
+      // Extract data from success response
+      const { clientSecret, orderId } = responseData.data || {}
+
+      if (!clientSecret) {
+        throw new Error('No client secret received from server')
       }
 
       // Confirm payment with Stripe
@@ -139,14 +148,24 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           }),
         })
 
-        const { order: updatedOrder, error: updateError } = await updateResponse.json()
+        const updateData = await updateResponse.json()
 
-        if (updateError) {
-          throw new Error(updateError)
+        if (!updateData.success) {
+          const errorMessage = updateData.error?.message || 'Failed to update order'
+          throw new Error(errorMessage)
+        }
+
+        const updatedOrder = updateData.data?.order
+        const accessToken = updateData.data?.accessToken
+
+        if (!updatedOrder) {
+          throw new Error('No order returned from update')
         }
 
         toast.success('Payment successful!')
-        onSuccess(updatedOrder)
+
+        // Pass the secure access token to allow guest access to the confirmation page
+        onSuccess(updatedOrder, accessToken)
       }
     } catch (error: unknown) {
       logger.error('Payment error', error, { orderId: order.id })
