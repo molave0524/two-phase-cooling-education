@@ -17,6 +17,12 @@ export const users = sqliteTable('users', {
   image: text('image'), // Profile picture URL
   hashedPassword: text('hashed_password'),
   emailVerified: integer('email_verified', { mode: 'timestamp' }), // NextAuth compatibility
+
+  // Email verification for email changes
+  newEmail: text('new_email'),
+  emailVerificationToken: text('email_verification_token'),
+  emailVerificationExpires: integer('email_verification_expires', { mode: 'timestamp' }),
+
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -226,6 +232,58 @@ export const orderItems = sqliteTable('order_items', {
 })
 
 // ============================================================================
+// ADDRESSES TABLE
+// ============================================================================
+
+export const addresses = sqliteTable('addresses', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+
+  // Address type
+  type: text('type').notNull(), // 'shipping' | 'billing' | 'both'
+  isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+
+  // Address fields
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  company: text('company'),
+  address1: text('address1').notNull(),
+  address2: text('address2'),
+  city: text('city').notNull(),
+  state: text('state').notNull(),
+  postalCode: text('postal_code').notNull(),
+  country: text('country').notNull().default('US'),
+  phone: text('phone'),
+
+  // Timestamps
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+})
+
+// ============================================================================
+// PASSWORD RESET TOKENS TABLE
+// ============================================================================
+
+export const passwordResetTokens = sqliteTable('password_reset_tokens', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  token: text('token').notNull().unique(),
+  expires: integer('expires', { mode: 'timestamp' }).notNull(),
+  used: integer('used', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+})
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -255,3 +313,9 @@ export type NewOrderItem = typeof orderItems.$inferInsert
 
 export type Product = typeof products.$inferSelect
 export type NewProduct = typeof products.$inferInsert
+
+export type Address = typeof addresses.$inferSelect
+export type NewAddress = typeof addresses.$inferInsert
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect
+export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert
