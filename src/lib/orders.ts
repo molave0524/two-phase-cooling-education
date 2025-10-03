@@ -331,7 +331,6 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
         ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.price ||
           cartItem.product.price
         : cartItem.product.price
-      const totalPrice = unitPrice * cartItem.quantity
 
       // Type assertion needed due to dual-database union type incompatibility
       const [item] = await (db.insert as any)(orderItemsTable)
