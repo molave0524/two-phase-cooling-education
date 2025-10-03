@@ -340,9 +340,13 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
           productId: cartItem.productId,
           productName: cartItem.product.name,
           productSku: cartItem.product.sku || '', // SKU at time of order
+          productImage: cartItem.product.images?.[0]?.url || '', // Product image at time of order
+          variantId: cartItem.selectedVariantId || null,
+          variantName: cartItem.selectedVariantId
+            ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.name
+            : null,
           quantity: cartItem.quantity,
-          unitPrice: unitPrice,
-          totalPrice: totalPrice,
+          price: unitPrice, // Price per unit
         })
         .returning()
 
@@ -478,7 +482,7 @@ export async function updatePaymentStatus(
   const orderIdNum = parseInt(orderId, 10)
   if (isNaN(orderIdNum)) return null
 
-  const now = Math.floor(Date.now() / 1000)
+  const now = new Date()
   const updateData: Partial<typeof ordersTable.$inferInsert> = {
     paymentStatus,
     updatedAt: now,

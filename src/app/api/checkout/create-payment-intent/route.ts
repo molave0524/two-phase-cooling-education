@@ -12,6 +12,9 @@ import {
   apiValidationError,
   ERROR_CODES,
 } from '@/lib/api-response'
+import { db } from '@/db'
+import { orders } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 const CreatePaymentIntentSchema = z.object({
   customer: z.object({
@@ -175,8 +178,10 @@ async function handlePOST(request: Request | NextRequest) {
       },
     })
 
-    // Update order with payment intent ID
-    newOrder.paymentIntentId = paymentIntent.id
+    // Update order with payment intent ID in the database
+    await (db.update as any)(orders)
+      .set({ stripePaymentIntentId: paymentIntent.id })
+      .where(eq(orders.id, parseInt(newOrder.id, 10)))
 
     logger.info('Payment intent created', {
       orderNumber: newOrder.orderNumber,
