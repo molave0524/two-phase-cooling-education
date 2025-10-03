@@ -12,6 +12,9 @@ const nextConfig = {
   // Experimental features for performance
   experimental: {
     optimizePackageImports: ['@heroicons/react', 'react-hot-toast'],
+    // Disable worker pool to prevent Jest worker errors
+    workerThreads: false,
+    cpus: 1,
   },
 
   images: {

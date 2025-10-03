@@ -10,14 +10,29 @@ import GitHubProvider from 'next-auth/providers/github'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '@/db'
 import { users, accounts, sessions, verificationTokens } from '@/db/schema'
+import { randomUUID } from 'crypto'
+
+const adapter = DrizzleAdapter(db as any, {
+  usersTable: users as any,
+  accountsTable: accounts as any,
+  sessionsTable: sessions as any,
+  verificationTokensTable: verificationTokens as any,
+}) as any
+
+// Override linkAccount to generate IDs
+const originalLinkAccount = adapter.linkAccount
+adapter.linkAccount = async (account: any) => {
+  return originalLinkAccount({ ...account, id: account.id || randomUUID() })
+}
+
+// Override createSession to generate IDs
+const originalCreateSession = adapter.createSession
+adapter.createSession = async (session: any) => {
+  return originalCreateSession({ ...session, id: session.id || randomUUID() })
+}
 
 export const authOptions: NextAuthOptions = {
-  adapter: DrizzleAdapter(db as any, {
-    usersTable: users as any,
-    accountsTable: accounts as any,
-    sessionsTable: sessions as any,
-    verificationTokensTable: verificationTokens as any,
-  }),
+  adapter,
 
   providers: [
     GoogleProvider({

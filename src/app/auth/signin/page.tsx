@@ -102,9 +102,17 @@ function SignInContent() {
   )
 }
 
+function LoadingFallback() {
+  return (
+    <div className='min-h-screen flex items-center justify-center bg-gray-50'>
+      <div className='text-gray-600'>Loading...</div>
+    </div>
+  )
+}
+
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingFallback />}>
       <SignInContent />
     </Suspense>
   )
