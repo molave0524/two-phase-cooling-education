@@ -191,7 +191,6 @@ async function handlePOST(request: Request | NextRequest) {
   } catch (error) {
     // Log the full error details
     logger.error('Create payment intent error', error)
-    console.error('Full error details:', error)
 
     if (error instanceof z.ZodError) {
       return apiValidationError(error)
