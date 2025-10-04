@@ -6,7 +6,6 @@
 
 import type { Config } from 'drizzle-kit'
 import { config as dotenvConfig } from 'dotenv'
-import { join } from 'path'
 
 // Load environment variables from .env.local
 dotenvConfig({ path: '.env.local' })
