@@ -26,7 +26,11 @@ export async function POST(req: NextRequest) {
   const { email } = validation.data
 
   // Find user
-  const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase())).limit(1)
+  const [user] = await (db as any)
+    .select()
+    .from(users)
+    .where(eq(users.email, email.toLowerCase()))
+    .limit(1)
 
   // Don't reveal if user exists or not
   if (!user) {
@@ -40,7 +44,7 @@ export async function POST(req: NextRequest) {
   const expires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
   // Store reset token
-  await db.insert(passwordResetTokens).values({
+  await (db as any).insert(passwordResetTokens).values({
     userId: user.id,
     token,
     expires,

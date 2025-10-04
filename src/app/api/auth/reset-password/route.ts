@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Find valid reset token
-  const [resetToken] = await db
+  const [resetToken] = await (db as any)
     .select()
     .from(passwordResetTokens)
     .where(
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const hashedPassword = await hashPassword(password)
 
   // Update password
-  await db
+  await (db as any)
     .update(users)
     .set({
       hashedPassword,
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     .where(eq(users.id, resetToken.userId))
 
   // Mark token as used
-  await db
+  await (db as any)
     .update(passwordResetTokens)
     .set({ used: true })
     .where(eq(passwordResetTokens.id, resetToken.id))
