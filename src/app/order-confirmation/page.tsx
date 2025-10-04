@@ -133,6 +133,7 @@ function OrderConfirmationContent() {
       }, 2000) // Show modal 2 seconds after page load
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [orderData, session])
 
   if (error) {
