@@ -35,6 +35,18 @@ adapter.getUserByAccount = async (providerAccountId: any) => {
   }
 }
 
+// Override getUserByEmail to handle errors gracefully
+const originalGetUserByEmail = adapter.getUserByEmail
+adapter.getUserByEmail = async (email: string) => {
+  try {
+    return await originalGetUserByEmail(email)
+  } catch (error) {
+    logger.error('[auth] getUserByEmail error:', error)
+    // Return null if user doesn't exist (first time sign in)
+    return null
+  }
+}
+
 // Override linkAccount to generate IDs
 const originalLinkAccount = adapter.linkAccount
 adapter.linkAccount = async (account: any) => {
