@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/db'
-import { addresses } from '@/db/schema'
+import { addresses } from '@/db/schema-pg'
 import { eq, and, desc } from 'drizzle-orm'
 import { z } from 'zod'
 

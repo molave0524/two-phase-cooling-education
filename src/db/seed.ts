@@ -1,23 +1,20 @@
 /**
  * Database Seed Script
  * Seeds the database with product catalog data
- * Works with both PostgreSQL and SQLite
+ * PostgreSQL only
  */
 
 import { db, products } from './index'
 import { PRODUCTS } from '@/data/products'
 import { logger } from '@/lib/logger'
 
-const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
-
 async function seed() {
   logger.info('Seeding database...')
-  logger.info(`Using database: ${usePostgres ? 'PostgreSQL' : 'SQLite'}`)
+  logger.info('Using database: PostgreSQL')
 
   try {
     // Clear existing products
-    // Type assertion needed due to dual-database union type incompatibility
-    await (db.delete as any)(products)
+    await db.delete(products)
     logger.info('Cleared existing products')
 
     // Insert products from catalog
@@ -32,24 +29,21 @@ async function seed() {
         currency: product.currency,
         description: product.description,
         shortDescription: product.shortDescription,
-        features: usePostgres ? product.features : JSON.stringify(product.features),
+        features: product.features,
         inStock: product.inStock,
         stockQuantity: product.stockQuantity,
         estimatedShipping: product.estimatedShipping || null,
-        specifications: usePostgres
-          ? product.specifications
-          : JSON.stringify(product.specifications),
-        images: usePostgres ? product.images : JSON.stringify(product.images),
-        categories: usePostgres ? product.categories : JSON.stringify(product.categories),
-        tags: usePostgres ? product.tags : JSON.stringify(product.tags),
+        specifications: product.specifications,
+        images: product.images,
+        categories: product.categories,
+        tags: product.tags,
         metaTitle: product.metaTitle || null,
         metaDescription: product.metaDescription || null,
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
       }
 
-      // Type assertion needed due to dual-database union type incompatibility
-      await (db.insert as any)(products).values(productData)
+      await db.insert(products).values(productData)
       logger.info('Inserted product', { name: product.name })
     }
 

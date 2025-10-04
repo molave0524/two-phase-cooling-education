@@ -10,7 +10,7 @@ import GitHubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '@/db'
-import { users, accounts, sessions, verificationTokens } from '@/db/schema'
+import { users, accounts, sessions, verificationTokens } from '@/db/schema-pg'
 import { verifyPassword } from '@/lib/password'
 import { eq } from 'drizzle-orm'
 import { randomUUID } from 'crypto'
@@ -124,14 +124,14 @@ export const authOptions: NextAuthOptions = {
       // Auto-link guest orders when user signs in
       if (user.email) {
         try {
-          const { orders } = await import('@/db/schema')
+          const { orders } = await import('@/db/schema-pg')
           const { sql } = await import('drizzle-orm')
 
           await (db as any)
             .update(orders)
             .set({ userId: parseInt(user.id) })
             .where(
-              sql`${orders.userId} IS NULL AND json_extract(${orders.customer}, '$.email') = ${user.email.toLowerCase()}`
+              sql`${orders.userId} IS NULL AND (${orders.customer}->>'email')::text = ${user.email.toLowerCase()}`
             )
         } catch (error) {
           // Silently fail - order linking can be done manually later

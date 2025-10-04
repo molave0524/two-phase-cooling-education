@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/db'
-import { orders, orderItems } from '@/db/schema'
+import { orders, orderItems } from '@/db/schema-pg'
 import { eq, desc } from 'drizzle-orm'
 
 export async function GET(_req: NextRequest) {

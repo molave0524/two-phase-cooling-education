@@ -206,6 +206,31 @@ export const orderItems = pgTable('order_items', {
 })
 
 // ============================================================================
+// ADDRESSES TABLE
+// ============================================================================
+
+export const addresses = pgTable('addresses', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(), // 'shipping', 'billing', 'both'
+  isDefault: boolean('is_default').notNull().default(false),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  company: text('company'),
+  address1: text('address1').notNull(),
+  address2: text('address2'),
+  city: text('city').notNull(),
+  state: text('state').notNull(),
+  postalCode: text('postal_code').notNull(),
+  country: text('country').notNull().default('US'),
+  phone: text('phone'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -235,3 +260,6 @@ export type NewOrderItem = typeof orderItems.$inferInsert
 
 export type Product = typeof products.$inferSelect
 export type NewProduct = typeof products.$inferInsert
+
+export type Address = typeof addresses.$inferSelect
+export type NewAddress = typeof addresses.$inferInsert

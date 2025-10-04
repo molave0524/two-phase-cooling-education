@@ -1,4 +1,6 @@
 import { NextRequest } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { createPaymentIntent, createCustomer, handleStripeError } from '@/lib/stripe'
 import { createOrder, validateOrderInventory, reserveInventory } from '@/lib/orders'
 import { sanitizeCustomerData, sanitizeAddressData } from '@/lib/sanitize'
@@ -13,8 +15,8 @@ import {
   ERROR_CODES,
 } from '@/lib/api-response'
 import { db } from '@/db'
-import { orders } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { orders, addresses } from '@/db/schema-pg'
+import { eq, and } from 'drizzle-orm'
 
 const CreatePaymentIntentSchema = z.object({
   customer: z.object({
@@ -56,6 +58,9 @@ const CreatePaymentIntentSchema = z.object({
 
 async function handlePOST(request: Request | NextRequest) {
   try {
+    // Check if user is logged in
+    const session = await getServerSession(authOptions)
+
     const body = await request.json()
     const validatedData = CreatePaymentIntentSchema.parse(body)
 
@@ -128,6 +133,7 @@ async function handlePOST(request: Request | NextRequest) {
 
     // Create order record
     const newOrder = await createOrder({
+      userId: session?.user?.id ? parseInt(session.user.id) : undefined,
       customer: {
         ...customer,
         phone: customer.phone || '',
@@ -153,6 +159,50 @@ async function handlePOST(request: Request | NextRequest) {
 
     // Reserve inventory
     await reserveInventory(newOrder.items)
+
+    // Save shipping address to user's addresses if logged in
+    if (session?.user?.id) {
+      try {
+        // Check if this exact address already exists
+        const existingAddresses = await db
+          .select()
+          .from(addresses)
+          .where(
+            and(
+              eq(addresses.userId, parseInt(session.user.id)),
+              eq(addresses.address1, shippingAddress.addressLine1),
+              eq(addresses.city, shippingAddress.city),
+              eq(addresses.state, shippingAddress.state),
+              eq(addresses.postalCode, shippingAddress.zipCode)
+            )
+          )
+
+        // Only save if address doesn't already exist
+        if (existingAddresses.length === 0) {
+          await db.insert(addresses).values({
+            userId: parseInt(session.user.id),
+            type: 'shipping',
+            isDefault: false,
+            firstName: shippingAddress.firstName,
+            lastName: shippingAddress.lastName,
+            company: shippingAddress.company || null,
+            address1: shippingAddress.addressLine1,
+            address2: shippingAddress.addressLine2 || null,
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            postalCode: shippingAddress.zipCode,
+            country: shippingAddress.country,
+            phone: shippingAddress.phone || null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          logger.info('Saved shipping address for user', { userId: session.user.id })
+        }
+      } catch (error) {
+        // Log error but don't fail the checkout if address save fails
+        logger.warn('Failed to save address for user', { userId: session.user.id, error })
+      }
+    }
 
     // Create Stripe payment intent
     const paymentIntent = await createPaymentIntent({

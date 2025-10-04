@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { users, orders } from '@/db/schema'
+import { users, orders } from '@/db/schema-pg'
 import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { hashPassword, validatePassword } from '@/lib/password'
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     .update(orders)
     .set({ userId: newUser.id })
     .where(
-      sql`${orders.userId} IS NULL AND json_extract(${orders.customer}, '$.email') = ${email.toLowerCase()}`
+      sql`${orders.userId} IS NULL AND (${orders.customer}->>'email')::text = ${email.toLowerCase()}`
     )
     .returning()
 

@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/db'
-import { addresses } from '@/db/schema'
+import { addresses } from '@/db/schema-pg'
 import { eq, and } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -17,14 +17,14 @@ const addressUpdateSchema = z.object({
   isDefault: z.boolean().optional(),
   firstName: z.string().min(1).max(50).optional(),
   lastName: z.string().min(1).max(50).optional(),
-  company: z.string().max(100).optional(),
+  company: z.string().max(100).optional().nullable(),
   address1: z.string().min(1).max(200).optional(),
-  address2: z.string().max(200).optional(),
+  address2: z.string().max(200).optional().nullable(),
   city: z.string().min(1).max(100).optional(),
-  state: z.string().min(2).max(50).optional(),
+  state: z.string().min(1).max(50).optional(),
   postalCode: z.string().min(1).max(20).optional(),
-  country: z.string().min(2).max(2).optional(),
-  phone: z.string().max(20).optional(),
+  country: z.string().min(2).max(50).optional(),
+  phone: z.string().max(20).optional().nullable(),
 })
 
 // PATCH - Update address

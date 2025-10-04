@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { users } from '@/db/schema'
+import { users } from '@/db/schema-pg'
 import { eq, and, gt } from 'drizzle-orm'
 import { z } from 'zod'
 

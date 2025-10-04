@@ -4,7 +4,7 @@
  */
 
 import { db, products } from '@/db'
-import type { Product } from '@/db/schema'
+import type { Product } from '@/db/schema-pg'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiInternalError } from '@/lib/api-response'
 

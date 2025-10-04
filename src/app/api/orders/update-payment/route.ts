@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
         orderEmail: customerData.email,
         hasToken: !!token,
       })
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'You do not have permission to view this order', {
+      return apiError(ERROR_CODES.UNAUTHORIZED, 'Please log in to view order in My Account.', {
         status: 403,
       })
     }

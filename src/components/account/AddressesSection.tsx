@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import styles from './AddressesSection.module.css'
 
 interface Address {
   id: number
@@ -101,209 +102,251 @@ export default function AddressesSection() {
     setFormData({ type: 'shipping', isDefault: false, country: 'US' })
   }
 
-  if (isLoading) return <div>Loading addresses...</div>
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-medium text-gray-900">Saved Addresses</h2>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          <PlusIcon className="h-5 w-5" />
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.heading}>
+          <span className={styles.icon}>📍</span> Saved Addresses
+        </h2>
+        <button onClick={() => setShowForm(!showForm)} className={styles.addButton}>
+          <PlusIcon className={styles.addButtonIcon} />
           Add Address
         </button>
       </div>
 
       {/* Address Form */}
       {showForm && (
-        <form onSubmit={onSubmit} className="border rounded-lg p-6 space-y-4 bg-gray-50">
-          <h3 className="font-medium text-gray-900">{editingId ? 'Edit' : 'Add'} Address</h3>
+        <form onSubmit={onSubmit} className={styles.formCard}>
+          <h3 className={styles.formHeading}>
+            <span className={styles.icon}>{editingId ? '✏️' : '➕'}</span>
+            {editingId ? 'Edit' : 'Add'} Address
+          </h3>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">First Name</label>
+          <div className={styles.form}>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor='firstName' className={styles.label}>
+                  First Name
+                </label>
+                <input
+                  id='firstName'
+                  type='text'
+                  value={formData.firstName || ''}
+                  onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                  className={styles.input}
+                  placeholder='John'
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor='lastName' className={styles.label}>
+                  Last Name
+                </label>
+                <input
+                  id='lastName'
+                  type='text'
+                  value={formData.lastName || ''}
+                  onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                  className={styles.input}
+                  placeholder='Doe'
+                  required
+                />
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor='company' className={styles.label}>
+                Company (Optional)
+              </label>
               <input
-                type="text"
-                value={formData.firstName || ''}
-                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                id='company'
+                type='text'
+                value={formData.company || ''}
+                onChange={e => setFormData({ ...formData, company: e.target.value })}
+                className={styles.input}
+                placeholder='Company Name'
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor='address1' className={styles.label}>
+                Address Line 1
+              </label>
+              <input
+                id='address1'
+                type='text'
+                value={formData.address1 || ''}
+                onChange={e => setFormData({ ...formData, address1: e.target.value })}
+                className={styles.input}
+                placeholder='123 Main Street'
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Last Name</label>
+
+            <div className={styles.formGroup}>
+              <label htmlFor='address2' className={styles.label}>
+                Address Line 2 (Optional)
+              </label>
               <input
-                type="text"
-                value={formData.lastName || ''}
-                onChange={e => setFormData({ ...formData, lastName: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
+                id='address2'
+                type='text'
+                value={formData.address2 || ''}
+                onChange={e => setFormData({ ...formData, address2: e.target.value })}
+                className={styles.input}
+                placeholder='Apt, Suite, Unit, etc.'
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Company (Optional)</label>
-            <input
-              type="text"
-              value={formData.company || ''}
-              onChange={e => setFormData({ ...formData, company: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address Line 1</label>
-            <input
-              type="text"
-              value={formData.address1 || ''}
-              onChange={e => setFormData({ ...formData, address1: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address Line 2 (Optional)</label>
-            <input
-              type="text"
-              value={formData.address2 || ''}
-              onChange={e => setFormData({ ...formData, address2: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">City</label>
-              <input
-                type="text"
-                value={formData.city || ''}
-                onChange={e => setFormData({ ...formData, city: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
+            <div className={styles.formRow3}>
+              <div className={styles.formGroup}>
+                <label htmlFor='city' className={styles.label}>
+                  City
+                </label>
+                <input
+                  id='city'
+                  type='text'
+                  value={formData.city || ''}
+                  onChange={e => setFormData({ ...formData, city: e.target.value })}
+                  className={styles.input}
+                  placeholder='New York'
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor='state' className={styles.label}>
+                  State
+                </label>
+                <input
+                  id='state'
+                  type='text'
+                  value={formData.state || ''}
+                  onChange={e => setFormData({ ...formData, state: e.target.value })}
+                  className={styles.input}
+                  placeholder='NY'
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor='postalCode' className={styles.label}>
+                  Postal Code
+                </label>
+                <input
+                  id='postalCode'
+                  type='text'
+                  value={formData.postalCode || ''}
+                  onChange={e => setFormData({ ...formData, postalCode: e.target.value })}
+                  className={styles.input}
+                  placeholder='10001'
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">State</label>
-              <input
-                type="text"
-                value={formData.state || ''}
-                onChange={e => setFormData({ ...formData, state: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Postal Code</label>
-              <input
-                type="text"
-                value={formData.postalCode || ''}
-                onChange={e => setFormData({ ...formData, postalCode: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Phone (Optional)</label>
-              <input
-                type="tel"
-                value={formData.phone || ''}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor='phone' className={styles.label}>
+                  Phone (Optional)
+                </label>
+                <input
+                  id='phone'
+                  type='tel'
+                  value={formData.phone || ''}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                  className={styles.input}
+                  placeholder='(555) 123-4567'
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor='type' className={styles.label}>
+                  Address Type
+                </label>
+                <select
+                  id='type'
+                  value={formData.type || 'shipping'}
+                  onChange={e => setFormData({ ...formData, type: e.target.value as any })}
+                  className={styles.select}
+                  required
+                >
+                  <option value='shipping'>Shipping</option>
+                  <option value='billing'>Billing</option>
+                  <option value='both'>Both</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Address Type</label>
-              <select
-                value={formData.type || 'shipping'}
-                onChange={e => setFormData({ ...formData, type: e.target.value as any })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              >
-                <option value="shipping">Shipping</option>
-                <option value="billing">Billing</option>
-                <option value="both">Both</option>
-              </select>
+
+            <div className={styles.checkboxContainer}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type='checkbox'
+                  checked={formData.isDefault || false}
+                  onChange={e => setFormData({ ...formData, isDefault: e.target.checked })}
+                  className={styles.checkbox}
+                />
+                <span className={styles.checkboxText}>Set as default address</span>
+              </label>
             </div>
-          </div>
 
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.isDefault || false}
-                onChange={e => setFormData({ ...formData, isDefault: e.target.checked })}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm text-gray-700">Set as default address</span>
-            </label>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              {editingId ? 'Update' : 'Save'} Address
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-            >
-              Cancel
-            </button>
+            <div className={styles.formActions}>
+              <button type='submit' className={styles.submitButton}>
+                {editingId ? 'Update' : 'Save'} Address
+              </button>
+              <button type='button' onClick={resetForm} className={styles.cancelButton}>
+                Cancel
+              </button>
+            </div>
           </div>
         </form>
       )}
 
       {/* Address List */}
       {addresses.length === 0 ? (
-        <p className="text-center text-gray-500 py-8">No addresses saved yet</p>
+        <div className={styles.emptyState}>
+          <span className={styles.emptyStateIcon}>📭</span>
+          <p className={styles.emptyStateText}>No addresses saved yet</p>
+          <p className={styles.emptyStateSubtext}>Click &quot;Add Address&quot; to get started</p>
+        </div>
       ) : (
-        <div className="grid gap-4">
+        <div className={styles.addressList}>
           {addresses.map(address => (
-            <div key={address.id} className="border rounded-lg p-4 flex justify-between items-start">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-medium">
+            <div key={address.id} className={styles.addressCard}>
+              <div className={styles.addressContent}>
+                <div className={styles.addressHeader}>
+                  <span className={styles.addressName}>
                     {address.firstName} {address.lastName}
                   </span>
-                  {address.isDefault && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">Default</span>
-                  )}
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded capitalize">
-                    {address.type}
-                  </span>
+                  {address.isDefault && <span className={styles.defaultBadge}>Default</span>}
+                  <span className={styles.typeBadge}>{address.type}</span>
                 </div>
-                {address.company && <p className="text-sm text-gray-600">{address.company}</p>}
-                <p className="text-sm text-gray-600">{address.address1}</p>
-                {address.address2 && <p className="text-sm text-gray-600">{address.address2}</p>}
-                <p className="text-sm text-gray-600">
+                {address.company && <p className={styles.addressCompany}>{address.company}</p>}
+                <p className={styles.addressLine}>{address.address1}</p>
+                {address.address2 && <p className={styles.addressLine}>{address.address2}</p>}
+                <p className={styles.addressLine}>
                   {address.city}, {address.state} {address.postalCode}
                 </p>
-                {address.phone && <p className="text-sm text-gray-600">{address.phone}</p>}
+                {address.phone && <p className={styles.addressPhone}>{address.phone}</p>}
               </div>
-              <div className="flex gap-2">
+              <div className={styles.addressActions}>
                 <button
                   onClick={() => editAddress(address)}
-                  className="p-2 text-gray-600 hover:text-blue-600"
-                  title="Edit"
+                  className={styles.iconButton}
+                  title='Edit'
                 >
-                  <PencilIcon className="h-5 w-5" />
+                  <PencilIcon className={styles.actionIcon} />
                 </button>
                 <button
                   onClick={() => deleteAddress(address.id)}
-                  className="p-2 text-gray-600 hover:text-red-600"
-                  title="Delete"
+                  className={`${styles.iconButton} ${styles.delete}`}
+                  title='Delete'
                 >
-                  <TrashIcon className="h-5 w-5" />
+                  <TrashIcon className={styles.actionIcon} />
                 </button>
               </div>
             </div>

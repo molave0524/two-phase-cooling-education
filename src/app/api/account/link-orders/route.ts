@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/db'
-import { orders } from '@/db/schema'
+import { orders } from '@/db/schema-pg'
 import { sql } from 'drizzle-orm'
 
 export async function POST(_req: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(_req: NextRequest) {
     .update(orders)
     .set({ userId: parseInt(session.user.id) })
     .where(
-      sql`${orders.userId} IS NULL AND json_extract(${orders.customer}, '$.email') = ${session.user.email.toLowerCase()}`
+      sql`${orders.userId} IS NULL AND (${orders.customer}->>'email')::text = ${session.user.email.toLowerCase()}`
     )
     .returning()
 

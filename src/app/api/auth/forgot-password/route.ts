@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { users, passwordResetTokens } from '@/db/schema'
+import { users, passwordResetTokens } from '@/db/schema-pg'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { generateResetToken } from '@/lib/password'

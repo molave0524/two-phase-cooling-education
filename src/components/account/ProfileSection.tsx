@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
+import styles from './ProfileSection.module.css'
 
 export default function ProfileSection() {
   const { data: session, update } = useSession()
@@ -66,80 +67,137 @@ export default function ProfileSection() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className={styles.container}>
       {/* Profile Info */}
-      <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h2>
-        <form onSubmit={onUpdateProfile} className="space-y-4 max-w-md">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Name
+      <div className={styles.card}>
+        <h2 className={styles.heading}>
+          <span className={styles.icon}>👤</span> Profile Information
+        </h2>
+        <form onSubmit={onUpdateProfile} className={styles.form}>
+          {session?.user?.image && (
+            <div className={styles.profileImagePreview}>
+              <img src={session.user.image} alt='Profile' className={styles.profileImage} />
+              <div className={styles.imageInfo}>
+                <p>Current Profile Picture</p>
+                <p>Update the URL below to change</p>
+              </div>
+            </div>
+          )}
+
+          <div className={styles.formGroup}>
+            <label htmlFor='name' className={styles.label}>
+              Full Name
             </label>
             <input
-              id="name"
-              type="text"
+              id='name'
+              type='text'
               value={name}
               onChange={e => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className={styles.input}
+              placeholder='Enter your name'
               required
             />
           </div>
 
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+          <div className={styles.formGroup}>
+            <label htmlFor='image' className={styles.label}>
               Profile Image URL
             </label>
             <input
-              id="image"
-              type="url"
+              id='image'
+              type='url'
               value={image}
               onChange={e => setImage(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className={styles.input}
+              placeholder='https://example.com/avatar.jpg'
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isUpdating}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUpdating ? 'Updating...' : 'Update Profile'}
+          <button type='submit' disabled={isUpdating} className={styles.button}>
+            {isUpdating ? (
+              <span className={styles.buttonContent}>
+                <svg className={styles.spinner} viewBox='0 0 24 24'>
+                  <circle
+                    style={{ opacity: 0.25 }}
+                    cx='12'
+                    cy='12'
+                    r='10'
+                    stroke='currentColor'
+                    strokeWidth='4'
+                    fill='none'
+                  />
+                  <path
+                    style={{ opacity: 0.75 }}
+                    fill='currentColor'
+                    d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                  />
+                </svg>
+                Updating...
+              </span>
+            ) : (
+              'Update Profile'
+            )}
           </button>
         </form>
       </div>
 
       {/* Email */}
-      <div className="border-t pt-8">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Email Address</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Current email: <strong>{session?.user?.email}</strong>
-        </p>
+      <div className={`${styles.card} ${styles.emailCard}`}>
+        <h2 className={styles.heading}>
+          <span className={styles.icon}>✉️</span> Email Address
+        </h2>
+        <div className={styles.currentEmailBox}>
+          <p>
+            Current email: <strong>{session?.user?.email}</strong>
+          </p>
+        </div>
 
-        <form onSubmit={onUpdateEmail} className="space-y-4 max-w-md">
-          <div>
-            <label htmlFor="newEmail" className="block text-sm font-medium text-gray-700">
+        <form onSubmit={onUpdateEmail} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label htmlFor='newEmail' className={styles.label}>
               New Email Address
             </label>
             <input
-              id="newEmail"
-              type="email"
+              id='newEmail'
+              type='email'
               value={newEmail}
               onChange={e => setNewEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Enter new email"
+              className={styles.input}
+              placeholder='your.new.email@example.com'
               required
             />
-            <p className="mt-1 text-xs text-gray-500">
-              A verification email will be sent to the new address
+            <p className={styles.infoText}>
+              <span className={styles.infoIcon}>ℹ️</span>
+              <span>
+                A verification email will be sent to the new address before the change takes effect
+              </span>
             </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={isUpdatingEmail}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUpdatingEmail ? 'Sending...' : 'Update Email'}
+          <button type='submit' disabled={isUpdatingEmail} className={styles.button}>
+            {isUpdatingEmail ? (
+              <span className={styles.buttonContent}>
+                <svg className={styles.spinner} viewBox='0 0 24 24'>
+                  <circle
+                    style={{ opacity: 0.25 }}
+                    cx='12'
+                    cy='12'
+                    r='10'
+                    stroke='currentColor'
+                    strokeWidth='4'
+                    fill='none'
+                  />
+                  <path
+                    style={{ opacity: 0.75 }}
+                    fill='currentColor'
+                    d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                  />
+                </svg>
+                Sending...
+              </span>
+            ) : (
+              'Update Email'
+            )}
           </button>
         </form>
       </div>

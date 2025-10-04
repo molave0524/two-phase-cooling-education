@@ -21,7 +21,13 @@
       "Bash(npx drizzle-kit generate:*)",
       "Bash(git reset:*)",
       "Bash(test:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker pull:*)",
+      "Bash(tsx scripts/migrate-sqlite-to-postgres.ts:*)",
+      "Bash(npx tsx:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

@@ -13,7 +13,7 @@ import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-r
 import { CartAction, AIContext } from '@/types/ai'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { db, products } from '@/db'
-import type { Product } from '@/db/schema'
+import type { Product } from '@/db/schema-pg'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'

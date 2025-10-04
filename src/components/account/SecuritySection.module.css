@@ -1,0 +1,137 @@
+/* SecuritySection CSS Module */
+
+.container {
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, #ffffff 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  border: 1px solid var(--color-primary-100);
+}
+
+.heading {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-900);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon {
+  color: var(--color-primary-600);
+}
+
+.infoText {
+  font-size: var(--text-sm);
+  color: var(--color-secondary-600);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.infoIcon {
+  color: var(--color-primary-600);
+  margin-top: 0.125rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 48rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-700);
+  margin-bottom: var(--space-2);
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-secondary-200);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-colors);
+  font-size: var(--text-base);
+  background-color: white;
+  color: var(--color-secondary-900);
+}
+
+.input::placeholder {
+  color: var(--color-secondary-400);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.passwordHint {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-secondary-600);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.hintIcon {
+  color: var(--color-primary-600);
+  margin-top: 0.125rem;
+}
+
+.button {
+  padding: var(--space-3) var(--space-6);
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+  color: white;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  border: none;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-all);
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-primary-800));
+  box-shadow: var(--shadow-xl);
+  transform: scale(1.05);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

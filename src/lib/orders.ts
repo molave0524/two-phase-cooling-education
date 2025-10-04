@@ -291,6 +291,7 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
     const result = await (db.insert as any)(ordersTable)
       .values({
         orderNumber,
+        userId: params.userId || null,
         status: 'pending',
         paymentStatus: 'pending',
         customer: JSON.stringify(params.customer),
