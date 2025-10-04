@@ -20,6 +20,8 @@ logger.info('Using PostgreSQL database')
 // Disable prefetch for serverless compatibility
 const client = postgres(connectionString, {
   prepare: false, // Disable prepared statements for serverless
+  onnotice: () => {}, // Suppress notices
+  debug: process.env.NODE_ENV === 'development', // Enable debug in development
 })
 
 // Create drizzle instance with schema
