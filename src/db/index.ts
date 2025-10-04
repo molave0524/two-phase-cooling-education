@@ -1,44 +1,31 @@
 /**
  * Database Connection - Drizzle ORM
  * Using PostgreSQL for both local development (Docker) and production
- * Fixed: Added missing accounts and verification_tokens tables to Neon
+ * Using postgres-js everywhere for consistency
  */
 
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import { logger } from '@/lib/logger'
 import * as schema from './schema-pg'
 
-// Use Vercel Postgres in production/Vercel environment, postgres-js locally
-const isVercel = process.env.VERCEL === '1'
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
 
-let db: any
+logger.info(`Connecting to PostgreSQL database...`)
 
-if (isVercel) {
-  // Use Vercel Postgres for serverless
-  const { drizzle } = require('drizzle-orm/vercel-postgres')
-  const { sql } = require('@vercel/postgres')
+// Configure postgres-js client
+const client = postgres(connectionString, {
+  prepare: false,
+  max: 1, // Serverless-friendly: use single connection
+  idle_timeout: 20,
+  connect_timeout: 10,
+  onnotice: () => {}, // Silence notices
+})
 
-  logger.info('Using Vercel Postgres (serverless)')
-  db = drizzle(sql, { schema })
-} else {
-  // Use postgres-js for local development
-  const { drizzle } = require('drizzle-orm/postgres-js')
-  const postgres = require('postgres')
-
-  const connectionString =
-    process.env.DATABASE_URL ||
-    process.env.POSTGRES_URL ||
-    'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
-
-  logger.info('Using postgres-js (local)')
-
-  const client = postgres(connectionString, {
-    prepare: false,
-    onnotice: () => {},
-    debug: process.env.NODE_ENV === 'development',
-  })
-
-  db = drizzle(client, { schema })
-}
+const db = drizzle(client, { schema })
 
 export { db }
 
