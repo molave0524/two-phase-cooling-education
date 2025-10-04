@@ -14,6 +14,7 @@ import { users, accounts, sessions, verificationTokens } from '@/db/schema-pg'
 import { verifyPassword } from '@/lib/password'
 import { eq } from 'drizzle-orm'
 import { randomUUID } from 'crypto'
+import { logger } from '@/lib/logger'
 
 const adapter = DrizzleAdapter(db as any, {
   usersTable: users as any,
@@ -21,6 +22,18 @@ const adapter = DrizzleAdapter(db as any, {
   sessionsTable: sessions as any,
   verificationTokensTable: verificationTokens as any,
 }) as any
+
+// Override getUserByAccount to handle errors gracefully
+const originalGetUserByAccount = adapter.getUserByAccount
+adapter.getUserByAccount = async (providerAccountId: any) => {
+  try {
+    return await originalGetUserByAccount(providerAccountId)
+  } catch (error) {
+    logger.error('[auth] getUserByAccount error:', error)
+    // Return null if account doesn't exist (first time sign in)
+    return null
+  }
+}
 
 // Override linkAccount to generate IDs
 const originalLinkAccount = adapter.linkAccount
