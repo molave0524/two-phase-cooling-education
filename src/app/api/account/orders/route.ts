@@ -26,7 +26,7 @@ export async function GET(_req: NextRequest) {
 
   // Fetch items for each order
   const ordersWithItems = await Promise.all(
-    userOrders.map(async order => {
+    userOrders.map(async (order: any) => {
       const items = await (db as any)
         .select()
         .from(orderItems)
