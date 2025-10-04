@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { users, passwordResetTokens } from '@/db/schema-pg'
+import { users } from '@/db/schema-pg'
 import { eq, and, gt } from 'drizzle-orm'
 import { z } from 'zod'
 import { hashPassword, validatePassword } from '@/lib/password'
@@ -34,40 +34,30 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Find valid reset token
-  const [resetToken] = await (db as any)
+  // Find user with valid reset token
+  const [user] = await (db as any)
     .select()
-    .from(passwordResetTokens)
-    .where(
-      and(
-        eq(passwordResetTokens.token, token),
-        eq(passwordResetTokens.used, false),
-        gt(passwordResetTokens.expires, new Date())
-      )
-    )
+    .from(users)
+    .where(and(eq(users.resetPasswordToken, token), gt(users.resetPasswordExpires!, new Date())))
     .limit(1)
 
-  if (!resetToken) {
+  if (!user) {
     return NextResponse.json({ error: 'Invalid or expired token' }, { status: 400 })
   }
 
   // Hash new password
   const hashedPassword = await hashPassword(password)
 
-  // Update password
+  // Update password and clear reset token
   await (db as any)
     .update(users)
     .set({
       hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, resetToken.userId))
-
-  // Mark token as used
-  await (db as any)
-    .update(passwordResetTokens)
-    .set({ used: true })
-    .where(eq(passwordResetTokens.id, resetToken.id))
+    .where(eq(users.id, user.id))
 
   return NextResponse.json({
     message: 'Password reset successfully',

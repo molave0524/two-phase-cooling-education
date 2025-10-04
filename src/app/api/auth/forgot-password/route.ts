@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { users, passwordResetTokens } from '@/db/schema-pg'
+import { users } from '@/db/schema-pg'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { generateResetToken } from '@/lib/password'
@@ -43,14 +43,14 @@ export async function POST(req: NextRequest) {
   const token = generateResetToken()
   const expires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
-  // Store reset token
-  await (db as any).insert(passwordResetTokens).values({
-    userId: user.id,
-    token,
-    expires,
-    used: false,
-    createdAt: new Date(),
-  })
+  // Store reset token in users table
+  await (db as any)
+    .update(users)
+    .set({
+      resetPasswordToken: token,
+      resetPasswordExpires: expires,
+    })
+    .where(eq(users.id, user.id))
 
   // Send email
   await sendPasswordResetEmail(user.email, token, user.name || 'User')
