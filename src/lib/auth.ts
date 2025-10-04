@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Find user by email
-        const [user] = await db
+        const [user] = await (db as any)
           .select()
           .from(users)
           .where(eq(users.email, credentials.email.toLowerCase()))
