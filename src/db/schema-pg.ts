@@ -25,6 +25,10 @@ export const users = pgTable('users', {
   image: text('image'), // Profile picture URL
   hashedPassword: text('hashed_password'),
   emailVerified: timestamp('email_verified'), // NextAuth compatibility
+  emailVerificationToken: text('email_verification_token'),
+  emailVerificationExpires: timestamp('email_verification_expires'),
+  resetPasswordToken: text('reset_password_token'),
+  resetPasswordExpires: timestamp('reset_password_expires'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
