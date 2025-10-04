@@ -1,9 +1,11 @@
 /**
- * Next.js Middleware - CSRF Protection
+ * Next.js Middleware - CSRF Protection & Route Protection
  * Validates CSRF tokens for state-changing requests
+ * Protects authenticated routes
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 import { logger } from '@/lib/logger'
 
 // Routes that require CSRF protection (state-changing operations)
@@ -18,6 +20,12 @@ const PROTECTED_API_ROUTES = [
 const CSRF_EXEMPT_ROUTES = [
   '/api/webhooks', // Stripe and other webhooks use their own signature verification
 ]
+
+// Routes that require authentication
+const PROTECTED_ROUTES = ['/account']
+
+// Auth routes that should redirect to home if already authenticated
+const AUTH_ROUTES = ['/auth/signin', '/auth/signup']
 
 // Generate a random CSRF token
 function generateToken(): string {
@@ -34,6 +42,23 @@ function verifyToken(token: string | null, cookieToken: string | null): boolean 
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Get authentication token
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+
+  // Check if user is trying to access a protected route
+  const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route))
+  if (isProtectedRoute && !token) {
+    const signInUrl = new URL('/auth/signin', request.url)
+    signInUrl.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(signInUrl)
+  }
+
+  // Check if authenticated user is trying to access auth routes
+  const isAuthRoute = AUTH_ROUTES.some(route => pathname.startsWith(route))
+  if (isAuthRoute && token) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
 
   // Skip CSRF for exempt routes (webhooks with their own verification)
   const isExemptRoute = CSRF_EXEMPT_ROUTES.some(route => pathname.startsWith(route))
@@ -62,9 +87,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check if this is a protected API route
-  const isProtectedRoute = PROTECTED_API_ROUTES.some(route => pathname.startsWith(route))
+  const isProtectedApiRoute = PROTECTED_API_ROUTES.some(route => pathname.startsWith(route))
 
-  if (isProtectedRoute) {
+  if (isProtectedApiRoute) {
     // Get CSRF token from header
     const csrfTokenFromHeader = request.headers.get('x-csrf-token')
 

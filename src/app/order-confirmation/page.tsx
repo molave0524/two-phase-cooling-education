@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import {
   CheckCircleIcon,
   TruckIcon,
@@ -12,6 +13,7 @@ import {
   ShareIcon,
 } from '@heroicons/react/24/outline'
 import styles from './order-confirmation.module.css'
+import GuestConversionModal from '@/components/checkout/GuestConversionModal'
 
 interface OrderItem {
   id: string
@@ -47,10 +49,12 @@ interface OrderData {
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
+  const { data: session } = useSession()
   const orderId = searchParams.get('id')
   const token = searchParams.get('token')
   const [orderData, setOrderData] = useState<OrderData | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showConversionModal, setShowConversionModal] = useState(false)
 
   useEffect(() => {
     async function fetchOrder() {
@@ -120,6 +124,16 @@ function OrderConfirmationContent() {
 
     fetchOrder()
   }, [orderId, token])
+
+  // Show conversion modal for guest users after a brief delay
+  useEffect(() => {
+    if (orderData && !session && orderData.email) {
+      const timer = setTimeout(() => {
+        setShowConversionModal(true)
+      }, 2000) // Show modal 2 seconds after page load
+      return () => clearTimeout(timer)
+    }
+  }, [orderData, session])
 
   if (error) {
     return (
@@ -374,6 +388,15 @@ function OrderConfirmationContent() {
           </Link>
         </div>
       </div>
+
+      {/* Guest Conversion Modal */}
+      {!session && orderData && (
+        <GuestConversionModal
+          isOpen={showConversionModal}
+          onClose={() => setShowConversionModal(false)}
+          email={orderData.email}
+        />
+      )}
     </div>
   )
 }

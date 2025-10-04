@@ -135,6 +135,21 @@ export function generateOrderConfirmationEmail(data: OrderConfirmationData): str
             <a href="${EMAIL_CONFIG.baseUrl}/orders/${order.id}" class="button">View Order Details</a>
         </div>
 
+        ${
+          !order.userId
+            ? `
+        <div style="background: #eff6ff; border: 1px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+            <h3 style="margin-top: 0; color: #1e40af;">Create an Account to Track Your Order</h3>
+            <p>Track your shipment, view order history, and manage your information by creating an account.</p>
+            <a href="${EMAIL_CONFIG.baseUrl}/auth/signup?email=${encodeURIComponent(order.customer.email)}" class="button">Create Account</a>
+            <p style="font-size: 14px; color: #6b7280; margin-bottom: 0;">
+                Already have an account? <a href="${EMAIL_CONFIG.baseUrl}/auth/signin?callbackUrl=${encodeURIComponent(`/orders/${order.id}`)}">Sign in</a>
+            </p>
+        </div>
+        `
+            : ''
+        }
+
         <h3>What's Next?</h3>
         <ul>
             <li>We'll send you shipping confirmation with tracking information</li>
