@@ -51,7 +51,7 @@ export default function OrdersSection() {
   }
 
   const getStatusClass = (status: string) => {
-    const statusMap: Record<string, string> = {
+    const statusMap: Record<string, string | undefined> = {
       pending: styles.statusPending,
       processing: styles.statusProcessing,
       shipped: styles.statusShipped,
