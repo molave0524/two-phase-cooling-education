@@ -10,7 +10,7 @@ import { db } from '@/db'
 import { orders } from '@/db/schema'
 import { sql } from 'drizzle-orm'
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.id || !session?.user?.email) {

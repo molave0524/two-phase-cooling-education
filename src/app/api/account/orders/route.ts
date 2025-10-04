@@ -10,7 +10,7 @@ import { db } from '@/db'
 import { orders, orderItems } from '@/db/schema'
 import { eq, desc } from 'drizzle-orm'
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.id) {
