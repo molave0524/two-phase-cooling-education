@@ -29,7 +29,7 @@ export async function POST(_req: NextRequest) {
   return NextResponse.json({
     message: `Linked ${linkedOrders.length} order(s) to your account`,
     count: linkedOrders.length,
-    orders: linkedOrders.map(order => ({
+    orders: linkedOrders.map((order: any) => ({
       id: order.id,
       orderNumber: order.orderNumber,
       total: order.total,
