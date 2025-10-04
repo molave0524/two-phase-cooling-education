@@ -50,13 +50,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   // If setting as default, unset other defaults of the same type
   if (data.isDefault && data.type) {
-    await db
+    await (db as any)
       .update(addresses)
       .set({ isDefault: false })
       .where(and(eq(addresses.userId, parseInt(session.user.id)), eq(addresses.type, data.type)))
   }
 
-  const [updatedAddress] = await db
+  const [updatedAddress] = await (db as any)
     .update(addresses)
     .set({
       ...data,
@@ -82,7 +82,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   const addressId = parseInt(params.id)
 
-  const [deleted] = await db
+  const [deleted] = await (db as any)
     .delete(addresses)
     .where(and(eq(addresses.id, addressId), eq(addresses.userId, parseInt(session.user.id))))
     .returning()
