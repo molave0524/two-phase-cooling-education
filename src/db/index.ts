@@ -1,11 +1,9 @@
 /**
  * Database Connection - Drizzle ORM
  * Using PostgreSQL for both local development (Docker) and production
- * Using postgres-js everywhere for consistency
+ * Using @neondatabase/serverless on Vercel, postgres-js locally
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
 import { logger } from '@/lib/logger'
 import * as schema from './schema-pg'
 
@@ -14,18 +12,30 @@ const connectionString =
   process.env.POSTGRES_URL ||
   'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
 
-logger.info(`Connecting to PostgreSQL database...`)
+const isVercel = process.env.VERCEL === '1'
 
-// Configure postgres-js client
-const client = postgres(connectionString, {
-  prepare: false,
-  max: 1, // Serverless-friendly: use single connection
-  idle_timeout: 20,
-  connect_timeout: 10,
-  onnotice: () => {}, // Silence notices
-})
+let db: any
 
-const db = drizzle(client, { schema })
+if (isVercel) {
+  // Use Neon serverless driver on Vercel
+  const { neon } = require('@neondatabase/serverless')
+  const { drizzle } = require('drizzle-orm/neon-http')
+
+  logger.info('Using @neondatabase/serverless (Vercel)')
+  const sql = neon(connectionString)
+  db = drizzle(sql, { schema })
+} else {
+  // Use postgres-js for local development
+  const { drizzle } = require('drizzle-orm/postgres-js')
+  const postgres = require('postgres')
+
+  logger.info('Using postgres-js (local)')
+  const client = postgres(connectionString, {
+    prepare: false,
+    onnotice: () => {},
+  })
+  db = drizzle(client, { schema })
+}
 
 export { db }
 
