@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Check if user already exists
-  const [existingUser] = await db
+  const [existingUser] = await (db as any)
     .select()
     .from(users)
     .where(eq(users.email, email.toLowerCase()))
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   const hashedPassword = await hashPassword(password)
 
   // Create user
-  const [newUser] = await db
+  const [newUser] = await (db as any)
     .insert(users)
     .values({
       email: email.toLowerCase(),
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     .returning()
 
   // Link guest orders to new user account
-  const linkedOrders = await db
+  const linkedOrders = await (db as any)
     .update(orders)
     .set({ userId: newUser.id })
     .where(
