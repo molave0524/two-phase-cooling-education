@@ -3,7 +3,7 @@
  * Handles password hashing, verification, and validation
  */
 
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
 const SALT_ROUNDS = 12
