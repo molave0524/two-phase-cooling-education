@@ -115,6 +115,7 @@ export interface Order {
 
 // Order creation parameters
 export interface CreateOrderParams {
+  userId?: number
   customer: OrderCustomer
   shippingAddress: OrderShippingAddress
   billingAddress?: OrderShippingAddress
