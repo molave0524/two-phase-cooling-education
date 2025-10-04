@@ -1,6 +1,7 @@
 /**
  * Database Connection - Drizzle ORM
  * Using PostgreSQL for both local development (Docker) and production
+ * Fixed: Added missing accounts and verification_tokens tables to Neon
  */
 
 import { logger } from '@/lib/logger'
