@@ -16,11 +16,10 @@ const connectionString =
 
 logger.info('Using PostgreSQL database')
 
-// Create postgres client with serverless configuration
+// Create postgres client with proper configuration
+// Disable prefetch for serverless compatibility
 const client = postgres(connectionString, {
-  max: 1, // Limit connections for serverless
-  idle_timeout: 20,
-  connect_timeout: 10,
+  prepare: false, // Disable prepared statements for serverless
 })
 
 // Create drizzle instance with schema
