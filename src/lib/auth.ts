@@ -125,9 +125,9 @@ export const authOptions: NextAuthOptions = {
       if (user.email) {
         try {
           const { orders } = await import('@/db/schema')
-          const { isNull, sql } = await import('drizzle-orm')
+          const { sql } = await import('drizzle-orm')
 
-          await db
+          await (db as any)
             .update(orders)
             .set({ userId: parseInt(user.id) })
             .where(
