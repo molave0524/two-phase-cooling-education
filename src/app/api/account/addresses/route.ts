@@ -35,7 +35,7 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const userAddresses = await db
+  const userAddresses = await (db as any)
     .select()
     .from(addresses)
     .where(eq(addresses.userId, parseInt(session.user.id)))
@@ -66,13 +66,13 @@ export async function POST(req: NextRequest) {
 
   // If setting as default, unset other defaults of the same type
   if (data.isDefault) {
-    await db
+    await (db as any)
       .update(addresses)
       .set({ isDefault: false })
       .where(and(eq(addresses.userId, parseInt(session.user.id)), eq(addresses.type, data.type)))
   }
 
-  const [newAddress] = await db
+  const [newAddress] = await (db as any)
     .insert(addresses)
     .values({
       userId: parseInt(session.user.id),
