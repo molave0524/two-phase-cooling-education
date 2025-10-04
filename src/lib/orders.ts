@@ -54,7 +54,7 @@ export interface OrderItem {
   quantity: number
   unitPrice: number
   totalPrice: number
-  selectedVariantId?: string
+  selectedVariantId?: string | undefined
 }
 
 export interface OrderTotals {
