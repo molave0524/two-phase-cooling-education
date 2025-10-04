@@ -64,7 +64,7 @@ export interface OrderTotals {
   shipping: number
   shippingMethod: string
   discount: number
-  discountCode?: string
+  discountCode?: string | undefined
   total: number
 }
 
@@ -225,8 +225,8 @@ function dbOrderToOrder(
     items: orderItems,
     totals,
     metadata,
-    createdAt: new Date(dbOrder.createdAt * 1000),
-    updatedAt: new Date(dbOrder.updatedAt * 1000),
+    createdAt: new Date(dbOrder.createdAt),
+    updatedAt: new Date(dbOrder.updatedAt),
   }
 
   // Add optional fields only if they exist
@@ -243,13 +243,13 @@ function dbOrderToOrder(
     order.internalNotes = dbOrder.internalNotes
   }
   if (dbOrder.paidAt) {
-    order.paidAt = new Date(dbOrder.paidAt * 1000)
+    order.paidAt = new Date(dbOrder.paidAt)
   }
   if (dbOrder.shippedAt) {
-    order.shippedAt = new Date(dbOrder.shippedAt * 1000)
+    order.shippedAt = new Date(dbOrder.shippedAt)
   }
   if (dbOrder.deliveredAt) {
-    order.deliveredAt = new Date(dbOrder.deliveredAt * 1000)
+    order.deliveredAt = new Date(dbOrder.deliveredAt)
   }
 
   // Add tracking if available
@@ -258,15 +258,15 @@ function dbOrderToOrder(
       carrier: dbOrder.shippingCarrier || '',
       trackingNumber: dbOrder.trackingNumber,
       trackingUrl: dbOrder.trackingUrl || '',
-      shippedAt: dbOrder.shippedAt ? new Date(dbOrder.shippedAt * 1000) : new Date(),
+      shippedAt: dbOrder.shippedAt ? new Date(dbOrder.shippedAt) : new Date(),
     }
 
     if (dbOrder.estimatedDelivery) {
-      order.tracking.estimatedDelivery = new Date(dbOrder.estimatedDelivery * 1000)
+      order.tracking.estimatedDelivery = new Date(dbOrder.estimatedDelivery)
     }
 
     if (dbOrder.deliveredAt) {
-      order.tracking.actualDelivery = new Date(dbOrder.deliveredAt * 1000)
+      order.tracking.actualDelivery = new Date(dbOrder.deliveredAt)
     }
   }
 
@@ -440,7 +440,7 @@ export async function updateOrderStatus(
 
   if (!currentOrder) return null
 
-  const now = Math.floor(Date.now() / 1000)
+  const now = new Date()
   const updateData: Partial<typeof ordersTable.$inferInsert> = {
     status,
     updatedAt: now,
@@ -540,7 +540,7 @@ export async function updateOrderPaymentStatus(
   const orderIdNum = parseInt(orderId, 10)
   if (isNaN(orderIdNum)) return null
 
-  const now = Math.floor(Date.now() / 1000)
+  const now = new Date()
   const updateData: Partial<typeof ordersTable.$inferInsert> = {
     updatedAt: now,
   }
@@ -554,7 +554,7 @@ export async function updateOrderPaymentStatus(
   if (update.status === 'paid') {
     updateData.paymentStatus = 'succeeded'
     updateData.status = 'processing'
-    updateData.paidAt = update.paidAt ? Math.floor(update.paidAt.getTime() / 1000) : now
+    updateData.paidAt = update.paidAt || now
   } else if (update.status === 'payment_failed') {
     updateData.paymentStatus = 'failed'
     updateData.status = 'failed'
@@ -592,15 +592,13 @@ export async function addOrderTracking(
   const orderIdNum = parseInt(orderId, 10)
   if (isNaN(orderIdNum)) return null
 
-  const now = Math.floor(Date.now() / 1000)
+  const now = new Date()
   const updateData: Partial<typeof ordersTable.$inferInsert> = {
     trackingNumber: tracking.trackingNumber,
     shippingCarrier: tracking.carrier,
     trackingUrl: tracking.trackingUrl,
     shippedAt: now,
-    estimatedDelivery: tracking.estimatedDelivery
-      ? Math.floor(tracking.estimatedDelivery.getTime() / 1000)
-      : null,
+    estimatedDelivery: tracking.estimatedDelivery || null,
     status: 'shipped',
     updatedAt: now,
   }
@@ -677,11 +675,9 @@ export async function getOrderStats(dateRange?: { start: Date; end: Date }) {
   // Build the where condition for date range
   let whereCondition
   if (dateRange) {
-    const startTimestamp = Math.floor(dateRange.start.getTime() / 1000)
-    const endTimestamp = Math.floor(dateRange.end.getTime() / 1000)
     whereCondition = and(
-      gte(ordersTable.createdAt, startTimestamp),
-      lte(ordersTable.createdAt, endTimestamp)
+      gte(ordersTable.createdAt, dateRange.start),
+      lte(ordersTable.createdAt, dateRange.end)
     )
   }
 
@@ -771,10 +767,11 @@ export async function searchOrders(
   }
 
   if (filters.dateRange) {
-    const startTimestamp = Math.floor(filters.dateRange.start.getTime() / 1000)
-    const endTimestamp = Math.floor(filters.dateRange.end.getTime() / 1000)
     conditions.push(
-      and(gte(ordersTable.createdAt, startTimestamp), lte(ordersTable.createdAt, endTimestamp))
+      and(
+        gte(ordersTable.createdAt, filters.dateRange.start),
+        lte(ordersTable.createdAt, filters.dateRange.end)
+      )
     )
   }
 
@@ -837,7 +834,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<Orde
     throw new Error('Cannot cancel order that has already been shipped')
   }
 
-  const now = Math.floor(Date.now() / 1000)
+  const now = new Date()
   const existingNotes = currentOrder.internalNotes || ''
   const cancelNote = `Cancelled - ${reason}`
   const updatedNotes = existingNotes
