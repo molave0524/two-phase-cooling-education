@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const [user] = await db
+  const [user] = await (db as any)
     .select({
       id: users.id,
       email: users.email,
@@ -63,7 +63,7 @@ export async function PATCH(req: NextRequest) {
     )
   }
 
-  const [updatedUser] = await db
+  const [updatedUser] = await (db as any)
     .update(users)
     .set({
       ...validation.data,

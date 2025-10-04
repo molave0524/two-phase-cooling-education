@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Find guest orders with matching email and link them to the user
-  const linkedOrders = await db
+  const linkedOrders = await (db as any)
     .update(orders)
     .set({ userId: parseInt(session.user.id) })
     .where(

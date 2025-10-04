@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Fetch orders for the user
-  const userOrders = await db
+  const userOrders = await (db as any)
     .select()
     .from(orders)
     .where(eq(orders.userId, parseInt(session.user.id)))
@@ -27,7 +27,10 @@ export async function GET(req: NextRequest) {
   // Fetch items for each order
   const ordersWithItems = await Promise.all(
     userOrders.map(async order => {
-      const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id))
+      const items = await (db as any)
+        .select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, order.id))
 
       return {
         ...order,

@@ -43,7 +43,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   // Get user
-  const [user] = await db
+  const [user] = await (db as any)
     .select()
     .from(users)
     .where(eq(users.id, parseInt(session.user.id)))
@@ -68,7 +68,7 @@ export async function PATCH(req: NextRequest) {
   // Hash and update password
   const hashedPassword = await hashPassword(newPassword)
 
-  await db
+  await (db as any)
     .update(users)
     .set({
       hashedPassword,

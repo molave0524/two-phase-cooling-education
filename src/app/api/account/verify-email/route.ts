@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   const { token } = validation.data
 
   // Find user with this verification token
-  const [user] = await db
+  const [user] = await (db as any)
     .select()
     .from(users)
     .where(
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Update email
-  await db
+  await (db as any)
     .update(users)
     .set({
       email: user.newEmail,

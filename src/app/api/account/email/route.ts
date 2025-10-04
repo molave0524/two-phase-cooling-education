@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest) {
   const { newEmail } = validation.data
 
   // Check if email already exists
-  const [existingUser] = await db
+  const [existingUser] = await (db as any)
     .select()
     .from(users)
     .where(eq(users.email, newEmail.toLowerCase()))
@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
   // Store pending email change
-  await db
+  await (db as any)
     .update(users)
     .set({
       newEmail: newEmail.toLowerCase(),
