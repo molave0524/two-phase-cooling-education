@@ -36,5 +36,4 @@ export const {
   orders,
   orderItems,
   addresses,
-  passwordResetTokens,
 } = schema
