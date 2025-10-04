@@ -47,6 +47,23 @@ adapter.getUserByEmail = async (email: string) => {
   }
 }
 
+// Override createUser to handle emailVerified properly
+const originalCreateUser = adapter.createUser
+adapter.createUser = async (user: any) => {
+  try {
+    logger.info('[auth] Creating user:', { email: user.email, emailVerified: user.emailVerified })
+    // Ensure emailVerified is a proper Date object or null
+    const userData = {
+      ...user,
+      emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+    }
+    return await originalCreateUser(userData)
+  } catch (error) {
+    logger.error('[auth] createUser error:', error)
+    throw error
+  }
+}
+
 // Override linkAccount to generate IDs
 const originalLinkAccount = adapter.linkAccount
 adapter.linkAccount = async (account: any) => {
