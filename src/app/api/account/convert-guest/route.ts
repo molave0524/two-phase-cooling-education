@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users, orders } from '@/db/schema'
-import { eq, isNull, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { hashPassword, validatePassword } from '@/lib/password'
 
