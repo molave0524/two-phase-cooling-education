@@ -7,6 +7,7 @@ export function EnvironmentBadge() {
   const env = process.env.NODE_ENV
   const isVercel = process.env.VERCEL === '1'
   const vercelEnv = process.env.VERCEL_ENV || 'unknown'
+  const gitBranch = process.env.VERCEL_GIT_COMMIT_REF || ''
 
   // Determine environment label
   let envLabel = 'LOCAL'
@@ -17,12 +18,11 @@ export function EnvironmentBadge() {
       envLabel = 'PROD'
       bgColor = '#10b981' // green
     } else if (vercelEnv === 'preview') {
-      // Check URL to determine if DEV or UAT
-      const url = process.env.VERCEL_URL || ''
-      if (url.includes('develop')) {
+      // Use git branch to determine environment
+      if (gitBranch === 'develop') {
         envLabel = 'DEV'
         bgColor = '#3b82f6' // blue
-      } else if (url.includes('uat')) {
+      } else if (gitBranch === 'uat') {
         envLabel = 'UAT'
         bgColor = '#f59e0b' // orange
       } else {
