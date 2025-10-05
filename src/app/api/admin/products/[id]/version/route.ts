@@ -10,10 +10,7 @@ import { createProductVersion, isProductInOrders } from '@/services/product-vers
  * POST /api/admin/products/:id/version
  * Create new version of product
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
     const productId = params.id
@@ -29,12 +26,15 @@ export async function POST(
 
     const newProduct = await createProductVersion(productId, body)
 
-    return NextResponse.json({
-      message: 'New product version created successfully',
-      product: newProduct
-    }, { status: 201 })
+    return NextResponse.json(
+      {
+        message: 'New product version created successfully',
+        product: newProduct,
+      },
+      { status: 201 }
+    )
   } catch (error) {
-    console.error('Version creation error:', error)
+    // console.error('Version creation error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to create product version' },
       { status: 500 }

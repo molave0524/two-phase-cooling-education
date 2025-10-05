@@ -181,7 +181,7 @@ function dbOrderToOrder(
     quantity: item.quantity,
     unitPrice: item.price,
     totalPrice: item.price * item.quantity,
-    selectedVariantId: item.variantId || undefined,
+    selectedVariantId: (item as any).variantId || undefined,
   }))
 
   const customer =
@@ -298,7 +298,7 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
   const snapshots = await createOrderItemSnapshots(
     params.items.map(item => ({
       productId: item.productId,
-      quantity: item.quantity
+      quantity: item.quantity,
     }))
   )
 

@@ -49,7 +49,7 @@ interface OrderData {
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const orderId = searchParams.get('id')
   const [orderData, setOrderData] = useState<OrderData | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -97,18 +97,21 @@ function OrderConfirmationContent() {
               ? new Date(order.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
                 })
               : new Date().toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
                 }),
-            estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            }),
+            estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }
+            ),
             items: order.items.map((item: any) => ({
               id: item.id,
               name: item.product.name,
@@ -138,7 +141,7 @@ function OrderConfirmationContent() {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Failed to fetch order:', error)
+        // console.error('Failed to fetch order:', error)
       }
     }
 

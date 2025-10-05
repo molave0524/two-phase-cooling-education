@@ -4,10 +4,7 @@ import { products } from '@/db/schema-pg'
 import { eq } from 'drizzle-orm'
 import { apiSuccess, apiNotFound } from '@/lib/api-response'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { sku: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: { sku: string } }) {
   const { sku } = params
 
   // Look up product by SKU

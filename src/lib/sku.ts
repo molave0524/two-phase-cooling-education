@@ -12,10 +12,10 @@
  */
 
 export interface SKUComponents {
-  prefix: string      // 3 chars: TPC
-  category: string    // 4 chars: PUMP, MOTR, RADI, CLNT
+  prefix: string // 3 chars: TPC
+  category: string // 4 chars: PUMP, MOTR, RADI, CLNT
   productCode: string // 3 chars: A01, M01, R02
-  version: number     // 2 digits: 01, 02, etc.
+  version: number // 2 digits: 01, 02, etc.
 }
 
 export interface SKUGenerationOptions {
@@ -29,12 +29,7 @@ export interface SKUGenerationOptions {
  * Generate SKU from components
  */
 export function generateSKU(options: SKUGenerationOptions): string {
-  const {
-    prefix = 'TPC',
-    category,
-    productCode,
-    version = 1
-  } = options
+  const { prefix = 'TPC', category, productCode, version = 1 } = options
 
   // Validate lengths
   if (prefix.length !== 3) {
@@ -63,10 +58,10 @@ export function parseSKU(sku: string): SKUComponents {
   }
 
   return {
-    prefix: match[1],
-    category: match[2],
-    productCode: match[3],
-    version: parseInt(match[4], 10)
+    prefix: match[1]!,
+    category: match[2]!,
+    productCode: match[3]!,
+    version: parseInt(match[4]!, 10),
   }
 }
 
@@ -79,7 +74,7 @@ export function incrementVersion(currentSKU: string): string {
     prefix: components.prefix,
     category: components.category,
     productCode: components.productCode,
-    version: components.version + 1
+    version: components.version + 1,
   })
 }
 
