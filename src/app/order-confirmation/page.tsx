@@ -13,12 +13,12 @@ import {
   ShareIcon,
 } from '@heroicons/react/24/outline'
 import styles from './order-confirmation.module.css'
-import GuestConversionModal from '@/components/checkout/GuestConversionModal'
 
 interface OrderItem {
   id: string
   name: string
   sku: string
+  slug: string
   price: number
   quantity: number
   image: string
@@ -49,20 +49,25 @@ interface OrderData {
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const orderId = searchParams.get('id')
-  const token = searchParams.get('token')
   const [orderData, setOrderData] = useState<OrderData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [showConversionModal, setShowConversionModal] = useState(false)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = `/api/auth/signin?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`
+    }
+  }, [status])
 
   useEffect(() => {
     async function fetchOrder() {
-      if (!orderId) return
+      if (!orderId || status !== 'authenticated') return
 
       try {
-        // Include token in request for secure guest access
-        const url = `/api/orders/update-payment?orderId=${orderId}${token ? `&token=${token}` : ''}`
+        // Fetch order without token (requires authentication)
+        const url = `/api/orders/update-payment?orderId=${orderId}`
         const response = await fetch(url)
         const result = await response.json()
 
@@ -88,12 +93,27 @@ function OrderConfirmationContent() {
           setOrderData({
             id: order.orderNumber,
             email: customer.email,
-            orderDate: new Date(order.createdAt * 1000).toLocaleDateString(),
-            estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+            orderDate: order.createdAt
+              ? new Date(order.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })
+              : new Date().toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                }),
+            estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }),
             items: order.items.map((item: any) => ({
               id: item.id,
               name: item.product.name,
               sku: item.product.sku || '',
+              slug: item.product.slug || '',
               price: item.unitPrice,
               quantity: item.quantity,
               image:
@@ -123,18 +143,7 @@ function OrderConfirmationContent() {
     }
 
     fetchOrder()
-  }, [orderId, token])
-
-  // Show conversion modal for guest users after a brief delay
-  useEffect(() => {
-    if (orderData && !session && orderData.email) {
-      const timer = setTimeout(() => {
-        setShowConversionModal(true)
-      }, 2000) // Show modal 2 seconds after page load
-      return () => clearTimeout(timer)
-    }
-    return undefined
-  }, [orderData, session])
+  }, [orderId, status])
 
   if (error) {
     return (
@@ -211,15 +220,21 @@ function OrderConfirmationContent() {
                   key={item.id}
                   className='flex gap-4 py-4 border-b border-secondary-200 last:border-b-0'
                 >
-                  <Image
-                    src={item.image || '/images/placeholder-product.jpg'}
-                    alt={item.name}
-                    width={64}
-                    height={64}
-                    className='w-16 h-16 object-cover rounded-lg'
-                  />
+                  <Link href={`/products/sku/${item.sku}`}>
+                    <Image
+                      src={item.image || '/images/placeholder-product.jpg'}
+                      alt={item.name}
+                      width={64}
+                      height={64}
+                      className='w-16 h-16 object-cover rounded-lg hover:opacity-80 transition-opacity cursor-pointer'
+                    />
+                  </Link>
                   <div className='flex-1'>
-                    <h4 className='font-medium text-secondary-900'>{item.name}</h4>
+                    <Link href={`/products/sku/${item.sku}`}>
+                      <h4 className='font-medium text-secondary-900 hover:text-primary-600 transition-colors cursor-pointer'>
+                        {item.name}
+                      </h4>
+                    </Link>
                     {item.sku && (
                       <p
                         style={{
@@ -389,15 +404,6 @@ function OrderConfirmationContent() {
           </Link>
         </div>
       </div>
-
-      {/* Guest Conversion Modal */}
-      {!session && orderData && (
-        <GuestConversionModal
-          isOpen={showConversionModal}
-          onClose={() => setShowConversionModal(false)}
-          email={orderData.email}
-        />
-      )}
     </div>
   )
 }

@@ -12,7 +12,10 @@ import {
   integer,
   real,
   jsonb,
+  unique,
+  check,
 } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
 
 // ============================================================================
 // USERS TABLE
@@ -86,8 +89,16 @@ export const products = pgTable('products', {
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   sku: text('sku').notNull().unique(),
+
+  // SKU versioning fields
+  skuPrefix: text('sku_prefix').notNull(), // e.g., "TPC"
+  skuCategory: text('sku_category').notNull(), // e.g., "PUMP"
+  skuProductCode: text('sku_product_code').notNull(), // e.g., "A01"
+  skuVersion: text('sku_version').notNull(), // e.g., "V01"
+
   price: real('price').notNull(),
   originalPrice: real('original_price'),
+  componentPrice: real('component_price'), // Price when used as component
   currency: text('currency').notNull().default('USD'),
   description: text('description').notNull(),
   shortDescription: text('short_description').notNull(),
@@ -101,9 +112,68 @@ export const products = pgTable('products', {
   tags: jsonb('tags').notNull(),
   metaTitle: text('meta_title'),
   metaDescription: text('meta_description'),
+
+  // Versioning fields
+  version: integer('version').notNull().default(1),
+  baseProductId: text('base_product_id'), // Links to original product
+  previousVersionId: text('previous_version_id').references((): any => products.id),
+  replacedBy: text('replaced_by').references((): any => products.id),
+
+  // Lifecycle management
+  status: text('status').notNull().default('active'), // active, sunset, discontinued
+  isAvailableForPurchase: boolean('is_available_for_purchase').notNull().default(true),
+  sunsetDate: timestamp('sunset_date'),
+  discontinuedDate: timestamp('discontinued_date'),
+  sunsetReason: text('sunset_reason'),
+
+  // Product type
+  productType: text('product_type').notNull().default('standalone'), // standalone, bundle, component
+
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
+
+// ============================================================================
+// PRODUCT COMPONENTS TABLE (Many-to-Many Junction)
+// ============================================================================
+
+export const productComponents = pgTable('product_components', {
+  id: serial('id').primaryKey(),
+
+  // Relationships
+  parentProductId: text('parent_product_id')
+    .notNull()
+    .references(() => products.id, { onDelete: 'cascade' }),
+  componentProductId: text('component_product_id')
+    .notNull()
+    .references(() => products.id, { onDelete: 'restrict' }), // Prevent deletion if used
+
+  // Component configuration
+  quantity: integer('quantity').notNull().default(1),
+  isRequired: boolean('is_required').notNull().default(true),
+  isIncluded: boolean('is_included').notNull().default(true), // Included in price or optional add-on
+
+  // Pricing override
+  priceOverride: real('price_override'), // Override component's default price
+
+  // Display configuration
+  displayName: text('display_name'), // Override component name in parent context
+  displayOrder: integer('display_order').notNull().default(0),
+  sortOrder: integer('sort_order').notNull().default(0),
+
+  // Metadata
+  notes: text('notes'),
+
+  // Timestamps
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  // Constraints
+  uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
+  noSelfReference: check('no_self_reference',
+    sql`${table.parentProductId} != ${table.componentProductId}`
+  ),
+}))
 
 // ============================================================================
 // CARTS TABLE
@@ -128,7 +198,7 @@ export const cartItems = pgTable('cart_items', {
     .references(() => carts.id, { onDelete: 'cascade' }),
   productId: text('product_id')
     .notNull()
-    .references(() => products.id),
+    .references(() => products.id, { onDelete: 'restrict' }), // FIX: Prevent deletion of products in carts
   quantity: integer('quantity').notNull().default(1),
   price: real('price').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -142,7 +212,7 @@ export const cartItems = pgTable('cart_items', {
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   orderNumber: text('order_number').notNull().unique(),
-  userId: integer('user_id').references(() => users.id),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }), // FIX: Preserve orders when user deleted
   status: text('status').notNull().default('pending'),
 
   // Customer information
@@ -198,14 +268,30 @@ export const orderItems = pgTable('order_items', {
   orderId: integer('order_id')
     .notNull()
     .references(() => orders.id, { onDelete: 'cascade' }),
-  productId: text('product_id').notNull(),
-  productName: text('product_name').notNull(),
+
+  // Product snapshot (immutable)
+  productId: text('product_id').notNull(), // NO FK - allows product deletion
   productSku: text('product_sku').notNull(),
+  productSlug: text('product_slug').notNull().default(''),
+  productName: text('product_name').notNull(),
+  productVersion: integer('product_version').notNull().default(1),
+  productType: text('product_type').notNull().default('standalone'),
   productImage: text('product_image').notNull(),
-  variantId: text('variant_id'),
-  variantName: text('variant_name'),
+
+  // Component tree snapshot (JSONB)
+  componentTree: jsonb('component_tree').notNull().default('[]'),
+
+  // Pricing breakdown
   quantity: integer('quantity').notNull(),
-  price: real('price').notNull(), // Price per unit
+  basePrice: real('base_price').notNull(), // Product base price
+  includedComponentsPrice: real('included_components_price').notNull().default(0),
+  optionalComponentsPrice: real('optional_components_price').notNull().default(0),
+  price: real('price').notNull(), // Total per unit (base + included + optional)
+  lineTotal: real('line_total').notNull(), // price * quantity
+
+  // Optional: FK for reporting (not enforced)
+  currentProductId: text('current_product_id'), // Tracks current product version
+
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
 
@@ -267,3 +353,6 @@ export type NewProduct = typeof products.$inferInsert
 
 export type Address = typeof addresses.$inferSelect
 export type NewAddress = typeof addresses.$inferInsert
+
+export type ProductComponent = typeof productComponents.$inferSelect
+export type NewProductComponent = typeof productComponents.$inferInsert

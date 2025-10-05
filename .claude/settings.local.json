@@ -27,7 +27,15 @@
       "Bash(docker pull:*)",
       "Bash(tsx scripts/migrate-sqlite-to-postgres.ts:*)",
       "Bash(npx tsx:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(openssl rand:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(set POSTGRES_URL=postgresql://neondb_owner:npg_2LT0RAEwKjeN@ep-damp-fire-ad4x3c36-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require)",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

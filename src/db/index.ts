@@ -46,6 +46,7 @@ export const {
   sessions,
   verificationTokens,
   products,
+  productComponents,
   carts,
   cartItems,
   orders,

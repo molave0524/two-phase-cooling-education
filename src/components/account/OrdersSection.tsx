@@ -125,12 +125,15 @@ export default function OrdersSection() {
             {order.items.length > 0 && (
               <div className={styles.itemsPreview}>
                 {order.items.slice(0, 3).map(item => (
-                  <img
-                    key={item.id}
-                    src={item.productImage}
-                    alt={item.productName}
-                    className={styles.itemThumbnail}
-                  />
+                  <div key={item.id} className={styles.itemThumbnail}>
+                    <div style={{
+                      backgroundImage: `url(${item.productImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      width: '100%',
+                      height: '100%'
+                    }} role="img" aria-label={item.productName} />
+                  </div>
                 ))}
                 {order.items.length > 3 && (
                   <div className={styles.moreItems}>+{order.items.length - 3}</div>

@@ -76,7 +76,16 @@ export default function ProfileSection() {
         <form onSubmit={onUpdateProfile} className={styles.form}>
           {session?.user?.image && (
             <div className={styles.profileImagePreview}>
-              <img src={session.user.image} alt='Profile' className={styles.profileImage} />
+              <div className={styles.profileImage}>
+                <div style={{
+                  backgroundImage: `url(${session.user.image})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 'inherit'
+                }} role="img" aria-label="Profile" />
+              </div>
               <div className={styles.imageInfo}>
                 <p>Current Profile Picture</p>
                 <p>Update the URL below to change</p>

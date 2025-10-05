@@ -111,8 +111,9 @@ export default function GuestConversionModal({ isOpen, onClose, email }: GuestCo
 
                 <form onSubmit={onSubmit} className="mt-6 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <label htmlFor="guest-email" className="block text-sm font-medium text-gray-700">Email</label>
                     <input
+                      id="guest-email"
                       type="email"
                       value={email}
                       disabled
@@ -121,8 +122,9 @@ export default function GuestConversionModal({ isOpen, onClose, email }: GuestCo
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <label htmlFor="guest-name" className="block text-sm font-medium text-gray-700">Name</label>
                     <input
+                      id="guest-name"
                       type="text"
                       value={name}
                       onChange={e => setName(e.target.value)}
@@ -132,8 +134,9 @@ export default function GuestConversionModal({ isOpen, onClose, email }: GuestCo
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <label htmlFor="guest-password" className="block text-sm font-medium text-gray-700">Password</label>
                     <input
+                      id="guest-password"
                       type="password"
                       value={password}
                       onChange={e => setPassword(e.target.value)}
@@ -145,8 +148,9 @@ export default function GuestConversionModal({ isOpen, onClose, email }: GuestCo
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <label htmlFor="guest-confirm-password" className="block text-sm font-medium text-gray-700">Confirm Password</label>
                     <input
+                      id="guest-confirm-password"
                       type="password"
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { verifyOrderToken, generateOrderToken } from '@/lib/order-token'
+import { generateOrderToken } from '@/lib/order-token'
 import {
   apiSuccess,
   apiError,
@@ -87,10 +87,21 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const orderId = searchParams.get('orderId')
-    const token = searchParams.get('token')
 
     if (!orderId) {
       return apiError(ERROR_CODES.INVALID_INPUT, 'Order ID is required', { status: 400 })
+    }
+
+    // Check if user is authenticated
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.email) {
+      logger.warn('Unauthorized order access attempt - not authenticated', {
+        orderId,
+      })
+      return apiError(ERROR_CODES.UNAUTHORIZED, 'Please log in to view this order.', {
+        status: 401,
+      })
     }
 
     const order = await getOrder(orderId)
@@ -102,25 +113,19 @@ export async function GET(request: NextRequest) {
     const customerData =
       typeof order.customer === 'string' ? JSON.parse(order.customer) : order.customer
 
-    // Check if user is authenticated
-    const session = await getServerSession(authOptions)
-
     // Allow access if:
-    // 1. Valid access token is provided (for guest checkout)
-    // 2. User is authenticated AND their email matches the order's customer email
-    // 3. User is an admin (if you have admin role implemented)
-    const hasValidToken = token && verifyOrderToken(orderId, customerData.email, token)
-    const isCustomer = session?.user?.email === customerData.email
-    const isAdmin = (session?.user as any)?.role === 'admin' // Type assertion for optional role field
+    // 1. User is authenticated AND their email matches the order's customer email
+    // 2. User is an admin (if you have admin role implemented)
+    const isCustomer = session.user.email === customerData.email
+    const isAdmin = (session.user as any)?.role === 'admin' // Type assertion for optional role field
 
-    if (!hasValidToken && !isCustomer && !isAdmin) {
-      logger.warn('Unauthorized order access attempt', {
+    if (!isCustomer && !isAdmin) {
+      logger.warn('Unauthorized order access attempt - wrong user', {
         orderId,
-        attemptedBy: session?.user?.email || 'anonymous',
+        attemptedBy: session.user.email,
         orderEmail: customerData.email,
-        hasToken: !!token,
       })
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'Please log in to view order in My Account.', {
+      return apiError(ERROR_CODES.UNAUTHORIZED, 'You do not have permission to view this order.', {
         status: 403,
       })
     }

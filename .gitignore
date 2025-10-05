@@ -116,4 +116,7 @@ coverage/
 run-account-migration.js
 fix-billing-address.js
 migrate-orders-schema.js
+
+# SQL files (but keep Drizzle migrations)
 *.sql
+!drizzle/**/*.sql

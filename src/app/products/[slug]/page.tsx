@@ -55,10 +55,18 @@ export default function ProductPage() {
     notFound()
   }
 
+  // Normalize images to handle both string[] and object[] formats
+  const normalizedImages = (product.images || []).map((img, idx) => {
+    if (typeof img === 'string') {
+      return { url: img, altText: product.name, type: 'main' }
+    }
+    return img
+  })
+
   // Filter images based on selected type
   const filteredImages = selectedImageType
-    ? product.images.filter(img => img.type === selectedImageType)
-    : product.images
+    ? normalizedImages.filter(img => img.type === selectedImageType)
+    : normalizedImages
 
   // Reset indices when filter changes
   const handleTypeFilter = (type: string | null) => {
@@ -156,6 +164,7 @@ export default function ProductPage() {
                 height: '100%',
                 objectFit: 'cover',
               }}
+              unoptimized
             />
           </div>
 
@@ -263,6 +272,7 @@ export default function ProductPage() {
                             height: '100%',
                             objectFit: 'cover',
                           }}
+                          unoptimized
                         />
                       </div>
                     )
@@ -295,32 +305,34 @@ export default function ProductPage() {
                 transition: 'all 0.2s ease',
               }}
             >
-              All Images ({product.images.length})
+              All Images ({normalizedImages.length})
             </button>
 
             {/* Type filter buttons */}
-            {Array.from(new Set(product.images.map(img => img.type))).map(type => {
-              const typeCount = product.images.filter(img => img.type === type).length
-              return (
-                <button
-                  key={type}
-                  onClick={() => handleTypeFilter(type)}
-                  style={{
-                    padding: '4px 12px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    borderRadius: '20px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    backgroundColor: selectedImageType === type ? '#0284c7' : '#f1f5f9',
-                    color: selectedImageType === type ? 'white' : '#64748b',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)} View ({typeCount})
-                </button>
-              )
-            })}
+            {Array.from(new Set(normalizedImages.map(img => img.type)))
+              .filter(type => type) // Remove undefined/null values
+              .map(type => {
+                const typeCount = normalizedImages.filter(img => img.type === type).length
+                return (
+                  <button
+                    key={type}
+                    onClick={() => handleTypeFilter(type)}
+                    style={{
+                      padding: '4px 12px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      borderRadius: '20px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor: selectedImageType === type ? '#0284c7' : '#f1f5f9',
+                      color: selectedImageType === type ? 'white' : '#64748b',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)} View ({typeCount})
+                  </button>
+                )
+              })}
           </div>
         </div>
 
@@ -640,6 +652,163 @@ export default function ProductPage() {
           ))}
         </ul>
 
+        {/* Included Products Section */}
+        {(product as any).components && (product as any).components.length > 0 && (
+          <>
+            <h3
+              style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#0f172a',
+                marginBottom: '16px',
+                marginTop: '32px',
+              }}
+            >
+              Included Products
+            </h3>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr',
+                gap: '16px',
+                marginBottom: '32px',
+              }}
+            >
+              {(product as any).components.map((component: any) => (
+                <Link
+                  key={component.id}
+                  href={`/products/${component.slug}`}
+                  style={{
+                    display: 'flex',
+                    gap: '16px',
+                    padding: '16px',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f1f5f9'
+                    e.currentTarget.style.borderColor = '#0284c7'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f8fafc'
+                    e.currentTarget.style.borderColor = '#e2e8f0'
+                  }}
+                >
+                  {/* Component Image */}
+                  <div
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      backgroundColor: '#e2e8f0',
+                      borderRadius: '6px',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Image
+                      src={
+                        Array.isArray(component.images) && component.images.length > 0
+                          ? typeof component.images[0] === 'string'
+                            ? component.images[0]
+                            : component.images[0]?.url || '/placeholder-product.jpg'
+                          : '/placeholder-product.jpg'
+                      }
+                      alt={component.name}
+                      width={80}
+                      height={80}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                      unoptimized
+                    />
+                  </div>
+
+                  {/* Component Details */}
+                  <div style={{ flex: 1 }}>
+                    <h4
+                      style={{
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        color: '#0f172a',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      {component.name}
+                    </h4>
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: '#64748b',
+                        fontFamily: 'monospace',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      SKU: {component.sku}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '14px',
+                        color: '#475569',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      {component.shortDescription || component.description}
+                    </p>
+                    {component.quantity > 1 && (
+                      <p
+                        style={{
+                          fontSize: '14px',
+                          color: '#0284c7',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Quantity: {component.quantity}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Component Price */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-end',
+                      justifyContent: 'center',
+                      minWidth: '100px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        color: '#0284c7',
+                      }}
+                    >
+                      ${component.price.toLocaleString()}
+                    </span>
+                    {component.componentPrice && component.componentPrice !== component.price && (
+                      <span
+                        style={{
+                          fontSize: '12px',
+                          color: '#64748b',
+                          textDecoration: 'line-through',
+                        }}
+                      >
+                        ${component.componentPrice.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
         <h3
           style={{
             fontSize: '24px',
@@ -673,7 +842,7 @@ export default function ProductPage() {
               Cooling Performance
             </h4>
             <p style={{ fontSize: '16px', color: '#475569', margin: 0 }}>
-              {product.specifications.cooling.capacity}
+              {(product.specifications as any)?.cooling?.capacity || '350W TDP'}
             </p>
           </div>
           <div>
@@ -688,7 +857,9 @@ export default function ProductPage() {
               Noise Level
             </h4>
             <p style={{ fontSize: '16px', color: '#475569', margin: 0 }}>
-              {product.specifications.performance.noiseLevel}
+              {(product.specifications as any)?.performance?.noiseLevel ||
+               (product.specifications as any)?.environmental?.noiseLevel ||
+               'Quiet Operation'}
             </p>
           </div>
           <div>
@@ -703,7 +874,7 @@ export default function ProductPage() {
               Warranty
             </h4>
             <p style={{ fontSize: '16px', color: '#475569', margin: 0 }}>
-              {product.specifications.warranty.duration}
+              {(product.specifications as any)?.warranty?.duration || '3 years'}
             </p>
           </div>
           <div>

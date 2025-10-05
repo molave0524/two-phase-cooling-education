@@ -246,7 +246,12 @@ function CartItemRow({
   onQuantityChange: (itemId: string, quantity: number) => void
   onRemove: (itemId: string) => void
 }) {
-  const mainImage = item.product.images[0]
+  // Handle both string[] and object[] image formats
+  const firstImage = item.product.images?.[0]
+  const mainImage = typeof firstImage === 'string'
+    ? { url: firstImage, altText: item.product.name }
+    : firstImage || { url: '/placeholder-product.jpg', altText: item.product.name }
+
   const currentPrice = item.selectedVariantId
     ? item.product.variants?.find(v => v.id === item.selectedVariantId)?.price || item.product.price
     : item.product.price
@@ -262,6 +267,7 @@ function CartItemRow({
               alt={mainImage?.altText || item.product.name}
               width={120}
               height={120}
+              unoptimized
               className={styles.cartItemImg}
             />
           </Link>

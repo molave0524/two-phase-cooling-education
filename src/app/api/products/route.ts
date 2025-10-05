@@ -18,10 +18,17 @@ export async function GET() {
     // Type assertion needed due to dual-database union type incompatibility
     const allProducts = await (db.select() as any).from(products)
 
+    // Filter out sunsetted and discontinued products (only show active products)
+    const activeProducts = allProducts.filter(
+      (product: Product) =>
+        product.status === 'active' &&
+        product.isAvailableForPurchase === true
+    )
+
     // Parse JSON fields if using SQLite (Postgres stores them natively)
     const parsedProducts = usePostgres
-      ? allProducts
-      : allProducts.map((product: Product) => ({
+      ? activeProducts
+      : activeProducts.map((product: Product) => ({
           ...product,
           features: JSON.parse(product.features as string),
           specifications: JSON.parse(product.specifications as string),
@@ -31,7 +38,11 @@ export async function GET() {
         }))
 
     return apiSuccess(parsedProducts, {
-      meta: { count: parsedProducts.length },
+      meta: {
+        count: parsedProducts.length,
+        total: allProducts.length,
+        filtered: allProducts.length - parsedProducts.length
+      },
     })
   } catch (error) {
     logger.error('Failed to fetch products', error)

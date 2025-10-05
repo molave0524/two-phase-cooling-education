@@ -8,6 +8,7 @@ import { CartItem } from '@/types/cart'
 import { db, orders as ordersTable, orderItems as orderItemsTable } from '@/db'
 import { eq, and, gte, lte, like, or, desc, count, sum } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
+import { createOrderItemSnapshots, validateProductsAvailable } from '@/services/order-snapshot'
 
 // Order types and interfaces
 export type OrderStatus =
@@ -139,8 +140,8 @@ function dbOrderToOrder(
       // Product details are stored in orderItem for historical record
       id: item.productId,
       name: item.productName,
-      slug: item.productId.toLowerCase().replace(/\s+/g, '-'),
-      sku: item.productId,
+      slug: item.productSlug || item.productId.toLowerCase().replace(/\s+/g, '-'),
+      sku: item.productSku,
       price: item.price,
       currency: 'USD',
       description: '',
@@ -285,6 +286,22 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
   const orderNumber = generateOrderNumber()
   const now = new Date()
 
+  // Validate all products are available
+  const productIds = params.items.map(item => item.productId)
+  const validation = await validateProductsAvailable(productIds)
+
+  if (!validation.valid) {
+    throw new Error(`Some products are no longer available: ${validation.unavailable.join(', ')}`)
+  }
+
+  // Create immutable snapshots of all cart items
+  const snapshots = await createOrderItemSnapshots(
+    params.items.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity
+    }))
+  )
+
   let dbOrder
   try {
     // Insert order into database
@@ -327,28 +344,28 @@ export async function createOrder(params: CreateOrderParams): Promise<Order> {
     throw error
   }
 
-  // Insert order items into database
+  // Insert order items with snapshots
   const dbOrderItems = await Promise.all(
-    params.items.map(async cartItem => {
-      const unitPrice = cartItem.selectedVariantId
-        ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.price ||
-          cartItem.product.price
-        : cartItem.product.price
-
+    snapshots.map(async snapshot => {
       // Type assertion needed due to dual-database union type incompatibility
       const [item] = await (db.insert as any)(orderItemsTable)
         .values({
           orderId: dbOrder.id,
-          productId: cartItem.productId,
-          productName: cartItem.product.name,
-          productSku: cartItem.product.sku || '', // SKU at time of order
-          productImage: cartItem.product.images?.[0]?.url || '', // Product image at time of order
-          variantId: cartItem.selectedVariantId || null,
-          variantName: cartItem.selectedVariantId
-            ? cartItem.product.variants?.find(v => v.id === cartItem.selectedVariantId)?.name
-            : null,
-          quantity: cartItem.quantity,
-          price: unitPrice, // Price per unit
+          productId: snapshot.productId,
+          productSku: snapshot.productSku,
+          productName: snapshot.productName,
+          productVersion: snapshot.productVersion,
+          productType: snapshot.productType,
+          productImage: snapshot.productImage,
+          componentTree: snapshot.componentTree,
+          quantity: snapshot.quantity,
+          basePrice: snapshot.basePrice,
+          includedComponentsPrice: snapshot.includedComponentsPrice,
+          optionalComponentsPrice: snapshot.optionalComponentsPrice,
+          price: snapshot.price,
+          lineTotal: snapshot.lineTotal,
+          currentProductId: snapshot.currentProductId,
+          createdAt: now,
         })
         .returning()
 

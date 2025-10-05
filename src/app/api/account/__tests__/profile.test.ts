@@ -6,8 +6,6 @@ import { NextRequest } from 'next/server'
 import { GET, PATCH } from '../profile/route'
 import { getServerSession } from 'next-auth'
 import { db } from '@/db'
-import { users } from '@/db/schema-pg'
-import { eq } from 'drizzle-orm'
 
 // Mock dependencies
 jest.mock('next-auth')
