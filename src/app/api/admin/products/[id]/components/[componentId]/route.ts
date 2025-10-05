@@ -35,7 +35,7 @@ export async function PATCH(
  * Remove component from product
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string; componentId: string } }
 ) {
   try {
