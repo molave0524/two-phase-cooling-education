@@ -18,15 +18,11 @@ export async function PATCH(
   try {
     const body = await request.json()
 
-    const updated = await updateComponent(
-      params.id,
-      params.componentId,
-      body
-    )
+    const updated = await updateComponent(params.id, params.componentId, body)
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error('Component update error:', error)
+    // console.error('Component update error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to update component' },
       { status: 400 }
@@ -47,7 +43,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Component removed successfully' })
   } catch (error) {
-    console.error('Component remove error:', error)
+    // console.error('Component remove error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to remove component' },
       { status: 500 }
