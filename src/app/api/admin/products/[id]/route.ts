@@ -14,7 +14,7 @@ import { isProductInOrders, createProductVersion } from '@/services/product-vers
 /**
  * GET /api/admin/products/:id
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const product = await db.query.products.findFirst({
       where: eq(products.id, params.id),
@@ -93,7 +93,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
  * DELETE /api/admin/products/:id
  * Delete product (only if not in orders)
  */
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const productId = params.id
 
