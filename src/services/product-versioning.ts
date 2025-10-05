@@ -8,7 +8,7 @@
 import { db } from '@/db'
 import { products, orderItems } from '@/db/schema-pg'
 import { eq, sql } from 'drizzle-orm'
-import { generateSKU, incrementVersion, parseSKU } from '@/lib/sku'
+import { incrementVersion, parseSKU } from '@/lib/sku'
 import type { Product } from '@/db/schema-pg'
 
 export interface ProductVersionOptions {
@@ -58,7 +58,7 @@ export async function createProductVersion(
   options: ProductVersionOptions = {}
 ): Promise<Product> {
   const currentProduct = await db.query.products.findFirst({
-    where: eq(products.id, productId)
+    where: eq(products.id, productId),
   })
 
   if (!currentProduct) {
@@ -73,52 +73,53 @@ export async function createProductVersion(
   const baseId = currentProduct.baseProductId || productId
   const newProductId = `${baseId}_v${skuComponents.version}`
 
-  const [newProduct] = await db.insert(products).values({
-    id: newProductId,
-    sku: newSKU,
-    skuPrefix: skuComponents.prefix,
-    skuCategory: skuComponents.category,
-    skuProductCode: skuComponents.productCode,
-    skuVersion: `V${skuComponents.version.toString().padStart(2, '0')}`,
+  const [newProduct] = await db
+    .insert(products)
+    .values({
+      id: newProductId,
+      sku: newSKU,
+      skuPrefix: skuComponents.prefix,
+      skuCategory: skuComponents.category,
+      skuProductCode: skuComponents.productCode,
+      skuVersion: `V${skuComponents.version.toString().padStart(2, '0')}`,
 
-    // Copy existing fields
-    name: currentProduct.name,
-    slug: `${currentProduct.slug}-v${skuComponents.version}`,
-    price: options.priceChange ?? currentProduct.price,
-    componentPrice: options.componentPriceChange ?? currentProduct.componentPrice,
-    originalPrice: currentProduct.originalPrice,
-    currency: currentProduct.currency,
-    description: currentProduct.description,
-    shortDescription: currentProduct.shortDescription,
-    features: currentProduct.features,
-    specifications: currentProduct.specifications,
-    images: currentProduct.images,
-    categories: currentProduct.categories,
-    tags: currentProduct.tags,
-    metaTitle: currentProduct.metaTitle,
-    metaDescription: currentProduct.metaDescription,
-    productType: currentProduct.productType,
-    inStock: currentProduct.inStock,
-    stockQuantity: currentProduct.stockQuantity,
-    estimatedShipping: currentProduct.estimatedShipping,
+      // Copy existing fields
+      name: currentProduct.name,
+      slug: `${currentProduct.slug}-v${skuComponents.version}`,
+      price: options.priceChange ?? currentProduct.price,
+      componentPrice: options.componentPriceChange ?? currentProduct.componentPrice,
+      originalPrice: currentProduct.originalPrice,
+      currency: currentProduct.currency,
+      description: currentProduct.description,
+      shortDescription: currentProduct.shortDescription,
+      features: currentProduct.features,
+      specifications: currentProduct.specifications,
+      images: currentProduct.images,
+      categories: currentProduct.categories,
+      tags: currentProduct.tags,
+      metaTitle: currentProduct.metaTitle,
+      metaDescription: currentProduct.metaDescription,
+      productType: currentProduct.productType,
+      inStock: currentProduct.inStock,
+      stockQuantity: currentProduct.stockQuantity,
+      estimatedShipping: currentProduct.estimatedShipping,
 
-    // Versioning fields
-    version: skuComponents.version,
-    baseProductId: baseId,
-    previousVersionId: productId,
+      // Versioning fields
+      version: skuComponents.version,
+      baseProductId: baseId,
+      previousVersionId: productId,
 
-    // Lifecycle
-    status: 'active',
-    isAvailableForPurchase: true,
+      // Lifecycle
+      status: 'active',
+      isAvailableForPurchase: true,
 
-    // Apply custom updates
-    ...options.updateFields,
-  }).returning()
+      // Apply custom updates
+      ...options.updateFields,
+    })
+    .returning()
 
   // Update old product to point to new version
-  await db.update(products)
-    .set({ replacedBy: newProductId })
-    .where(eq(products.id, productId))
+  await db.update(products).set({ replacedBy: newProductId }).where(eq(products.id, productId))
 
   return newProduct
 }
@@ -131,7 +132,8 @@ export async function sunsetProduct(
   reason: string,
   replacementProductId?: string
 ): Promise<void> {
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'sunset',
       isAvailableForPurchase: false,
@@ -145,17 +147,15 @@ export async function sunsetProduct(
 /**
  * Discontinue product (completely remove from system)
  */
-export async function discontinueProduct(
-  productId: string,
-  reason: string
-): Promise<void> {
+export async function discontinueProduct(productId: string, reason: string): Promise<void> {
   const inOrders = await isProductInOrders(productId)
 
   if (inOrders) {
     throw new Error('Cannot discontinue product that exists in orders. Use sunset instead.')
   }
 
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'discontinued',
       isAvailableForPurchase: false,
@@ -172,9 +172,7 @@ export async function getProductVersions(baseProductId: string): Promise<Product
   const versions = await db
     .select()
     .from(products)
-    .where(
-      sql`${products.baseProductId} = ${baseProductId} OR ${products.id} = ${baseProductId}`
-    )
+    .where(sql`${products.baseProductId} = ${baseProductId} OR ${products.id} = ${baseProductId}`)
     .orderBy(products.version)
 
   return versions

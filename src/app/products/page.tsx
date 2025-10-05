@@ -21,9 +21,7 @@ export default function ProductsPage() {
         // Handle new standardized response format
         if (result.success && result.data) {
           // Filter to only show standalone products (not individual components)
-          const standaloneProducts = result.data.filter(
-            (p: any) => p.productType === 'standalone'
-          )
+          const standaloneProducts = result.data.filter((p: any) => p.productType === 'standalone')
           setProducts(standaloneProducts)
         } else {
           // Handle error response
@@ -95,7 +93,7 @@ function ProductCard({ product }: { product: any }) {
         addItem(product, 1)
       }
     } catch (e) {
-      console.error('Failed to add to cart:', e)
+      logger.error('Failed to add to cart', e)
     }
   }
 
@@ -152,9 +150,11 @@ function ProductCard({ product }: { product: any }) {
         {product.features && Array.isArray(product.features) && product.features.length > 0 && (
           <div className={styles.featuresSection}>
             <div className={styles.featuresContainer}>
-              {product.features.slice(0, 3).map((feature, index) => (
+              {product.features.slice(0, 3).map((feature: any, index: number) => (
                 <span key={index} className={styles.featureTag}>
-                  {typeof feature === 'string' && feature.length > 25 ? `${feature.substring(0, 25)}...` : feature}
+                  {typeof feature === 'string' && feature.length > 25
+                    ? `${feature.substring(0, 25)}...`
+                    : feature}
                 </span>
               ))}
             </div>
@@ -184,17 +184,17 @@ function ProductCard({ product }: { product: any }) {
                 <span className={styles.specLabel}>Cooling:</span>
                 <p className={styles.specValue}>
                   {(product.specifications as any)?.cooling?.capacity ||
-                   (product.specifications as any)?.capacity ||
-                   'High Performance'}
+                    (product.specifications as any)?.capacity ||
+                    'High Performance'}
                 </p>
               </div>
               <div>
                 <span className={styles.specLabel}>Noise:</span>
                 <p className={styles.specValue}>
                   {(product.specifications as any)?.performance?.noiseLevel ||
-                   (product.specifications as any)?.environmental?.noiseLevel ||
-                   (product.specifications as any)?.noise ||
-                   'Quiet Operation'}
+                    (product.specifications as any)?.environmental?.noiseLevel ||
+                    (product.specifications as any)?.noise ||
+                    'Quiet Operation'}
                 </p>
               </div>
             </div>

@@ -8,17 +8,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   addComponent,
   getComponentTree,
-  calculateComponentsPrice
+  calculateComponentsPrice,
 } from '@/services/component-management'
 
 /**
  * GET /api/admin/products/:id/components
  * Get product component tree
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { searchParams } = new URL(request.url)
     const includePricing = searchParams.get('pricing') === 'true'
@@ -32,7 +29,7 @@ export async function GET(
 
     return NextResponse.json(tree)
   } catch (error) {
-    console.error('Component tree fetch error:', error)
+    // console.error('Component tree fetch error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch component tree' },
       { status: 500 }
@@ -44,10 +41,7 @@ export async function GET(
  * POST /api/admin/products/:id/components
  * Add component to product
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
 
@@ -58,14 +52,11 @@ export async function POST(
       isIncluded,
       priceOverride,
       displayName,
-      sortOrder
+      sortOrder,
     } = body
 
     if (!componentProductId) {
-      return NextResponse.json(
-        { error: 'componentProductId is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'componentProductId is required' }, { status: 400 })
     }
 
     const component = await addComponent({
@@ -76,12 +67,12 @@ export async function POST(
       isIncluded,
       priceOverride,
       displayName,
-      sortOrder
+      sortOrder,
     })
 
     return NextResponse.json(component, { status: 201 })
   } catch (error) {
-    console.error('Component add error:', error)
+    // console.error('Component add error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to add component' },
       { status: 400 }

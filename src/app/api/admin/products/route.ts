@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { products } from '@/db/schema-pg'
 import { generateSKU, parseSKU } from '@/lib/sku'
-import { eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 /**
  * GET /api/admin/products
@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
-    const category = searchParams.get('category')
     const available = searchParams.get('available')
 
     let query = db.select().from(products)
@@ -35,11 +34,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(productList)
   } catch (error) {
-    console.error('Product list error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    )
+    // console.error('Product list error:', error)
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
   }
 }
 
@@ -73,9 +69,19 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Validate required fields
-    if (!name || !category || !productCode || price === undefined || !description || !shortDescription) {
+    if (
+      !name ||
+      !category ||
+      !productCode ||
+      price === undefined ||
+      !description ||
+      !shortDescription
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields: name, category, productCode, price, description, shortDescription' },
+        {
+          error:
+            'Missing required fields: name, category, productCode, price, description, shortDescription',
+        },
         { status: 400 }
       )
     }
@@ -84,48 +90,54 @@ export async function POST(request: NextRequest) {
     const sku = generateSKU({
       category,
       productCode,
-      version: 1
+      version: 1,
     })
 
     const skuComponents = parseSKU(sku)
     const productId = `${category.toLowerCase()}_${productCode.toLowerCase()}_v1`
 
     // Create slug from name
-    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    const slug = name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
 
-    const [product] = await db.insert(products).values({
-      id: productId,
-      sku,
-      skuPrefix: skuComponents.prefix,
-      skuCategory: skuComponents.category,
-      skuProductCode: skuComponents.productCode,
-      skuVersion: `V${skuComponents.version.toString().padStart(2, '0')}`,
-      name,
-      slug,
-      price,
-      componentPrice,
-      currency: 'USD',
-      description,
-      shortDescription,
-      features,
-      specifications,
-      images,
-      categories,
-      tags,
-      productType,
-      inStock,
-      stockQuantity,
-      estimatedShipping,
-      metaTitle: metaTitle || name,
-      metaDescription: metaDescription || shortDescription,
-      version: 1,
-      status: 'active',
-      isAvailableForPurchase: true,
-    }).returning()
+    const [product] = await db
+      .insert(products)
+      .values({
+        id: productId,
+        sku,
+        skuPrefix: skuComponents.prefix,
+        skuCategory: skuComponents.category,
+        skuProductCode: skuComponents.productCode,
+        skuVersion: `V${skuComponents.version.toString().padStart(2, '0')}`,
+        name,
+        slug,
+        price,
+        componentPrice,
+        currency: 'USD',
+        description,
+        shortDescription,
+        features,
+        specifications,
+        images,
+        categories,
+        tags,
+        productType,
+        inStock,
+        stockQuantity,
+        estimatedShipping,
+        metaTitle: metaTitle || name,
+        metaDescription: metaDescription || shortDescription,
+        version: 1,
+        status: 'active',
+        isAvailableForPurchase: true,
+      })
+      .returning()
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {
-    console.error('Product creation error:', error)
+    // console.error('Product creation error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to create product' },
       { status: 500 }

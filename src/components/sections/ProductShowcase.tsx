@@ -95,10 +95,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   useEffect(() => {
     async function fetchProducts() {
       try {
-        console.log('[ProductShowcase] Fetching products from /api/products')
         const response = await fetch('/api/products')
         const result = await response.json()
-        console.log('[ProductShowcase] API response:', result)
 
         // Handle new standardized response format
         if (result.success && result.data) {
@@ -106,20 +104,16 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           const featured = result.data
             .filter((p: any) => p.productType === 'standalone')
             .slice(0, maxProducts)
-          console.log('[ProductShowcase] Featured products filtered:', featured.length)
           setFeaturedProducts(featured)
         } else {
           // Handle error response
-          console.error('[ProductShowcase] API error:', result.error)
           logger.error('Failed to fetch products', result.error)
           setFeaturedProducts([])
         }
       } catch (error) {
-        console.error('[ProductShowcase] Fetch error:', error)
         logger.error('Failed to fetch products', error)
         setFeaturedProducts([])
       } finally {
-        console.log('[ProductShowcase] Setting loading to false')
         setLoading(false)
       }
     }
@@ -137,7 +131,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         : ''
 
       const allImages = Array.isArray(product.images)
-        ? product.images.map((img: any) => typeof img === 'string' ? img : img.url)
+        ? product.images.map((img: any) => (typeof img === 'string' ? img : img.url))
         : []
 
       return {
@@ -185,9 +179,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
   // Update products when featuredProducts changes
   useEffect(() => {
-    console.log('[ProductShowcase] Converting featured products:', featuredProducts.length)
     const converted = convertToLegacyFormat(featuredProducts)
-    console.log('[ProductShowcase] Converted to legacy format:', converted.length)
     setProducts(converted)
   }, [featuredProducts])
 
@@ -218,7 +210,6 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // ============================================================================
 
   useEffect(() => {
-    console.log('[ProductShowcase] Filtering products, input:', products.length)
     let filtered = [...products]
 
     // Category filter
@@ -257,7 +248,6 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
       }
     })
 
-    console.log('[ProductShowcase] Filtered products result:', filtered.length)
     setFilteredProducts(filtered)
   }, [products, filters])
 
@@ -464,10 +454,6 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
           {/* Products Grid/List */}
           <div className={styles.productsSection}>
-            {(() => {
-              console.log('[ProductShowcase] Render - loading:', loading, 'filteredProducts:', filteredProducts.length)
-              return null
-            })()}
             {loading ? (
               <div className={styles.loadingState}>Loading products...</div>
             ) : filteredProducts.length === 0 ? (

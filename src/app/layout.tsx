@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { FloatingAIButton } from '@/components/ai/FloatingAIButton'
+import { EnvironmentBadge } from '@/components/EnvironmentBadge'
 import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
 
 // Apple-style system font stack for optimal performance and Apple look
@@ -194,6 +195,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             {/* Floating AI Assistant Button */}
             <FloatingAIButton />
+
+            {/* Environment Badge */}
+            <EnvironmentBadge />
           </ErrorBoundary>
 
           {/* Toast notifications handled in Providers */}

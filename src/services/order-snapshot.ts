@@ -9,7 +9,6 @@
 import { db } from '@/db'
 import { products, productComponents } from '@/db/schema-pg'
 import { eq } from 'drizzle-orm'
-import type { Product } from '@/db/schema-pg'
 
 export interface ComponentSnapshot {
   componentId: string
@@ -57,7 +56,7 @@ export async function createOrderItemSnapshot(
 ): Promise<OrderItemSnapshot> {
   // Get product
   const product = await db.query.products.findFirst({
-    where: eq(products.id, productId)
+    where: eq(products.id, productId),
   })
 
   if (!product) {
@@ -77,7 +76,7 @@ export async function createOrderItemSnapshot(
 
   // For each depth 1, get depth 2
   const componentTree: ComponentSnapshot[] = await Promise.all(
-    depth1Components.map(async (d1) => {
+    depth1Components.map(async (d1: any) => {
       const depth2Components = await db
         .select({
           rel: productComponents,
@@ -99,7 +98,7 @@ export async function createOrderItemSnapshot(
         isRequired: d1.rel.isRequired,
 
         // Depth 2 sub-components
-        components: depth2Components.map(d2 => ({
+        components: depth2Components.map((d2: any) => ({
           componentId: d2.comp.id,
           componentSku: d2.comp.sku,
           componentName: d2.rel.displayName ?? d2.comp.name,
@@ -108,7 +107,7 @@ export async function createOrderItemSnapshot(
           price: d2.rel.priceOverride ?? d2.comp.componentPrice ?? d2.comp.price,
           isIncluded: d2.rel.isIncluded,
           isRequired: d2.rel.isRequired,
-        }))
+        })),
       }
     })
   )
@@ -131,7 +130,7 @@ export async function createOrderItemSnapshot(
 
   // Get first image or empty string
   const images = product.images as string[] | null
-  const productImage = images && images.length > 0 ? images[0] : ''
+  const productImage: string = images && images.length > 0 ? images[0]! : ''
 
   return {
     productId: product.id,
@@ -161,9 +160,7 @@ export async function createOrderItemSnapshot(
 export async function createOrderItemSnapshots(
   items: Array<{ productId: string; quantity: number }>
 ): Promise<OrderItemSnapshot[]> {
-  return Promise.all(
-    items.map(item => createOrderItemSnapshot(item.productId, item.quantity))
-  )
+  return Promise.all(items.map(item => createOrderItemSnapshot(item.productId, item.quantity)))
 }
 
 /**
@@ -173,17 +170,17 @@ export async function validateProductsAvailable(
   productIds: string[]
 ): Promise<{ valid: boolean; unavailable: string[] }> {
   const products = await db.query.products.findMany({
-    where: (products, { inArray }) => inArray(products.id, productIds)
+    where: (p: any, { inArray }: any) => inArray(p.id, productIds),
   })
 
   const unavailable = productIds.filter(id => {
-    const product = products.find(p => p.id === id)
+    const product = products.find((p: any) => p.id === id)
     return !product || !product.isAvailableForPurchase || product.status !== 'active'
   })
 
   return {
     valid: unavailable.length === 0,
-    unavailable
+    unavailable,
   }
 }
 
