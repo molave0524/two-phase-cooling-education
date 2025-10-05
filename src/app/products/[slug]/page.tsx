@@ -56,7 +56,7 @@ export default function ProductPage() {
   }
 
   // Normalize images to handle both string[] and object[] formats
-  const normalizedImages = (product.images || []).map((img, idx) => {
+  const normalizedImages = (product.images || []).map(img => {
     if (typeof img === 'string') {
       return { url: img, altText: product.name, type: 'main' }
     }
@@ -239,7 +239,7 @@ export default function ProductPage() {
                     const actualIndex = thumbnailStartIndex + index
                     return (
                       <div
-                        key={image.id}
+                        key={image.url}
                         onClick={() => setSelectedImageIndex(actualIndex)}
                         onKeyDown={e => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -688,11 +688,11 @@ export default function ProductPage() {
                     textDecoration: 'none',
                     transition: 'all 0.2s ease',
                   }}
-                  onMouseEnter={(e) => {
+                  onMouseEnter={e => {
                     e.currentTarget.style.backgroundColor = '#f1f5f9'
                     e.currentTarget.style.borderColor = '#0284c7'
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseLeave={e => {
                     e.currentTarget.style.backgroundColor = '#f8fafc'
                     e.currentTarget.style.borderColor = '#e2e8f0'
                   }}
@@ -858,8 +858,8 @@ export default function ProductPage() {
             </h4>
             <p style={{ fontSize: '16px', color: '#475569', margin: 0 }}>
               {(product.specifications as any)?.performance?.noiseLevel ||
-               (product.specifications as any)?.environmental?.noiseLevel ||
-               'Quiet Operation'}
+                (product.specifications as any)?.environmental?.noiseLevel ||
+                'Quiet Operation'}
             </p>
           </div>
           <div>

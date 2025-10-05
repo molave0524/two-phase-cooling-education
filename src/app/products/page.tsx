@@ -150,7 +150,7 @@ function ProductCard({ product }: { product: any }) {
         {product.features && Array.isArray(product.features) && product.features.length > 0 && (
           <div className={styles.featuresSection}>
             <div className={styles.featuresContainer}>
-              {product.features.slice(0, 3).map((feature, index) => (
+              {product.features.slice(0, 3).map((feature: any, index: number) => (
                 <span key={index} className={styles.featureTag}>
                   {typeof feature === 'string' && feature.length > 25
                     ? `${feature.substring(0, 25)}...`

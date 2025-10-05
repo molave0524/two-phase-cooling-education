@@ -49,7 +49,7 @@ interface OrderData {
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const orderId = searchParams.get('id')
   const [orderData, setOrderData] = useState<OrderData | null>(null)
   const [error, setError] = useState<string | null>(null)

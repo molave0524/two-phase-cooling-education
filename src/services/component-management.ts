@@ -67,7 +67,7 @@ export async function wouldCreateCycle(
  * Check if adding component would exceed depth limit (max 2 levels)
  */
 export async function wouldExceedDepth(
-  parentProductId: string,
+  _parentProductId: string,
   componentProductId: string
 ): Promise<boolean> {
   // Check if component has sub-components with their own sub-components
@@ -85,9 +85,7 @@ export async function wouldExceedDepth(
 /**
  * Add component to product
  */
-export async function addComponent(
-  options: AddComponentOptions
-): Promise<ProductComponent> {
+export async function addComponent(options: AddComponentOptions): Promise<ProductComponent> {
   const {
     parentProductId,
     componentProductId,
@@ -96,13 +94,13 @@ export async function addComponent(
     isIncluded = true,
     priceOverride,
     displayName,
-    sortOrder = 0
+    sortOrder = 0,
   } = options
 
   // Validation 0: Check products exist
   const [parent, component] = await Promise.all([
     db.query.products.findFirst({ where: eq(products.id, parentProductId) }),
-    db.query.products.findFirst({ where: eq(products.id, componentProductId) })
+    db.query.products.findFirst({ where: eq(products.id, componentProductId) }),
   ])
 
   if (!parent) {
@@ -123,22 +121,23 @@ export async function addComponent(
   // Validation 2: Check depth limit
   const exceedsDepth = await wouldExceedDepth(parentProductId, componentProductId)
   if (exceedsDepth) {
-    throw new Error(
-      `Cannot add component: would exceed maximum depth of 2 levels`
-    )
+    throw new Error(`Cannot add component: would exceed maximum depth of 2 levels`)
   }
 
   // Insert component relationship
-  const [componentRel] = await db.insert(productComponents).values({
-    parentProductId,
-    componentProductId,
-    quantity,
-    isRequired,
-    isIncluded,
-    priceOverride,
-    displayName,
-    sortOrder
-  }).returning()
+  const [componentRel] = await db
+    .insert(productComponents)
+    .values({
+      parentProductId,
+      componentProductId,
+      quantity,
+      isRequired,
+      isIncluded,
+      priceOverride,
+      displayName,
+      sortOrder,
+    })
+    .returning()
 
   return componentRel
 }
@@ -150,7 +149,8 @@ export async function removeComponent(
   parentProductId: string,
   componentProductId: string
 ): Promise<void> {
-  await db.delete(productComponents)
+  await db
+    .delete(productComponents)
     .where(
       and(
         eq(productComponents.parentProductId, parentProductId),
@@ -171,7 +171,7 @@ export async function updateComponent(
     .update(productComponents)
     .set({
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     })
     .where(
       and(
@@ -205,7 +205,7 @@ export async function getComponentTree(productId: string): Promise<ComponentTree
 
   // Level 2: For each level 1, get sub-components
   const tree = await Promise.all(
-    level1.map(async (l1) => {
+    level1.map(async (l1: any) => {
       const level2 = await db
         .select({
           rel: productComponents,
@@ -219,10 +219,10 @@ export async function getComponentTree(productId: string): Promise<ComponentTree
       return {
         component: l1.comp,
         relationship: l1.rel,
-        subComponents: level2.map(l2 => ({
+        subComponents: level2.map((l2: any) => ({
           component: l2.comp,
-          relationship: l2.rel
-        }))
+          relationship: l2.rel,
+        })),
       }
     })
   )
@@ -244,10 +244,10 @@ export async function getDirectComponents(productId: string): Promise<ComponentT
     .where(eq(productComponents.parentProductId, productId))
     .orderBy(productComponents.sortOrder)
 
-  return components.map(c => ({
+  return components.map((c: any) => ({
     component: c.comp,
     relationship: c.rel,
-    subComponents: []
+    subComponents: [],
   }))
 }
 
@@ -261,7 +261,7 @@ export async function getParentProducts(componentId: string): Promise<Product[]>
     .innerJoin(products, eq(productComponents.parentProductId, products.id))
     .where(eq(productComponents.componentProductId, componentId))
 
-  return parents.map(p => p.product)
+  return parents.map((p: any) => p.product)
 }
 
 /**
@@ -278,17 +278,15 @@ export async function calculateComponentsPrice(productId: string): Promise<{
     return nodes.reduce((sum, node) => {
       if (node.relationship.isIncluded !== included) return sum
 
-      const price = node.relationship.priceOverride ??
-                   node.component.componentPrice ??
-                   node.component.price
+      const price =
+        node.relationship.priceOverride ?? node.component.componentPrice ?? node.component.price
       const nodePrice = price * node.relationship.quantity
 
       const subPrice = node.subComponents.reduce((subSum, sub) => {
         if (sub.relationship.isIncluded !== included) return subSum
-        const subPrice = sub.relationship.priceOverride ??
-                        sub.component.componentPrice ??
-                        sub.component.price
-        return subSum + (subPrice * sub.relationship.quantity)
+        const subPrice =
+          sub.relationship.priceOverride ?? sub.component.componentPrice ?? sub.component.price
+        return subSum + subPrice * sub.relationship.quantity
       }, 0)
 
       return sum + nodePrice + subPrice
@@ -301,6 +299,6 @@ export async function calculateComponentsPrice(productId: string): Promise<{
   return {
     includedPrice,
     optionalPrice,
-    totalPrice: includedPrice + optionalPrice
+    totalPrice: includedPrice + optionalPrice,
   }
 }

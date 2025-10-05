@@ -4,7 +4,6 @@
  */
 
 export function EnvironmentBadge() {
-  const env = process.env.NODE_ENV
   const isVercel = process.env.VERCEL === '1'
   const vercelEnv = process.env.VERCEL_ENV || 'unknown'
   const gitBranch = process.env.VERCEL_GIT_COMMIT_REF || ''
