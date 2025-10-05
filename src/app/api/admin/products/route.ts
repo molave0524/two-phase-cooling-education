@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { products } from '@/db/schema-pg'
 import { generateSKU, parseSKU } from '@/lib/sku'
-import { eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 /**
  * GET /api/admin/products
