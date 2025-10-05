@@ -5,7 +5,7 @@
 
 import { NextRequest } from 'next/server'
 import { db, products, productComponents } from '@/db'
-import { eq, desc, asc } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiNotFound, apiInternalError } from '@/lib/api-response'
 
@@ -45,13 +45,17 @@ export async function GET(
 
       // Sort by price (desc) then SKU (asc) and parse JSON fields
       components = componentRelations
-        .map(({ component, relation }) => ({
+        .map(({ component, relation }: any) => ({
           ...component,
           // Parse JSON fields if using SQLite
           features: usePostgres ? component.features : JSON.parse(component.features as string),
-          specifications: usePostgres ? component.specifications : JSON.parse(component.specifications as string),
+          specifications: usePostgres
+            ? component.specifications
+            : JSON.parse(component.specifications as string),
           images: usePostgres ? component.images : JSON.parse(component.images as string),
-          categories: usePostgres ? component.categories : JSON.parse(component.categories as string),
+          categories: usePostgres
+            ? component.categories
+            : JSON.parse(component.categories as string),
           tags: usePostgres ? component.tags : JSON.parse(component.tags as string),
           // Add relation metadata
           quantity: relation.quantity,
@@ -59,7 +63,7 @@ export async function GET(
           isIncluded: relation.isIncluded,
           displayOrder: relation.displayOrder,
         }))
-        .sort((a, b) => {
+        .sort((a: any, b: any) => {
           // Sort by price descending
           if (b.price !== a.price) {
             return b.price - a.price

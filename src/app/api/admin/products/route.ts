@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
-    const category = searchParams.get('category')
     const available = searchParams.get('available')
 
     let query = db.select().from(products)
