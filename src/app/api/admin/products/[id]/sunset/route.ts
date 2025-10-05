@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { sunsetProduct, discontinueProduct } from '@/services/product-versioning'
+import { sunsetProduct } from '@/services/product-versioning'
 
 /**
  * POST /api/admin/products/:id/sunset
