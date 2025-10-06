@@ -1,0 +1,221 @@
+.section {
+  margin-bottom: 8px;
+}
+
+.sectionHeader {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sectionHeader:hover {
+  background: #f9fafb;
+}
+
+.expandIcon {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.sectionIcon {
+  font-size: 16px;
+}
+
+.sectionContent {
+  padding: 0 24px 16px;
+}
+
+.tableItem {
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tableItem:hover {
+  background: #f3f4f6;
+  transform: translateX(2px);
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.tableName {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expandIcon {
+  font-size: 10px;
+  color: #6b7280;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.tableCount {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.tableMeta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.compareBtn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.compareBtn:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.compareBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.loadingMessage {
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.errorMessage {
+  padding: 12px;
+  text-align: center;
+  color: #ef4444;
+  font-size: 13px;
+  background: #fef2f2;
+  border-radius: 6px;
+}
+
+.emptyMessage {
+  padding: 16px 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px dashed #d1d5db;
+}
+
+.tableDetails {
+  padding: 12px;
+  margin: 0 12px 8px 12px;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.fieldsHeader {
+  display: flex;
+  padding: 8px 0;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.fieldHeaderItem {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fieldRow {
+  display: flex;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+  align-items: center;
+}
+
+.fieldRow:last-child {
+  border-bottom: none;
+}
+
+.fieldNameContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldName {
+  font-size: 13px;
+  color: #111827;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+.fieldNamePrimaryKey {
+  font-weight: 700;
+}
+
+.fieldNameForeignKey {
+  font-style: italic;
+}
+
+.requiredBadge {
+  color: #ef4444;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.uniqueBadge {
+  color: #3b82f6;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.fieldType {
+  font-size: 11px;
+  color: #3b82f6;
+  font-family: 'Courier New', monospace;
+  padding-left: 12px;
+}
+
+.fieldStat {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: right;
+}

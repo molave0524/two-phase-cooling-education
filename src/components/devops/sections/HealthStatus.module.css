@@ -1,0 +1,90 @@
+.section {
+  margin-bottom: 8px;
+}
+
+.sectionHeader {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sectionHeader:hover {
+  background: #f9fafb;
+}
+
+.expandIcon {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.sectionIcon {
+  font-size: 16px;
+}
+
+.sectionContent {
+  padding: 0 24px 16px;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: #f9fafb;
+}
+
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusIndicator.healthy {
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.statusIndicator.unhealthy {
+  background: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.statusLabel {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.statusValue {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.loadingMessage {
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.errorMessage {
+  padding: 12px;
+  text-align: center;
+  color: #ef4444;
+  font-size: 13px;
+  background: #fef2f2;
+  border-radius: 6px;
+}
