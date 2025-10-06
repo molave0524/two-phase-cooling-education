@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { sql } from 'drizzle-orm'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,13 +59,13 @@ export async function POST(request: NextRequest) {
 
     // Setup FDW for target environment if not local
     if (target !== 'local') {
-      console.log(`[Schema Compare] Setting up FDW for ${target}...`)
+      logger.info('Setting up FDW for schema comparison', { target })
       await setupFDW(target)
-      console.log(`[Schema Compare] FDW setup complete for ${target}`)
+      logger.info('FDW setup complete', { target })
     }
 
     const targetSchema = target === 'local' ? 'public' : `${target}_remote`
-    console.log(`[Schema Compare] Using target schema: ${targetSchema}`)
+    logger.info('Using target schema for comparison', { targetSchema })
 
     // Get tables from source (always local/public)
     const sourceTables = (await db.execute(sql`
@@ -99,9 +100,9 @@ export async function POST(request: NextRequest) {
     const targetTableNames = new Set(targetTables.map((t: { tablename: string }) => t.tablename))
 
     // Find table differences
-    const tablesOnlyInSource = Array.from(sourceTableNames).filter((t) => !targetTableNames.has(t))
-    const tablesOnlyInTarget = Array.from(targetTableNames).filter((t) => !sourceTableNames.has(t))
-    const tablesInBoth = Array.from(sourceTableNames).filter((t) => targetTableNames.has(t))
+    const tablesOnlyInSource = Array.from(sourceTableNames).filter(t => !targetTableNames.has(t))
+    const tablesOnlyInTarget = Array.from(targetTableNames).filter(t => !sourceTableNames.has(t))
+    const tablesInBoth = Array.from(sourceTableNames).filter(t => targetTableNames.has(t))
 
     // Compare columns for tables in both
     const columnDifferences: ColumnDifference[] = []
@@ -232,7 +233,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('[Schema Comparison Error]', error)
+    logger.error('Schema comparison failed', { error })
     return NextResponse.json(
       {
         error: 'Failed to compare schemas',
@@ -249,7 +250,7 @@ async function setupFDW(environment: string) {
 
   if (!connectionUrl) {
     // Instead of throwing, return gracefully - FDW comparison not available
-    console.warn(`[FDW Setup] Missing environment variable: ${envVar}. Skipping FDW setup.`)
+    logger.warn('Missing environment variable for FDW setup', { envVar })
     return
   }
 
@@ -266,26 +267,29 @@ async function setupFDW(environment: string) {
     `)) as Array<{ count: number }>
 
     if (serverExists && serverExists[0] && serverExists[0].count > 0) {
-      console.log(`[FDW Setup] Server ${serverName} already exists, skipping setup`)
+      logger.info('FDW server already exists, skipping setup', { serverName })
       return
     }
 
-    console.log(`[FDW Setup] Setting up FDW for ${environment}...`)
+    logger.info('Setting up FDW', { environment })
 
     // Step 0: Call stored procedure on remote to stage metadata tables for comparison
-    console.log(`[FDW Setup] Calling usp_stage_pg_metadata_tables_for_schema_comparison() on ${environment}...`)
-    await db.execute(sql.raw(`
+    logger.info('Calling stored procedure for schema comparison', { environment })
+    await db.execute(
+      sql.raw(`
       CREATE EXTENSION IF NOT EXISTS dblink;
 
       SELECT dblink_exec(
         'host=${url.hostname} port=${url.port || '5432'} dbname=${url.pathname.slice(1)} user=${url.username} password=${url.password} sslmode=require',
         'CALL public.usp_stage_pg_metadata_tables_for_schema_comparison()'
       );
-    `))
-    console.log(`[FDW Setup] Successfully staged metadata tables on ${environment}`)
+    `)
+    )
+    logger.info('Successfully staged metadata tables', { environment })
 
     // Setup FDW
-    await db.execute(sql.raw(`
+    await db.execute(
+      sql.raw(`
       CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 
       CREATE SERVER ${serverName}
@@ -308,11 +312,12 @@ async function setupFDW(environment: string) {
       IMPORT FOREIGN SCHEMA public
       FROM SERVER ${serverName}
       INTO ${schemaName};
-    `))
+    `)
+    )
 
-    console.log(`[FDW Setup] FDW setup complete for ${environment}`)
+    logger.info('FDW setup complete', { environment })
   } catch (error) {
-    console.error('[FDW Setup Error]', error)
+    logger.error('FDW setup error', { error, environment })
     // If FDW already exists, continue
     if (error instanceof Error && !error.message.includes('already exists')) {
       throw error
@@ -329,31 +334,25 @@ function detectBreakingChanges(
 
   // Tables only in source (missing in target - would break deployment to target)
   if (tablesOnlyInSource.length > 0) {
-    changes.push(
-      `Tables missing in target: ${tablesOnlyInSource.join(', ')}`
-    )
+    changes.push(`Tables missing in target: ${tablesOnlyInSource.join(', ')}`)
   }
 
   // Tables only in target (missing in source - would break if code expects them)
   if (tablesOnlyInTarget.length > 0) {
-    changes.push(
-      `Tables missing in source: ${tablesOnlyInTarget.join(', ')}`
-    )
+    changes.push(`Tables missing in source: ${tablesOnlyInTarget.join(', ')}`)
   }
 
   // Removed columns (breaking) - only for tables that exist in both
-  const removedColumns = columnDifferences.filter((d) => d.status === 'removed')
+  const removedColumns = columnDifferences.filter(d => d.status === 'removed')
   if (removedColumns.length > 0) {
-    changes.push(
-      `Columns removed: ${removedColumns.map((c) => `${c.table}.${c.column}`).join(', ')}`
-    )
+    changes.push(`Columns removed: ${removedColumns.map(c => `${c.table}.${c.column}`).join(', ')}`)
   }
 
   // Modified columns (potentially breaking) - only for tables that exist in both
-  const modifiedColumns = columnDifferences.filter((d) => d.status === 'modified')
+  const modifiedColumns = columnDifferences.filter(d => d.status === 'modified')
   if (modifiedColumns.length > 0) {
     changes.push(
-      `Columns modified (type changes): ${modifiedColumns.map((c) => `${c.table}.${c.column}`).join(', ')}`
+      `Columns modified (type changes): ${modifiedColumns.map(c => `${c.table}.${c.column}`).join(', ')}`
     )
   }
 
