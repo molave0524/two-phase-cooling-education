@@ -1,0 +1,266 @@
+name: Schema Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/db/schema-pg.ts'
+      - 'drizzle/**/*.sql'
+  workflow_dispatch:
+
+jobs:
+  validate-schema:
+    name: Validate Database Schema
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for schema changes
+        id: schema-check
+        run: |
+          # Check if schema file was modified
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "src/db/schema-pg.ts"; then
+            echo "schema_changed=true" >> $GITHUB_OUTPUT
+            echo "Schema file was modified"
+          else
+            echo "schema_changed=false" >> $GITHUB_OUTPUT
+            echo "No schema changes detected"
+          fi
+
+      - name: Check for migration files
+        id: migration-check
+        if: steps.schema-check.outputs.schema_changed == 'true'
+        run: |
+          # Check if migration files exist for schema changes
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "drizzle/postgres/.*\.sql"; then
+            echo "migration_exists=true" >> $GITHUB_OUTPUT
+            echo "Migration files found"
+          else
+            echo "migration_exists=false" >> $GITHUB_OUTPUT
+            echo "No migration files found"
+          fi
+
+      - name: Fail if schema changed without migration
+        if: steps.schema-check.outputs.schema_changed == 'true' && steps.migration-check.outputs.migration_exists == 'false'
+        run: |
+          echo "::error::Schema was modified but no migration file was added!"
+          echo "::error::Please run 'npm run db:generate' to create a migration file"
+          exit 1
+
+      - name: Validate migration SQL syntax
+        if: steps.migration-check.outputs.migration_exists == 'true'
+        run: |
+          # Find new migration files
+          for file in $(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep "drizzle/postgres/.*\.sql"); do
+            echo "Validating SQL syntax in $file"
+            # Basic SQL syntax validation (you can enhance this)
+            if ! grep -qiE "^(CREATE|ALTER|DROP|INSERT|UPDATE|DELETE)" "$file"; then
+              echo "::warning::$file may not contain valid SQL statements"
+            fi
+          done
+
+      - name: Check for destructive operations
+        if: steps.migration-check.outputs.migration_exists == 'true'
+        id: destructive-check
+        run: |
+          DESTRUCTIVE=false
+          for file in $(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep "drizzle/postgres/.*\.sql"); do
+            if grep -qiE "(DROP TABLE|DROP COLUMN|ALTER.*DROP)" "$file"; then
+              echo "::warning::Destructive operation detected in $file"
+              DESTRUCTIVE=true
+            fi
+          done
+          echo "has_destructive=$DESTRUCTIVE" >> $GITHUB_OUTPUT
+
+      - name: Require approval for destructive changes
+        if: steps.destructive-check.outputs.has_destructive == 'true'
+        run: |
+          echo "::warning::This PR contains destructive database operations"
+          echo "::warning::Manual approval from a tech lead is required"
+          echo "::warning::Ensure you have a rollback plan documented in the PR description"
+
+      - name: Comment on PR
+        if: steps.schema-check.outputs.schema_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+
+            // Get list of changed files
+            const changedFiles = execSync('git diff --name-only origin/${{ github.base_ref }}...HEAD')
+              .toString()
+              .split('\n')
+              .filter(f => f.length > 0);
+
+            const schemaChanged = changedFiles.includes('src/db/schema-pg.ts');
+            const migrationFiles = changedFiles.filter(f => f.startsWith('drizzle/postgres/') && f.endsWith('.sql'));
+
+            let comment = '## 🗃️ Database Schema Validation\n\n';
+
+            if (schemaChanged) {
+              comment += '✅ Schema file modified: `src/db/schema-pg.ts`\n\n';
+            }
+
+            if (migrationFiles.length > 0) {
+              comment += '✅ Migration files added:\n';
+              migrationFiles.forEach(f => {
+                comment += `- \`${f}\`\n`;
+              });
+              comment += '\n';
+            } else if (schemaChanged) {
+              comment += '❌ **No migration file found!**\n';
+              comment += 'Please run `npm run db:generate` to create a migration.\n\n';
+            }
+
+            // Check for destructive operations
+            let hasDestructive = false;
+            for (const file of migrationFiles) {
+              try {
+                const content = fs.readFileSync(file, 'utf8');
+                if (content.match(/DROP\s+(TABLE|COLUMN)|ALTER.*DROP/i)) {
+                  hasDestructive = true;
+                  break;
+                }
+              } catch (e) {
+                // File might not exist in checkout
+              }
+            }
+
+            if (hasDestructive) {
+              comment += '⚠️ **Destructive operations detected**\n';
+              comment += 'This PR contains operations that may cause data loss.\n';
+              comment += 'Please ensure:\n';
+              comment += '- [ ] Rollback plan is documented\n';
+              comment += '- [ ] Database backup is scheduled\n';
+              comment += '- [ ] Tech lead approval obtained\n\n';
+            }
+
+            comment += '### 📋 Pre-Deployment Checklist\n';
+            comment += '- [ ] Schema comparison completed via DevOps tool\n';
+            comment += '- [ ] Migration tested locally\n';
+            comment += '- [ ] No breaking changes (or approved if breaking)\n';
+            comment += '- [ ] Rollback plan documented (if needed)\n\n';
+
+            comment += '### 🔗 Useful Links\n';
+            comment += '- [Database Change Management Docs](../blob/develop/docs/DATABASE_CHANGE_MANAGEMENT.md)\n';
+            comment += '- [Schema Comparison Tool](https://dev.yourapp.com/devops/schema-comparison)\n';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  schema-comparison:
+    name: Compare Schema with DEV
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup local database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          # Start PostgreSQL in Docker
+          docker run -d \
+            --name postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=test_db \
+            -p 5432:5432 \
+            postgres:16-alpine
+
+          # Wait for PostgreSQL to be ready
+          sleep 5
+
+          # Run migrations to get local schema
+          npm run db:migrate
+
+      - name: Compare schemas
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          DEV_POSTGRES_URL: ${{ secrets.DEV_POSTGRES_URL }}
+        run: |
+          # This would call your schema comparison API
+          # For now, just validate that DEV_POSTGRES_URL is set
+          if [ -z "$DEV_POSTGRES_URL" ]; then
+            echo "::warning::DEV_POSTGRES_URL secret not configured"
+            echo "::warning::Schema comparison with DEV environment skipped"
+            exit 0
+          fi
+
+          echo "Schema comparison with DEV would run here"
+          echo "TODO: Implement API call to /api/devops/database/compare"
+
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker stop postgres && docker rm postgres
+
+  migration-order-check:
+    name: Verify Migration Order
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check migration file naming
+        run: |
+          # Ensure migration files follow naming convention: XXXX_description.sql
+          for file in $(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep "drizzle/postgres/.*\.sql"); do
+            filename=$(basename "$file")
+            if ! echo "$filename" | grep -qE "^[0-9]{4}_.*\.sql$"; then
+              echo "::error::Migration file $file doesn't follow naming convention"
+              echo "::error::Expected format: XXXX_description.sql (e.g., 0001_add_users_table.sql)"
+              exit 1
+            fi
+          done
+
+          echo "All migration files follow naming convention"
+
+      - name: Check for migration conflicts
+        run: |
+          # Check if migration number already exists
+          for file in $(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep "drizzle/postgres/.*\.sql"); do
+            filename=$(basename "$file")
+            number=$(echo "$filename" | grep -oE "^[0-9]{4}")
+
+            # Check if this number exists in the base branch
+            if git ls-tree -r --name-only origin/${{ github.base_ref }} drizzle/postgres/ | grep -q "^drizzle/postgres/${number}_"; then
+              echo "::error::Migration number $number already exists in base branch"
+              echo "::error::Please renumber your migration to avoid conflicts"
+              exit 1
+            fi
+          done
+
+          echo "No migration number conflicts detected"
