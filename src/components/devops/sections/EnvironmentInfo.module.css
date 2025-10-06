@@ -1,0 +1,78 @@
+.section {
+  margin-bottom: 8px;
+}
+
+.sectionHeader {
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sectionHeader:hover {
+  background: #f9fafb;
+}
+
+.expandIcon {
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+
+.sectionIcon {
+  font-size: 16px;
+}
+
+.sectionContent {
+  padding: 0 24px 16px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.infoItem:hover {
+  background: #f3f4f6;
+}
+
+.infoLabel {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 13px;
+  color: #111827;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+.loadingMessage {
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.errorMessage {
+  padding: 12px;
+  text-align: center;
+  color: #ef4444;
+  font-size: 13px;
+  background: #fef2f2;
+  border-radius: 6px;
+}

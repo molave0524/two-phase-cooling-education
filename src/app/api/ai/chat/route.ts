@@ -309,8 +309,18 @@ ${messages
       },
     })
   } catch (error) {
-    logger.error('Failed to generate AI response', { context: 'AI API', error })
-    return apiInternalError('Failed to generate AI response', { error })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    logger.error('Failed to generate AI response', {
+      context: 'AI API',
+      error: errorMessage,
+      stack: errorStack,
+      hasApiKey: !!process.env.GEMINI_API_KEY
+    })
+    return apiInternalError('Failed to generate AI response: ' + errorMessage, {
+      error: errorMessage,
+      hasApiKey: !!process.env.GEMINI_API_KEY
+    })
   }
 }
 
