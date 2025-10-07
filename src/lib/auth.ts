@@ -8,76 +8,24 @@ import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import GitHubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { DrizzleAdapter } from '@auth/drizzle-adapter'
+// Temporarily disable Drizzle adapter to fix Jest worker issue
+// import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '@/db'
-import { users, accounts, sessions, verificationTokens } from '@/db/schema-pg'
+import { users } from '@/db/schema-pg'
 import { verifyPassword } from '@/lib/password'
 import { eq } from 'drizzle-orm'
-import { randomUUID } from 'crypto'
 import { logger } from '@/lib/logger'
 
-const adapter = DrizzleAdapter(db as any, {
-  usersTable: users as any,
-  accountsTable: accounts as any,
-  sessionsTable: sessions as any,
-  verificationTokensTable: verificationTokens as any,
-}) as any
-
-// Override getUserByAccount to handle errors gracefully
-const originalGetUserByAccount = adapter.getUserByAccount
-adapter.getUserByAccount = async (providerAccountId: any) => {
-  try {
-    return await originalGetUserByAccount(providerAccountId)
-  } catch (error) {
-    logger.error('[auth] getUserByAccount error:', error)
-    // Return null if account doesn't exist (first time sign in)
-    return null
-  }
-}
-
-// Override getUserByEmail to handle errors gracefully
-const originalGetUserByEmail = adapter.getUserByEmail
-adapter.getUserByEmail = async (email: string) => {
-  try {
-    return await originalGetUserByEmail(email)
-  } catch (error) {
-    logger.error('[auth] getUserByEmail error:', error)
-    // Return null if user doesn't exist (first time sign in)
-    return null
-  }
-}
-
-// Override createUser to handle emailVerified properly
-const originalCreateUser = adapter.createUser
-adapter.createUser = async (user: any) => {
-  try {
-    logger.info('[auth] Creating user:', { email: user.email, emailVerified: user.emailVerified })
-    // Ensure emailVerified is a proper Date object or null
-    const userData = {
-      ...user,
-      emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
-    }
-    return await originalCreateUser(userData)
-  } catch (error) {
-    logger.error('[auth] createUser error:', error)
-    throw error
-  }
-}
-
-// Override linkAccount to generate IDs
-const originalLinkAccount = adapter.linkAccount
-adapter.linkAccount = async (account: any) => {
-  return originalLinkAccount({ ...account, id: account.id || randomUUID() })
-}
-
-// Override createSession to generate IDs
-const originalCreateSession = adapter.createSession
-adapter.createSession = async (session: any) => {
-  return originalCreateSession({ ...session, id: session.id || randomUUID() })
-}
+// Temporarily removed adapter to fix Jest worker issues on Windows + Node v24
+// const adapter = DrizzleAdapter(db as any, {
+//   usersTable: users as any,
+//   accountsTable: accounts as any,
+//   sessionsTable: sessions as any,
+//   verificationTokensTable: verificationTokens as any,
+// }) as any
 
 export const authOptions: NextAuthOptions = {
-  adapter,
+  // adapter: removed temporarily to fix worker issues
 
   providers: [
     GoogleProvider({
@@ -163,6 +111,7 @@ export const authOptions: NextAuthOptions = {
 
   events: {
     async signIn({ user }) {
+      logger.info('[auth] User signed in', { userId: user.id, email: user.email })
       // Auto-link guest orders when user signs in
       if (user.email) {
         try {
@@ -177,8 +126,30 @@ export const authOptions: NextAuthOptions = {
             )
         } catch (error) {
           // Silently fail - order linking can be done manually later
+          logger.warn('[auth] Failed to link guest orders', { error })
         }
       }
+    },
+    async signOut({ session }) {
+      logger.info('[auth] User signed out', { sessionId: session?.user?.id })
+    },
+    async linkAccount({ user, account }) {
+      logger.info('[auth] Account linked', {
+        userId: user.id,
+        provider: account.provider,
+      })
+    },
+  },
+
+  logger: {
+    error(code, metadata) {
+      logger.error(`[auth] NextAuth Error: ${code}`, new Error(code), metadata as any)
+    },
+    warn(code) {
+      logger.warn(`[auth] NextAuth Warning: ${code}`)
+    },
+    debug(code, metadata) {
+      logger.debug(`[auth] NextAuth Debug: ${code}`, metadata as any)
     },
   },
 

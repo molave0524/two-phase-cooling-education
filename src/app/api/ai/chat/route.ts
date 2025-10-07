@@ -315,11 +315,10 @@ ${messages
       context: 'AI API',
       error: errorMessage,
       stack: errorStack,
-      hasApiKey: !!process.env.GEMINI_API_KEY
+      hasApiKey: !!process.env.GEMINI_API_KEY,
     })
     return apiInternalError('Failed to generate AI response: ' + errorMessage, {
       error: errorMessage,
-      hasApiKey: !!process.env.GEMINI_API_KEY
     })
   }
 }
