@@ -61,11 +61,6 @@ export function DevOpsDrawer({ isOpen, onClose }: DevOpsDrawerProps) {
     }
   }, [isOpen])
 
-  const handleRefresh = () => {
-    setLastUpdated(new Date())
-    // Query invalidation will be handled by React Query
-  }
-
   const getTimeSinceUpdate = () => {
     const seconds = Math.floor((new Date().getTime() - lastUpdated.getTime()) / 1000)
     if (seconds < 60) return `${seconds}s ago`
