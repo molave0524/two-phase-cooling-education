@@ -10,8 +10,6 @@ import GitHubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
 // Temporarily disable Drizzle adapter to fix Jest worker issue
 // import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { db } from '@/db'
-import { users } from '@/db/schema-pg'
 import { verifyPassword } from '@/lib/password'
 import { eq } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
@@ -48,6 +46,10 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password required')
         }
+
+        // Lazy load database to avoid build-time import
+        const { db } = await import('@/db')
+        const { users } = await import('@/db/schema-pg')
 
         // Find user by email
         const [user] = await (db as any)
@@ -117,6 +119,8 @@ export const authOptions: NextAuthOptions = {
       // Auto-link guest orders when user signs in
       if (user.email) {
         try {
+          // Lazy load database to avoid build-time import
+          const { db } = await import('@/db')
           const { orders } = await import('@/db/schema-pg')
           const { sql } = await import('drizzle-orm')
 
