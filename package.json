@@ -31,7 +31,10 @@
     "db:migrate:dryrun": "tsx scripts/migrate-dryrun.ts",
     "db:migrate:run": "tsx scripts/migrate.ts",
     "db:fix-dev": "tsx scripts/fix-dev-schema.ts",
-    "db:migrate:dev": "tsx scripts/apply-migration-dev.ts"
+    "db:migrate:dev": "tsx scripts/apply-migration-dev.ts",
+    "deploy": "node -e \"console.error('❌ Use npm run deploy:safe instead'); process.exit(1)\"",
+    "deploy:safe": "powershell -ExecutionPolicy Bypass -File scripts/deploy-safe.ps1",
+    "deploy:check": "git branch --show-current"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
