@@ -8,7 +8,7 @@ import { useCartStore } from '@/stores/cartStore'
 import { stripePromise } from '@/lib/stripe'
 import { ShippingForm } from '@/components/checkout/ShippingForm'
 import { PaymentForm } from '@/components/checkout/PaymentForm'
-import { Order, OrderCustomer, OrderShippingAddress } from '@/lib/orders'
+import { Order, OrderCustomer, OrderShippingAddress } from '@/types/order'
 import { CART_CONFIG } from '@/constants'
 import {
   TruckIcon,
