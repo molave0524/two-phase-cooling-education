@@ -8,14 +8,17 @@ import { logger } from '@/lib/logger'
 import styles from './VideoShowcase.module.css'
 
 // Dynamic import for performance optimization
-const VideoPlayer = dynamic(() => import('@/components/video/VideoPlayer').then(mod => mod.default), {
-  loading: () => (
-    <div className='w-full h-64 bg-secondary-100 rounded-lg flex items-center justify-center'>
-      <div className='text-secondary-600'>Loading video player...</div>
-    </div>
-  ),
-  ssr: false,
-})
+const VideoPlayer = dynamic(
+  () => import('@/components/video/VideoPlayer').then(mod => ({ default: mod.VideoPlayer })),
+  {
+    loading: () => (
+      <div className='w-full h-64 bg-secondary-100 rounded-lg flex items-center justify-center'>
+        <div className='text-secondary-600'>Loading video player...</div>
+      </div>
+    ),
+    ssr: false,
+  }
+)
 // Mock type for demo mode
 interface Video {
   id: string
