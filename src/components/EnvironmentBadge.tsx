@@ -5,37 +5,38 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DevOpsDrawer } from './devops/DevOpsDrawer'
 
 export function EnvironmentBadge() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const isVercel = process.env.VERCEL === '1'
-  const vercelEnv = process.env.VERCEL_ENV || 'unknown'
-  const gitBranch = process.env.VERCEL_GIT_COMMIT_REF || ''
+  const [envLabel, setEnvLabel] = useState('LOCAL')
+  const [bgColor, setBgColor] = useState('#6b7280')
 
-  // Determine environment label
-  let envLabel = 'LOCAL'
-  let bgColor = '#6b7280' // gray
+  useEffect(() => {
+    // Fetch environment detection from API
+    fetch('/api/devops/environment/detect')
+      .then(res => res.json())
+      .then(data => {
+        const env = data.environment.toUpperCase()
+        setEnvLabel(env)
 
-  if (isVercel) {
-    if (vercelEnv === 'production') {
-      envLabel = 'PROD'
-      bgColor = '#10b981' // green
-    } else if (vercelEnv === 'preview') {
-      // Use git branch to determine environment
-      if (gitBranch === 'develop') {
-        envLabel = 'DEV'
-        bgColor = '#3b82f6' // blue
-      } else if (gitBranch === 'uat') {
-        envLabel = 'UAT'
-        bgColor = '#f59e0b' // orange
-      } else {
-        envLabel = 'PREVIEW'
-        bgColor = '#8b5cf6' // purple
-      }
-    }
-  }
+        // Set colors based on environment
+        const colors: Record<string, string> = {
+          LOCAL: '#6b7280', // gray
+          DEV: '#3b82f6', // blue
+          UAT: '#f59e0b', // orange
+          PROD: '#10b981', // green
+          PREVIEW: '#8b5cf6', // purple
+        }
+        setBgColor(colors[env] || '#6b7280')
+      })
+      .catch(() => {
+        // Fallback to LOCAL on error
+        setEnvLabel('LOCAL')
+        setBgColor('#6b7280')
+      })
+  }, [])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
