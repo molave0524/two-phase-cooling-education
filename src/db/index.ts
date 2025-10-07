@@ -13,9 +13,18 @@ const connectionString =
   'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
 
 // Validate connection string
-if (!connectionString || connectionString === 'undefined') {
+if (!connectionString || connectionString === 'undefined' || connectionString === 'null') {
   throw new Error(
-    'DATABASE_URL or POSTGRES_URL environment variable is required but not set. Please configure your database connection string.'
+    'DATABASE_URL or POSTGRES_URL environment variable is required but not set. Please configure your database connection string in Vercel environment variables.'
+  )
+}
+
+// Validate URL format
+try {
+  new URL(connectionString)
+} catch (error) {
+  throw new Error(
+    `Invalid DATABASE_URL format: "${connectionString}". Please ensure it's a valid PostgreSQL connection string (postgresql://...)`
   )
 }
 
