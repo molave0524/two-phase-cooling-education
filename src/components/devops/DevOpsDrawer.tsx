@@ -15,6 +15,15 @@ interface DevOpsDrawerProps {
 
 export function DevOpsDrawer({ isOpen, onClose }: DevOpsDrawerProps) {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [environment, setEnvironment] = useState<string>('local')
+
+  // Fetch environment on mount
+  useEffect(() => {
+    fetch('/api/devops/environment/detect')
+      .then(res => res.json())
+      .then(data => setEnvironment(data.environment))
+      .catch(() => setEnvironment('unknown'))
+  }, [])
 
   // Update timestamp periodically
   useEffect(() => {
@@ -108,16 +117,15 @@ export function DevOpsDrawer({ isOpen, onClose }: DevOpsDrawerProps) {
             <div className={styles.drawerFooter}>
               <div className={styles.lastUpdated}>Updated {getTimeSinceUpdate()}</div>
               <div className={styles.footerActions}>
-                <a
-                  href="/devops/schema-comparison"
-                  className={styles.dbBtn}
-                  aria-label="Open Schema Comparison"
-                >
-                  🗄️ DB
-                </a>
-                <button className={styles.refreshBtn} onClick={handleRefresh}>
-                  ↻ Refresh
-                </button>
+                {environment === 'local' && (
+                  <a
+                    href='/devops/schema-comparison'
+                    className={styles.dbBtn}
+                    aria-label='Open Schema Comparison'
+                  >
+                    🗄️ DB
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

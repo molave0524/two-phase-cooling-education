@@ -12,6 +12,7 @@ export function EnvironmentBadge() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [envLabel, setEnvLabel] = useState('LOCAL')
   const [bgColor, setBgColor] = useState('#6b7280')
+  const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
     // Fetch environment detection from API
@@ -20,6 +21,11 @@ export function EnvironmentBadge() {
       .then(data => {
         const env = data.environment.toUpperCase()
         setEnvLabel(env)
+
+        // Hide in PROD environment
+        if (env === 'PROD') {
+          setIsVisible(false)
+        }
 
         // Set colors based on environment
         const colors: Record<string, string> = {
@@ -43,6 +49,11 @@ export function EnvironmentBadge() {
       e.preventDefault()
       setIsDrawerOpen(true)
     }
+  }
+
+  // Don't render anything in PROD
+  if (!isVisible) {
+    return null
   }
 
   return (
