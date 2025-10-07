@@ -22,6 +22,9 @@ export async function GET() {
     if (process.env.NEXTAUTH_URL) {
       return process.env.NEXTAUTH_URL
     }
+    if (process.env.VERCEL_BRANCH_URL) {
+      return `https://${process.env.VERCEL_BRANCH_URL}`
+    }
     if (process.env.VERCEL_URL) {
       return `https://${process.env.VERCEL_URL}`
     }
@@ -32,6 +35,7 @@ export async function GET() {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL ? 'Set ✓' : 'Not set ✗',
     NEXTAUTH_URL_value: process.env.NEXTAUTH_URL || 'empty',
     VERCEL_URL: process.env.VERCEL_URL || 'Not set',
+    VERCEL_BRANCH_URL: process.env.VERCEL_BRANCH_URL || 'Not set',
     computed_nextauth_url: getNextAuthUrl(),
     expected_redirect_uri: `${getNextAuthUrl()}/api/auth/callback/google`,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID

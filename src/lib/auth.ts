@@ -22,10 +22,15 @@ import { logger } from '@/lib/logger'
 //   verificationTokensTable: verificationTokens as any,
 // }) as any
 
-// Auto-detect NEXTAUTH_URL on Vercel using VERCEL_URL
+// Auto-detect NEXTAUTH_URL on Vercel using VERCEL_BRANCH_URL for stable git-based URLs
 const getNextAuthUrl = () => {
   if (process.env.NEXTAUTH_URL) {
     return process.env.NEXTAUTH_URL
+  }
+  // Use VERCEL_BRANCH_URL for stable git-branch URLs (e.g., *-git-develop-*.vercel.app)
+  // Falls back to VERCEL_URL for deployment-specific URLs
+  if (process.env.VERCEL_BRANCH_URL) {
+    return `https://${process.env.VERCEL_BRANCH_URL}`
   }
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`
