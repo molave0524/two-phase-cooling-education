@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevOps Drawer Mockup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      min-height: 600px;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .env-badge {
+      background: #10b981;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .env-badge:hover {
+      background: #059669;
+      transform: scale(1.05);
+    }
+
+    .env-badge.dev {
+      background: #3b82f6;
+    }
+
+    .env-badge.uat {
+      background: #f59e0b;
+    }
+
+    .env-badge.prod {
+      background: #ef4444;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Drawer */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 420px;
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    /* Drawer Header */
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+    }
+
+    .drawer-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 4px;
+      line-height: 1;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    /* Drawer Content */
+    .drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 0;
+    }
+
+    .section {
+      margin-bottom: 8px;
+    }
+
+    .section-header {
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .section-header:hover {
+      background: #f9fafb;
+    }
+
+    .section-icon {
+      font-size: 16px;
+    }
+
+    .section-content {
+      padding: 0 24px 16px;
+    }
+
+    /* Status Items */
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      background: #f9fafb;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-indicator.healthy {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-indicator.warning {
+      background: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    .status-indicator.unhealthy {
+      background: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    .status-label {
+      flex: 1;
+      font-size: 14px;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .status-value {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    /* Info Items */
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .info-item:hover {
+      background: #f3f4f6;
+    }
+
+    .info-label {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 13px;
+      color: #111827;
+      font-family: 'Courier New', monospace;
+      font-weight: 500;
+    }
+
+    /* Table List */
+    .table-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .table-item:hover {
+      background: #f3f4f6;
+      transform: translateX(2px);
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .table-name {
+      font-size: 14px;
+      color: #111827;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+    }
+
+    .table-count {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .table-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    /* Compare Button */
+    .compare-btn {
+      width: 100%;
+      padding: 10px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+
+    .compare-btn:hover {
+      background: #2563eb;
+    }
+
+    /* Footer */
+    .drawer-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #e5e5e5;
+      background: #f9fafb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .last-updated {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .refresh-btn {
+      padding: 6px 12px;
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .drawer {
+        width: 100%;
+      }
+    }
+
+    /* Badge Pulse Animation */
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+      }
+    }
+
+    .env-badge {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header with Environment Badge -->
+    <div class="header">
+      <div class="env-badge" onclick="toggleDrawer()">
+        💻 LOCAL
+      </div>
+      <span style="color: #6b7280; font-size: 14px;">Click badge to open DevOps Console →</span>
+    </div>
+
+    <!-- Content Area -->
+    <div style="padding: 24px;">
+      <h2 style="color: #111827; margin-bottom: 8px;">Simple Todo App</h2>
+      <p style="color: #6b7280;">Your main application content goes here...</p>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+
+  <!-- Drawer -->
+  <div class="drawer" id="drawer">
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="drawer-title">
+        ⚙️ DevOps Console
+      </div>
+      <button class="close-btn" onclick="toggleDrawer()">×</button>
+    </div>
+
+    <!-- Drawer Content -->
+    <div class="drawer-content">
+
+      <!-- System Health Section -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">💚</span>
+          System Health
+        </div>
+        <div class="section-content">
+          <div class="status-item">
+            <div class="status-indicator healthy"></div>
+            <div class="status-label">Database</div>
+            <div class="status-value">12ms</div>
+          </div>
+          <div class="status-item">
+            <div class="status-indicator healthy"></div>
+            <div class="status-label">AI (Gemini)</div>
+            <div class="status-value">OK</div>
+          </div>
+          <div class="status-item">
+            <div class="status-indicator healthy"></div>
+            <div class="status-label">Stripe</div>
+            <div class="status-value">Test Mode</div>
+          </div>
+          <div class="status-item">
+            <div class="status-indicator warning"></div>
+            <div class="status-label">Redis Cache</div>
+            <div class="status-value">N/A</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Environment Info Section -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">📊</span>
+          Environment
+        </div>
+        <div class="section-content">
+          <div class="info-item">
+            <span class="info-label">Environment</span>
+            <span class="info-value">LOCAL</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Branch</span>
+            <span class="info-value">develop</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Commit</span>
+            <span class="info-value">daa8878</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Version</span>
+            <span class="info-value">0.1.1</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Node.js</span>
+            <span class="info-value">v20.18.0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Next.js</span>
+            <span class="info-value">15.0.2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database Inspector Section -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">🗄️</span>
+          Database (11 tables)
+        </div>
+        <div class="section-content">
+          <div class="table-item">
+            <div class="table-header">
+              <span class="table-name">products</span>
+              <span class="table-count">12 rows</span>
+            </div>
+            <div class="table-meta">
+              <span>48 KB</span>
+              <span>•</span>
+              <span>Modified 2h ago</span>
+            </div>
+          </div>
+          <div class="table-item">
+            <div class="table-header">
+              <span class="table-name">orders</span>
+              <span class="table-count">156 rows</span>
+            </div>
+            <div class="table-meta">
+              <span>124 KB</span>
+              <span>•</span>
+              <span>Modified 5m ago</span>
+            </div>
+          </div>
+          <div class="table-item">
+            <div class="table-header">
+              <span class="table-name">users</span>
+              <span class="table-count">47 rows</span>
+            </div>
+            <div class="table-meta">
+              <span>92 KB</span>
+              <span>•</span>
+              <span>Modified 1d ago</span>
+            </div>
+          </div>
+          <div class="table-item">
+            <div class="table-header">
+              <span class="table-name">categories</span>
+              <span class="table-count">8 rows</span>
+            </div>
+            <div class="table-meta">
+              <span>16 KB</span>
+              <span>•</span>
+              <span>Modified 3d ago</span>
+            </div>
+          </div>
+          <div class="table-item">
+            <div class="table-header">
+              <span class="table-name">sessions</span>
+              <span class="table-count">23 rows</span>
+            </div>
+            <div class="table-meta">
+              <span>32 KB</span>
+              <span>•</span>
+              <span>Modified 10m ago</span>
+            </div>
+          </div>
+
+          <button class="compare-btn">
+            🔄 Compare with DEV ▾
+          </button>
+        </div>
+      </div>
+
+      <!-- Configuration Section -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">⚡</span>
+          Quick Actions
+        </div>
+        <div class="section-content">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button style="padding: 8px; background: white; border: 1px solid #e5e5e5; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+              🧹 Clear Cache
+            </button>
+            <button style="padding: 8px; background: white; border: 1px solid #e5e5e5; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+              📥 Export Logs
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="drawer-footer">
+      <div class="last-updated">
+        Updated 3s ago
+      </div>
+      <button class="refresh-btn">
+        ↻ Refresh
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('drawer');
+      const overlay = document.getElementById('overlay');
+
+      drawer.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    // Close drawer on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('overlay');
+        if (drawer.classList.contains('open')) {
+          drawer.classList.remove('open');
+          overlay.classList.remove('active');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

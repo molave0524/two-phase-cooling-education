@@ -22,6 +22,8 @@ const customJestConfig = {
     '<rootDir>/coverage/',
     '<rootDir>/dist/',
   ],
+  maxWorkers: 1,
+  workerIdleMemoryLimit: '512MB',
 }
 
 module.exports = createJestConfig(customJestConfig)

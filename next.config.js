@@ -9,12 +9,18 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
 
-  // Experimental features for performance
+  // Disable experimental features that use worker threads
   experimental: {
-    optimizePackageImports: ['@heroicons/react', 'react-hot-toast'],
-    // Disable worker pool to prevent Jest worker errors
-    workerThreads: false,
-    cpus: 1,
+    // Disable all worker-based features
+  },
+
+  // Webpack configuration to disable worker usage
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Disable worker threads in server compilation
+      config.parallelism = 1
+    }
+    return config
   },
 
   images: {

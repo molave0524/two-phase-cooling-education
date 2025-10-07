@@ -29,7 +29,9 @@
     "db:compare": "tsx scripts/compare-schemas.ts",
     "db:backup": "tsx scripts/backup-database.ts",
     "db:migrate:dryrun": "tsx scripts/migrate-dryrun.ts",
-    "db:migrate:run": "tsx scripts/migrate.ts"
+    "db:migrate:run": "tsx scripts/migrate.ts",
+    "db:fix-dev": "tsx scripts/fix-dev-schema.ts",
+    "db:migrate:dev": "tsx scripts/apply-migration-dev.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
