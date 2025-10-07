@@ -48,8 +48,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get authentication token
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || '' })
+  // Get authentication token with error handling
+  let token = null
+  try {
+    token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || '' })
+  } catch (error) {
+    logger.warn('Failed to get auth token in middleware', { error })
+    // Continue without token - treat as unauthenticated
+  }
 
   // Check if user is trying to access a protected route
   const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route))
