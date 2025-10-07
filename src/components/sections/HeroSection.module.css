@@ -52,8 +52,8 @@
 }
 
 .title {
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 400;
   color: white;
   margin-bottom: 0;
   line-height: 1;
@@ -61,18 +61,18 @@
 
 @media (min-width: 640px) {
   .title {
-    font-size: 3.75rem;
+    font-size: 3rem;
   }
 }
 
 @media (min-width: 1024px) {
   .title {
-    font-size: 4.5rem;
+    font-size: 3.5rem;
   }
 }
 
 .subtitle {
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   color: white;
   margin-top: 0.5rem;
   margin-bottom: -1rem;
@@ -80,7 +80,7 @@
 
 @media (min-width: 640px) {
   .subtitle {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
   }
 }
 

@@ -196,7 +196,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Floating AI Assistant Button */}
             <FloatingAIButton />
 
-            {/* Environment Badge */}
+            {/* Environment Badge - Hidden in PROD */}
             <EnvironmentBadge />
           </ErrorBoundary>
 
