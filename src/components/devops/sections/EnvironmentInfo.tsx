@@ -31,7 +31,8 @@ async function fetchEnvironment(): Promise<EnvironmentData> {
   if (!response.ok) {
     throw new Error('Failed to fetch environment data')
   }
-  return response.json()
+  const data = await response.json()
+  return data
 }
 
 export function EnvironmentInfo() {
@@ -40,7 +41,9 @@ export function EnvironmentInfo() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['devops', 'environment'],
     queryFn: fetchEnvironment,
-    staleTime: 60000, // Environment info doesn't change often
+    staleTime: 5000, // Reduced for debugging
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   })
 
   if (error) {
@@ -105,22 +108,26 @@ export function EnvironmentInfo() {
       </div>
       {isExpanded && (
         <div className={styles.sectionContent}>
-        <InfoItem label='Environment' value={data.environment.toUpperCase()} />
-        <InfoItem label='Branch' value={data.git.branch} onCopy={() => handleCopy(data.git.branch)} />
-        <InfoItem
-          label='Commit'
-          value={data.git.commitShort}
-          title={data.git.commit}
-          onCopy={() => handleCopy(data.git.commit)}
-        />
-        <InfoItem
-          label='Commit Date'
-          value={formatCommitDate(data.git.commitDate)}
-          title={data.git.commitDate}
-        />
-        <InfoItem label='Version' value={data.versions.app} />
-        <InfoItem label='Node.js' value={data.versions.node} />
-        <InfoItem label='Next.js' value={data.versions.nextjs} />
+          <InfoItem label='Environment' value={data.environment.toUpperCase()} />
+          <InfoItem
+            label='Branch'
+            value={data.git.branch}
+            onCopy={() => handleCopy(data.git.branch)}
+          />
+          <InfoItem
+            label='Commit'
+            value={data.git.commitShort}
+            title={data.git.commit}
+            onCopy={() => handleCopy(data.git.commit)}
+          />
+          <InfoItem
+            label='Commit Date'
+            value={formatCommitDate(data.git.commitDate)}
+            title={data.git.commitDate}
+          />
+          <InfoItem label='Version' value={data.versions.app} />
+          <InfoItem label='Node.js' value={data.versions.node} />
+          <InfoItem label='Next.js' value={data.versions.nextjs} />
         </div>
       )}
     </div>
