@@ -12,6 +12,13 @@ const connectionString =
   process.env.POSTGRES_URL ||
   'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
 
+// Validate connection string
+if (!connectionString || connectionString === 'undefined') {
+  throw new Error(
+    'DATABASE_URL or POSTGRES_URL environment variable is required but not set. Please configure your database connection string.'
+  )
+}
+
 const isVercel = process.env.VERCEL === '1'
 
 let db: any
