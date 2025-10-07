@@ -43,6 +43,11 @@ function verifyToken(token: string | null, cookieToken: string | null): boolean 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Skip middleware entirely for NextAuth routes to prevent worker issues
+  if (pathname.startsWith('/api/auth/')) {
+    return NextResponse.next()
+  }
+
   // Get authentication token
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || '' })
 

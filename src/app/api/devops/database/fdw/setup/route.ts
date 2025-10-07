@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { sql } from 'drizzle-orm'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,7 +42,8 @@ export async function POST(request: NextRequest) {
     const serverName = `${environment}_server`
     const schemaName = `${environment}_remote`
 
-    await db.execute(sql.raw(`
+    await db.execute(
+      sql.raw(`
       -- Enable FDW extension
       CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 
@@ -73,7 +75,8 @@ export async function POST(request: NextRequest) {
       IMPORT FOREIGN SCHEMA public
       FROM SERVER ${serverName}
       INTO ${schemaName};
-    `))
+    `)
+    )
 
     return NextResponse.json({
       success: true,
@@ -83,7 +86,7 @@ export async function POST(request: NextRequest) {
       schema: schemaName,
     })
   } catch (error) {
-    console.error('[FDW Setup Error]', error)
+    logger.error('FDW setup error', { error })
     return NextResponse.json(
       {
         error: 'Failed to setup FDW',

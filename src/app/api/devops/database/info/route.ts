@@ -75,14 +75,18 @@ export async function GET() {
         ORDER BY COALESCE(pg_total_relation_size(quote_ident(t.schemaname)||'.'||quote_ident(t.tablename)), 0) DESC
       `)
 
-      console.log('[DEBUG] Tables query result type:', Array.isArray(tablesResult) ? 'array' : 'object')
-      console.log('[DEBUG] Tables result length/rows:', Array.isArray(tablesResult) ? tablesResult.length : tablesResult.rows?.length)
+      logger.debug('Tables query result type', {
+        type: Array.isArray(tablesResult) ? 'array' : 'object',
+      })
+      logger.debug('Tables result length/rows', {
+        length: Array.isArray(tablesResult) ? tablesResult.length : tablesResult.rows?.length,
+      })
 
       // Handle both array format and rows property format
       const rows = Array.isArray(tablesResult) ? tablesResult : tablesResult.rows || []
 
       // Get actual row counts for each table
-      console.log('[DEBUG] Starting row count queries for', rows.length, 'tables')
+      logger.debug('Starting row count queries for tables', { count: rows.length })
       const tablesWithCounts = await Promise.all(
         rows.map(async (row: any) => {
           try {
@@ -102,7 +106,7 @@ export async function GET() {
               indexes: row.index_count || 0,
             }
           } catch (err) {
-            console.log('[DEBUG] Error counting rows for table', row.tablename, ':', err)
+            logger.debug('Error counting rows for table', { table: row.tablename, error: err })
             // Return 0 count if query fails
             return {
               name: row.tablename,
@@ -116,7 +120,7 @@ export async function GET() {
         })
       )
 
-      console.log('[DEBUG] Finished row counts, got', tablesWithCounts.length, 'tables')
+      logger.debug('Finished row counts', { tablesCount: tablesWithCounts.length })
       tables = tablesWithCounts
     } catch (err) {
       // No tables exist or query failed - return empty array
@@ -162,4 +166,3 @@ export async function GET() {
     })
   }
 }
- 

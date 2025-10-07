@@ -137,43 +137,48 @@ export const products = pgTable('products', {
 // PRODUCT COMPONENTS TABLE (Many-to-Many Junction)
 // ============================================================================
 
-export const productComponents = pgTable('product_components', {
-  id: serial('id').primaryKey(),
+export const productComponents = pgTable(
+  'product_components',
+  {
+    id: serial('id').primaryKey(),
 
-  // Relationships
-  parentProductId: text('parent_product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
-  componentProductId: text('component_product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'restrict' }), // Prevent deletion if used
+    // Relationships
+    parentProductId: text('parent_product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    componentProductId: text('component_product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'restrict' }), // Prevent deletion if used
 
-  // Component configuration
-  quantity: integer('quantity').notNull().default(1),
-  isRequired: boolean('is_required').notNull().default(true),
-  isIncluded: boolean('is_included').notNull().default(true), // Included in price or optional add-on
+    // Component configuration
+    quantity: integer('quantity').notNull().default(1),
+    isRequired: boolean('is_required').notNull().default(true),
+    isIncluded: boolean('is_included').notNull().default(true), // Included in price or optional add-on
 
-  // Pricing override
-  priceOverride: real('price_override'), // Override component's default price
+    // Pricing override
+    priceOverride: real('price_override'), // Override component's default price
 
-  // Display configuration
-  displayName: text('display_name'), // Override component name in parent context
-  displayOrder: integer('display_order').notNull().default(0),
-  sortOrder: integer('sort_order').notNull().default(0),
+    // Display configuration
+    displayName: text('display_name'), // Override component name in parent context
+    displayOrder: integer('display_order').notNull().default(0),
+    sortOrder: integer('sort_order').notNull().default(0),
 
-  // Metadata
-  notes: text('notes'),
+    // Metadata
+    notes: text('notes'),
 
-  // Timestamps
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-}, (table) => ({
-  // Constraints
-  uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
-  noSelfReference: check('no_self_reference',
-    sql`${table.parentProductId} != ${table.componentProductId}`
-  ),
-}))
+    // Timestamps
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => ({
+    // Constraints
+    uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
+    noSelfReference: check(
+      'no_self_reference',
+      sql`${table.parentProductId} != ${table.componentProductId}`
+    ),
+  })
+)
 
 // ============================================================================
 // CARTS TABLE
@@ -270,7 +275,9 @@ export const orderItems = pgTable('order_items', {
     .references(() => orders.id, { onDelete: 'cascade' }),
 
   // Product snapshot (immutable)
-  productId: text('product_id').notNull(), // NO FK - allows product deletion
+  productId: text('product_id')
+    .notNull()
+    .references(() => products.id, { onDelete: 'restrict' }), // FK with restrict to prevent orphans
   productSku: text('product_sku').notNull(),
   productSlug: text('product_slug').notNull().default(''),
   productName: text('product_name').notNull(),

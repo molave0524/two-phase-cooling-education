@@ -85,7 +85,7 @@ export default function SchemaComparisonPage() {
         )
       }
 
-      const data = await response.json()
+      await response.json()
       toast.success(`Metadata refreshed for ${target.toUpperCase()} environment`)
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error occurred'
