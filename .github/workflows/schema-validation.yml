@@ -77,13 +77,44 @@ jobs:
         id: destructive-check
         run: |
           DESTRUCTIVE=false
+          DANGEROUS=false
           for file in $(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep "drizzle/postgres/.*\.sql"); do
-            if grep -qiE "(DROP TABLE|DROP COLUMN|ALTER.*DROP)" "$file"; then
+            echo "Analyzing $file for dangerous operations..."
+
+            # Check for DANGEROUS operations (data loss)
+            if grep -qiE "(DROP TABLE|TRUNCATE|DELETE FROM)" "$file"; then
+              echo "::error::DANGEROUS operation detected in $file - May cause PERMANENT data loss"
+              DANGEROUS=true
+            fi
+
+            # Check for DESTRUCTIVE operations (may fail or lose data)
+            if grep -qiE "(DROP COLUMN|ALTER.*DROP|ALTER.*TYPE)" "$file"; then
               echo "::warning::Destructive operation detected in $file"
               DESTRUCTIVE=true
             fi
+
+            # Check for RISKY operations (may fail on existing data)
+            if grep -qiE "(ADD.*NOT NULL|ADD.*UNIQUE|ADD.*FOREIGN KEY)" "$file"; then
+              echo "::warning::Risky constraint detected in $file - May fail if data violates constraint"
+            fi
           done
           echo "has_destructive=$DESTRUCTIVE" >> $GITHUB_OUTPUT
+          echo "has_dangerous=$DANGEROUS" >> $GITHUB_OUTPUT
+
+      - name: Block dangerous operations
+        if: steps.destructive-check.outputs.has_dangerous == 'true'
+        run: |
+          echo "::error::BLOCKING: This PR contains DANGEROUS operations that may cause permanent data loss"
+          echo "::error::Operations like DROP TABLE, TRUNCATE, or DELETE FROM require:"
+          echo "::error::  1. Database backup BEFORE applying migration"
+          echo "::error::  2. Tech lead approval"
+          echo "::error::  3. Documented rollback plan"
+          echo "::error::  4. Testing on production data clone"
+          echo "::error::"
+          echo "::error::Override this check by adding '[DANGEROUS-APPROVED]' to your PR title"
+          if [[ ! "${{ github.event.pull_request.title }}" =~ \[DANGEROUS-APPROVED\] ]]; then
+            exit 1
+          fi
 
       - name: Require approval for destructive changes
         if: steps.destructive-check.outputs.has_destructive == 'true'
@@ -91,6 +122,11 @@ jobs:
           echo "::warning::This PR contains destructive database operations"
           echo "::warning::Manual approval from a tech lead is required"
           echo "::warning::Ensure you have a rollback plan documented in the PR description"
+          echo "::warning::"
+          echo "::warning::Before applying these migrations:"
+          echo "::warning::  1. Run: npm run db:backup [environment]"
+          echo "::warning::  2. Run: npm run db:migrate:dryrun [environment]"
+          echo "::warning::  3. Test on staging/UAT first"
 
       - name: Comment on PR
         if: steps.schema-check.outputs.schema_changed == 'true'
@@ -151,10 +187,24 @@ jobs:
             }
 
             comment += '### 📋 Pre-Deployment Checklist\n';
+            comment += '- [ ] Backup created: `npm run db:backup [environment]`\n';
+            comment += '- [ ] Dry-run passed: `npm run db:migrate:dryrun [environment]`\n';
             comment += '- [ ] Schema comparison completed via DevOps tool\n';
-            comment += '- [ ] Migration tested locally\n';
+            comment += '- [ ] Migration tested locally with real data\n';
             comment += '- [ ] No breaking changes (or approved if breaking)\n';
-            comment += '- [ ] Rollback plan documented (if needed)\n\n';
+            comment += '- [ ] Rollback plan documented (if destructive)\n\n';
+
+            comment += '### 🛡️ Safety Commands\n';
+            comment += '```bash\n';
+            comment += '# 1. Create backup before migration\n';
+            comment += 'npm run db:backup dev\n\n';
+            comment += '# 2. Test migration without applying (dry-run)\n';
+            comment += 'npm run db:migrate:dryrun dev\n\n';
+            comment += '# 3. Compare schemas across environments\n';
+            comment += 'npm run db:compare local dev\n\n';
+            comment += '# 4. Apply migration (only after backup + dry-run)\n';
+            comment += 'npm run db:migrate dev\n';
+            comment += '```\n\n';
 
             comment += '### 🔗 Useful Links\n';
             comment += '- [Database Change Management Docs](../blob/develop/docs/DATABASE_CHANGE_MANAGEMENT.md)\n';

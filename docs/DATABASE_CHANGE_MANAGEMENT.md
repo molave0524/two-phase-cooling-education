@@ -1,21 +1,25 @@
 # Database Change Management
 
 ## Overview
+
 This document defines the process for managing database schema changes across all environments (local, dev, UAT, production) to ensure consistency, prevent breaking changes, and maintain data integrity.
 
 ## Core Principles
 
 ### 1. All Schema Changes MUST Have Migrations
+
 - No direct database modifications in dev/UAT/production
 - Every schema change requires a versioned migration file
 - Migrations are the single source of truth for schema evolution
 
 ### 2. Schema Validation Before Deployment
+
 - Use DevOps Schema Comparison tool before deploying
 - Automated checks in CI/CD pipeline
 - Manual verification for production deployments
 
 ### 3. Breaking Changes Require Special Approval
+
 - Breaking changes need tech lead approval
 - Must include rollback plan
 - Coordinated deployment with application code
@@ -25,46 +29,76 @@ This document defines the process for managing database schema changes across al
 ### Making Database Schema Changes
 
 #### Step 1: Update Schema Definition
+
 ```bash
 # Edit the schema file
 src/db/schema-pg.ts
 ```
 
 #### Step 2: Generate Migration
+
 ```bash
 npm run db:generate
 # Creates a new file in drizzle/postgres/XXXX_description.sql
 ```
 
-#### Step 3: Test Migration Locally
+#### Step 3: Test Migration with Dry-Run
+
+```bash
+# Test migration without applying changes
+npm run db:migrate:dryrun local
+
+# This will:
+# - Analyze migration for dangerous operations
+# - Run migration in a transaction
+# - Rollback automatically (no changes made)
+# - Report if migration would succeed
+```
+
+#### Step 4: Apply Migration Locally
+
 ```bash
 npm run db:migrate
 # Applies migration to your local database
 ```
 
-#### Step 4: Verify Schema Compatibility
+#### Step 5: Verify Schema Compatibility
+
 1. Start dev server: `npm run dev`
 2. Navigate to: http://localhost:3000/devops/schema-comparison
 3. Compare: `local → dev`
 4. Review any breaking changes
 
 #### Step 5: Commit Changes
+
 ```bash
 git add src/db/schema-pg.ts
 git add drizzle/postgres/XXXX_description.sql
 git commit -m "feat: Add user preferences table"
 ```
 
-#### Step 6: Create Pull Request
+#### Step 6: Commit Changes
+
+```bash
+git add src/db/schema-pg.ts
+git add drizzle/postgres/XXXX_description.sql
+git commit -m "feat: Add user preferences table"
+```
+
+#### Step 7: Create Pull Request
+
 Include in PR description:
+
 - Migration file name
 - Schema changes summary
 - Breaking changes (if any)
 - Rollback plan (if breaking)
+- Backup verification (for UAT/prod deployments)
 
 ## CI/CD Integration
 
 ### Automated Checks (GitHub Actions)
+
 The following checks run automatically on every PR:
 
 1. **Schema Drift Detection**
@@ -85,6 +119,7 @@ The following checks run automatically on every PR:
 ### Deployment Process
 
 #### To DEV (Automated)
+
 ```bash
 git push origin develop
 # GitHub Actions automatically:
@@ -94,33 +129,61 @@ git push origin develop
 ```
 
 #### To UAT (Semi-Automated)
+
 ```bash
 # Create release branch
 git checkout -b release/v1.2.0
 
-# Manual schema comparison
+# 1. Create backup BEFORE migration
+npm run db:backup uat
+
+# 2. Test migration with dry-run
+npm run db:migrate:dryrun uat
+
+# 3. Manual schema comparison
 # Navigate to: https://dev.yourapp.com/devops/schema-comparison
 # Compare: dev → uat
 
-# If compatible:
-git push origin release/v1.2.0
-# Requires approval before merge
+# 4. If compatible, apply migration:
+npm run db:migrate uat
+
+# 5. Verify schema after migration
+npm run db:compare uat dev
 ```
 
-#### To PROD (Manual)
+#### To PROD (Manual - EXTRA CAUTION)
+
 ```bash
 # Pre-deployment checklist:
 # ☐ Schema comparison (uat → prod) shows no breaking changes
 # ☐ Rollback plan documented
-# ☐ Database backup completed
+# ☐ Database backup completed (MANDATORY)
+# ☐ Dry-run passed on production
 # ☐ Maintenance window scheduled (if needed)
+# ☐ Tech lead approval obtained
 
-# Deploy with manual approval
+# 1. CREATE BACKUP (MANDATORY)
+npm run db:backup prod
+
+# 2. TEST MIGRATION (Dry-run)
+npm run db:migrate:dryrun prod
+
+# 3. VERIFY backup was created successfully
+ls -lh backups/
+
+# 4. If all checks pass, apply migration:
+npm run db:migrate prod
+
+# 5. VERIFY schema after migration
+npm run db:compare prod uat
+
+# 6. Monitor application logs for errors
 ```
 
 ## Breaking Changes Policy
 
 ### What Qualifies as Breaking?
+
 - ❌ Dropping tables
 - ❌ Dropping columns
 - ❌ Changing column data types (non-compatible)
@@ -128,6 +191,7 @@ git push origin release/v1.2.0
 - ⚠️ Renaming tables/columns (requires coordination)
 
 ### Non-Breaking Changes
+
 - ✅ Adding new tables
 - ✅ Adding nullable columns
 - ✅ Adding indexes
@@ -136,6 +200,7 @@ git push origin release/v1.2.0
 ### Handling Breaking Changes
 
 #### Option 1: Multi-Phase Deployment (Preferred)
+
 ```
 Phase 1: Add new column (nullable)
 Phase 2: Backfill data
@@ -144,6 +209,7 @@ Phase 4: Remove old column
 ```
 
 #### Option 2: Maintenance Window
+
 ```
 1. Schedule downtime
 2. Take database backup
@@ -153,9 +219,90 @@ Phase 4: Remove old column
 6. Resume operations
 ```
 
+## Database Backup & Restore
+
+### Creating Backups
+
+#### Full Backup (Schema + Data)
+
+```bash
+# Local database
+npm run db:backup local
+
+# Remote environments
+npm run db:backup dev
+npm run db:backup uat
+npm run db:backup prod
+```
+
+**Output**: Creates compressed backup file in `./backups/` directory:
+
+- Format: `backup-{env}-{timestamp}.sql.gz`
+- Example: `backup-prod-2025-10-06T15-30-00.sql.gz`
+
+#### Schema-Only Backup (Fast)
+
+Useful for comparison and documentation:
+
+```typescript
+// In scripts/backup-database.ts
+backupSchemaOnly('prod')
+```
+
+### Backup Best Practices
+
+1. **Always backup before migrations** - Especially UAT and PROD
+2. **Verify backup size** - Ensure it's not empty or corrupted
+3. **Store securely** - Backups may contain sensitive data
+4. **Retention policy**:
+   - Development: 7 days
+   - UAT: 30 days
+   - Production: 90 days (minimum), per compliance requirements
+5. **Off-site storage** - Upload to S3/Azure Blob for disaster recovery
+
+### Restoring from Backup
+
+#### Restore Full Backup
+
+```bash
+# Decompress backup
+gunzip -c backups/backup-prod-2025-10-06T15-30-00.sql.gz > restore.sql
+
+# Restore to database
+psql -h HOST -U USER -d DATABASE < restore.sql
+```
+
+#### Restore to Specific Environment
+
+```bash
+# Restore production backup to UAT for testing
+gunzip -c backups/backup-prod-2025-10-06T15-30-00.sql.gz | \
+  psql -h uat-host -U uat-user -d uat-database
+```
+
+### Backup Testing
+
+**Test your backups regularly!**
+
+```bash
+# 1. Create test database
+createdb test_restore
+
+# 2. Restore backup
+gunzip -c backups/backup-prod-latest.sql.gz | psql -d test_restore
+
+# 3. Verify data
+psql -d test_restore -c "SELECT COUNT(*) FROM users;"
+psql -d test_restore -c "SELECT COUNT(*) FROM orders;"
+
+# 4. Cleanup
+dropdb test_restore
+```
+
 ## Rollback Procedures
 
 ### Automatic Rollback (Non-Breaking)
+
 ```bash
 # Revert migration
 npm run db:rollback
@@ -166,6 +313,7 @@ git push
 ```
 
 ### Manual Rollback (Breaking Changes)
+
 ```bash
 # 1. Restore from backup
 psql $DATABASE_URL < backup.sql
@@ -179,11 +327,13 @@ vercel rollback
 ## Tools & Resources
 
 ### DevOps Schema Comparison
+
 - **Local**: http://localhost:3000/devops/schema-comparison
 - **Dev**: https://dev.yourapp.com/devops/schema-comparison
 - **UAT**: https://uat.yourapp.com/devops/schema-comparison
 
 ### Useful Commands
+
 ```bash
 # Generate migration
 npm run db:generate
@@ -202,7 +352,9 @@ npm run db:compare
 ```
 
 ### Environment Variables
+
 Required for schema comparison across environments:
+
 ```env
 # .env.local
 DATABASE_URL=postgresql://...           # Local database
@@ -214,13 +366,17 @@ PROD_POSTGRES_URL=postgresql://...      # Production (read-only)
 ## Monitoring & Alerts
 
 ### Schema Drift Alerts
+
 Automated daily checks:
+
 - Compares dev/UAT/prod schemas
 - Alerts if drift detected
 - Posts to #devops Slack channel
 
 ### Migration Failures
+
 If migration fails in any environment:
+
 1. GitHub Actions job fails
 2. Deployment halted
 3. Team notified via Slack
@@ -229,18 +385,22 @@ If migration fails in any environment:
 ## Story/Epic Template
 
 ### Epic: Database Schema Change Management
+
 ```markdown
 ## Epic Description
+
 Implement automated validation and deployment process for database schema changes to prevent drift and breaking changes across environments.
 
 ## User Stories
 
 ### Story 1: Schema Validation in CI/CD
+
 **As a** developer
 **I want** automated schema validation in pull requests
 **So that** I catch breaking changes before deployment
 
 **Acceptance Criteria:**
+
 - [ ] GitHub Action runs on every PR
 - [ ] Compares local schema against target environment
 - [ ] Comments on PR with schema differences
@@ -249,11 +409,13 @@ Implement automated validation and deployment process for database schema change
 ---
 
 ### Story 2: Pre-Deployment Schema Comparison
+
 **As a** DevOps engineer
 **I want** to compare schemas before deployment
 **So that** I can prevent incompatible deployments
 
 **Acceptance Criteria:**
+
 - [ ] Web UI accessible at /devops/schema-comparison
 - [ ] Can select source and target environments
 - [ ] Shows side-by-side table and column comparison
@@ -263,11 +425,13 @@ Implement automated validation and deployment process for database schema change
 ---
 
 ### Story 3: Migration Generation Workflow
+
 **As a** developer
 **I want** clear guidelines for creating migrations
 **So that** schema changes are consistent and traceable
 
 **Acceptance Criteria:**
+
 - [ ] Documentation in CONTRIBUTING.md
 - [ ] Example migration files
 - [ ] Pre-commit hook validates migrations
@@ -276,11 +440,13 @@ Implement automated validation and deployment process for database schema change
 ---
 
 ### Story 4: Automated Migration Deployment
+
 **As a** platform engineer
 **I want** migrations to deploy automatically to dev/UAT
 **So that** manual database operations are minimized
 
 **Acceptance Criteria:**
+
 - [ ] Migrations auto-apply on successful deployment
 - [ ] Rollback mechanism for failed migrations
 - [ ] Migration status visible in deployment logs
@@ -289,11 +455,13 @@ Implement automated validation and deployment process for database schema change
 ---
 
 ### Story 5: Rollback Procedures & Documentation
+
 **As a** team member
 **I want** documented rollback procedures
 **So that** I can safely recover from failed deployments
 
 **Acceptance Criteria:**
+
 - [ ] Rollback documentation in /docs
 - [ ] Automated rollback for non-breaking changes
 - [ ] Manual rollback checklist for breaking changes
@@ -304,6 +472,7 @@ Implement automated validation and deployment process for database schema change
 
 **Q: What if I need to make an emergency schema change in production?**
 A: Follow the emergency change process:
+
 1. Create migration file locally
 2. Test in dev environment first
 3. Get approval from tech lead
@@ -315,6 +484,7 @@ A: No. All schema changes require migrations, regardless of size. This ensures c
 
 **Q: What if schema comparison shows differences that don't exist?**
 A: This may indicate:
+
 - Cached metadata (restart dev server)
 - Manual changes made outside migrations
 - Migration not applied to target environment

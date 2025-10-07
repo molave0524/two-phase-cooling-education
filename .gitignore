@@ -120,3 +120,7 @@ migrate-orders-schema.js
 # SQL files (but keep Drizzle migrations)
 *.sql
 !drizzle/**/*.sql
+
+# Database backups (contain sensitive data)
+/backups/
+*.sql.gz
