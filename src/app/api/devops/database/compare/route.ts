@@ -266,9 +266,10 @@ async function setupFDW(environment: string) {
       WHERE srvname = ${serverName}
     `)) as Array<{ count: number }>
 
+    // If FDW server exists, drop the foreign schema to force refresh
     if (serverExists && serverExists[0] && serverExists[0].count > 0) {
-      logger.info('FDW server already exists, skipping setup', { serverName })
-      return
+      logger.info('FDW server exists, refreshing foreign schema', { serverName, schemaName })
+      await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE;`))
     }
 
     logger.info('Setting up FDW', { environment })
@@ -287,28 +288,36 @@ async function setupFDW(environment: string) {
     )
     logger.info('Successfully staged metadata tables', { environment })
 
-    // Setup FDW
+    // Setup FDW - only create server if it doesn't exist
+    const needsServerCreation = !(serverExists && serverExists[0] && serverExists[0].count > 0)
+
+    if (needsServerCreation) {
+      // Create new FDW server and user mapping
+      await db.execute(
+        sql.raw(`
+        CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+
+        CREATE SERVER ${serverName}
+        FOREIGN DATA WRAPPER postgres_fdw
+        OPTIONS (
+          host '${url.hostname}',
+          port '${url.port || '5432'}',
+          dbname '${url.pathname.slice(1)}',
+          sslmode 'require'
+        );
+
+        CREATE USER MAPPING FOR CURRENT_USER
+        SERVER ${serverName}
+        OPTIONS (user '${url.username}', password '${url.password}');
+      `)
+      )
+    }
+
+    // Always recreate the foreign schema to get fresh data
     await db.execute(
       sql.raw(`
-      CREATE EXTENSION IF NOT EXISTS postgres_fdw;
-
-      CREATE SERVER ${serverName}
-      FOREIGN DATA WRAPPER postgres_fdw
-      OPTIONS (
-        host '${url.hostname}',
-        port '${url.port || '5432'}',
-        dbname '${url.pathname.slice(1)}',
-        sslmode 'require'
-      );
-
-      CREATE USER MAPPING IF NOT EXISTS FOR CURRENT_USER
-      SERVER ${serverName}
-      OPTIONS (user '${url.username}', password '${url.password}');
-
       DROP SCHEMA IF EXISTS ${schemaName} CASCADE;
-
       CREATE SCHEMA ${schemaName};
-
       IMPORT FOREIGN SCHEMA public
       FROM SERVER ${serverName}
       INTO ${schemaName};
