@@ -17,9 +17,23 @@ export async function GET() {
     return NextResponse.json({ error: 'Not available in production' }, { status: 403 })
   }
 
+  // Construct the URL the same way auth.ts does
+  const getNextAuthUrl = () => {
+    if (process.env.NEXTAUTH_URL) {
+      return process.env.NEXTAUTH_URL
+    }
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}`
+    }
+    return 'http://localhost:3000'
+  }
+
   return NextResponse.json({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL ? 'Set ✓' : 'Not set ✗',
     NEXTAUTH_URL_value: process.env.NEXTAUTH_URL || 'empty',
+    VERCEL_URL: process.env.VERCEL_URL || 'Not set',
+    computed_nextauth_url: getNextAuthUrl(),
+    expected_redirect_uri: `${getNextAuthUrl()}/api/auth/callback/google`,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID
       ? `Set ✓ (${process.env.GOOGLE_CLIENT_ID.substring(0, 10)}...)`
       : 'Not set ✗',
