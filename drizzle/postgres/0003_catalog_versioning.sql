@@ -131,6 +131,7 @@ CREATE TABLE order_items (
   -- Product snapshot (immutable)
   product_id TEXT NOT NULL,
   product_sku TEXT NOT NULL,
+  product_slug TEXT NOT NULL DEFAULT '',
   product_name TEXT NOT NULL,
   product_version INTEGER NOT NULL DEFAULT 1,
   product_type TEXT NOT NULL DEFAULT 'standalone',
