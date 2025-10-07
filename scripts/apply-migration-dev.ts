@@ -22,10 +22,13 @@ async function applyMigrationToDev() {
   const sql = postgres(devUrl, { max: 1 })
 
   try {
-    console.log('🚀 Applying migration 0003_catalog_versioning.sql to DEV database...\n')
+    // Get migration file from command line argument, default to latest
+    const migrationFile = process.argv[2] || '0006_remove_cart_id_from_orders.sql'
+
+    console.log(`🚀 Applying migration ${migrationFile} to DEV database...\n`)
 
     // Read the migration file
-    const migrationPath = path.join(process.cwd(), 'drizzle/postgres/0003_catalog_versioning.sql')
+    const migrationPath = path.join(process.cwd(), 'drizzle/postgres', migrationFile)
     const migrationSQL = readFileSync(migrationPath, 'utf-8')
 
     console.log(`Executing migration file...\n`)
