@@ -7,13 +7,18 @@
 import { logger } from '@/lib/logger'
 import * as schema from './schema-pg'
 
+// Get connection string, ensuring we don't use empty strings
+const rawUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || ''
 const connectionString =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
+  rawUrl.trim() || 'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
 
 // Validate connection string
-if (!connectionString || connectionString === 'undefined' || connectionString === 'null') {
+if (
+  !connectionString ||
+  connectionString === 'undefined' ||
+  connectionString === 'null' ||
+  connectionString.trim() === ''
+) {
   throw new Error(
     'DATABASE_URL or POSTGRES_URL environment variable is required but not set. Please configure your database connection string in Vercel environment variables.'
   )
