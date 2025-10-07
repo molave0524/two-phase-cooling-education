@@ -23,7 +23,7 @@ async function applyMigrationToDev() {
 
   try {
     // Get migration file from command line argument, default to latest
-    const migrationFile = process.argv[2] || '0007_remove_created_at_from_sessions.sql'
+    const migrationFile = process.argv[2] || '0008_fix_sessions_table_structure.sql'
 
     console.log(`🚀 Applying migration ${migrationFile} to DEV database...\n`)
 
