@@ -31,6 +31,7 @@ export default function SchemaComparisonPage() {
   const [source, setSource] = useState<Environment>('local')
   const [target, setTarget] = useState<Environment>('dev')
   const [isComparing, setIsComparing] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [result, setResult] = useState<ComparisonResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -47,7 +48,9 @@ export default function SchemaComparisonPage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.details || errorData.error || `Failed to compare: ${response.statusText}`)
+        throw new Error(
+          errorData.details || errorData.error || `Failed to compare: ${response.statusText}`
+        )
       }
 
       const data = await response.json()
@@ -56,6 +59,39 @@ export default function SchemaComparisonPage() {
       setError(err instanceof Error ? err.message : 'Unknown error occurred')
     } finally {
       setIsComparing(false)
+    }
+  }
+
+  const handleRefreshMetadata = async () => {
+    // Only refresh metadata for remote environments (dev, uat, prod)
+    if (target === 'local') {
+      toast.error('Cannot refresh metadata for local environment')
+      return
+    }
+
+    setIsRefreshing(true)
+
+    try {
+      const response = await fetch('/api/devops/database/refresh-metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ environment: target }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(
+          errorData.details || errorData.error || `Failed to refresh: ${response.statusText}`
+        )
+      }
+
+      const data = await response.json()
+      toast.success(`Metadata refreshed for ${target.toUpperCase()} environment`)
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error occurred'
+      toast.error(`Failed to refresh metadata: ${errorMsg}`)
+    } finally {
+      setIsRefreshing(false)
     }
   }
 
@@ -102,7 +138,7 @@ export default function SchemaComparisonPage() {
 
         // Get columns for this table
         const tableColumns = result.comparison.columnDifferences.filter(
-          (diff) => diff.table === tableName
+          diff => diff.table === tableName
         )
 
         if (inBoth && tableColumns.length > 0) {
@@ -154,7 +190,7 @@ export default function SchemaComparisonPage() {
       if (result.comparison.breakingChanges.length > 0) {
         copyText += `\n${'='.repeat(100)}\n`
         copyText += `BREAKING CHANGES:\n`
-        result.comparison.breakingChanges.forEach((change) => {
+        result.comparison.breakingChanges.forEach(change => {
           copyText += `  ⚠ ${change}\n`
         })
       }
@@ -162,7 +198,6 @@ export default function SchemaComparisonPage() {
       await navigator.clipboard.writeText(copyText)
       toast.success('Schema comparison copied to clipboard!')
     } catch (err) {
-      console.error('Failed to copy:', err)
       toast.error('Failed to copy to clipboard')
     }
   }
@@ -178,37 +213,37 @@ export default function SchemaComparisonPage() {
 
       <div className={styles.controls}>
         <div className={styles.selectorGroup}>
-          <label htmlFor="source" className={styles.label}>
+          <label htmlFor='source' className={styles.label}>
             Source Environment
           </label>
           <select
-            id="source"
+            id='source'
             value={source}
-            onChange={(e) => setSource(e.target.value as Environment)}
+            onChange={e => setSource(e.target.value as Environment)}
             className={styles.select}
           >
-            <option value="local">LOCAL</option>
-            <option value="dev">DEV</option>
-            <option value="uat">UAT</option>
-            <option value="prod">PROD</option>
+            <option value='local'>LOCAL</option>
+            <option value='dev'>DEV</option>
+            <option value='uat'>UAT</option>
+            <option value='prod'>PROD</option>
           </select>
         </div>
 
         <div className={styles.arrow}>→</div>
 
         <div className={styles.selectorGroup}>
-          <label htmlFor="target" className={styles.label}>
+          <label htmlFor='target' className={styles.label}>
             Target Environment
           </label>
           <select
-            id="target"
+            id='target'
             value={target}
-            onChange={(e) => setTarget(e.target.value as Environment)}
+            onChange={e => setTarget(e.target.value as Environment)}
             className={styles.select}
           >
-            <option value="dev">DEV</option>
-            <option value="uat">UAT</option>
-            <option value="prod">PROD</option>
+            <option value='dev'>DEV</option>
+            <option value='uat'>UAT</option>
+            <option value='prod'>PROD</option>
           </select>
         </div>
 
@@ -218,6 +253,19 @@ export default function SchemaComparisonPage() {
           className={styles.compareBtn}
         >
           {isComparing ? 'Comparing...' : 'Compare Schemas'}
+        </button>
+
+        <button
+          onClick={handleRefreshMetadata}
+          disabled={isRefreshing || target === 'local'}
+          className={styles.refreshBtn}
+          title={
+            target === 'local'
+              ? 'Cannot refresh local metadata'
+              : `Refresh ${target.toUpperCase()} metadata`
+          }
+        >
+          {isRefreshing ? 'Refreshing...' : '🔄 Refresh Metadata'}
         </button>
       </div>
 
@@ -275,7 +323,7 @@ export default function SchemaComparisonPage() {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>📊 Table & Column Comparison</h2>
-              <button onClick={handleCopy} className={styles.copyButton} title="Copy to clipboard">
+              <button onClick={handleCopy} className={styles.copyButton} title='Copy to clipboard'>
                 📋 Copy
               </button>
             </div>
@@ -293,7 +341,7 @@ export default function SchemaComparisonPage() {
                 ])
               )
                 .sort()
-                .map((tableName) => {
+                .map(tableName => {
                   const inSource =
                     result.comparison.tablesInBoth.includes(tableName) ||
                     result.comparison.tablesOnlyInSource.includes(tableName)
@@ -304,12 +352,12 @@ export default function SchemaComparisonPage() {
 
                   // Get column differences for this table
                   const tableColumnDiffs = result.comparison.columnDifferences.filter(
-                    (diff) => diff.table === tableName
+                    diff => diff.table === tableName
                   )
 
                   // Get all unique columns for this table
                   const allColumns = new Set<string>()
-                  tableColumnDiffs.forEach((diff) => allColumns.add(diff.column))
+                  tableColumnDiffs.forEach(diff => allColumns.add(diff.column))
 
                   return (
                     <div key={tableName}>
@@ -317,14 +365,22 @@ export default function SchemaComparisonPage() {
                       <div className={styles.compareRow}>
                         <div
                           className={`${styles.sourceCell} ${styles.tableCell} ${
-                            inBoth ? styles.cellCommon : inSource ? styles.cellUnique : styles.cellMissing
+                            inBoth
+                              ? styles.cellCommon
+                              : inSource
+                                ? styles.cellUnique
+                                : styles.cellMissing
                           }`}
                         >
                           {inSource ? tableName : ''}
                         </div>
                         <div
                           className={`${styles.targetCell} ${styles.tableCell} ${
-                            inBoth ? styles.cellCommon : inTarget ? styles.cellUnique : styles.cellMissing
+                            inBoth
+                              ? styles.cellCommon
+                              : inTarget
+                                ? styles.cellUnique
+                                : styles.cellMissing
                           }`}
                         >
                           {inTarget ? tableName : ''}
@@ -336,8 +392,8 @@ export default function SchemaComparisonPage() {
                         tableColumnDiffs.length > 0 &&
                         Array.from(allColumns)
                           .sort()
-                          .map((columnName) => {
-                            const diff = tableColumnDiffs.find((d) => d.column === columnName)
+                          .map(columnName => {
+                            const diff = tableColumnDiffs.find(d => d.column === columnName)
                             if (!diff) return null
 
                             const inSourceCol = diff.status !== 'added'
@@ -364,7 +420,10 @@ export default function SchemaComparisonPage() {
                                     <>
                                       {`  ${columnName}`}
                                       {diff.sourceType && (
-                                        <span className={styles.columnType}> : {diff.sourceType}</span>
+                                        <span className={styles.columnType}>
+                                          {' '}
+                                          : {diff.sourceType}
+                                        </span>
                                       )}
                                     </>
                                   )}
@@ -384,7 +443,10 @@ export default function SchemaComparisonPage() {
                                     <>
                                       {`  ${columnName}`}
                                       {diff.targetType && (
-                                        <span className={styles.columnType}> : {diff.targetType}</span>
+                                        <span className={styles.columnType}>
+                                          {' '}
+                                          : {diff.targetType}
+                                        </span>
                                       )}
                                     </>
                                   )}

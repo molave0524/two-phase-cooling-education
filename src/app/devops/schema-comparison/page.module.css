@@ -100,6 +100,31 @@
   cursor: not-allowed;
 }
 
+.refreshBtn {
+  padding: 12px 24px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.refreshBtn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .error {
   padding: 20px;
   background: #fef2f2;
@@ -551,7 +576,8 @@
     padding: 0;
   }
 
-  .compareBtn {
+  .compareBtn,
+  .refreshBtn {
     width: 100%;
   }
 
