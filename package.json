@@ -28,7 +28,8 @@
     "db:seed": "tsx src/db/seed.ts",
     "db:compare": "tsx scripts/compare-schemas.ts",
     "db:backup": "tsx scripts/backup-database.ts",
-    "db:migrate:dryrun": "tsx scripts/migrate-dryrun.ts"
+    "db:migrate:dryrun": "tsx scripts/migrate-dryrun.ts",
+    "db:migrate:run": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.10.0",
