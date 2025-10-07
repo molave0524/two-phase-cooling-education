@@ -39,7 +39,6 @@ async function getGitInfo(): Promise<GitInfo> {
     const commit = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown'
     const branch = process.env.VERCEL_GIT_COMMIT_REF || 'unknown'
     const message = process.env.VERCEL_GIT_COMMIT_MESSAGE || 'No commit message'
-    const author = process.env.VERCEL_GIT_COMMIT_AUTHOR_NAME || 'Unknown'
 
     return {
       branch,
