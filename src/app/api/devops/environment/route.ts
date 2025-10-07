@@ -32,6 +32,25 @@ interface EnvironmentResponse {
 }
 
 async function getGitInfo(): Promise<GitInfo> {
+  // On Vercel, use environment variables instead of git commands
+  const isVercel = process.env.VERCEL === '1'
+
+  if (isVercel) {
+    const commit = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown'
+    const branch = process.env.VERCEL_GIT_COMMIT_REF || 'unknown'
+    const message = process.env.VERCEL_GIT_COMMIT_MESSAGE || 'No commit message'
+    const author = process.env.VERCEL_GIT_COMMIT_AUTHOR_NAME || 'Unknown'
+
+    return {
+      branch,
+      commit,
+      commitShort: commit.substring(0, 7),
+      commitDate: new Date().toISOString(), // Vercel doesn't provide commit date
+      commitMessage: message,
+    }
+  }
+
+  // Local development - use git commands
   try {
     const [commitResult, branchResult, dateResult, messageResult] = await Promise.all([
       execAsync('git rev-parse HEAD'),
@@ -50,13 +69,12 @@ async function getGitInfo(): Promise<GitInfo> {
       commitMessage: messageResult.stdout.trim(),
     }
   } catch (error) {
-    // Error logged for debugging
     return {
       branch: 'unknown',
       commit: 'unknown',
       commitShort: 'unknown',
       commitDate: new Date().toISOString(),
-      commitMessage: 'Git information not available',
+      commitMessage: error instanceof Error ? error.message : 'Git information not available',
     }
   }
 }

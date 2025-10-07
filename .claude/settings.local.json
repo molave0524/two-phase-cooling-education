@@ -36,7 +36,9 @@
       "Bash(git commit --no-verify -m \"$(cat <<''EOF''\nfeat: Add automated database schema validation and management\n\nOption A - Documentation & Process:\n- Created comprehensive Database Change Management guide\n- Defined workflow for schema changes across environments\n- Included PRD/Story templates for future implementations\n- Added rollback procedures and best practices\n\nOption B - Automation & Enforcement:\n- GitHub Actions workflow for schema validation on PRs\n- Automated checks for migration files when schema changes\n- Detects destructive operations and requires approval\n- CLI tool for schema comparison (npm run db:compare)\n- Validates migration file naming and ordering\n\nFeatures:\n- Blocks PRs if schema changed without migration\n- Auto-comments on PRs with schema diff summary\n- Warns about breaking changes\n- Provides pre-deployment checklist\n- Allow console.log in scripts folder for CLI tools\n\nThis prevents schema drift and catches breaking changes before deployment.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git commit:*)",
       "Bash(echo:*)",
-      "Bash(echo \"DEV_POSTGRES_URL: $DEV_POSTGRES_URL:0:50...\")"
+      "Bash(echo \"DEV_POSTGRES_URL: $DEV_POSTGRES_URL:0:50...\")",
+      "Bash(git rev-parse:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
