@@ -8,8 +8,12 @@ import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  // Only allow in non-production
-  if (process.env.NODE_ENV === 'production') {
+  // Detect environment using DATABASE_URL pattern
+  const dbUrl = process.env.DATABASE_URL || ''
+  const isProd = dbUrl.includes('prod') || process.env.VERCEL_ENV === 'production'
+
+  // Only allow in non-production environments
+  if (isProd) {
     return NextResponse.json({ error: 'Not available in production' }, { status: 403 })
   }
 
@@ -21,5 +25,6 @@ export async function GET() {
       : 'Not set ✗',
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? 'Set ✓' : 'Not set ✗',
     NODE_ENV: process.env.NODE_ENV,
+    VERCEL_ENV: process.env.VERCEL_ENV,
   })
 }
