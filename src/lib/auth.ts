@@ -22,10 +22,25 @@ import { logger } from '@/lib/logger'
 //   verificationTokensTable: verificationTokens as any,
 // }) as any
 
+// Auto-detect NEXTAUTH_URL on Vercel using VERCEL_URL
+const getNextAuthUrl = () => {
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+  return 'http://localhost:3000'
+}
+
 export const authOptions: NextAuthOptions = {
   // adapter: removed temporarily to fix worker issues
 
   secret: process.env.NEXTAUTH_SECRET || '',
+
+  // Explicitly set the URL for OAuth redirects
+  // This is needed because NextAuth doesn't auto-detect VERCEL_URL properly
+  ...(typeof window === 'undefined' && { url: getNextAuthUrl() }),
 
   providers: [
     GoogleProvider({
