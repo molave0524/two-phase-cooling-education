@@ -51,11 +51,20 @@ export async function GET() {
     }
   }
 
+  let databaseHost = 'unknown'
+  try {
+    if (dbUrl) {
+      databaseHost = new URL(dbUrl).hostname
+    }
+  } catch {
+    databaseHost = 'invalid-url'
+  }
+
   return NextResponse.json({
     environment,
     detectionMethod,
     isVercel,
     vercelEnv,
-    databaseHost: dbUrl ? new URL(dbUrl).hostname : 'unknown',
+    databaseHost,
   })
 }
