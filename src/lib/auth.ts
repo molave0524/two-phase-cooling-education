@@ -27,7 +27,7 @@ import { logger } from '@/lib/logger'
 export const authOptions: NextAuthOptions = {
   // adapter: removed temporarily to fix worker issues
 
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || '',
 
   providers: [
     GoogleProvider({
