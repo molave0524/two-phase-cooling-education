@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next'
 import { COMPANY_INFO } from '@/constants'
-import { db, products } from '@/db'
 
 const BASE_URL = `https://${COMPANY_INFO.DOMAIN}`
 
@@ -11,6 +10,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all products from database
   let allProducts: any[] = []
   try {
+    // Import database only when sitemap is generated (not during build)
+    const { db, products } = await import('@/db')
     allProducts = await (db.select() as any).from(products)
   } catch (error) {
     // Database not available during build, skip product pages
