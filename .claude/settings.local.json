@@ -38,7 +38,8 @@
       "Bash(echo:*)",
       "Bash(echo \"DEV_POSTGRES_URL: $DEV_POSTGRES_URL:0:50...\")",
       "Bash(git rev-parse:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(openssl rand:*)"
     ],
     "deny": [],
     "ask": []
