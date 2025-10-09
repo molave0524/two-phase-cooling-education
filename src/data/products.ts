@@ -161,6 +161,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaDescription:
       'Experience next-generation PC cooling with our transparent two-phase cooling case. 97% efficiency, whisper-quiet operation, 5-year warranty.',
 
+    isAvailableForPurchase: true,
+
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-20'),
   },
@@ -269,6 +271,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaTitle: 'Two-Phase Cooling Case Compact - Small Form Factor PC Cooling',
     metaDescription:
       'Compact two-phase cooling solution for ITX and mATX builds. Efficient cooling in a small package with 3-year warranty.',
+
+    isAvailableForPurchase: true,
 
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-18'),
@@ -395,6 +399,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaDescription:
       'Ultimate two-phase cooling with RGB lighting, dual-zone cooling, and premium materials. Perfect for extreme overclocking.',
 
+    isAvailableForPurchase: true,
+
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-22'),
   },
@@ -504,6 +510,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaTitle: 'Two-Phase Cooling Case Gaming Edition - High-Performance Gaming Cooling',
     metaDescription:
       'Gaming-optimized two-phase cooling with performance thermal profiles and RGB lighting for sustained gaming performance.',
+
+    isAvailableForPurchase: true,
 
     createdAt: new Date('2024-01-12'),
     updatedAt: new Date('2024-01-25'),
@@ -623,6 +631,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaDescription:
       'Professional workstation cooling for 24/7 operation with multi-GPU support and enterprise reliability standards.',
 
+    isAvailableForPurchase: true,
+
     createdAt: new Date('2024-01-08'),
     updatedAt: new Date('2024-01-28'),
   },
@@ -730,6 +740,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaTitle: 'Two-Phase Cooling Case Silent Pro - Ultra-Quiet PC Cooling',
     metaDescription:
       'Ultra-quiet two-phase cooling system engineered for absolute silence while maintaining exceptional cooling performance.',
+
+    isAvailableForPurchase: true,
 
     createdAt: new Date('2024-01-18'),
     updatedAt: new Date('2024-01-30'),
@@ -846,6 +858,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaDescription:
       'Extreme overclocking cooling with sub-ambient capability and world-record breaking potential for competition overclocking.',
 
+    isAvailableForPurchase: true,
+
     createdAt: new Date('2024-01-02'),
     updatedAt: new Date('2024-02-01'),
   },
@@ -954,6 +968,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaDescription:
       'Environmentally conscious two-phase cooling made from recycled materials with carbon-neutral operation and green certification.',
 
+    isAvailableForPurchase: true,
+
     createdAt: new Date('2024-01-20'),
     updatedAt: new Date('2024-02-03'),
   },
@@ -1061,6 +1077,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaTitle: 'Two-Phase Cooling Case Mini-ITX - Ultra-Compact PC Cooling',
     metaDescription:
       'Ultra-compact Mini-ITX two-phase cooling system delivering full-size performance in the smallest form factor available.',
+
+    isAvailableForPurchase: true,
 
     createdAt: new Date('2024-02-01'),
     updatedAt: new Date('2024-02-05'),
@@ -1177,6 +1195,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaDescription:
       'Content creator optimized two-phase cooling with streaming features, RGB controls, and render-optimized thermal profiles.',
 
+    isAvailableForPurchase: true,
+
     createdAt: new Date('2024-02-08'),
     updatedAt: new Date('2024-02-12'),
   },
@@ -1290,6 +1310,8 @@ export const PRODUCTS: TwoPhaseCoolingProduct[] = [
     metaTitle: 'Two-Phase Cooling Case Server Rack - Enterprise Server Cooling',
     metaDescription:
       'Enterprise server-grade two-phase cooling for data center deployment with redundant cooling and 24/7/365 operation.',
+
+    isAvailableForPurchase: true,
 
     createdAt: new Date('2024-02-15'),
     updatedAt: new Date('2024-02-20'),

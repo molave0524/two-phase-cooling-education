@@ -28,6 +28,11 @@ export interface TwoPhaseCoolingProduct {
   metaTitle?: string
   metaDescription?: string
 
+  // Product availability and lifecycle
+  isAvailableForPurchase: boolean
+  productType?: string
+  componentPrice?: number
+
   // Timestamps
   createdAt: Date
   updatedAt: Date
