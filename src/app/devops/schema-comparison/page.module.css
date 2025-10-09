@@ -389,7 +389,7 @@
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 700;
-  text-align: center;
+  text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #374151;
@@ -426,7 +426,7 @@
 /* Matching columns - Light gray */
 .cellMatching {
   background: #f3f4f6;
-  color: #9ca3af;
+  /* color removed - let constraint classes define color */
 }
 
 /* Non-matching columns - Light red */
@@ -438,7 +438,7 @@
 /* Common to both - Gray (fallback) */
 .cellCommon {
   background: #f9fafb;
-  color: #6b7280;
+  /* color removed - let constraint classes define color */
 }
 
 /* Unique to this side - Blue */
@@ -544,18 +544,39 @@
 /* Table cells (bold) */
 .tableCell {
   font-weight: 700;
+  color: #000000;
 }
 
-/* Column cells (indented, smaller) */
+/* Column cells (indented, smaller) - v3 */
 .columnCell {
   font-size: 12px;
   padding-left: 32px;
   font-weight: 400;
+  color: #111827 !important;
+}
+
+/* Primary key columns - bold */
+.columnCell.primaryKey {
+  font-weight: 700 !important;
+  color: #000000 !important;
+}
+
+/* Unique columns - blue */
+.columnCell.uniqueColumn {
+  color: #1e3a8a !important;
+  font-weight: 500 !important;
+}
+
+/* Nullable columns - lighter */
+.columnCell.nullableColumn {
+  color: #4b5563 !important;
+  font-weight: 400 !important;
 }
 
 .columnType {
   color: #9ca3af;
   font-size: 11px;
+  margin-left: 8px;
 }
 
 /* Modified columns - Yellow/Orange */

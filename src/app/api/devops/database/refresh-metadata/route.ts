@@ -5,7 +5,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from 'drizzle-orm'
-import { db } from '@/db'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import { logger } from '@/lib/logger'
 
 type Environment = 'dev' | 'uat' | 'prod'
@@ -15,7 +16,7 @@ interface RefreshMetadataRequest {
 }
 
 /**
- * Refresh metadata for target environment using dblink
+ * Refresh metadata for target environment by connecting directly
  */
 async function refreshFDWMetadata(environment: Environment): Promise<void> {
   const envVar = `${environment.toUpperCase()}_POSTGRES_URL`
@@ -26,27 +27,31 @@ async function refreshFDWMetadata(environment: Environment): Promise<void> {
     throw new Error(`Missing environment variable: ${envVar}`)
   }
 
-  const url = new URL(connectionUrl)
+  // Create a direct connection to the remote database
+  const remoteClient = postgres(connectionUrl, {
+    ssl: 'require',
+    max: 1,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  })
+
+  const remoteDb = drizzle(remoteClient)
 
   try {
-    // Call stored procedure on remote database to refresh metadata
+    // Call stored procedure directly on remote database
     logger.info('Calling stored procedure for metadata refresh', { environment })
 
-    await db.execute(
-      sql.raw(`
-        CREATE EXTENSION IF NOT EXISTS dblink;
-
-        SELECT dblink_exec(
-          'host=${url.hostname} port=${url.port || '5432'} dbname=${url.pathname.slice(1)} user=${url.username} password=${url.password} sslmode=require',
-          'CALL public.usp_stage_pg_metadata_tables_for_schema_comparison()'
-        );
-      `)
+    await remoteDb.execute(
+      sql.raw(`CALL public.usp_stage_pg_metadata_tables_for_schema_comparison()`)
     )
 
     logger.info('Successfully refreshed metadata', { environment })
   } catch (error) {
     logger.error('Metadata refresh error', { error, environment })
     throw error
+  } finally {
+    // Close the connection
+    await remoteClient.end()
   }
 }
 

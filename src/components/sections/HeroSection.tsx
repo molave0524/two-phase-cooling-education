@@ -12,7 +12,7 @@ export const HeroSection: React.FC = () => {
           {/* Text */}
           <div className={styles.textSection}>
             <h1 className={styles.title}>2-Phase</h1>
-            <p className={styles.subtitle}>PC Cooling</p>
+            <p className={styles.subtitle}>AI cooling.</p>
           </div>
 
           {/* Visual */}

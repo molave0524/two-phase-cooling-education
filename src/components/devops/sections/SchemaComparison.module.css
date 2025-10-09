@@ -239,8 +239,8 @@
 }
 
 .diffColumn {
-  color: #111827;
-  font-weight: 600;
+  color: #000000;
+  font-weight: 700;
   font-family: 'Courier New', monospace;
   flex: 1;
 }

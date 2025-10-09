@@ -154,7 +154,7 @@ export default function ProductPage() {
             <Image
               src={
                 filteredImages[selectedImageIndex]?.url ||
-                'https://via.placeholder.com/600x600/f1f5f9/64748b?text=Product+Image'
+                'https://placehold.co/600x600/f1f5f9/64748b?text=Product+Image'
               }
               alt={filteredImages[selectedImageIndex]?.altText || product.name}
               width={600}
@@ -522,30 +522,36 @@ export default function ProductPage() {
           >
             <button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.inStock || !product.isAvailableForPurchase}
               style={{
                 padding: '16px 24px',
-                backgroundColor: !product.inStock ? '#f1f5f9' : '#0284c7',
-                color: !product.inStock ? '#94a3b8' : 'white',
+                backgroundColor:
+                  !product.inStock || !product.isAvailableForPurchase ? '#f1f5f9' : '#0284c7',
+                color: !product.inStock || !product.isAvailableForPurchase ? '#94a3b8' : 'white',
                 border: 'none',
                 borderRadius: '6px',
                 fontSize: '16px',
                 fontWeight: '600',
-                cursor: !product.inStock ? 'not-allowed' : 'pointer',
+                cursor:
+                  !product.inStock || !product.isAvailableForPurchase ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.2s ease',
               }}
               onMouseEnter={e => {
-                if (product.inStock) {
+                if (product.inStock && product.isAvailableForPurchase) {
                   e.currentTarget.style.backgroundColor = '#0369a1'
                 }
               }}
               onMouseLeave={e => {
-                if (product.inStock) {
+                if (product.inStock && product.isAvailableForPurchase) {
                   e.currentTarget.style.backgroundColor = '#0284c7'
                 }
               }}
             >
-              {!product.inStock ? 'Out of Stock' : `Add ${quantity} to Cart`}
+              {!product.inStock
+                ? 'Out of Stock'
+                : !product.isAvailableForPurchase
+                  ? 'Kit Only - Not Sold Separately'
+                  : `Add ${quantity} to Cart`}
             </button>
 
             <Link
@@ -779,18 +785,30 @@ export default function ProductPage() {
                       flexDirection: 'column',
                       alignItems: 'flex-end',
                       justifyContent: 'center',
-                      minWidth: '100px',
+                      minWidth: '120px',
                     }}
                   >
                     <span
                       style={{
                         fontSize: '20px',
                         fontWeight: 'bold',
-                        color: '#0284c7',
+                        color: component.isAvailableForPurchase === false ? '#94a3b8' : '#0284c7',
                       }}
                     >
                       ${component.price.toLocaleString()}
                     </span>
+                    {component.isAvailableForPurchase === false && (
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          color: '#94a3b8',
+                          fontWeight: '500',
+                          marginTop: '4px',
+                        }}
+                      >
+                        Kit Only
+                      </span>
+                    )}
                     {component.componentPrice && component.componentPrice !== component.price && (
                       <span
                         style={{
@@ -893,6 +911,162 @@ export default function ProductPage() {
             </p>
           </div>
         </div>
+
+        {/* Used In Products Section - Only show for components */}
+        {(product as any).usedInProducts && (product as any).usedInProducts.length > 0 && (
+          <>
+            <h3
+              style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: '#0f172a',
+                marginBottom: '16px',
+                marginTop: '48px',
+              }}
+            >
+              Included In Complete Systems
+            </h3>
+            <p
+              style={{
+                fontSize: '16px',
+                color: '#64748b',
+                marginBottom: '16px',
+              }}
+            >
+              This component is included in the following standalone builds:
+            </p>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr',
+                gap: '12px',
+              }}
+            >
+              {(product as any).usedInProducts.map((build: any) => (
+                <Link
+                  key={build.id}
+                  href={`/products/${build.slug}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '16px',
+                    backgroundColor: '#f8fafc',
+                    borderRadius: '8px',
+                    border: '2px solid #e2e8f0',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.backgroundColor = '#f1f5f9'
+                    e.currentTarget.style.borderColor = '#0284c7'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.backgroundColor = '#f8fafc'
+                    e.currentTarget.style.borderColor = '#e2e8f0'
+                  }}
+                >
+                  {/* Build Image */}
+                  <div
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      backgroundColor: '#e2e8f0',
+                      borderRadius: '6px',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Image
+                      src={
+                        Array.isArray(build.images) && build.images.length > 0
+                          ? typeof build.images[0] === 'string'
+                            ? build.images[0]
+                            : build.images[0]?.url || '/placeholder-product.jpg'
+                          : '/placeholder-product.jpg'
+                      }
+                      alt={build.name}
+                      width={80}
+                      height={80}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                      unoptimized
+                    />
+                  </div>
+
+                  {/* Build Details */}
+                  <div style={{ flex: 1 }}>
+                    <h4
+                      style={{
+                        fontSize: '20px',
+                        fontWeight: '600',
+                        color: '#0f172a',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      {build.name}
+                    </h4>
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: '#64748b',
+                        fontFamily: 'monospace',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      SKU: {build.sku}
+                    </p>
+                    {build.displayName && (
+                      <p
+                        style={{
+                          fontSize: '14px',
+                          color: '#0284c7',
+                          fontWeight: '500',
+                        }}
+                      >
+                        Used as: {build.displayName}
+                        {build.quantity > 1 && ` (×${build.quantity})`}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Build Price */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-end',
+                      justifyContent: 'center',
+                      minWidth: '120px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '24px',
+                        fontWeight: 'bold',
+                        color: '#0284c7',
+                      }}
+                    >
+                      ${build.price.toLocaleString()}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '12px',
+                        color: '#64748b',
+                        marginTop: '4px',
+                      }}
+                    >
+                      View Build →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

@@ -18,6 +18,10 @@ interface ColumnDifference {
   status: 'added' | 'removed' | 'modified' | 'matching'
   sourceType?: string
   targetType?: string
+  ordinalPosition?: number
+  isPrimaryKey?: boolean
+  isUnique?: boolean
+  isNullable?: boolean
 }
 
 export async function POST(request: NextRequest) {
@@ -108,39 +112,143 @@ export async function POST(request: NextRequest) {
     const columnDifferences: ColumnDifference[] = []
 
     for (const tableName of tablesInBoth) {
-      // Get columns from source
+      // Get columns from source with constraint information and full type
       const sourceColumns = (await db.execute(sql`
-        SELECT column_name, data_type, is_nullable
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-          AND table_name = ${tableName}
-        ORDER BY ordinal_position
+        SELECT
+          c.column_name,
+          CASE
+            -- Character types with length
+            WHEN c.data_type = 'character varying' THEN
+              'character varying(' || c.character_maximum_length || ')'
+            WHEN c.data_type = 'character' THEN
+              'character(' || c.character_maximum_length || ')'
+            -- Numeric types with precision/scale
+            WHEN c.data_type = 'numeric' THEN
+              CASE
+                WHEN c.numeric_scale IS NOT NULL THEN
+                  'numeric(' || c.numeric_precision || ',' || c.numeric_scale || ')'
+                ELSE
+                  'numeric(' || c.numeric_precision || ')'
+              END
+            -- Bit types with length
+            WHEN c.data_type = 'bit' THEN
+              'bit(' || c.character_maximum_length || ')'
+            WHEN c.data_type = 'bit varying' THEN
+              'bit varying(' || c.character_maximum_length || ')'
+            -- Time/timestamp types with precision
+            WHEN c.data_type = 'time without time zone' AND c.datetime_precision IS NOT NULL THEN
+              'time(' || c.datetime_precision || ')'
+            WHEN c.data_type = 'time with time zone' AND c.datetime_precision IS NOT NULL THEN
+              'time(' || c.datetime_precision || ') with time zone'
+            WHEN c.data_type = 'timestamp without time zone' AND c.datetime_precision IS NOT NULL THEN
+              'timestamp(' || c.datetime_precision || ')'
+            WHEN c.data_type = 'timestamp with time zone' AND c.datetime_precision IS NOT NULL THEN
+              'timestamp(' || c.datetime_precision || ') with time zone'
+            -- Interval with precision
+            WHEN c.data_type = 'interval' AND c.datetime_precision IS NOT NULL THEN
+              'interval(' || c.datetime_precision || ')'
+            -- All other types (integer, text, boolean, etc.)
+            ELSE c.data_type
+          END as data_type,
+          c.is_nullable,
+          c.ordinal_position,
+          CASE WHEN pk.constraint_type = 'PRIMARY KEY' THEN true ELSE false END as is_primary_key,
+          CASE WHEN uq.constraint_type = 'UNIQUE' THEN true ELSE false END as is_unique
+        FROM information_schema.columns c
+        LEFT JOIN information_schema.key_column_usage kcu
+          ON c.table_schema = kcu.table_schema
+          AND c.table_name = kcu.table_name
+          AND c.column_name = kcu.column_name
+        LEFT JOIN information_schema.table_constraints pk
+          ON kcu.constraint_name = pk.constraint_name
+          AND pk.constraint_type = 'PRIMARY KEY'
+        LEFT JOIN information_schema.table_constraints uq
+          ON kcu.constraint_name = uq.constraint_name
+          AND uq.constraint_type = 'UNIQUE'
+        WHERE c.table_schema = 'public'
+          AND c.table_name = ${tableName}
+        ORDER BY c.ordinal_position
       `)) as Array<{
         column_name: string
         data_type: string
         is_nullable: string
+        ordinal_position: number
+        is_primary_key: boolean
+        is_unique: boolean
       }>
 
-      // Get columns from target
-      // Note: For FDW, we need to query the foreign columns directly from the foreign table
-      // We'll use the pg_attribute catalog instead since information_schema isn't imported via FDW
+      // Get columns from target with constraint information and full type
       const targetColumnsQuery =
         target === 'local'
           ? sql`
-              SELECT column_name, data_type, is_nullable
-              FROM information_schema.columns
-              WHERE table_schema = 'public'
-                AND table_name = ${tableName}
-              ORDER BY ordinal_position
+              SELECT
+                c.column_name,
+                CASE
+                  -- Character types with length
+                  WHEN c.data_type = 'character varying' THEN
+                    'character varying(' || c.character_maximum_length || ')'
+                  WHEN c.data_type = 'character' THEN
+                    'character(' || c.character_maximum_length || ')'
+                  -- Numeric types with precision/scale
+                  WHEN c.data_type = 'numeric' THEN
+                    CASE
+                      WHEN c.numeric_scale IS NOT NULL THEN
+                        'numeric(' || c.numeric_precision || ',' || c.numeric_scale || ')'
+                      ELSE
+                        'numeric(' || c.numeric_precision || ')'
+                    END
+                  -- Bit types with length
+                  WHEN c.data_type = 'bit' THEN
+                    'bit(' || c.character_maximum_length || ')'
+                  WHEN c.data_type = 'bit varying' THEN
+                    'bit varying(' || c.character_maximum_length || ')'
+                  -- Time/timestamp types with precision
+                  WHEN c.data_type = 'time without time zone' AND c.datetime_precision IS NOT NULL THEN
+                    'time(' || c.datetime_precision || ')'
+                  WHEN c.data_type = 'time with time zone' AND c.datetime_precision IS NOT NULL THEN
+                    'time(' || c.datetime_precision || ') with time zone'
+                  WHEN c.data_type = 'timestamp without time zone' AND c.datetime_precision IS NOT NULL THEN
+                    'timestamp(' || c.datetime_precision || ')'
+                  WHEN c.data_type = 'timestamp with time zone' AND c.datetime_precision IS NOT NULL THEN
+                    'timestamp(' || c.datetime_precision || ') with time zone'
+                  -- Interval with precision
+                  WHEN c.data_type = 'interval' AND c.datetime_precision IS NOT NULL THEN
+                    'interval(' || c.datetime_precision || ')'
+                  -- All other types (integer, text, boolean, etc.)
+                  ELSE c.data_type
+                END as data_type,
+                c.is_nullable,
+                c.ordinal_position,
+                CASE WHEN pk.constraint_type = 'PRIMARY KEY' THEN true ELSE false END as is_primary_key,
+                CASE WHEN uq.constraint_type = 'UNIQUE' THEN true ELSE false END as is_unique
+              FROM information_schema.columns c
+              LEFT JOIN information_schema.key_column_usage kcu
+                ON c.table_schema = kcu.table_schema
+                AND c.table_name = kcu.table_name
+                AND c.column_name = kcu.column_name
+              LEFT JOIN information_schema.table_constraints pk
+                ON kcu.constraint_name = pk.constraint_name
+                AND pk.constraint_type = 'PRIMARY KEY'
+              LEFT JOIN information_schema.table_constraints uq
+                ON kcu.constraint_name = uq.constraint_name
+                AND uq.constraint_type = 'UNIQUE'
+              WHERE c.table_schema = 'public'
+                AND c.table_name = ${tableName}
+              ORDER BY c.ordinal_position
             `
           : sql.raw(`
               SELECT
                 a.attname as column_name,
                 format_type(a.atttypid, a.atttypmod) as data_type,
-                CASE WHEN a.attnotnull THEN 'NO' ELSE 'YES' END as is_nullable
+                CASE WHEN a.attnotnull THEN 'NO' ELSE 'YES' END as is_nullable,
+                a.attnum as ordinal_position,
+                CASE WHEN i.indisprimary THEN true ELSE false END as is_primary_key,
+                CASE WHEN con.contype = 'u' THEN true ELSE false END as is_unique
               FROM pg_catalog.pg_attribute a
               JOIN pg_catalog.pg_class c ON a.attrelid = c.oid
               JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid
+              LEFT JOIN pg_catalog.pg_index i ON i.indrelid = c.oid AND a.attnum = ANY(i.indkey) AND i.indisprimary
+              LEFT JOIN pg_catalog.pg_constraint con ON con.conrelid = c.oid AND con.contype = 'u' AND a.attnum = ANY(con.conkey)
               WHERE n.nspname = '${targetSchema}'
                 AND c.relname = '${tableName}'
                 AND a.attnum > 0
@@ -152,18 +260,51 @@ export async function POST(request: NextRequest) {
         column_name: string
         data_type: string
         is_nullable: string
+        ordinal_position: number
+        is_primary_key: boolean
+        is_unique: boolean
       }>
 
-      const sourceColMap = new Map<string, { type: string; nullable: string }>(
-        sourceColumns.map((c: { column_name: string; data_type: string; is_nullable: string }) => [
+      const sourceColMap = new Map<
+        string,
+        {
+          type: string
+          nullable: string
+          ordinal: number
+          isPk: boolean
+          isUnique: boolean
+        }
+      >(
+        sourceColumns.map(c => [
           c.column_name,
-          { type: c.data_type, nullable: c.is_nullable },
+          {
+            type: c.data_type,
+            nullable: c.is_nullable,
+            ordinal: c.ordinal_position,
+            isPk: c.is_primary_key,
+            isUnique: c.is_unique,
+          },
         ])
       )
-      const targetColMap = new Map<string, { type: string; nullable: string }>(
-        targetColumns.map((c: { column_name: string; data_type: string; is_nullable: string }) => [
+      const targetColMap = new Map<
+        string,
+        {
+          type: string
+          nullable: string
+          ordinal: number
+          isPk: boolean
+          isUnique: boolean
+        }
+      >(
+        targetColumns.map(c => [
           c.column_name,
-          { type: c.data_type, nullable: c.is_nullable },
+          {
+            type: c.data_type,
+            nullable: c.is_nullable,
+            ordinal: c.ordinal_position,
+            isPk: c.is_primary_key,
+            isUnique: c.is_unique,
+          },
         ])
       )
 
@@ -175,6 +316,10 @@ export async function POST(request: NextRequest) {
             column: colName,
             status: 'added',
             targetType: colInfo.type,
+            ordinalPosition: colInfo.ordinal,
+            isPrimaryKey: colInfo.isPk,
+            isUnique: colInfo.isUnique,
+            isNullable: colInfo.nullable === 'YES',
           })
         }
       }
@@ -187,6 +332,10 @@ export async function POST(request: NextRequest) {
             column: colName,
             status: 'removed',
             sourceType: colInfo.type,
+            ordinalPosition: colInfo.ordinal,
+            isPrimaryKey: colInfo.isPk,
+            isUnique: colInfo.isUnique,
+            isNullable: colInfo.nullable === 'YES',
           })
         } else {
           const targetCol = targetColMap.get(colName)!
@@ -197,6 +346,10 @@ export async function POST(request: NextRequest) {
               status: 'modified',
               sourceType: `${colInfo.type}${colInfo.nullable === 'YES' ? ' (nullable)' : ''}`,
               targetType: `${targetCol.type}${targetCol.nullable === 'YES' ? ' (nullable)' : ''}`,
+              ordinalPosition: colInfo.ordinal,
+              isPrimaryKey: colInfo.isPk || targetCol.isPk,
+              isUnique: colInfo.isUnique || targetCol.isUnique,
+              isNullable: colInfo.nullable === 'YES' || targetCol.nullable === 'YES',
             })
           } else {
             // Column matches perfectly
@@ -206,6 +359,10 @@ export async function POST(request: NextRequest) {
               status: 'matching',
               sourceType: colInfo.type,
               targetType: targetCol.type,
+              ordinalPosition: colInfo.ordinal,
+              isPrimaryKey: colInfo.isPk,
+              isUnique: colInfo.isUnique,
+              isNullable: colInfo.nullable === 'YES',
             })
           }
         }
