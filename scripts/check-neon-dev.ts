@@ -1,8 +1,16 @@
-// Direct connection to Neon DEV database (bypasses .env.local)
+// Check Neon DEV database using environment variable
 import postgres from 'postgres'
+import * as dotenv from 'dotenv'
+import * as path from 'path'
 
-const NEON_DEV_URL =
-  'postgresql://neondb_owner:npg_2LT0RAEwKjeN@ep-rough-lab-addes3ze.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require'
+dotenv.config({ path: path.join(process.cwd(), '.env.local') })
+
+const NEON_DEV_URL = process.env.DEV_POSTGRES_URL
+
+if (!NEON_DEV_URL) {
+  console.error('❌ DEV_POSTGRES_URL not found in .env.local')
+  process.exit(1)
+}
 
 async function checkNeonDev() {
   const sql = postgres(NEON_DEV_URL)
