@@ -4,13 +4,10 @@ import React, { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { VideoMetadata } from '@/types'
 
-const VideoPlayer = dynamic(
-  () => import('./VideoPlayer').then(mod => ({ default: mod.VideoPlayer })),
-  {
-    loading: () => <div className='w-full h-64 bg-gray-800 rounded-lg animate-pulse' />,
-    ssr: false,
-  }
-)
+const VideoPlayer = dynamic(() => import('./VideoPlayer').then(mod => mod.VideoPlayer), {
+  loading: () => <div className='w-full h-64 bg-gray-800 rounded-lg animate-pulse' />,
+  ssr: false,
+})
 
 // ============================================================================
 // TYPES AND INTERFACES

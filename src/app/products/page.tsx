@@ -9,8 +9,12 @@ import { logger } from '@/lib/logger'
 import styles from './products.module.css'
 
 export default function ProductsPage() {
+  const [allProducts, setAllProducts] = useState<TwoPhaseCoolingProduct[]>([])
   const [products, setProducts] = useState<TwoPhaseCoolingProduct[]>([])
   const [loading, setLoading] = useState(true)
+  const [productTypeFilter, setProductTypeFilter] = useState<'all' | 'standalone' | 'component'>(
+    'standalone'
+  )
 
   useEffect(() => {
     async function fetchProducts() {
@@ -20,16 +24,19 @@ export default function ProductsPage() {
 
         // Handle new standardized response format
         if (result.success && result.data) {
-          // Filter to only show standalone products (not individual components)
+          setAllProducts(result.data)
+          // Initially show standalone products
           const standaloneProducts = result.data.filter((p: any) => p.productType === 'standalone')
           setProducts(standaloneProducts)
         } else {
           // Handle error response
           logger.error('Failed to fetch products', result.error)
+          setAllProducts([])
           setProducts([])
         }
       } catch (error) {
         logger.error('Failed to fetch products', error)
+        setAllProducts([])
         setProducts([])
       } finally {
         setLoading(false)
@@ -37,6 +44,16 @@ export default function ProductsPage() {
     }
     fetchProducts()
   }, [])
+
+  // Filter products when filter changes
+  useEffect(() => {
+    if (productTypeFilter === 'all') {
+      setProducts(allProducts)
+    } else {
+      const filtered = allProducts.filter((p: any) => p.productType === productTypeFilter)
+      setProducts(filtered)
+    }
+  }, [productTypeFilter, allProducts])
 
   return (
     <div className={styles.pageContainer}>
@@ -51,10 +68,48 @@ export default function ProductsPage() {
         </div>
       </div>
 
+      {/* Product Type Filter */}
+      <div className={styles.filterSection}>
+        <div className={styles.filterContainer}>
+          <span className={styles.filterLabel}>Show:</span>
+          <div className={styles.filterButtons}>
+            <button
+              onClick={() => setProductTypeFilter('standalone')}
+              className={`${styles.filterButton} ${productTypeFilter === 'standalone' ? styles.filterButtonActive : ''}`}
+            >
+              Complete Systems (
+              {allProducts.filter((p: any) => p.productType === 'standalone').length})
+            </button>
+            <button
+              onClick={() => setProductTypeFilter('component')}
+              className={`${styles.filterButton} ${productTypeFilter === 'component' ? styles.filterButtonActive : ''}`}
+            >
+              Components ({allProducts.filter((p: any) => p.productType === 'component').length})
+            </button>
+            <button
+              onClick={() => setProductTypeFilter('all')}
+              className={`${styles.filterButton} ${productTypeFilter === 'all' ? styles.filterButtonActive : ''}`}
+            >
+              All Products ({allProducts.length})
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Products Grid */}
       <div className={styles.productsContainer}>
         {loading ? (
           <div className='text-center py-8'>Loading products...</div>
+        ) : products.length === 0 ? (
+          <div className={styles.noProducts}>
+            <div className={styles.noProductsIcon}>📦</div>
+            <h3 className={styles.noProductsTitle}>No products found</h3>
+            <p className={styles.noProductsText}>
+              {productTypeFilter === 'standalone' && 'No complete systems available at this time.'}
+              {productTypeFilter === 'component' && 'No components available at this time.'}
+              {productTypeFilter === 'all' && 'No products available at this time.'}
+            </p>
+          </div>
         ) : (
           <div className={styles.productsGrid}>
             {products.map(product => (
@@ -177,24 +232,41 @@ function ProductCard({ product }: { product: any }) {
         </div>
 
         {/* Key Specs */}
-        {product.specifications && (
+        {product?.specifications && (
           <div className={styles.specsSection}>
             <div className={styles.specsGrid}>
               <div>
                 <span className={styles.specLabel}>Cooling:</span>
                 <p className={styles.specValue}>
-                  {(product.specifications as any)?.cooling?.capacity ||
-                    (product.specifications as any)?.capacity ||
-                    'High Performance'}
+                  {(() => {
+                    try {
+                      const specs = product.specifications as any
+                      if (!specs) return 'High Performance'
+                      if (specs.cooling?.type) return specs.cooling.type
+                      if (specs.cooling?.capacity) return specs.cooling.capacity
+                      if (specs.capacity) return specs.capacity
+                      return 'High Performance'
+                    } catch {
+                      return 'High Performance'
+                    }
+                  })()}
                 </p>
               </div>
               <div>
                 <span className={styles.specLabel}>Noise:</span>
                 <p className={styles.specValue}>
-                  {(product.specifications as any)?.performance?.noiseLevel ||
-                    (product.specifications as any)?.environmental?.noiseLevel ||
-                    (product.specifications as any)?.noise ||
-                    'Quiet Operation'}
+                  {(() => {
+                    try {
+                      const specs = product.specifications as any
+                      if (!specs) return 'Quiet Operation'
+                      if (specs.performance?.noiseLevel) return specs.performance.noiseLevel
+                      if (specs.environmental?.noiseLevel) return specs.environmental.noiseLevel
+                      if (specs.noise) return specs.noise
+                      return 'Quiet Operation'
+                    } catch {
+                      return 'Quiet Operation'
+                    }
+                  })()}
                 </p>
               </div>
             </div>

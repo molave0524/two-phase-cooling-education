@@ -37,11 +37,100 @@
   max-width: 48rem;
 }
 
+/* Filter Section */
+.filterSection {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem 0;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.filterContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filterButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 0.625rem 1.25rem;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterButton:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.filterButtonActive {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #2563eb;
+}
+
+.filterButtonActive:hover {
+  background-color: #2563eb;
+}
+
 /* Products Grid Section */
 .productsContainer {
   max-width: 80rem;
   margin: 0 auto;
   padding: 4rem 1rem;
+}
+
+/* No Products State */
+.noProducts {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 1rem;
+  border: 2px dashed #d1d5db;
+}
+
+.noProductsIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.noProductsTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.noProductsText {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
 }
 
 .productsGrid {

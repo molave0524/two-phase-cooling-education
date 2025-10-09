@@ -39,7 +39,15 @@
       "Bash(echo \"DEV_POSTGRES_URL: $DEV_POSTGRES_URL:0:50...\")",
       "Bash(git rev-parse:*)",
       "Bash(git log:*)",
-      "Bash(openssl rand:*)"
+      "Bash(openssl rand:*)",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(vercel ls:*)",
+      "Bash(npx vercel:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(npx tsx:*)",
+      "Bash(set DATABASE_URL=postgresql://neondb_owner:npg_2LT0RAEwKjeN@ep-rough-lab-addes3ze.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require)",
+      "Bash(vercel:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

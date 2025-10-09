@@ -186,7 +186,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // Filter and view state
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
-    priceRange: [0, 2000],
+    priceRange: [0, 20000], // Increased to accommodate higher-priced products
     sortBy: 'featured',
     inStock: false,
   })
@@ -203,7 +203,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // ============================================================================
 
   const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))]
-  const maxPrice = Math.max(...products.map(p => p.price_cents / 100))
+  const maxPrice = products.length > 0 ? Math.max(...products.map(p => p.price_cents / 100)) : 20000
 
   // ============================================================================
   // FILTERING AND SORTING

@@ -30,9 +30,10 @@ export async function GET(
       return apiNotFound('Product', { details: { slug } })
     }
 
-    // Fetch component products if this is a standalone product
+    // Fetch component products if this product has components
+    // (applies to both standalone builds AND component kits)
     let components: any[] = []
-    if (product.productType === 'standalone') {
+    if (product.productType === 'standalone' || product.productType === 'component') {
       // Get component relationships
       const componentRelations = await db
         .select({
@@ -73,9 +74,41 @@ export async function GET(
         })
     }
 
+    // Fetch parent products (standalone builds) that include this component
+    let usedInProducts: any[] = []
+    if (product.productType === 'component') {
+      const parentRelations = await db
+        .select({
+          parent: products,
+          relation: productComponents,
+        })
+        .from(productComponents)
+        .innerJoin(products, eq(productComponents.parentProductId, products.id))
+        .where(eq(productComponents.componentProductId, product.id))
+
+      // Filter to only show standalone products and parse JSON fields
+      usedInProducts = parentRelations
+        .filter(({ parent }: any) => parent.productType === 'standalone')
+        .map(({ parent, relation }: any) => ({
+          ...parent,
+          // Parse JSON fields if using SQLite
+          features: usePostgres ? parent.features : JSON.parse(parent.features as string),
+          specifications: usePostgres
+            ? parent.specifications
+            : JSON.parse(parent.specifications as string),
+          images: usePostgres ? parent.images : JSON.parse(parent.images as string),
+          categories: usePostgres ? parent.categories : JSON.parse(parent.categories as string),
+          tags: usePostgres ? parent.tags : JSON.parse(parent.tags as string),
+          // Add relation metadata
+          quantity: relation.quantity,
+          displayName: relation.displayName,
+        }))
+        .sort((a: any, b: any) => a.name.localeCompare(b.name))
+    }
+
     // Parse JSON fields if using SQLite (Postgres stores them natively)
     const parsedProduct = usePostgres
-      ? { ...product, components }
+      ? { ...product, components, usedInProducts }
       : {
           ...product,
           features: JSON.parse(product.features as string),
@@ -84,6 +117,7 @@ export async function GET(
           categories: JSON.parse(product.categories as string),
           tags: JSON.parse(product.tags as string),
           components,
+          usedInProducts,
         }
 
     return apiSuccess(parsedProduct)
