@@ -33,30 +33,16 @@ try {
   )
 }
 
-const isVercel = process.env.VERCEL === '1'
+// Use postgres-js everywhere for consistency
+const { drizzle } = require('drizzle-orm/postgres-js')
+const postgres = require('postgres')
 
-let db: any
-
-if (isVercel) {
-  // Use Neon serverless driver on Vercel
-  const { neon } = require('@neondatabase/serverless')
-  const { drizzle } = require('drizzle-orm/neon-http')
-
-  logger.info('Using @neondatabase/serverless (Vercel)')
-  const sql = neon(connectionString)
-  db = drizzle(sql, { schema })
-} else {
-  // Use postgres-js for local development
-  const { drizzle } = require('drizzle-orm/postgres-js')
-  const postgres = require('postgres')
-
-  logger.info('Using postgres-js (local)')
-  const client = postgres(connectionString, {
-    prepare: false,
-    onnotice: () => {},
-  })
-  db = drizzle(client, { schema })
-}
+logger.info('Using postgres-js')
+const client = postgres(connectionString, {
+  prepare: false,
+  onnotice: () => {},
+})
+const db = drizzle(client, { schema })
 
 export { db }
 
