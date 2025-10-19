@@ -65,15 +65,15 @@ export const products = catalogSchema.table(
     // Lifecycle management
     status: text('status').notNull().default('active'), // active, sunset, discontinued
     isAvailableForPurchase: boolean('is_available_for_purchase').notNull().default(true),
-    sunsetDate: timestamp('sunset_date'),
-    discontinuedDate: timestamp('discontinued_date'),
+    sunsetDate: timestamp('sunset_date', { withTimezone: true }),
+    discontinuedDate: timestamp('discontinued_date', { withTimezone: true }),
     sunsetReason: text('sunset_reason'),
 
     // Product type
     productType: text('product_type').notNull().default('standalone'), // standalone, bundle, component
 
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   table => ({
     // SKU field constraints: exactly 3 characters, no spaces
@@ -130,8 +130,8 @@ export const productComponents = catalogSchema.table(
     notes: text('notes'),
 
     // Timestamps
-    createdAt: timestamp('created_at').notNull().defaultNow(),
-    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   table => ({
     // Constraints

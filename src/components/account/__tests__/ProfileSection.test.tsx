@@ -26,7 +26,7 @@ describe('ProfileSection', () => {
     ;(global.fetch as jest.Mock).mockClear()
   })
 
-  it('should render loading state initially', () => {
+  it('should render profile form with session data', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: { id: '1', email: 'test@example.com', name: 'Test User' },
@@ -38,10 +38,12 @@ describe('ProfileSection', () => {
 
     render(<ProfileSection />)
 
-    expect(screen.getByText('Loading profile...')).toBeInTheDocument()
+    // Component should render form with session data immediately
+    expect(screen.getByText('Profile Information')).toBeInTheDocument()
+    expect(screen.getByLabelText('Full Name')).toBeInTheDocument()
   })
 
-  it('should load and display user profile', async () => {
+  it('should display user profile from session', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: { id: '1', email: 'test@example.com', name: 'Test User' },
@@ -50,22 +52,12 @@ describe('ProfileSection', () => {
       status: 'authenticated',
       update: jest.fn(),
     })
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        id: 1,
-        email: 'test@example.com',
-        name: 'Test User',
-        image: null,
-      }),
-    })
 
     render(<ProfileSection />)
 
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('Test User')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('test@example.com')).toBeInTheDocument()
-    })
+    // Component uses session data directly, no fetch needed
+    expect(screen.getByDisplayValue('Test User')).toBeInTheDocument()
+    expect(screen.getByText(/test@example.com/)).toBeInTheDocument()
   })
 
   it('should update profile when form is submitted', async () => {
@@ -78,28 +70,13 @@ describe('ProfileSection', () => {
       update: jest.fn(),
     })
 
-    // Mock GET profile
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        id: 1,
-        email: 'test@example.com',
-        name: 'Test User',
-        image: null,
-      }),
-    })
-
-    render(<ProfileSection />)
-
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('Test User')).toBeInTheDocument()
-    })
-
-    // Mock PATCH profile
+    // Mock PATCH profile (component doesn't fetch, it uses session data)
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ message: 'Profile updated successfully' }),
     })
+
+    render(<ProfileSection />)
 
     const nameInput = screen.getByDisplayValue('Test User')
     fireEvent.change(nameInput, { target: { value: 'Updated Name' } })
@@ -128,28 +105,13 @@ describe('ProfileSection', () => {
       update: jest.fn(),
     })
 
-    // Mock GET profile
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        id: 1,
-        email: 'test@example.com',
-        name: 'Test User',
-        image: null,
-      }),
-    })
-
-    render(<ProfileSection />)
-
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('Test User')).toBeInTheDocument()
-    })
-
     // Mock PATCH profile failure
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ error: 'Failed to update profile' }),
     })
+
+    render(<ProfileSection />)
 
     const saveButton = screen.getByText('Update Profile')
     fireEvent.click(saveButton)

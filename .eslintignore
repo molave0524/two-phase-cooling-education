@@ -1,0 +1,17 @@
+# Archive directory - legacy scripts no longer in use
+_archive/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Dependencies
+node_modules/
+
+# Generated files
+*.tsbuildinfo
+
+# Migration files
+drizzle/

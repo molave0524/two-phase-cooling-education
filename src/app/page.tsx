@@ -4,6 +4,7 @@ import { TechnologyOverview } from '@/components/sections/TechnologyOverview'
 import { VideoShowcase } from '@/components/sections/VideoShowcase'
 import { ProductShowcase } from '@/components/sections/ProductShowcase'
 import { CallToAction } from '@/components/sections/CallToAction'
+import { SEO, SOCIAL_LINKS } from '@/constants/defaults'
 
 // Page metadata for SEO optimization
 export const metadata: Metadata = {
@@ -98,25 +99,21 @@ export default function HomePage() {
         type='application/ld+json'
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
+            '@context': SEO.SCHEMA_CONTEXT,
             '@type': 'EducationalOrganization',
             name: 'Two-Phase Cooling Education Center',
             description:
               'Learn about revolutionary two-phase cooling technology through interactive demos and educational content.',
-            url: 'https://twophasecooling.com',
-            logo: 'https://twophasecooling.com/images/logo.png',
-            image: 'https://twophasecooling.com/images/hero-og.jpg',
+            url: SEO.SITE_URL,
+            logo: SEO.LOGO_URL,
+            image: SEO.OG_IMAGE_URL,
             telephone: '+1-555-COOLING',
             address: {
               '@type': 'PostalAddress',
               addressCountry: 'US',
               addressRegion: 'USA',
             },
-            sameAs: [
-              'https://youtube.com/@twophasecooling',
-              'https://twitter.com/twophasecooling',
-              'https://linkedin.com/company/twophasecooling',
-            ],
+            sameAs: [SOCIAL_LINKS.YOUTUBE, SOCIAL_LINKS.TWITTER, SOCIAL_LINKS.LINKEDIN],
             offers: {
               '@type': 'Product',
               name: 'Two-Phase Cooling Case',
@@ -130,8 +127,8 @@ export default function HomePage() {
                 '@type': 'Offer',
                 price: '899.00',
                 priceCurrency: 'USD',
-                availability: 'https://schema.org/PreOrder',
-                url: 'https://twophasecooling.com/products',
+                availability: `${SEO.SCHEMA_CONTEXT}/PreOrder`,
+                url: SEO.PRODUCTS_URL,
               },
             },
             educationalCredentialAwarded: 'Certificate of Completion',
@@ -151,7 +148,7 @@ export default function HomePage() {
         type='application/ld+json'
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
+            '@context': SEO.SCHEMA_CONTEXT,
             '@type': 'Product',
             name: 'Two-Phase Cooling Computer Case',
             description:
@@ -161,17 +158,13 @@ export default function HomePage() {
               name: 'Two-Phase Cooling Technologies',
             },
             category: 'Computer Cases',
-            image: [
-              'https://twophasecooling.com/images/product-main.jpg',
-              'https://twophasecooling.com/images/product-side.jpg',
-              'https://twophasecooling.com/images/product-internal.jpg',
-            ],
+            image: [SEO.PRODUCT_IMAGE_MAIN, SEO.PRODUCT_IMAGE_SIDE, SEO.PRODUCT_IMAGE_INTERNAL],
             offers: {
               '@type': 'Offer',
               price: '899.00',
               priceCurrency: 'USD',
-              availability: 'https://schema.org/PreOrder',
-              url: 'https://twophasecooling.com/products',
+              availability: `${SEO.SCHEMA_CONTEXT}/PreOrder`,
+              url: SEO.PRODUCTS_URL,
               seller: {
                 '@type': 'Organization',
                 name: 'Two-Phase Cooling Technologies',

@@ -1,0 +1,14 @@
+{
+  "id": "0011_fix_timestamp_types",
+  "prevId": "0010_sync_catalog_schema",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

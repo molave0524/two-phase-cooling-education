@@ -1,12 +1,14 @@
 /**
  * Stripe Configuration and Helper Functions
  * Handles payment processing integration with Stripe API
+ * With automatic retry logic for transient failures
  */
 
 import Stripe from 'stripe'
 import { loadStripe } from '@stripe/stripe-js'
 import { logger } from '@/lib/logger'
 import { clientEnv } from '@/lib/env'
+import { retry } from '@/lib/retry'
 
 // Environment variables validation
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
@@ -64,22 +66,38 @@ export async function createPaymentIntent(
   } = params
 
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount), // Ensure integer
-      currency,
-      ...(customerId && { customer: customerId }),
-      metadata,
-      ...(description && { description }),
-      ...(shippingAddress && {
-        shipping: {
-          name: shippingAddress.name,
-          address: shippingAddress.address,
-        },
-      }),
-      automatic_payment_methods: {
-        enabled: true,
+    // Retry Stripe API call with exponential backoff
+    const paymentIntent = await retry(
+      async () => {
+        return await stripe.paymentIntents.create({
+          amount: Math.round(amount), // Ensure integer
+          currency,
+          ...(customerId && { customer: customerId }),
+          metadata,
+          ...(description && { description }),
+          ...(shippingAddress && {
+            shipping: {
+              name: shippingAddress.name,
+              address: shippingAddress.address,
+            },
+          }),
+          automatic_payment_methods: {
+            enabled: true,
+          },
+        })
       },
-    })
+      {
+        maxRetries: 3,
+        initialDelay: 1000,
+        shouldRetry: error => {
+          // Retry on network errors and rate limits, but not on invalid params
+          if (error instanceof Stripe.errors.StripeConnectionError) return true
+          if (error instanceof Stripe.errors.StripeAPIError) return true
+          if (error instanceof Stripe.errors.StripeRateLimitError) return true
+          return false
+        },
+      }
+    )
 
     return paymentIntent
   } catch (error) {
@@ -106,13 +124,28 @@ export interface CreateCustomerParams {
 
 export async function createCustomer(params: CreateCustomerParams): Promise<Stripe.Customer> {
   try {
-    const customer = await stripe.customers.create({
-      email: params.email,
-      ...(params.name && { name: params.name }),
-      ...(params.phone && { phone: params.phone }),
-      ...(params.address && { address: params.address }),
-      metadata: params.metadata || {},
-    })
+    // Retry Stripe API call with exponential backoff
+    const customer = await retry(
+      async () => {
+        return await stripe.customers.create({
+          email: params.email,
+          ...(params.name && { name: params.name }),
+          ...(params.phone && { phone: params.phone }),
+          ...(params.address && { address: params.address }),
+          metadata: params.metadata || {},
+        })
+      },
+      {
+        maxRetries: 3,
+        initialDelay: 1000,
+        shouldRetry: error => {
+          if (error instanceof Stripe.errors.StripeConnectionError) return true
+          if (error instanceof Stripe.errors.StripeAPIError) return true
+          if (error instanceof Stripe.errors.StripeRateLimitError) return true
+          return false
+        },
+      }
+    )
 
     return customer
   } catch (error) {
@@ -123,7 +156,22 @@ export async function createCustomer(params: CreateCustomerParams): Promise<Stri
 
 export async function getCustomer(customerId: string): Promise<Stripe.Customer | null> {
   try {
-    const customer = await stripe.customers.retrieve(customerId)
+    // Retry Stripe API call for retrieving customer
+    const customer = await retry(
+      async () => {
+        return await stripe.customers.retrieve(customerId)
+      },
+      {
+        maxRetries: 3,
+        initialDelay: 500,
+        shouldRetry: error => {
+          if (error instanceof Stripe.errors.StripeConnectionError) return true
+          if (error instanceof Stripe.errors.StripeAPIError) return true
+          if (error instanceof Stripe.errors.StripeRateLimitError) return true
+          return false
+        },
+      }
+    )
     return customer as Stripe.Customer
   } catch (error) {
     logger.error('Failed to get customer', error, { customerId })
@@ -137,9 +185,24 @@ export async function attachPaymentMethodToCustomer(
   customerId: string
 ): Promise<Stripe.PaymentMethod> {
   try {
-    const paymentMethod = await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customerId,
-    })
+    // Retry Stripe API call for attaching payment method
+    const paymentMethod = await retry(
+      async () => {
+        return await stripe.paymentMethods.attach(paymentMethodId, {
+          customer: customerId,
+        })
+      },
+      {
+        maxRetries: 3,
+        initialDelay: 1000,
+        shouldRetry: error => {
+          if (error instanceof Stripe.errors.StripeConnectionError) return true
+          if (error instanceof Stripe.errors.StripeAPIError) return true
+          if (error instanceof Stripe.errors.StripeRateLimitError) return true
+          return false
+        },
+      }
+    )
 
     return paymentMethod
   } catch (error) {

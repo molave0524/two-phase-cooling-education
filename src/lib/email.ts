@@ -5,6 +5,7 @@
 
 import { Order, OrderStatus } from './orders'
 import { logger } from '@/lib/logger'
+import { DEFAULTS, COMPANY_CONTACTS } from '@/constants/defaults'
 
 // Email template types
 export type EmailTemplate =
@@ -32,9 +33,9 @@ export interface OrderConfirmationData {
 
 // Email service configuration
 const EMAIL_CONFIG = {
-  from: process.env.FROM_EMAIL || 'orders@twophasecooling.com',
-  supportEmail: process.env.SUPPORT_EMAIL || 'support@twophasecooling.com',
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+  from: process.env.FROM_EMAIL || COMPANY_CONTACTS.CONTACT_EMAIL,
+  supportEmail: process.env.SUPPORT_EMAIL || COMPANY_CONTACTS.SUPPORT_EMAIL,
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || DEFAULTS.APP_URL,
   // In production, you would configure AWS SES, SendGrid, etc.
   provider: process.env.EMAIL_PROVIDER || 'console', // 'ses' | 'sendgrid' | 'console'
 }

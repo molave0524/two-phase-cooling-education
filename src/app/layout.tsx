@@ -7,6 +7,7 @@ import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 import { FloatingAIButton } from '@/components/ai/FloatingAIButton'
 import { EnvironmentBadge } from '@/components/EnvironmentBadge'
 import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
+import { SEO } from '@/constants/defaults'
 
 // Apple-style system font stack for optimal performance and Apple look
 // Using system fonts to match Apple's approach
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: `https://${COMPANY_INFO.DOMAIN}`,
+    url: SEO.SITE_URL,
     siteName: COMPANY_INFO.NAME,
     title: 'Revolutionary Two-Phase Cooling Technology',
     description:
@@ -103,17 +104,17 @@ export const metadata: Metadata = {
   // App links for mobile
   appLinks: {
     web: {
-      url: `https://${COMPANY_INFO.DOMAIN}`,
+      url: SEO.SITE_URL,
       should_fallback: true,
     },
   },
 
   // Alternate languages (future expansion)
   alternates: {
-    canonical: `https://${COMPANY_INFO.DOMAIN}`,
+    canonical: SEO.SITE_URL,
     languages: {
-      'en-US': `https://${COMPANY_INFO.DOMAIN}`,
-      'en-CA': `https://${COMPANY_INFO.DOMAIN}/ca`,
+      'en-US': SEO.SITE_URL,
+      'en-CA': `${SEO.SITE_URL}/ca`,
     },
   },
 

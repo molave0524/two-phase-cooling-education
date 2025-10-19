@@ -1,0 +1,14 @@
+{
+  "id": "0012_fix_order_items_structure",
+  "prevId": "0011_fix_timestamp_types",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

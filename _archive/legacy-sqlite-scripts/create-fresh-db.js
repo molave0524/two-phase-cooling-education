@@ -128,9 +128,7 @@ try {
   console.log(`✓ Inserted ${products.length} products`)
 
   // Verify tables were created
-  const tables = db
-    .prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
-    .all()
+  const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all()
   console.log('\nCreated tables:', tables.map(t => t.name).join(', '))
 
   // Show product count

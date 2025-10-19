@@ -10,16 +10,12 @@ try {
 
   // Check if product_sku column exists
   const columns = db
-    .prepare(
-      "SELECT name FROM pragma_table_info('order_items') WHERE name='product_sku'"
-    )
+    .prepare("SELECT name FROM pragma_table_info('order_items') WHERE name='product_sku'")
     .all()
 
   if (columns.length === 0) {
     console.log('Adding product_sku column to order_items table...')
-    db.prepare(
-      "ALTER TABLE order_items ADD COLUMN product_sku TEXT NOT NULL DEFAULT ''"
-    ).run()
+    db.prepare("ALTER TABLE order_items ADD COLUMN product_sku TEXT NOT NULL DEFAULT ''").run()
     console.log('✓ product_sku column added successfully')
   } else {
     console.log('✓ product_sku column already exists')

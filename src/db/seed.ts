@@ -9,8 +9,19 @@ import { PRODUCTS } from '@/data/products'
 import { logger } from '@/lib/logger'
 
 async function seed() {
+  // CRITICAL: Prevent accidental seeding in production
+  if (process.env.NODE_ENV === 'production') {
+    logger.error('BLOCKED: Cannot run seed script in production environment!')
+    // eslint-disable-next-line no-console
+    console.error('❌ CRITICAL: Seed script cannot run in production')
+    // eslint-disable-next-line no-console
+    console.error('💡 Use database migrations for production data changes')
+    process.exit(1)
+  }
+
   logger.info('Seeding database...')
   logger.info('Using database: PostgreSQL')
+  logger.info('Environment: ' + process.env.NODE_ENV)
 
   try {
     // Clear existing products

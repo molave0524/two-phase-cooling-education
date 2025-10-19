@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { FAQ_CONTENT } from '@/data/faq-content'
 import { FAQSection } from '@/components/sections/FAQSection'
 import { COMPANY_INFO } from '@/constants'
+import { SEO } from '@/constants/defaults'
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import styles from './faq.module.css'
 
@@ -82,7 +83,7 @@ export default function FAQPage() {
         type='application/ld+json'
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            '@context': 'https://schema.org',
+            '@context': SEO.SCHEMA_CONTEXT,
             '@type': 'FAQPage',
             mainEntity: FAQ_CONTENT.map(faq => ({
               '@type': 'Question',

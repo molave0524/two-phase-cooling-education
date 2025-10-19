@@ -5,6 +5,7 @@
 
 import { VideoMetadata, VideoListResponse, FilterParams } from '@/types'
 import { logger } from '@/lib/logger'
+import { DEFAULTS } from '@/constants/defaults'
 
 // Enhanced video interface with CDN sources
 export interface EnhancedVideoMetadata extends VideoMetadata {
@@ -63,7 +64,7 @@ export class VideoService {
   private cdnUrl: string
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || DEFAULTS.VIDEO_API_URL
     this.cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || 'https://d1example.cloudfront.net'
   }
 

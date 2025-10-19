@@ -27,6 +27,9 @@ const PROTECTED_ROUTES = ['/account']
 // Auth routes that should redirect to home if already authenticated
 const AUTH_ROUTES = ['/auth/signin', '/auth/signup']
 
+// Debug/DevOps routes that should be blocked in production
+const DEBUG_ROUTES = ['/api/debug', '/api/devops']
+
 // Generate a random CSRF token
 function generateToken(): string {
   const array = new Uint8Array(32)
@@ -46,6 +49,13 @@ export async function middleware(request: NextRequest) {
   // Skip middleware entirely for NextAuth routes to prevent worker issues
   if (pathname.startsWith('/api/auth/')) {
     return NextResponse.next()
+  }
+
+  // Block debug/devops routes in production
+  const isDebugRoute = DEBUG_ROUTES.some(route => pathname.startsWith(route))
+  if (isDebugRoute && process.env.NODE_ENV === 'production') {
+    logger.warn('Attempted access to debug route in production', { pathname })
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
   // Get authentication token with error handling
