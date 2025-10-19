@@ -5,7 +5,16 @@
  */
 
 import { logger } from '@/lib/logger'
-import * as schema from './schema-pg'
+import * as authSchema from './schemas/auth'
+import * as catalogSchema from './schemas/catalog'
+import * as storeSchema from './schemas/store'
+
+// Combine all schemas for Drizzle
+const schema = {
+  ...authSchema,
+  ...catalogSchema,
+  ...storeSchema,
+}
 
 // Get connection string, ensuring we don't use empty strings
 const rawUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || ''
@@ -46,17 +55,9 @@ const db = drizzle(client, { schema })
 
 export { db }
 
-// Export all tables from schema
-export const {
-  users,
-  accounts,
-  sessions,
-  verificationTokens,
-  products,
-  productComponents,
-  carts,
-  cartItems,
-  orders,
-  orderItems,
-  addresses,
-} = schema
+// Export all tables from schemas
+export const { users, accounts, sessions, verificationTokens, addresses } = authSchema
+
+export const { products, productComponents } = catalogSchema
+
+export const { carts, cartItems, orders, orderItems } = storeSchema

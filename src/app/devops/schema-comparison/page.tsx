@@ -189,9 +189,8 @@ export default function SchemaComparisonPage() {
         const inBoth = result.comparison.tablesInBoth.includes(tableName)
 
         // Table row with schema names
-        const schema = 'public'
-        const sourceTableText = inSource ? `${schema}.${tableName}` : ''
-        const targetTableText = inTarget ? `${schema}.${tableName}` : ''
+        const sourceTableText = inSource ? tableName : ''
+        const targetTableText = inTarget ? tableName : ''
         copyText += `${sourceTableText.padEnd(colWidth)} | ${targetTableText.padEnd(colWidth)}\n`
 
         // Get columns for this table
@@ -408,10 +407,9 @@ export default function SchemaComparisonPage() {
                   const allColumns = new Set<string>()
                   tableColumnDiffs.forEach(diff => allColumns.add(diff.column))
 
-                  // Format table names with schema
-                  const schema = 'public'
-                  const sourceTableName = inSource ? `${schema}.${tableName}` : ''
-                  const targetTableName = inTarget ? `${schema}.${tableName}` : ''
+                  // Format table names (already include schema prefix like auth.users)
+                  const sourceTableName = inSource ? tableName : ''
+                  const targetTableName = inTarget ? tableName : ''
 
                   return (
                     <div key={tableName}>

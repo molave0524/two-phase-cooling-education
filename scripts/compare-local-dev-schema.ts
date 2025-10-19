@@ -44,14 +44,11 @@ async function compareSchemas() {
 
     const { comparison } = result
 
-    // Both environments use 'public' schema
-    const schema = 'public'
-
     // Tables only in LOCAL
     if (comparison.tablesOnlyInSource.length > 0) {
       console.log('\n🔴 Tables ONLY in LOCAL (missing in DEV):')
       comparison.tablesOnlyInSource.forEach((table: string) => {
-        console.log(`   - ${schema}.${table}`)
+        console.log(`   - ${table}`)
       })
     }
 
@@ -59,14 +56,14 @@ async function compareSchemas() {
     if (comparison.tablesOnlyInTarget.length > 0) {
       console.log('\n🔵 Tables ONLY in DEV (missing in LOCAL):')
       comparison.tablesOnlyInTarget.forEach((table: string) => {
-        console.log(`   - ${schema}.${table}`)
+        console.log(`   - ${table}`)
       })
     }
 
     // Tables in both
     console.log(`\n✅ Tables in BOTH: ${comparison.tablesInBoth.length}`)
     comparison.tablesInBoth.forEach((table: string) => {
-      console.log(`   - ${schema}.${table}`)
+      console.log(`   - ${table}`)
     })
 
     // Column differences
@@ -81,21 +78,21 @@ async function compareSchemas() {
       if (addedCols.length > 0) {
         console.log('\n  ➕ Added in DEV (not in LOCAL):')
         addedCols.forEach((col: any) => {
-          console.log(`     ${schema}.${col.table}.${col.column} - ${col.targetType}`)
+          console.log(`     ${col.table}.${col.column} - ${col.targetType}`)
         })
       }
 
       if (removedCols.length > 0) {
         console.log('\n  ➖ Removed from DEV (only in LOCAL):')
         removedCols.forEach((col: any) => {
-          console.log(`     ${schema}.${col.table}.${col.column} - ${col.sourceType}`)
+          console.log(`     ${col.table}.${col.column} - ${col.sourceType}`)
         })
       }
 
       if (modifiedCols.length > 0) {
         console.log('\n  ⚠️  Modified (type or constraint changes):')
         modifiedCols.forEach((col: any) => {
-          console.log(`     ${schema}.${col.table}.${col.column}`)
+          console.log(`     ${col.table}.${col.column}`)
           console.log(`       LOCAL:  ${col.sourceType}`)
           console.log(`       DEV:    ${col.targetType}`)
         })
