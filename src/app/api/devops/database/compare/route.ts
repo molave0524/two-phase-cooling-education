@@ -71,9 +71,6 @@ export async function POST(request: NextRequest) {
     const targetSchema = target === 'local' ? 'public' : `${target}_remote`
     logger.info('Using target schema for comparison', { targetSchema })
 
-    // Define schemas to compare (auth, catalog, store)
-    const schemasToCompare = ['auth', 'catalog', 'store']
-
     // Get tables from source (local - auth, catalog, store schemas)
     const sourceTables = (await db.execute(sql`
       SELECT schemaname || '.' || tablename as tablename
