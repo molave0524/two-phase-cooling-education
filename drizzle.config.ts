@@ -17,7 +17,7 @@ const connectionString =
   'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
 
 const config: Config = {
-  schema: './src/db/schema-pg.ts',
+  schema: ['./src/db/schemas/auth.ts', './src/db/schemas/catalog.ts', './src/db/schemas/store.ts'],
   out: './drizzle/postgres',
   dialect: 'postgresql',
   dbCredentials: {

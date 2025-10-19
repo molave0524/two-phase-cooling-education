@@ -71,11 +71,14 @@ export async function POST(request: NextRequest) {
     const targetSchema = target === 'local' ? 'public' : `${target}_remote`
     logger.info('Using target schema for comparison', { targetSchema })
 
-    // Get tables from source (always local/public)
+    // Define schemas to compare (auth, catalog, store)
+    const schemasToCompare = ['auth', 'catalog', 'store']
+
+    // Get tables from source (local - auth, catalog, store schemas)
     const sourceTables = (await db.execute(sql`
-      SELECT tablename
+      SELECT schemaname || '.' || tablename as tablename
       FROM pg_tables
-      WHERE schemaname = 'public'
+      WHERE schemaname IN ('auth', 'catalog', 'store')
       ORDER BY tablename
     `)) as Array<{ tablename: string }>
 
@@ -84,18 +87,19 @@ export async function POST(request: NextRequest) {
     const targetTablesQuery =
       target === 'local'
         ? sql`
-            SELECT tablename
+            SELECT schemaname || '.' || tablename as tablename
             FROM pg_tables
-            WHERE schemaname = 'public'
+            WHERE schemaname IN ('auth', 'catalog', 'store')
             ORDER BY tablename
           `
         : sql.raw(`
-            SELECT c.relname as tablename
+            SELECT
+              REPLACE(n.nspname, '${targetSchema}_', '') || '.' || c.relname as tablename
             FROM pg_catalog.pg_class c
             JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-            WHERE n.nspname = '${targetSchema}'
+            WHERE n.nspname LIKE '${targetSchema}_%'
               AND c.relkind = 'f'
-            ORDER BY c.relname
+            ORDER BY tablename
           `)
 
     const targetTables = (await db.execute(targetTablesQuery)) as Array<{ tablename: string }>
@@ -111,7 +115,10 @@ export async function POST(request: NextRequest) {
     // Compare columns for tables in both
     const columnDifferences: ColumnDifference[] = []
 
-    for (const tableName of tablesInBoth) {
+    for (const fullTableName of tablesInBoth) {
+      // Split schema and table name (e.g., "auth.users" -> ["auth", "users"])
+      const [schemaName, tableName] = fullTableName.split('.')
+
       // Get columns from source with constraint information and full type
       const sourceColumns = (await db.execute(sql`
         SELECT
@@ -165,7 +172,7 @@ export async function POST(request: NextRequest) {
         LEFT JOIN information_schema.table_constraints uq
           ON kcu.constraint_name = uq.constraint_name
           AND uq.constraint_type = 'UNIQUE'
-        WHERE c.table_schema = 'public'
+        WHERE c.table_schema = ${schemaName}
           AND c.table_name = ${tableName}
         ORDER BY c.ordinal_position
       `)) as Array<{
@@ -232,7 +239,7 @@ export async function POST(request: NextRequest) {
               LEFT JOIN information_schema.table_constraints uq
                 ON kcu.constraint_name = uq.constraint_name
                 AND uq.constraint_type = 'UNIQUE'
-              WHERE c.table_schema = 'public'
+              WHERE c.table_schema = ${schemaName}
                 AND c.table_name = ${tableName}
               ORDER BY c.ordinal_position
             `
@@ -249,7 +256,7 @@ export async function POST(request: NextRequest) {
               JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid
               LEFT JOIN pg_catalog.pg_index i ON i.indrelid = c.oid AND a.attnum = ANY(i.indkey) AND i.indisprimary
               LEFT JOIN pg_catalog.pg_constraint con ON con.conrelid = c.oid AND con.contype = 'u' AND a.attnum = ANY(con.conkey)
-              WHERE n.nspname = '${targetSchema}'
+              WHERE n.nspname = '${targetSchema}_${schemaName}'
                 AND c.relname = '${tableName}'
                 AND a.attnum > 0
                 AND NOT a.attisdropped
@@ -312,7 +319,7 @@ export async function POST(request: NextRequest) {
       for (const [colName, colInfo] of Array.from(targetColMap)) {
         if (!sourceColMap.has(colName)) {
           columnDifferences.push({
-            table: tableName,
+            table: fullTableName,
             column: colName,
             status: 'added',
             targetType: colInfo.type,
@@ -328,7 +335,7 @@ export async function POST(request: NextRequest) {
       for (const [colName, colInfo] of Array.from(sourceColMap)) {
         if (!targetColMap.has(colName)) {
           columnDifferences.push({
-            table: tableName,
+            table: fullTableName,
             column: colName,
             status: 'removed',
             sourceType: colInfo.type,
@@ -341,7 +348,7 @@ export async function POST(request: NextRequest) {
           const targetCol = targetColMap.get(colName)!
           if (colInfo.type !== targetCol.type || colInfo.nullable !== targetCol.nullable) {
             columnDifferences.push({
-              table: tableName,
+              table: fullTableName,
               column: colName,
               status: 'modified',
               sourceType: `${colInfo.type}${colInfo.nullable === 'YES' ? ' (nullable)' : ''}`,
@@ -354,7 +361,7 @@ export async function POST(request: NextRequest) {
           } else {
             // Column matches perfectly
             columnDifferences.push({
-              table: tableName,
+              table: fullTableName,
               column: colName,
               status: 'matching',
               sourceType: colInfo.type,
@@ -390,11 +397,13 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    logger.error('Schema comparison failed', { error })
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    logger.error('Schema comparison failed', { errorMessage, errorStack })
     return NextResponse.json(
       {
         error: 'Failed to compare schemas',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: errorMessage,
       },
       { status: 500 }
     )
@@ -416,19 +425,6 @@ async function setupFDW(environment: string) {
   const schemaName = `${environment}_remote`
 
   try {
-    // Check if server already exists
-    const serverExists = (await db.execute(sql`
-      SELECT COUNT(*) as count
-      FROM pg_foreign_server
-      WHERE srvname = ${serverName}
-    `)) as Array<{ count: number }>
-
-    // If FDW server exists, drop the foreign schema to force refresh
-    if (serverExists && serverExists[0] && serverExists[0].count > 0) {
-      logger.info('FDW server exists, refreshing foreign schema', { serverName, schemaName })
-      await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE;`))
-    }
-
     logger.info('Setting up FDW', { environment })
 
     // Step 0: Call stored procedure on remote to stage metadata tables for comparison
@@ -445,45 +441,98 @@ async function setupFDW(environment: string) {
     )
     logger.info('Successfully staged metadata tables', { environment })
 
-    // Setup FDW - only create server if it doesn't exist
-    const needsServerCreation = !(serverExists && serverExists[0] && serverExists[0].count > 0)
-
-    if (needsServerCreation) {
-      // Create new FDW server and user mapping
-      await db.execute(
-        sql.raw(`
-        CREATE EXTENSION IF NOT EXISTS postgres_fdw;
-
-        CREATE SERVER ${serverName}
-        FOREIGN DATA WRAPPER postgres_fdw
-        OPTIONS (
-          host '${url.hostname}',
-          port '${url.port || '5432'}',
-          dbname '${url.pathname.slice(1)}',
-          sslmode 'require'
-        );
-
-        CREATE USER MAPPING FOR CURRENT_USER
-        SERVER ${serverName}
-        OPTIONS (user '${url.username}', password '${url.password}');
-      `)
-      )
-    }
-
-    // Always recreate the foreign schema to get fresh data
+    // Always drop and recreate the FDW server to ensure fresh credentials
+    // This prevents issues with stale passwords or configuration
     await db.execute(
       sql.raw(`
-      DROP SCHEMA IF EXISTS ${schemaName} CASCADE;
-      CREATE SCHEMA ${schemaName};
-      IMPORT FOREIGN SCHEMA public
-      FROM SERVER ${serverName}
-      INTO ${schemaName};
+      CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+
+      DROP SERVER IF EXISTS ${serverName} CASCADE;
+
+      CREATE SERVER ${serverName}
+      FOREIGN DATA WRAPPER postgres_fdw
+      OPTIONS (
+        host '${url.hostname}',
+        port '${url.port || '5432'}',
+        dbname '${url.pathname.slice(1)}',
+        sslmode 'require'
+      );
+
+      CREATE USER MAPPING FOR CURRENT_USER
+      SERVER ${serverName}
+      OPTIONS (user '${url.username}', password '${url.password}');
     `)
     )
 
+    // Import foreign schemas (auth, catalog, store)
+    // Must drop schemas first as DROP SERVER CASCADE only drops foreign tables, not schemas
+    try {
+      await db.execute(
+        sql.raw(`
+        DROP SCHEMA IF EXISTS ${schemaName}_auth CASCADE;
+        DROP SCHEMA IF EXISTS ${schemaName}_catalog CASCADE;
+        DROP SCHEMA IF EXISTS ${schemaName}_store CASCADE;
+
+        CREATE SCHEMA ${schemaName}_auth;
+        CREATE SCHEMA ${schemaName}_catalog;
+        CREATE SCHEMA ${schemaName}_store;
+
+        IMPORT FOREIGN SCHEMA auth
+        FROM SERVER ${serverName}
+        INTO ${schemaName}_auth;
+
+        IMPORT FOREIGN SCHEMA catalog
+        FROM SERVER ${serverName}
+        INTO ${schemaName}_catalog;
+
+        IMPORT FOREIGN SCHEMA store
+        FROM SERVER ${serverName}
+        INTO ${schemaName}_store;
+      `)
+      )
+    } catch (importError: any) {
+      // Extract all possible error details from postgres-js error
+      const errMsg = importError?.message || importError?.toString() || 'Unknown import error'
+      const errorDetails = {
+        message: importError?.message,
+        query: importError?.query,
+        parameters: importError?.parameters,
+        code: importError?.code,
+        detail: importError?.detail,
+        hint: importError?.hint,
+        position: importError?.position,
+        schema: importError?.schema,
+        table: importError?.table,
+        column: importError?.column,
+        dataType: importError?.dataType,
+        constraint: importError?.constraint,
+      }
+
+      logger.error('Failed to import foreign schemas', {
+        environment,
+        serverName,
+        schemaName,
+        errorMessage: errMsg,
+        ...errorDetails,
+      })
+
+      // Create a detailed error message
+      let detailMsg = `Failed to import foreign schemas from ${environment}: ${errMsg}`
+      if (importError?.detail) {
+        detailMsg += `\nDetail: ${importError.detail}`
+      }
+      if (importError?.hint) {
+        detailMsg += `\nHint: ${importError.hint}`
+      }
+
+      throw new Error(detailMsg)
+    }
+
     logger.info('FDW setup complete', { environment })
   } catch (error) {
-    logger.error('FDW setup error', { error, environment })
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    logger.error('FDW setup error', { errorMessage, errorStack, environment })
     // If FDW already exists, continue
     if (error instanceof Error && !error.message.includes('already exists')) {
       throw error
