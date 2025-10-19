@@ -127,3 +127,4 @@ migrate-orders-schema.js
 # Database backups (contain sensitive data)
 /backups/
 *.sql.gz
+.env.vercel-staging
