@@ -1,17 +1,24 @@
 /**
  * Migrate Neon DEV database to modular schemas
- * Uses hardcoded connection string to avoid .env conflicts
  */
+
+import { config as dotenvConfig } from 'dotenv'
+
+// Load environment variables
+dotenvConfig({ path: '.env.local' })
 
 const postgres = require('postgres')
 
 async function migrateDevDatabase() {
-  // Hardcoded DEV connection string
-  const connectionString =
-    'postgresql://neondb_owner:npg_CcQ8o1Prbfmw@ep-rough-lab-addes3ze.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require'
+  // DEV connection string from environment
+  const connectionString = process.env.DEV_DATABASE_URL
+
+  if (!connectionString) {
+    console.error('❌ DEV_DATABASE_URL environment variable not set')
+    process.exit(1)
+  }
 
   console.log('Connecting to Neon DEV database...')
-  console.log('Endpoint: ep-rough-lab-addes3ze.c-2.us-east-1.aws.neon.tech')
 
   const sql = postgres(connectionString, {
     max: 1,

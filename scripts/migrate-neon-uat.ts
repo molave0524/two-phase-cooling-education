@@ -2,15 +2,23 @@
  * Migrate Neon UAT database to modular schemas
  */
 
+import { config as dotenvConfig } from 'dotenv'
+
+// Load environment variables
+dotenvConfig({ path: '.env.local' })
+
 const postgres = require('postgres')
 
 async function migrateUATDatabase() {
-  // UAT connection string
-  const connectionString =
-    'postgresql://neondb_owner:f998ab36-768d-4389-917b-68435e3557bc!@ep-orange-haze-adxn06jb.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require'
+  // UAT connection string from environment
+  const connectionString = process.env.UAT_DATABASE_URL
+
+  if (!connectionString) {
+    console.error('❌ UAT_DATABASE_URL environment variable not set')
+    process.exit(1)
+  }
 
   console.log('Connecting to Neon UAT database...')
-  console.log('Endpoint: ep-orange-haze-adxn06jb.c-2.us-east-1.aws.neon.tech')
 
   const sql = postgres(connectionString, {
     max: 1,
