@@ -1,0 +1,14 @@
+{
+  "id": "0016_fix_orders_user_id_type",
+  "prevId": "0015_add_uuid_defaults_for_auth_tables",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

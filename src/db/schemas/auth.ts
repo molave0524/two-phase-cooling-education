@@ -4,6 +4,7 @@
  */
 
 import { pgSchema, serial, text, timestamp, integer } from 'drizzle-orm/pg-core'
+import { randomUUID } from 'crypto'
 
 // Create auth schema
 export const authSchema = pgSchema('auth')
@@ -13,18 +14,20 @@ export const authSchema = pgSchema('auth')
 // ============================================================================
 
 export const users = authSchema.table('users', {
-  id: serial('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => randomUUID()), // OAuth provider IDs or UUID
   email: text('email').notNull().unique(),
   name: text('name'),
   image: text('image'), // Profile picture URL
   hashedPassword: text('hashed_password'),
-  emailVerified: timestamp('email_verified'), // NextAuth compatibility
+  emailVerified: timestamp('email_verified', { withTimezone: true }), // NextAuth compatibility
   emailVerificationToken: text('email_verification_token'),
-  emailVerificationExpires: timestamp('email_verification_expires'),
+  emailVerificationExpires: timestamp('email_verification_expires', { withTimezone: true }),
   resetPasswordToken: text('reset_password_token'),
-  resetPasswordExpires: timestamp('reset_password_expires'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  resetPasswordExpires: timestamp('reset_password_expires', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ============================================================================
@@ -32,8 +35,10 @@ export const users = authSchema.table('users', {
 // ============================================================================
 
 export const accounts = authSchema.table('accounts', {
-  id: text('id').primaryKey(),
-  userId: integer('user_id')
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   type: text('type').notNull(), // oauth, email, credentials
@@ -53,12 +58,14 @@ export const accounts = authSchema.table('accounts', {
 // ============================================================================
 
 export const sessions = authSchema.table('sessions', {
-  id: text('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
   sessionToken: text('session_token').notNull().unique(),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  expires: timestamp('expires').notNull(),
+  expires: timestamp('expires', { withTimezone: true }).notNull(),
 })
 
 // ============================================================================
@@ -68,7 +75,7 @@ export const sessions = authSchema.table('sessions', {
 export const verificationTokens = authSchema.table('verification_tokens', {
   identifier: text('identifier').notNull(),
   token: text('token').notNull().unique(),
-  expires: timestamp('expires').notNull(),
+  expires: timestamp('expires', { withTimezone: true }).notNull(),
 })
 
 // ============================================================================
@@ -77,7 +84,7 @@ export const verificationTokens = authSchema.table('verification_tokens', {
 
 export const addresses = authSchema.table('addresses', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   type: text('type').notNull(), // 'shipping', 'billing', 'both'
@@ -92,8 +99,8 @@ export const addresses = authSchema.table('addresses', {
   postalCode: text('postal_code').notNull(),
   country: text('country').notNull().default('US'),
   phone: text('phone'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ============================================================================

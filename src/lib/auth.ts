@@ -8,19 +8,21 @@ import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import GitHubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
-// Temporarily disable Drizzle adapter to fix Jest worker issue
-// import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import { db } from '@/db'
+import { users, accounts, sessions, verificationTokens } from '@/db/schemas/auth'
 import { verifyPassword } from '@/lib/password'
 import { eq } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
+import { DEFAULTS } from '@/constants/defaults'
 
-// Temporarily removed adapter to fix Jest worker issues on Windows + Node v24
-// const adapter = DrizzleAdapter(db as any, {
-//   usersTable: users as any,
-//   accountsTable: accounts as any,
-//   sessionsTable: sessions as any,
-//   verificationTokensTable: verificationTokens as any,
-// }) as any
+// Drizzle adapter for NextAuth database persistence
+const adapter = DrizzleAdapter(db as any, {
+  usersTable: users as any,
+  accountsTable: accounts as any,
+  sessionsTable: sessions as any,
+  verificationTokensTable: verificationTokens as any,
+}) as any
 
 // Auto-detect NEXTAUTH_URL on Vercel using VERCEL_BRANCH_URL for stable git-based URLs
 const getNextAuthUrl = () => {
@@ -35,11 +37,11 @@ const getNextAuthUrl = () => {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`
   }
-  return 'http://localhost:3000'
+  return DEFAULTS.APP_URL
 }
 
 export const authOptions: NextAuthOptions = {
-  // adapter: removed temporarily to fix worker issues
+  adapter,
 
   secret: process.env.NEXTAUTH_SECRET || '',
 
@@ -100,8 +102,9 @@ export const authOptions: NextAuthOptions = {
   ],
 
   session: {
-    strategy: 'jwt',
+    strategy: 'database', // Use database sessions for better persistence
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // Update session every 24 hours
   },
 
   pages: {
@@ -110,26 +113,15 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub
+    async session({ session, user }) {
+      // In database mode, user object is from database
+      if (session.user && user) {
+        session.user.id = user.id
+        session.user.email = user.email
+        session.user.name = user.name
+        session.user.image = user.image
       }
       return session
-    },
-
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.sub = user.id
-      }
-
-      // Handle session updates (e.g., profile changes)
-      if (trigger === 'update' && session) {
-        token.name = session.name
-        token.email = session.email
-        token.picture = session.image
-      }
-
-      return token
     },
   },
 
@@ -146,7 +138,7 @@ export const authOptions: NextAuthOptions = {
 
           await (db as any)
             .update(orders)
-            .set({ userId: parseInt(user.id) })
+            .set({ userId: user.id }) // user_id is now TEXT to support OAuth provider IDs
             .where(
               sql`${orders.userId} IS NULL AND (${orders.customer}->>'email')::text = ${user.email.toLowerCase()}`
             )
