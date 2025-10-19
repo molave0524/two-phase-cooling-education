@@ -1,0 +1,14 @@
+{
+  "id": "0014_fix_user_id_type_for_oauth",
+  "prevId": "0013_add_product_components_table",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

@@ -1,6 +1,7 @@
 /**
  * Order Processing and Management System
  * Handles order creation, status updates, and fulfillment workflow
+ * With automatic retry logic for critical database operations
  */
 
 import { TwoPhaseCoolingProduct } from '@/types/product'
@@ -9,6 +10,7 @@ import { db, orders as ordersTable, orderItems as orderItemsTable } from '@/db'
 import { eq, and, gte, lte, like, or, desc, count, sum } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 import { createOrderItemSnapshots, validateProductsAvailable } from '@/services/order-snapshot'
+import { retry } from '@/lib/retry'
 
 // Order types and interfaces
 export type OrderStatus =
@@ -545,6 +547,7 @@ export async function updatePaymentStatus(
 /**
  * Update order payment status from webhook
  * Used by Stripe webhooks to update order state
+ * CRITICAL: Uses retry logic to ensure webhook updates are never lost
  */
 export async function updateOrderPaymentStatus(
   orderId: string,
@@ -580,20 +583,38 @@ export async function updateOrderPaymentStatus(
     updateData.status = 'cancelled'
   }
 
-  // Type assertion needed due to dual-database union type incompatibility
-  const [updatedDbOrder] = await (db.update as any)(ordersTable)
-    .set(updateData)
-    .where(eq(ordersTable.id, orderIdNum))
-    .returning()
+  // Retry database update to ensure webhook data is never lost
+  const result = await retry(
+    async () => {
+      // Type assertion needed due to dual-database union type incompatibility
+      const [updatedDbOrder] = await (db.update as any)(ordersTable)
+        .set(updateData)
+        .where(eq(ordersTable.id, orderIdNum))
+        .returning()
 
-  if (!updatedDbOrder) return null
+      if (!updatedDbOrder) throw new Error('Order not found')
 
-  // Type assertion needed due to dual-database union type incompatibility
-  const dbOrderItems = await (db.select as any)()
-    .from(orderItemsTable)
-    .where(eq(orderItemsTable.orderId, orderIdNum))
+      // Type assertion needed due to dual-database union type incompatibility
+      const dbOrderItems = await (db.select as any)()
+        .from(orderItemsTable)
+        .where(eq(orderItemsTable.orderId, orderIdNum))
 
-  const order = dbOrderToOrder(updatedDbOrder, dbOrderItems)
+      return { updatedDbOrder, dbOrderItems }
+    },
+    {
+      maxRetries: 5, // Higher retries for critical webhook processing
+      initialDelay: 2000, // Longer initial delay for database
+      maxDelay: 30000,
+      shouldRetry: error => {
+        // Retry on database connection errors, but not on "not found"
+        return !error.message.includes('not found')
+      },
+    }
+  )
+
+  if (!result) return null
+
+  const order = dbOrderToOrder(result.updatedDbOrder, result.dbOrderItems)
   logger.info('Order updated from webhook', {
     orderNumber: order.orderNumber,
     webhookStatus: update.status,

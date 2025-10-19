@@ -13,8 +13,6 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 export const dynamicParams = true
 
-const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
-
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -44,20 +42,10 @@ export async function GET(
         .innerJoin(products, eq(productComponents.componentProductId, products.id))
         .where(eq(productComponents.parentProductId, product.id))
 
-      // Sort by price (desc) then SKU (asc) and parse JSON fields
+      // Sort by price (desc) then SKU (asc)
       components = componentRelations
         .map(({ component, relation }: any) => ({
           ...component,
-          // Parse JSON fields if using SQLite
-          features: usePostgres ? component.features : JSON.parse(component.features as string),
-          specifications: usePostgres
-            ? component.specifications
-            : JSON.parse(component.specifications as string),
-          images: usePostgres ? component.images : JSON.parse(component.images as string),
-          categories: usePostgres
-            ? component.categories
-            : JSON.parse(component.categories as string),
-          tags: usePostgres ? component.tags : JSON.parse(component.tags as string),
           // Add relation metadata
           quantity: relation.quantity,
           isRequired: relation.isRequired,
@@ -86,19 +74,11 @@ export async function GET(
         .innerJoin(products, eq(productComponents.parentProductId, products.id))
         .where(eq(productComponents.componentProductId, product.id))
 
-      // Filter to only show standalone products and parse JSON fields
+      // Filter to only show standalone products
       usedInProducts = parentRelations
         .filter(({ parent }: any) => parent.productType === 'standalone')
         .map(({ parent, relation }: any) => ({
           ...parent,
-          // Parse JSON fields if using SQLite
-          features: usePostgres ? parent.features : JSON.parse(parent.features as string),
-          specifications: usePostgres
-            ? parent.specifications
-            : JSON.parse(parent.specifications as string),
-          images: usePostgres ? parent.images : JSON.parse(parent.images as string),
-          categories: usePostgres ? parent.categories : JSON.parse(parent.categories as string),
-          tags: usePostgres ? parent.tags : JSON.parse(parent.tags as string),
           // Add relation metadata
           quantity: relation.quantity,
           displayName: relation.displayName,
@@ -106,21 +86,11 @@ export async function GET(
         .sort((a: any, b: any) => a.name.localeCompare(b.name))
     }
 
-    // Parse JSON fields if using SQLite (Postgres stores them natively)
-    const parsedProduct = usePostgres
-      ? { ...product, components, usedInProducts }
-      : {
-          ...product,
-          features: JSON.parse(product.features as string),
-          specifications: JSON.parse(product.specifications as string),
-          images: JSON.parse(product.images as string),
-          categories: JSON.parse(product.categories as string),
-          tags: JSON.parse(product.tags as string),
-          components,
-          usedInProducts,
-        }
-
-    return apiSuccess(parsedProduct)
+    return apiSuccess({
+      ...product,
+      components,
+      usedInProducts,
+    })
   } catch (error) {
     logger.error('Failed to fetch product', error)
     return apiInternalError('Failed to fetch product', { error })

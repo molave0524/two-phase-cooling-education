@@ -1,0 +1,14 @@
+{
+  "id": "0013_add_product_components_table",
+  "prevId": "0012_fix_order_items_structure",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

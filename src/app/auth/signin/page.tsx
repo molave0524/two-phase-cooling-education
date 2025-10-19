@@ -9,6 +9,7 @@ import { signIn } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
+import styles from './signin.module.css'
 
 function SignInContent() {
   const searchParams = useSearchParams()
@@ -54,15 +55,13 @@ function SignInContent() {
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
-      <div className='max-w-md w-full space-y-8'>
-        <div>
-          <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-            Sign in to your account
-          </h2>
+    <div className={styles.container}>
+      <div className={styles.formWrapper}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>Sign in to your account</h2>
           {error && (
-            <div className='mt-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4'>
-              <p className='text-sm'>
+            <div className={styles.errorAlert}>
+              <p className={styles.errorText}>
                 {error === 'OAuthAccountNotLinked'
                   ? 'This email is already associated with another account. Please sign in with the original provider.'
                   : 'An error occurred during sign in. Please try again.'}
@@ -72,9 +71,9 @@ function SignInContent() {
         </div>
 
         {/* Email/Password Sign In Form */}
-        <form onSubmit={handleCredentialsSignIn} className='mt-8 space-y-4'>
-          <div>
-            <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
+        <form onSubmit={handleCredentialsSignIn} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label htmlFor='email' className={styles.label}>
               Email address
             </label>
             <input
@@ -85,13 +84,13 @@ function SignInContent() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+              className={styles.input}
               placeholder='you@example.com'
             />
           </div>
 
-          <div>
-            <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
+          <div className={styles.formGroup}>
+            <label htmlFor='password' className={styles.label}>
               Password
             </label>
             <input
@@ -102,38 +101,31 @@ function SignInContent() {
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+              className={styles.input}
               placeholder='••••••••'
             />
           </div>
 
           {credentialsError && (
-            <div className='bg-red-50 border border-red-200 text-red-800 rounded-md p-3'>
-              <p className='text-sm'>{credentialsError}</p>
+            <div className={styles.credentialsError}>
+              <p className={styles.errorText}>{credentialsError}</p>
             </div>
           )}
 
-          <div className='flex items-center justify-between'>
-            <Link
-              href='/auth/forgot-password'
-              className='text-sm font-medium text-blue-600 hover:text-blue-500'
-            >
+          <div className={styles.formFooter}>
+            <Link href='/auth/forgot-password' className={styles.forgotLink}>
               Forgot password?
             </Link>
           </div>
 
-          <button
-            type='submit'
-            disabled={isLoading !== null}
-            className='w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed'
-          >
+          <button type='submit' disabled={isLoading !== null} className={styles.submitButton}>
             {isLoading === 'credentials' ? 'Signing in...' : 'Sign in with Email'}
           </button>
 
-          <div className='text-center'>
-            <span className='text-sm text-gray-600'>
+          <div className={styles.signupText}>
+            <span className={styles.signupTextInner}>
               Don&apos;t have an account?{' '}
-              <Link href='/auth/signup' className='font-medium text-blue-600 hover:text-blue-500'>
+              <Link href='/auth/signup' className={styles.signupLink}>
                 Sign up
               </Link>
             </span>
@@ -141,23 +133,23 @@ function SignInContent() {
         </form>
 
         {/* Divider */}
-        <div className='relative mt-6'>
-          <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t border-gray-300' />
+        <div className={styles.divider}>
+          <div className={styles.dividerLine}>
+            <div className={styles.dividerLineInner} />
           </div>
-          <div className='relative flex justify-center text-sm'>
-            <span className='px-2 bg-gray-50 text-gray-500'>Or continue with</span>
+          <div className={styles.dividerText}>
+            <span className={styles.dividerTextInner}>Or continue with</span>
           </div>
         </div>
 
         {/* OAuth Buttons */}
-        <div className='mt-6 space-y-4'>
+        <div className={styles.oauthButtons}>
           <button
             onClick={() => handleOAuthSignIn('google')}
             disabled={isLoading !== null}
-            className='group relative w-full flex justify-center py-3 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed'
+            className={styles.oauthButton}
           >
-            <span className='absolute left-0 inset-y-0 flex items-center pl-3'>
+            <span className={styles.oauthIcon}>
               <svg className='h-5 w-5' viewBox='0 0 24 24'>
                 <path
                   fill='currentColor'
@@ -183,9 +175,9 @@ function SignInContent() {
           <button
             onClick={() => handleOAuthSignIn('github')}
             disabled={isLoading !== null}
-            className='group relative w-full flex justify-center py-3 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed'
+            className={styles.oauthButton}
           >
-            <span className='absolute left-0 inset-y-0 flex items-center pl-3'>
+            <span className={styles.oauthIcon}>
               <svg className='h-5 w-5' fill='currentColor' viewBox='0 0 24 24'>
                 <path
                   fillRule='evenodd'
@@ -197,13 +189,13 @@ function SignInContent() {
             {isLoading === 'github' ? 'Signing in...' : 'Continue with GitHub'}
           </button>
         </div>
-        <p className='mt-2 text-center text-sm text-gray-600'>
+        <p className={styles.disclaimer}>
           By signing in, you agree to our{' '}
-          <button type='button' className='font-medium text-blue-600 hover:text-blue-500'>
+          <button type='button' className={styles.disclaimerButton}>
             Terms of Service
           </button>{' '}
           and{' '}
-          <button type='button' className='font-medium text-blue-600 hover:text-blue-500'>
+          <button type='button' className={styles.disclaimerButton}>
             Privacy Policy
           </button>
         </p>
@@ -214,8 +206,8 @@ function SignInContent() {
 
 function LoadingFallback() {
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-50'>
-      <div className='text-gray-600'>Loading...</div>
+    <div className={styles.loadingFallback}>
+      <div className={styles.loadingText}>Loading...</div>
     </div>
   )
 }

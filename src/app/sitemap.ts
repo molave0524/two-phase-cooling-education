@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { COMPANY_INFO } from '@/constants'
+import { logger } from '@/lib/logger'
 
 const BASE_URL = `https://${COMPANY_INFO.DOMAIN}`
 
@@ -15,8 +16,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     allProducts = await (db.select() as any).from(products)
   } catch (error) {
     // Database not available during build, skip product pages
-    // eslint-disable-next-line no-console
-    console.warn('Database not available for sitemap generation, using static pages only')
+    logger.warn('Database not available for sitemap generation, using static pages only', {
+      context: 'sitemap',
+    })
   }
 
   // Static pages

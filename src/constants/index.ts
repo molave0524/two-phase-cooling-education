@@ -11,3 +11,4 @@
 export * from './ui'
 export * from './api'
 export * from './product'
+export * from './defaults'

@@ -5,6 +5,7 @@
  */
 
 import { logger } from '@/lib/logger'
+import { DEFAULTS } from '@/constants/defaults'
 import * as authSchema from './schemas/auth'
 import * as catalogSchema from './schemas/catalog'
 import * as storeSchema from './schemas/store'
@@ -18,8 +19,7 @@ const schema = {
 
 // Get connection string, ensuring we don't use empty strings
 const rawUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || ''
-const connectionString =
-  rawUrl.trim() || 'postgresql://postgres:postgres@localhost:5432/twophase_education_dev'
+const connectionString = rawUrl.trim() || DEFAULTS.DATABASE_URL
 
 // Validate connection string
 if (

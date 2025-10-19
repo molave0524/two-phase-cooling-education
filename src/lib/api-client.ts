@@ -1,9 +1,11 @@
 /**
  * CSRF-Protected API Client
  * Automatically includes CSRF tokens in API requests
+ * With optional retry logic for transient failures
  */
 
 import { logger } from '@/lib/logger'
+import { retry, type RetryOptions } from '@/lib/retry'
 
 // Cache for CSRF token
 let csrfToken: string | null = null
@@ -73,4 +75,38 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
  */
 export function clearCsrfToken() {
   csrfToken = null
+}
+
+/**
+ * Fetch wrapper with automatic CSRF protection and retry logic
+ *
+ * @example
+ * ```ts
+ * const response = await apiFetchWithRetry('/api/data', {
+ *   method: 'POST',
+ *   body: JSON.stringify({ foo: 'bar' })
+ * }, {
+ *   maxRetries: 3,
+ *   initialDelay: 1000
+ * })
+ * ```
+ */
+export async function apiFetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  retryOptions?: RetryOptions
+): Promise<Response> {
+  return retry(async () => {
+    const response = await apiFetch(url, options)
+
+    // Check if response indicates a retryable error
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}: ${response.statusText}`)
+      ;(error as any).status = response.status
+      ;(error as any).statusText = response.statusText
+      throw error
+    }
+
+    return response
+  }, retryOptions)
 }
