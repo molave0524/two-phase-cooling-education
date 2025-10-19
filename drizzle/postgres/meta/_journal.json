@@ -22,6 +22,55 @@
       "when": 1759558372999,
       "tag": "0002_funny_blindfold",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759559391000,
+      "tag": "0010_sync_catalog_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1759559392000,
+      "tag": "0011_fix_timestamp_types",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1759559393000,
+      "tag": "0012_fix_order_items_structure",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1759559394000,
+      "tag": "0013_add_product_components_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1759559395000,
+      "tag": "0014_fix_user_id_type_for_oauth",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1759559396000,
+      "tag": "0015_add_uuid_defaults_for_auth_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1759559397000,
+      "tag": "0016_fix_orders_user_id_type",
+      "breakpoints": true
     }
   ]
 }

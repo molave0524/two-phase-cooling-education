@@ -1,0 +1,14 @@
+{
+  "id": "0015_add_uuid_defaults_for_auth_tables",
+  "prevId": "0014_fix_user_id_type_for_oauth",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {},
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

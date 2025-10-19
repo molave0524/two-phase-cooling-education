@@ -16,10 +16,10 @@ export const storeSchema = pgSchema('store')
 
 export const carts = storeSchema.table('carts', {
   id: text('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
   sessionId: text('session_id'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ============================================================================
@@ -36,8 +36,8 @@ export const cartItems = storeSchema.table('cart_items', {
     .references(() => products.id, { onDelete: 'restrict' }), // FIX: Prevent deletion of products in carts
   quantity: integer('quantity').notNull().default(1),
   price: real('price').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ============================================================================
@@ -47,7 +47,7 @@ export const cartItems = storeSchema.table('cart_items', {
 export const orders = storeSchema.table('orders', {
   id: serial('id').primaryKey(),
   orderNumber: text('order_number').notNull().unique(),
-  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }), // FIX: Preserve orders when user deleted
+  userId: text('user_id').references(() => users.id, { onDelete: 'set null' }), // FIX: Preserve orders when user deleted
   status: text('status').notNull().default('pending'),
 
   // Customer information
@@ -77,7 +77,7 @@ export const orders = storeSchema.table('orders', {
   trackingNumber: text('tracking_number'),
   shippingCarrier: text('shipping_carrier'),
   trackingUrl: text('tracking_url'),
-  estimatedDelivery: timestamp('estimated_delivery'),
+  estimatedDelivery: timestamp('estimated_delivery', { withTimezone: true }),
 
   // Additional information
   notes: text('notes'),
@@ -85,13 +85,13 @@ export const orders = storeSchema.table('orders', {
   metadata: jsonb('metadata'),
 
   // Timestamps
-  paidAt: timestamp('paid_at'),
-  shippedAt: timestamp('shipped_at'),
-  deliveredAt: timestamp('delivered_at'),
-  cancelledAt: timestamp('cancelled_at'),
+  paidAt: timestamp('paid_at', { withTimezone: true }),
+  shippedAt: timestamp('shipped_at', { withTimezone: true }),
+  deliveredAt: timestamp('delivered_at', { withTimezone: true }),
+  cancelledAt: timestamp('cancelled_at', { withTimezone: true }),
   cancellationReason: text('cancellation_reason'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ============================================================================
@@ -129,7 +129,7 @@ export const orderItems = storeSchema.table('order_items', {
   // Optional: FK for reporting (not enforced)
   currentProductId: text('current_product_id'), // Tracks current product version
 
-  createdAt: timestamp('created_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
 // ============================================================================

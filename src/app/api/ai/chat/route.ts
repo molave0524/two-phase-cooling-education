@@ -13,12 +13,9 @@ import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-r
 import { CartAction, AIContext } from '@/types/ai'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { db, products } from '@/db'
-import type { Product } from '@/db/schema-pg'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-const usePostgres = process.env.POSTGRES_URL || process.env.DATABASE_URL?.startsWith('postgres')
 
 // Initialize knowledge base on module load
 let isKnowledgeBaseInitialized = false
@@ -35,22 +32,8 @@ async function ensureKnowledgeBase() {
  */
 async function fetchProducts(): Promise<TwoPhaseCoolingProduct[]> {
   try {
-    // Type assertion needed due to dual-database union type incompatibility
-    const allProducts = await (db.select() as any).from(products)
-
-    // Parse JSON fields if using SQLite (Postgres stores them natively)
-    const parsedProducts = usePostgres
-      ? allProducts
-      : allProducts.map((product: Product) => ({
-          ...product,
-          features: JSON.parse(product.features as string),
-          specifications: JSON.parse(product.specifications as string),
-          images: JSON.parse(product.images as string),
-          categories: JSON.parse(product.categories as string),
-          tags: JSON.parse(product.tags as string),
-        }))
-
-    return parsedProducts as TwoPhaseCoolingProduct[]
+    const allProducts = await db.select().from(products)
+    return allProducts as TwoPhaseCoolingProduct[]
   } catch (error) {
     logger.error('Failed to fetch products for AI', error)
     return []
@@ -123,7 +106,7 @@ function detectCartActions(
     if (matchedProduct) {
       actions.push({
         type: 'add',
-        productId: matchedProduct.id,
+        productId: matchedProduct.slug, // Use slug instead of ID for API compatibility
         quantity: 1,
         description: `Add ${matchedProduct.name} to cart`,
         requiresConfirmation: true,
