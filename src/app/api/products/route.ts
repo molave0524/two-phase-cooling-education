@@ -4,7 +4,7 @@
  */
 
 import { db, products } from '@/db'
-import type { Product } from '@/db/schema-pg'
+import type { Product } from '@/db/schemas/catalog'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiInternalError } from '@/lib/api-response'
 
@@ -20,9 +20,7 @@ export async function GET() {
 
     // Filter out sunsetted and discontinued products (only show active products)
     const activeProducts = allProducts.filter(
-      (product: Product) =>
-        product.status === 'active' &&
-        product.isAvailableForPurchase === true
+      (product: Product) => product.status === 'active' && product.isAvailableForPurchase === true
     )
 
     // Parse JSON fields if using SQLite (Postgres stores them natively)
@@ -41,7 +39,7 @@ export async function GET() {
       meta: {
         count: parsedProducts.length,
         total: allProducts.length,
-        filtered: allProducts.length - parsedProducts.length
+        filtered: allProducts.length - parsedProducts.length,
       },
     })
   } catch (error) {
