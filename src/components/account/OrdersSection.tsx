@@ -42,7 +42,7 @@ export default function OrdersSection() {
       const res = await fetch('/api/account/orders')
       if (!res.ok) throw new Error('Failed to fetch orders')
       const data = await res.json()
-      setOrders(data)
+      setOrders(data.data || [])
     } catch (error) {
       toast.error('Failed to load orders')
     } finally {
@@ -126,13 +126,17 @@ export default function OrdersSection() {
               <div className={styles.itemsPreview}>
                 {order.items.slice(0, 3).map(item => (
                   <div key={item.id} className={styles.itemThumbnail}>
-                    <div style={{
-                      backgroundImage: `url(${item.productImage})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      width: '100%',
-                      height: '100%'
-                    }} role="img" aria-label={item.productName} />
+                    <div
+                      style={{
+                        backgroundImage: `url(${item.productImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        width: '100%',
+                        height: '100%',
+                      }}
+                      role='img'
+                      aria-label={item.productName}
+                    />
                   </div>
                 ))}
                 {order.items.length > 3 && (
