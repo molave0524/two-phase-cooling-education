@@ -12,7 +12,10 @@ import { logger } from '@/lib/logger'
 import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
 import { CartAction, AIContext } from '@/types/ai'
 import { TwoPhaseCoolingProduct } from '@/types/product'
-import { db, products } from '@/db'
+import { db, products, orders, orderItems } from '@/db'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { eq, desc } from 'drizzle-orm'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -37,6 +40,169 @@ async function fetchProducts(): Promise<TwoPhaseCoolingProduct[]> {
   } catch (error) {
     logger.error('Failed to fetch products for AI', error)
     return []
+  }
+}
+
+/**
+ * Fetch user orders securely (ONLY for authenticated user)
+ * Returns ONLY orders belonging to the logged-in user
+ */
+async function fetchUserOrders(userId: string) {
+  try {
+    // Fetch ONLY orders for this specific user (security critical)
+    const userOrders = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt))
+      .limit(10) // Last 10 orders
+
+    // Fetch items for each order
+    const ordersWithItems = await Promise.all(
+      userOrders.map(async order => {
+        const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id))
+
+        return {
+          id: order.id,
+          orderNumber: order.orderNumber,
+          status: order.status,
+          paymentStatus: order.paymentStatus,
+          total: order.total,
+          createdAt: order.createdAt,
+          items: items.map(item => ({
+            productId: item.productId,
+            productSnapshot: item.productSnapshot,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          })),
+        }
+      })
+    )
+
+    return ordersWithItems
+  } catch (error) {
+    logger.error('Failed to fetch user orders for AI', { error, userId })
+    return []
+  }
+}
+
+/**
+ * Get maintenance information for a product
+ */
+function getProductMaintenance(productName: string) {
+  const maintenanceData: Record<
+    string,
+    {
+      consumables: Array<{
+        item: string
+        frequency: string
+        quantity: string
+        estimatedCost: string
+      }>
+      maintenanceTasks: Array<{ task: string; frequency: string }>
+      warrantyInfo: string
+    }
+  > = {
+    'thermosphere pro pc case': {
+      consumables: [
+        {
+          item: 'Distilled water / coolant refill',
+          frequency: 'Every 12-18 months',
+          quantity: '500ml',
+          estimatedCost: '$15-25',
+        },
+        {
+          item: 'Thermal paste replacement',
+          frequency: 'Every 24 months',
+          quantity: '1 tube (3-5g)',
+          estimatedCost: '$10-15',
+        },
+        {
+          item: 'Dust filter cleaning/replacement',
+          frequency: 'Every 3-6 months',
+          quantity: 'Clean (free) or replace ($20)',
+          estimatedCost: '$0-20',
+        },
+      ],
+      maintenanceTasks: [
+        { task: 'Visual inspection of coolant levels', frequency: 'Monthly' },
+        { task: 'Check for leaks around fittings', frequency: 'Monthly' },
+        { task: 'Clean dust filters', frequency: 'Every 3 months' },
+        { task: 'System pressure check', frequency: 'Every 6 months' },
+      ],
+      warrantyInfo: '5-year limited warranty on vapor chamber, 2-year on pump assembly',
+    },
+    'cryoflow elite gpu cooler': {
+      consumables: [
+        {
+          item: 'Thermal pads replacement',
+          frequency: 'Every 24-36 months',
+          quantity: '1 set (varies by GPU)',
+          estimatedCost: '$15-30',
+        },
+        {
+          item: 'Thermal paste for GPU die',
+          frequency: 'Every 18-24 months',
+          quantity: '2-3g',
+          estimatedCost: '$10-15',
+        },
+      ],
+      maintenanceTasks: [
+        { task: 'Fan bearing lubrication', frequency: 'Every 12 months' },
+        { task: 'Thermal performance monitoring', frequency: 'Monthly' },
+        { task: 'Clean heatsink fins', frequency: 'Every 6 months' },
+      ],
+      warrantyInfo: '3-year limited warranty',
+    },
+    'quantum freeze cpu cooler': {
+      consumables: [
+        {
+          item: 'Thermal paste replacement',
+          frequency: 'Every 18-24 months',
+          quantity: '3-5g',
+          estimatedCost: '$8-12',
+        },
+      ],
+      maintenanceTasks: [
+        { task: 'Fan operation check', frequency: 'Monthly' },
+        { task: 'Mounting pressure inspection', frequency: 'Every 6 months' },
+        { task: 'Clean heatsink', frequency: 'Every 6 months' },
+      ],
+      warrantyInfo: '2-year limited warranty',
+    },
+  }
+
+  // Find matching product (case-insensitive)
+  const productKey = Object.keys(maintenanceData).find(key =>
+    productName.toLowerCase().includes(key.toLowerCase())
+  )
+
+  if (productKey) {
+    return maintenanceData[productKey]
+  }
+
+  // Default maintenance for two-phase cooling products
+  return {
+    consumables: [
+      {
+        item: 'Coolant/working fluid check',
+        frequency: 'Every 12 months',
+        quantity: 'As needed',
+        estimatedCost: '$15-25',
+      },
+      {
+        item: 'Thermal interface material',
+        frequency: 'Every 24 months',
+        quantity: '1 application',
+        estimatedCost: '$10-15',
+      },
+    ],
+    maintenanceTasks: [
+      { task: 'Visual inspection', frequency: 'Monthly' },
+      { task: 'Performance monitoring', frequency: 'Monthly' },
+      { task: 'Cleaning', frequency: 'Every 6 months' },
+    ],
+    warrantyInfo: 'Contact support for warranty information',
   }
 }
 
@@ -182,6 +348,11 @@ async function handlePOST(request: Request | NextRequest) {
     // Sanitize user input to prevent XSS
     const userQuestion = sanitizeChatMessage(lastMessage.content)
 
+    // Get authenticated user session (SECURITY: Only fetch orders for logged-in user)
+    const session = await getServerSession(authOptions)
+    const userId = session?.user?.id
+    const userEmail = session?.user?.email
+
     // Initialize knowledge base
     await ensureKnowledgeBase()
 
@@ -216,6 +387,49 @@ Total Value: $${context.cartItems.reduce((sum: number, item: { productName: stri
 `
         : '\n\nShopping cart is currently empty.'
 
+    // Build order history context (ONLY for logged-in users - SECURITY CRITICAL)
+    let orderContext = ''
+    if (userId) {
+      const userOrders = await fetchUserOrders(userId)
+
+      if (userOrders.length > 0) {
+        orderContext = `\n\nUser Order History (${userEmail}):
+${userOrders
+  .map((order, index) => {
+    const orderDate = new Date(order.createdAt).toLocaleDateString()
+    const products = order.items
+      .map(item => {
+        try {
+          const snapshot =
+            typeof item.productSnapshot === 'string'
+              ? JSON.parse(item.productSnapshot)
+              : item.productSnapshot
+          return `  - ${snapshot.name} (Qty: ${item.quantity}, $${item.unitPrice})`
+        } catch {
+          return `  - Product ID ${item.productId} (Qty: ${item.quantity})`
+        }
+      })
+      .join('\n')
+
+    return `${index + 1}. Order #${order.orderNumber} - Placed ${orderDate}
+   Status: ${order.status}
+   Payment: ${order.paymentStatus}
+   Total: $${order.total}
+   Products:
+${products}`
+  })
+  .join('\n\n')}
+
+Note: You can provide maintenance guidance for products in these orders.
+`
+      } else {
+        orderContext = '\n\nUser has no order history yet.'
+      }
+    } else {
+      orderContext =
+        '\n\nUser is not logged in. Cannot access order history. Suggest logging in for personalized order tracking.'
+    }
+
     // Build system prompt
     const systemPrompt = `You are a helpful AI assistant for a two-phase cooling technology company.
 
@@ -223,6 +437,8 @@ Your role:
 - Answer questions about two-phase cooling technology
 - Recommend products based on customer needs
 - Help customers with their shopping cart
+- Provide ORDER STATUS information (ONLY for logged-in users)
+- Provide MAINTENANCE guidance for purchased products
 - Provide technical support and education
 
 IMPORTANT INSTRUCTIONS:
@@ -232,10 +448,25 @@ IMPORTANT INSTRUCTIONS:
 4. When recommending products, explain why they're suitable
 5. If asked about cart actions (add/remove items), suggest them but ALWAYS mention the user needs to confirm
 
+ORDER STATUS QUERIES:
+- When user asks about "order status", "my order", "where is my order", check the order history below
+- Provide order number, status, payment status, and products
+- If user is NOT logged in, ask them to log in to access order information
+- NEVER make up order information - only use data from the order history below
+
+MAINTENANCE GUIDANCE:
+- When user asks about "maintenance", "consumables", "what do I need", check their order history
+- Identify products they've purchased
+- Provide specific maintenance schedules and consumable requirements
+- Include frequency, quantity, and estimated costs
+- Be helpful and proactive about maintenance reminders
+
 Available FAQ Knowledge:
 ${faqContext}
 
 ${cartContext}
+
+${orderContext}
 
 Conversation History:
 ${messages
@@ -262,11 +493,14 @@ ${messages
     const response = result.response
     const text = response.text()
 
+    // Check if user has orders for suggested questions
+    const hasOrders = userId ? (await fetchUserOrders(userId)).length > 0 : false
+
     // Generate suggested questions
     const suggestedQuestions =
       knowledgeResults.length > 0 && knowledgeResults[0]
-        ? getSuggestedQuestions(knowledgeResults[0].item.category)
-        : getDefaultSuggestedQuestions()
+        ? getSuggestedQuestions(knowledgeResults[0].item.category, hasOrders)
+        : getDefaultSuggestedQuestions(hasOrders)
 
     // Calculate confidence
     const confidence =
@@ -306,7 +540,7 @@ ${messages
   }
 }
 
-function getSuggestedQuestions(category: string): string[] {
+function getSuggestedQuestions(category: string, hasOrders: boolean): string[] {
   const suggestions: Record<string, string[]> = {
     technology: [
       'How does vapor chamber technology work?',
@@ -328,12 +562,36 @@ function getSuggestedQuestions(category: string): string[] {
       'What is included in the package?',
       'How do I install the cooling system?',
     ],
+    orders: [
+      "What's the status of my order?",
+      'When will my order arrive?',
+      'Can I track my shipment?',
+    ],
+    maintenance: [
+      'What maintenance does my system need?',
+      'What consumables do I need to buy?',
+      'How often should I service my cooling system?',
+    ],
   }
 
-  return suggestions[category] || getDefaultSuggestedQuestions()
+  // If user has orders, prioritize order/maintenance suggestions
+  if (hasOrders && (category === 'orders' || category === 'maintenance')) {
+    return suggestions[category] || getDefaultSuggestedQuestions(hasOrders)
+  }
+
+  return suggestions[category] || getDefaultSuggestedQuestions(hasOrders)
 }
 
-function getDefaultSuggestedQuestions(): string[] {
+function getDefaultSuggestedQuestions(hasOrders: boolean = false): string[] {
+  if (hasOrders) {
+    return [
+      'How does two-phase cooling work?',
+      "What's the status of my order?",
+      'What maintenance does my product need?',
+      'What consumables should I stock up on?',
+    ]
+  }
+
   return [
     'How does two-phase cooling work?',
     'What products do you offer?',
