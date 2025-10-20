@@ -1,7 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/db'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
+import {
+  apiSuccess,
+  apiError,
+  apiInternalError,
+  ERROR_CODES,
+  HTTP_STATUS,
+} from '@/lib/api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,7 +23,9 @@ export async function POST(request: NextRequest) {
     const { environment } = (await request.json()) as SetupRequest
 
     if (!['dev', 'uat', 'prod'].includes(environment)) {
-      return NextResponse.json({ error: 'Invalid environment' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Invalid environment', {
+        status: HTTP_STATUS.BAD_REQUEST,
+      })
     }
 
     // Get environment-specific database URL
@@ -24,10 +33,7 @@ export async function POST(request: NextRequest) {
     const connectionUrl = process.env[envVar]
 
     if (!connectionUrl) {
-      return NextResponse.json(
-        { error: `Missing environment variable: ${envVar}` },
-        { status: 500 }
-      )
+      return apiInternalError(`Missing environment variable: ${envVar}`)
     }
 
     // Parse connection URL
@@ -78,7 +84,7 @@ export async function POST(request: NextRequest) {
     `)
     )
 
-    return NextResponse.json({
+    return apiSuccess({
       success: true,
       message: `FDW setup completed for ${environment}`,
       environment,
@@ -87,12 +93,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     logger.error('FDW setup error', { error })
-    return NextResponse.json(
-      {
-        error: 'Failed to setup FDW',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    return apiInternalError('Failed to setup FDW')
   }
 }

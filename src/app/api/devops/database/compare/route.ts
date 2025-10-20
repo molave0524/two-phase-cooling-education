@@ -1,7 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/db'
 import { sql } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
+import {
+  apiSuccess,
+  apiError,
+  apiInternalError,
+  ERROR_CODES,
+  HTTP_STATUS,
+} from '@/lib/api-response'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,7 +36,9 @@ export async function POST(request: NextRequest) {
     const { source, target } = (await request.json()) as CompareRequest
 
     if (source === target) {
-      return NextResponse.json({ error: 'Source and target must be different' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Source and target must be different', {
+        status: HTTP_STATUS.BAD_REQUEST,
+      })
     }
 
     // Check if environment variable exists for target
@@ -38,26 +47,22 @@ export async function POST(request: NextRequest) {
       const targetUrl = process.env[envVar]
 
       if (!targetUrl) {
-        return NextResponse.json(
-          {
-            error: 'Environment not configured',
-            details: `Missing environment variable: ${envVar}. Please add it to .env.local to enable schema comparison with ${target.toUpperCase()}.`,
+        return apiError(ERROR_CODES.INVALID_INPUT, 'Environment not configured', {
+          status: HTTP_STATUS.BAD_REQUEST,
+          details: {
+            message: `Missing environment variable: ${envVar}. Please add it to .env.local to enable schema comparison with ${target.toUpperCase()}.`,
             envVar,
           },
-          { status: 400 }
-        )
+        })
       }
 
       // Check if target URL is same as local (comparing to same database)
       const localUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL
       if (targetUrl === localUrl) {
-        return NextResponse.json(
-          {
-            error: 'Same database comparison',
-            details: `Cannot compare: ${target.toUpperCase()}_POSTGRES_URL points to the same database as local. Schema comparison requires different databases.`,
-          },
-          { status: 400 }
-        )
+        return apiError(ERROR_CODES.INVALID_INPUT, 'Same database comparison', {
+          status: HTTP_STATUS.BAD_REQUEST,
+          details: `Cannot compare: ${target.toUpperCase()}_POSTGRES_URL points to the same database as local. Schema comparison requires different databases.`,
+        })
       }
     }
 
@@ -380,7 +385,7 @@ export async function POST(request: NextRequest) {
       columnDifferences
     )
 
-    return NextResponse.json({
+    return apiSuccess({
       timestamp: new Date().toISOString(),
       source,
       target,
@@ -397,13 +402,7 @@ export async function POST(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : String(error)
     const errorStack = error instanceof Error ? error.stack : undefined
     logger.error('Schema comparison failed', { errorMessage, errorStack })
-    return NextResponse.json(
-      {
-        error: 'Failed to compare schemas',
-        details: errorMessage,
-      },
-      { status: 500 }
-    )
+    return apiInternalError('Failed to compare schemas')
   }
 }
 

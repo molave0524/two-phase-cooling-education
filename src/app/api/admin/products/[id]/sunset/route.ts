@@ -4,8 +4,16 @@
  * POST /api/admin/products/:id/discontinue - Discontinue product
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { sunsetProduct } from '@/services/product-versioning'
+import {
+  apiSuccess,
+  apiError,
+  apiInternalError,
+  ERROR_CODES,
+  HTTP_STATUS,
+} from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/admin/products/:id/sunset
@@ -17,19 +25,18 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const { reason, replacementProductId } = body
 
     if (!reason) {
-      return NextResponse.json({ error: 'Reason is required' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'Reason is required', {
+        status: HTTP_STATUS.BAD_REQUEST,
+      })
     }
 
     await sunsetProduct(params.id, reason, replacementProductId)
 
-    return NextResponse.json({
+    return apiSuccess({
       message: 'Product sunset successfully',
     })
   } catch (error) {
-    // console.error('Product sunset error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to sunset product' },
-      { status: 500 }
-    )
+    logger.error('Failed to sunset product', { error, productId: params.id })
+    return apiInternalError('Failed to sunset product')
   }
 }

@@ -4,12 +4,20 @@
  * POST   /api/admin/products/:id/components - Add component to product
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import {
   addComponent,
   getComponentTree,
   calculateComponentsPrice,
 } from '@/services/component-management'
+import {
+  apiSuccess,
+  apiError,
+  apiInternalError,
+  ERROR_CODES,
+  HTTP_STATUS,
+} from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/products/:id/components
@@ -24,16 +32,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     if (includePricing) {
       const pricing = await calculateComponentsPrice(params.id)
-      return NextResponse.json({ tree, pricing })
+      return apiSuccess({ tree, pricing })
     }
 
-    return NextResponse.json(tree)
+    return apiSuccess(tree)
   } catch (error) {
-    // console.error('Component tree fetch error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch component tree' },
-      { status: 500 }
-    )
+    logger.error('Failed to fetch component tree', { error, productId: params.id })
+    return apiInternalError('Failed to fetch component tree')
   }
 }
 
@@ -56,7 +61,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     } = body
 
     if (!componentProductId) {
-      return NextResponse.json({ error: 'componentProductId is required' }, { status: 400 })
+      return apiError(ERROR_CODES.INVALID_INPUT, 'componentProductId is required', {
+        status: HTTP_STATUS.BAD_REQUEST,
+      })
     }
 
     const component = await addComponent({
@@ -70,12 +77,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       sortOrder,
     })
 
-    return NextResponse.json(component, { status: 201 })
+    return apiSuccess(component, { status: HTTP_STATUS.CREATED })
   } catch (error) {
-    // console.error('Component add error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to add component' },
-      { status: 400 }
-    )
+    logger.error('Failed to add component', { error, productId: params.id })
+    return apiInternalError('Failed to add component')
   }
 }

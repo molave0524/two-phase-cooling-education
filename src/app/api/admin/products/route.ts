@@ -4,11 +4,19 @@
  * POST /api/admin/products - Create new product
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/db'
 import { products } from '@/db/schema-pg'
 import { generateSKU, parseSKU } from '@/lib/sku'
 import { eq } from 'drizzle-orm'
+import {
+  apiSuccess,
+  apiError,
+  apiInternalError,
+  ERROR_CODES,
+  HTTP_STATUS,
+} from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/products
@@ -32,10 +40,10 @@ export async function GET(request: NextRequest) {
 
     const productList = await query
 
-    return NextResponse.json(productList)
+    return apiSuccess(productList)
   } catch (error) {
-    // console.error('Product list error:', error)
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
+    logger.error('Failed to fetch products', { error })
+    return apiInternalError('Failed to fetch products')
   }
 }
 
@@ -77,12 +85,10 @@ export async function POST(request: NextRequest) {
       !description ||
       !shortDescription
     ) {
-      return NextResponse.json(
-        {
-          error:
-            'Missing required fields: name, category, productCode, price, description, shortDescription',
-        },
-        { status: 400 }
+      return apiError(
+        ERROR_CODES.INVALID_INPUT,
+        'Missing required fields: name, category, productCode, price, description, shortDescription',
+        { status: HTTP_STATUS.BAD_REQUEST }
       )
     }
 
@@ -135,12 +141,9 @@ export async function POST(request: NextRequest) {
       })
       .returning()
 
-    return NextResponse.json(product, { status: 201 })
+    return apiSuccess(product, { status: HTTP_STATUS.CREATED })
   } catch (error) {
-    // console.error('Product creation error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create product' },
-      { status: 500 }
-    )
+    logger.error('Failed to create product', { error })
+    return apiInternalError('Failed to create product')
   }
 }

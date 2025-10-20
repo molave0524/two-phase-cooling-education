@@ -5,11 +5,20 @@
  * DELETE /api/admin/products/:id - Delete product
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { db } from '@/db'
 import { products } from '@/db/schema-pg'
 import { eq } from 'drizzle-orm'
 import { isProductInOrders, createProductVersion } from '@/services/product-versioning'
+import {
+  apiSuccess,
+  apiError,
+  apiNotFound,
+  apiInternalError,
+  ERROR_CODES,
+  HTTP_STATUS,
+} from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/products/:id
@@ -21,13 +30,13 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
     })
 
     if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+      return apiNotFound('Product')
     }
 
-    return NextResponse.json(product)
+    return apiSuccess(product)
   } catch (error) {
-    // console.error('Product fetch error:', error)
-    return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 })
+    logger.error('Failed to fetch product', { error, productId: params.id })
+    return apiInternalError('Failed to fetch product')
   }
 }
 
@@ -46,7 +55,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     })
 
     if (!existingProduct) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+      return apiNotFound('Product')
     }
 
     // Check if product is in orders
@@ -58,7 +67,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         updateFields: body,
       })
 
-      return NextResponse.json({
+      return apiSuccess({
         message: 'Product has orders. New version created.',
         versioned: true,
         product: newProduct,
@@ -74,18 +83,15 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         .where(eq(products.id, productId))
         .returning()
 
-      return NextResponse.json({
+      return apiSuccess({
         message: 'Product updated successfully',
         versioned: false,
         product: updatedProduct,
       })
     }
   } catch (error) {
-    // console.error('Product update error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update product' },
-      { status: 500 }
-    )
+    logger.error('Failed to update product', { error, productId: params.id })
+    return apiInternalError('Failed to update product')
   }
 }
 
@@ -101,20 +107,18 @@ export async function DELETE(_request: NextRequest, { params }: { params: { id: 
     const inOrders = await isProductInOrders(productId)
 
     if (inOrders) {
-      return NextResponse.json(
-        { error: 'Cannot delete product that exists in orders. Use sunset instead.' },
-        { status: 400 }
+      return apiError(
+        ERROR_CODES.INVALID_INPUT,
+        'Cannot delete product that exists in orders. Use sunset instead.',
+        { status: HTTP_STATUS.BAD_REQUEST }
       )
     }
 
     await db.delete(products).where(eq(products.id, productId))
 
-    return NextResponse.json({ message: 'Product deleted successfully' })
+    return apiSuccess({ message: 'Product deleted successfully' })
   } catch (error) {
-    // console.error('Product delete error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete product' },
-      { status: 500 }
-    )
+    logger.error('Failed to delete product', { error, productId: params.id })
+    return apiInternalError('Failed to delete product')
   }
 }
