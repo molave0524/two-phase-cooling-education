@@ -1,7 +1,10 @@
 /**
  * Centralized Logging Utility
  * Provides structured logging with automatic sensitive data redaction
+ * Integrated with Sentry for error tracking in production
  */
+
+import * as Sentry from '@sentry/nextjs'
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
@@ -65,15 +68,47 @@ class Logger {
   error(message: string, error?: Error | unknown, metadata?: LogMetadata): void {
     if (!this.shouldLog('error')) return
 
+    const sanitizedMetadata = this.sanitizeMetadata(metadata)
     const errorData = {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
-      ...this.sanitizeMetadata(metadata),
+      ...sanitizedMetadata,
     }
 
     console.error(`[ERROR] ${message}`, errorData)
 
-    // TODO: Send to error tracking service (Sentry, DataDog, etc.)
+    // Send to Sentry in production or when explicitly enabled
+    if (process.env.NODE_ENV === 'production' || process.env.SENTRY_ENABLED === 'true') {
+      // Set context for better debugging
+      if (sanitizedMetadata) {
+        Sentry.setContext('metadata', sanitizedMetadata)
+      }
+
+      // Capture the error
+      if (error instanceof Error) {
+        Sentry.captureException(error, {
+          tags: {
+            logger: 'true',
+          },
+          contexts: {
+            message: {
+              formatted: message,
+            },
+          },
+        })
+      } else {
+        Sentry.captureMessage(message, {
+          level: 'error',
+          tags: {
+            logger: 'true',
+          },
+          extra: {
+            error: String(error),
+            ...errorData,
+          },
+        })
+      }
+    }
   }
 }
 

@@ -1,3 +1,5 @@
+const { withSentryConfig } = require('@sentry/nextjs')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   compress: true,
@@ -9,9 +11,10 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
 
-  // Disable experimental features that use worker threads
+  // Experimental features
   experimental: {
-    // Disable all worker-based features
+    // Enable instrumentation for Sentry and other monitoring tools
+    instrumentation: true,
   },
 
   // Webpack configuration to disable worker usage
@@ -107,4 +110,25 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+// Sentry configuration options
+const sentryWebpackPluginOptions = {
+  // Suppress all Sentry CLI logs in development
+  silent: process.env.NODE_ENV === 'development',
+
+  // Upload source maps for production builds
+  hideSourceMaps: true,
+
+  // Disable source map uploads in development
+  disableServerWebpackPlugin: process.env.NODE_ENV === 'development',
+  disableClientWebpackPlugin: process.env.NODE_ENV === 'development',
+
+  // Organization and project for Sentry
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Auth token for uploading source maps (only needed in production)
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+}
+
+// Wrap the config with Sentry
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)

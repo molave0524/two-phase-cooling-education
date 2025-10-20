@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { ExclamationTriangleIcon, ArrowPathIcon, HomeIcon } from '@heroicons/react/24/outline'
 import { logger } from '@/lib/logger'
+import * as Sentry from '@sentry/nextjs'
 
 /**
  * Custom Error Page
@@ -18,10 +19,24 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    // Log the error to our logging service
+    // Log the error to our logging service (which forwards to Sentry)
     logger.error('Application error', error, {
       digest: error.digest,
       stack: error.stack,
+    })
+
+    // Also send directly to Sentry with error boundary context
+    Sentry.captureException(error, {
+      tags: {
+        errorBoundary: 'true',
+        component: 'error.tsx',
+      },
+      contexts: {
+        react: {
+          componentStack: error.stack,
+          errorBoundary: true,
+        },
+      },
     })
   }, [error])
 

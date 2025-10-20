@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import * as Sentry from '@sentry/nextjs'
 
 /**
  * Global Error Handler
@@ -19,6 +20,16 @@ export default function GlobalError({
     // Log the error - can't use our logger here as it may be broken
     // eslint-disable-next-line no-console
     console.error('Global error:', error)
+
+    // Send to Sentry - critical global error
+    Sentry.captureException(error, {
+      tags: {
+        errorBoundary: 'global',
+        component: 'global-error.tsx',
+        severity: 'critical',
+      },
+      level: 'fatal',
+    })
   }, [error])
 
   return (
