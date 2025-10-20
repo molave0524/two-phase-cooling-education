@@ -77,7 +77,7 @@ export interface Order {
   orderNumber: string
   status: OrderStatus
   paymentStatus: PaymentStatus
-  userId?: number | null
+  userId?: string | null
 
   // Customer information
   customer: OrderCustomer

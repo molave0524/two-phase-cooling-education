@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     await (db as any)
       .update(addresses)
       .set({ isDefault: false })
-      .where(and(eq(addresses.userId, parseInt(session.user.id)), eq(addresses.type, data.type)))
+      .where(and(eq(addresses.userId, session.user.id), eq(addresses.type, data.type)))
   }
 
   const [updatedAddress] = await (db as any)
@@ -62,7 +62,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       ...data,
       updatedAt: new Date(),
     })
-    .where(and(eq(addresses.id, addressId), eq(addresses.userId, parseInt(session.user.id))))
+    .where(and(eq(addresses.id, addressId), eq(addresses.userId, session.user.id)))
     .returning()
 
   if (!updatedAddress) {
@@ -84,7 +84,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
 
   const [deleted] = await (db as any)
     .delete(addresses)
-    .where(and(eq(addresses.id, addressId), eq(addresses.userId, parseInt(session.user.id))))
+    .where(and(eq(addresses.id, addressId), eq(addresses.userId, session.user.id)))
     .returning()
 
   if (!deleted) {

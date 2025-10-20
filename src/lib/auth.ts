@@ -118,8 +118,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user && user) {
         session.user.id = user.id
         session.user.email = user.email
-        session.user.name = user.name
-        session.user.image = user.image
+        session.user.name = user.name ?? null
+        session.user.image = user.image ?? null
       }
       return session
     },
