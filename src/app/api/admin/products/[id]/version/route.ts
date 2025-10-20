@@ -3,8 +3,10 @@
  * POST /api/admin/products/:id/version - Create new version of product
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { createProductVersion, isProductInOrders } from '@/services/product-versioning'
+import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/admin/products/:id/version
@@ -18,15 +20,21 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const inOrders = await isProductInOrders(productId)
 
     if (!inOrders) {
-      return NextResponse.json(
-        { error: 'Product has no orders. Modify directly instead of versioning.' },
+      return apiError(
+        ERROR_CODES.INVALID_INPUT,
+        'Product has no orders. Modify directly instead of versioning.',
         { status: 400 }
       )
     }
 
     const newProduct = await createProductVersion(productId, body)
 
-    return NextResponse.json(
+    logger.info('Product version created', {
+      productId,
+      newProductId: newProduct.id,
+    })
+
+    return apiSuccess(
       {
         message: 'New product version created successfully',
         product: newProduct,
@@ -34,10 +42,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       { status: 201 }
     )
   } catch (error) {
-    // console.error('Version creation error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create product version' },
-      { status: 500 }
-    )
+    logger.error('Product version creation failed', error, { productId: params.id })
+    return apiInternalError('Failed to create product version', { error })
   }
 }

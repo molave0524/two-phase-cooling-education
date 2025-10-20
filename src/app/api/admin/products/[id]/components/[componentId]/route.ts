@@ -4,8 +4,10 @@
  * DELETE /api/admin/products/:id/components/:componentId - Remove component
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { removeComponent, updateComponent } from '@/services/component-management'
+import { apiSuccess, apiInternalError } from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 /**
  * PATCH /api/admin/products/:id/components/:componentId
@@ -20,13 +22,18 @@ export async function PATCH(
 
     const updated = await updateComponent(params.id, params.componentId, body)
 
-    return NextResponse.json(updated)
+    logger.info('Component relationship updated', {
+      productId: params.id,
+      componentId: params.componentId,
+    })
+
+    return apiSuccess(updated)
   } catch (error) {
-    // console.error('Component update error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update component' },
-      { status: 400 }
-    )
+    logger.error('Component update failed', error, {
+      productId: params.id,
+      componentId: params.componentId,
+    })
+    return apiInternalError('Failed to update component', { error })
   }
 }
 
@@ -41,12 +48,17 @@ export async function DELETE(
   try {
     await removeComponent(params.id, params.componentId)
 
-    return NextResponse.json({ message: 'Component removed successfully' })
+    logger.info('Component removed from product', {
+      productId: params.id,
+      componentId: params.componentId,
+    })
+
+    return apiSuccess({ message: 'Component removed successfully' })
   } catch (error) {
-    // console.error('Component remove error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to remove component' },
-      { status: 500 }
-    )
+    logger.error('Component removal failed', error, {
+      productId: params.id,
+      componentId: params.componentId,
+    })
+    return apiInternalError('Failed to remove component', { error })
   }
 }

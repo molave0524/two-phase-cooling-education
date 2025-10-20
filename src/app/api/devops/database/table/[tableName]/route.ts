@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
 import { db } from '@/db'
 import { sql } from 'drizzle-orm'
+import { apiSuccess, apiInternalError } from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -130,11 +131,11 @@ export async function GET(_request: Request, { params }: { params: { tableName: 
       fields,
     }
 
-    return NextResponse.json(response)
+    logger.info('Table details retrieved', { tableName, fieldCount: fields.length })
+
+    return apiSuccess(response)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch table details' },
-      { status: 500 }
-    )
+    logger.error('Failed to fetch table details', error, { tableName: params.tableName })
+    return apiInternalError('Failed to fetch table details', { error })
   }
 }

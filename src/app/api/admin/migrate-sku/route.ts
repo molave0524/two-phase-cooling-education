@@ -7,6 +7,8 @@ import { NextResponse } from 'next/server'
 import { products } from '@/db'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
+import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -14,65 +16,54 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     // Add SKU column if it doesn't exist (Postgres only)
-    if (process.env.POSTGRES_URL) {
-      try {
-        // Create a direct postgres connection for raw SQL
-        const client = postgres(process.env.POSTGRES_URL)
-        const db = drizzle(client)
+    if (!process.env.POSTGRES_URL) {
+      return apiError(ERROR_CODES.INVALID_INPUT, 'This migration only works with Postgres', {
+        status: 400,
+      })
+    }
 
-        // Add SKU column if it doesn't exist
-        await client`
-          DO $$
-          BEGIN
-              IF NOT EXISTS (
-                  SELECT 1 FROM information_schema.columns
-                  WHERE table_name = 'products' AND column_name = 'sku'
-              ) THEN
-                  ALTER TABLE products ADD COLUMN sku TEXT NOT NULL DEFAULT '';
-              END IF;
-          END $$;
-        `
+    try {
+      // Create a direct postgres connection for raw SQL
+      const client = postgres(process.env.POSTGRES_URL)
+      const db = drizzle(client)
 
-        // Update existing products with SKU values
-        await client`UPDATE products SET sku = 'TPC-CASE-PRO-001' WHERE slug = 'thermosphere-pro-pc-case'`
-        await client`UPDATE products SET sku = 'TPC-GPU-ELITE-001' WHERE slug = 'cryoflow-elite-gpu-cooler'`
-        await client`UPDATE products SET sku = 'TPC-CPU-BASIC-001' WHERE slug = 'quantum-freeze-cpu-cooler'`
+      // Add SKU column if it doesn't exist
+      await client`
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_name = 'products' AND column_name = 'sku'
+            ) THEN
+                ALTER TABLE products ADD COLUMN sku TEXT NOT NULL DEFAULT '';
+            END IF;
+        END $$;
+      `
 
-        // Verify the changes
-        const allProducts = await db.select().from(products)
+      // Update existing products with SKU values
+      await client`UPDATE products SET sku = 'TPC-CASE-PRO-001' WHERE slug = 'thermosphere-pro-pc-case'`
+      await client`UPDATE products SET sku = 'TPC-GPU-ELITE-001' WHERE slug = 'cryoflow-elite-gpu-cooler'`
+      await client`UPDATE products SET sku = 'TPC-CPU-BASIC-001' WHERE slug = 'quantum-freeze-cpu-cooler'`
 
-        await client.end()
+      // Verify the changes
+      const allProducts = await db.select().from(products)
 
-        return NextResponse.json({
-          success: true,
-          message: 'SKU column added and products updated successfully',
-          products: allProducts.map(p => ({ id: p.id, name: p.name, sku: p.sku })),
-        })
-      } catch (error) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error occurred',
-          },
-          { status: 500 }
-        )
-      }
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'This migration only works with Postgres',
-        },
-        { status: 400 }
-      )
+      await client.end()
+
+      logger.info('SKU migration completed successfully', {
+        productsUpdated: allProducts.length,
+      })
+
+      return apiSuccess({
+        message: 'SKU column added and products updated successfully',
+        products: allProducts.map(p => ({ id: p.id, name: p.name, sku: p.sku })),
+      })
+    } catch (error) {
+      logger.error('SKU migration failed', error)
+      return apiInternalError('Migration failed', { error })
     }
   } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-      },
-      { status: 500 }
-    )
+    logger.error('SKU migration error', error)
+    return apiInternalError('Unexpected migration error', { error })
   }
 }

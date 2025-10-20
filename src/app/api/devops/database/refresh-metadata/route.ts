@@ -3,11 +3,12 @@
  * Refreshes metadata for a target environment without performing comparison
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { logger } from '@/lib/logger'
+import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
 
 type Environment = 'dev' | 'uat' | 'prod'
 
@@ -66,8 +67,9 @@ export async function POST(request: NextRequest) {
 
     // Validate environment
     if (!environment || !['dev', 'uat', 'prod'].includes(environment)) {
-      return NextResponse.json(
-        { error: 'Invalid environment. Must be dev, uat, or prod.' },
+      return apiError(
+        ERROR_CODES.INVALID_INPUT,
+        'Invalid environment. Must be dev, uat, or prod.',
         { status: 400 }
       )
     }
@@ -77,19 +79,12 @@ export async function POST(request: NextRequest) {
     // Refresh FDW metadata
     await refreshFDWMetadata(environment)
 
-    return NextResponse.json({
-      success: true,
+    return apiSuccess({
       message: `Metadata refreshed successfully for ${environment} environment`,
       environment,
     })
   } catch (error) {
     logger.error('Metadata refresh failed', { error })
-    return NextResponse.json(
-      {
-        error: 'Failed to refresh metadata',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    return apiInternalError('Failed to refresh metadata', { error })
   }
 }
