@@ -5,8 +5,9 @@
 
 'use client'
 
+import { useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Tab } from '@headlessui/react'
 import { UserIcon, ShieldCheckIcon, MapPinIcon, ShoppingBagIcon } from '@heroicons/react/24/outline'
 import ProfileSection from '@/components/account/ProfileSection'
@@ -24,6 +25,13 @@ const tabs = [
 
 export default function AccountPage() {
   const { status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/account')
+    }
+  }, [status, router])
 
   if (status === 'loading') {
     return (
@@ -34,7 +42,11 @@ export default function AccountPage() {
   }
 
   if (status === 'unauthenticated') {
-    redirect('/auth/signin?callbackUrl=/account')
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+      </div>
+    )
   }
 
   return (
