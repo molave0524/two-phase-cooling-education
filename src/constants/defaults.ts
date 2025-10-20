@@ -14,11 +14,9 @@ export const DEFAULTS = {
   API_BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
   VIDEO_API_URL: process.env.NEXT_PUBLIC_VIDEO_API_URL || 'http://localhost:3001',
 
-  // Database
-  DATABASE_URL:
-    process.env.DATABASE_URL ||
-    process.env.POSTGRES_URL ||
-    'postgresql://postgres:postgres@localhost:5432/twophase_education_dev',
+  // Database - No fallback for security
+  // Environment variable DATABASE_URL or POSTGRES_URL must be set
+  DATABASE_URL: process.env.DATABASE_URL || process.env.POSTGRES_URL || '',
 
   // Image Services
   IMAGE_PLACEHOLDER_SERVICE:

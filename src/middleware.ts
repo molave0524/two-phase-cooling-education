@@ -27,8 +27,8 @@ const PROTECTED_ROUTES = ['/account']
 // Auth routes that should redirect to home if already authenticated
 const AUTH_ROUTES = ['/auth/signin', '/auth/signup']
 
-// Debug/DevOps routes that should be blocked in production
-const DEBUG_ROUTES = ['/api/debug', '/api/devops']
+// DevOps routes that should be blocked in production
+const DEBUG_ROUTES = ['/api/devops']
 
 // Generate a random CSRF token
 function generateToken(): string {
