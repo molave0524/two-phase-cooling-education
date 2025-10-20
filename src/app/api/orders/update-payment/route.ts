@@ -53,10 +53,19 @@ export async function POST(request: NextRequest) {
     })
 
     // Generate access token for order confirmation page
-    const customerData =
-      typeof updatedOrder.customer === 'string'
-        ? JSON.parse(updatedOrder.customer)
-        : updatedOrder.customer
+    let customerData
+    try {
+      customerData =
+        typeof updatedOrder.customer === 'string'
+          ? JSON.parse(updatedOrder.customer)
+          : updatedOrder.customer
+    } catch (error) {
+      logger.error('Failed to parse customer data for order token', {
+        orderId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+      return apiInternalError('Failed to generate order access token')
+    }
     const accessToken = generateOrderToken(updatedOrder.id, customerData.email)
 
     // TODO: Send confirmation email when payment succeeds
@@ -110,8 +119,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Parse customer data to get email
-    const customerData =
-      typeof order.customer === 'string' ? JSON.parse(order.customer) : order.customer
+    let customerData
+    try {
+      customerData =
+        typeof order.customer === 'string' ? JSON.parse(order.customer) : order.customer
+    } catch (error) {
+      logger.error('Failed to parse customer data for authorization check', {
+        orderId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+      return apiInternalError('Failed to verify order access')
+    }
 
     // Allow access if:
     // 1. User is authenticated AND their email matches the order's customer email

@@ -12,6 +12,29 @@ import { logger } from '@/lib/logger'
 import { createOrderItemSnapshots, validateProductsAvailable } from '@/services/order-snapshot'
 import { retry } from '@/lib/retry'
 
+/**
+ * Safely parse JSON with error handling
+ * @param value - String to parse or already parsed object
+ * @param fallback - Fallback value if parsing fails
+ * @param context - Context for error logging
+ */
+function safeJSONParse<T>(value: string | T, fallback: T, context: string): T {
+  if (typeof value !== 'string') {
+    return value
+  }
+
+  try {
+    return JSON.parse(value) as T
+  } catch (error) {
+    logger.error('JSON parse error in orders', {
+      context,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      value: value.substring(0, 100), // Log first 100 chars only
+    })
+    return fallback
+  }
+}
+
 // Order types and interfaces
 export type OrderStatus =
   | 'pending' // Order created, payment pending
@@ -186,24 +209,44 @@ function dbOrderToOrder(
     selectedVariantId: (item as any).variantId || undefined,
   }))
 
-  const customer =
-    typeof dbOrder.customer === 'string' ? JSON.parse(dbOrder.customer) : dbOrder.customer
+  const customer = safeJSONParse<OrderCustomer>(
+    dbOrder.customer,
+    {
+      email: 'unknown@example.com',
+      firstName: 'Unknown',
+      lastName: 'Customer',
+    },
+    `order ${dbOrder.orderNumber} customer`
+  )
 
-  const shippingAddress =
-    typeof dbOrder.shippingAddress === 'string'
-      ? JSON.parse(dbOrder.shippingAddress)
-      : dbOrder.shippingAddress
+  const shippingAddress = safeJSONParse<OrderShippingAddress>(
+    dbOrder.shippingAddress,
+    {
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      addressLine1: 'Address unavailable',
+      city: 'Unknown',
+      state: 'Unknown',
+      zipCode: '00000',
+      country: 'US',
+    },
+    `order ${dbOrder.orderNumber} shippingAddress`
+  )
 
   const billingAddress = dbOrder.billingAddress
-    ? typeof dbOrder.billingAddress === 'string'
-      ? JSON.parse(dbOrder.billingAddress)
-      : dbOrder.billingAddress
+    ? safeJSONParse<OrderShippingAddress>(
+        dbOrder.billingAddress,
+        shippingAddress,
+        `order ${dbOrder.orderNumber} billingAddress`
+      )
     : shippingAddress
 
   const metadata = dbOrder.metadata
-    ? typeof dbOrder.metadata === 'string'
-      ? JSON.parse(dbOrder.metadata)
-      : dbOrder.metadata
+    ? safeJSONParse<Record<string, unknown>>(
+        dbOrder.metadata,
+        {},
+        `order ${dbOrder.orderNumber} metadata`
+      )
     : {}
 
   const totals: OrderTotals = {

@@ -83,12 +83,36 @@ function OrderConfirmationContent() {
 
         if (result.success && result.data?.order) {
           const order = result.data.order
-          const customer =
-            typeof order.customer === 'string' ? JSON.parse(order.customer) : order.customer
-          const shippingAddr =
-            typeof order.shippingAddress === 'string'
-              ? JSON.parse(order.shippingAddress)
-              : order.shippingAddress
+
+          // Safely parse customer data
+          let customer
+          try {
+            customer =
+              typeof order.customer === 'string' ? JSON.parse(order.customer) : order.customer
+          } catch {
+            // Parse failed - use default customer data
+            customer = { email: 'unknown@example.com', firstName: 'Unknown', lastName: 'Customer' }
+          }
+
+          // Safely parse shipping address
+          let shippingAddr
+          try {
+            shippingAddr =
+              typeof order.shippingAddress === 'string'
+                ? JSON.parse(order.shippingAddress)
+                : order.shippingAddress
+          } catch {
+            // Parse failed - use default shipping address
+            shippingAddr = {
+              firstName: customer.firstName || 'Unknown',
+              lastName: customer.lastName || 'Customer',
+              addressLine1: 'Address unavailable',
+              city: 'Unknown',
+              state: 'Unknown',
+              zipCode: '00000',
+              country: 'US',
+            }
+          }
 
           setOrderData({
             id: order.orderNumber,

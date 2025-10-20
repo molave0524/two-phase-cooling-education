@@ -66,8 +66,13 @@ export default function ResetPasswordForm() {
       if (error.message.includes('Invalid or expired')) {
         toast.error('This reset link has expired. Please request a new one.')
       } else if (error.message.includes('details')) {
-        const errorData = JSON.parse(error.message)
-        toast.error(errorData.details.join(', '))
+        try {
+          const errorData = JSON.parse(error.message)
+          toast.error(errorData.details.join(', '))
+        } catch {
+          // If JSON parse fails, show the raw error message
+          toast.error(error.message || 'Failed to reset password')
+        }
       } else {
         toast.error(error.message || 'Failed to reset password')
       }
