@@ -87,3 +87,41 @@ export const RATE_LIMIT = {
   WINDOW_MS: Number(process.env.RATE_LIMIT_WINDOW_MS) || 900000, // 15 minutes
   MAX_REQUESTS: Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
 } as const
+
+/**
+ * Shipping Configuration
+ * Centralized shipping rates, fees, and thresholds
+ */
+export const SHIPPING = {
+  // Free shipping threshold
+  FREE_SHIPPING_THRESHOLD: 500, // USD - Free shipping on orders over this amount
+
+  // Standard shipping rates by state (USD)
+  STANDARD_RATES: {
+    CA: 49.99,
+    NY: 59.99,
+    TX: 54.99,
+    FL: 52.99,
+    WA: 51.99,
+    DEFAULT: 59.99, // Default for states not listed above
+  },
+
+  // Expedited shipping methods (USD)
+  EXPEDITED_2_3_DAY: 149.99,
+  OVERNIGHT: 299.99,
+
+  // Base rate calculation (for src/lib/shipping.ts)
+  BASE_FEE: 25, // Base shipping fee in USD
+  WEIGHT_MULTIPLIER: 1.2, // Cost per pound of weight
+  MAX_COST: 500, // Maximum shipping cost in USD
+
+  // Service multipliers (for calculating rates from base rate)
+  SERVICE_MULTIPLIERS: {
+    UPS_GROUND: 0.8,
+    UPS_2ND_DAY: 2.5,
+    UPS_NEXT_DAY: 4.0,
+    FEDEX_GROUND: 0.85,
+    FEDEX_EXPRESS: 2.2,
+    FEDEX_PRIORITY: 3.8,
+  },
+} as const

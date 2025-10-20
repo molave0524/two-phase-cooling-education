@@ -5,6 +5,7 @@
 
 import { OrderShippingAddress, Order } from './orders'
 import { logger } from '@/lib/logger'
+import { SHIPPING } from '@/constants/defaults'
 
 // Shipping provider types
 export type ShippingProvider = 'ups' | 'fedex' | 'usps' | 'dhl'
@@ -136,7 +137,7 @@ export async function getShippingRates(
       provider: 'ups',
       service: 'UPS Ground',
       serviceCode: 'GND',
-      cost: baseRate * 0.8,
+      cost: baseRate * SHIPPING.SERVICE_MULTIPLIERS.UPS_GROUND,
       currency: 'USD',
       estimatedDays: '5-7 business days',
       features: ['Tracking included', 'Insurance up to $100'],
@@ -145,7 +146,7 @@ export async function getShippingRates(
       provider: 'ups',
       service: 'UPS 2nd Day Air',
       serviceCode: '2DA',
-      cost: baseRate * 2.5,
+      cost: baseRate * SHIPPING.SERVICE_MULTIPLIERS.UPS_2ND_DAY,
       currency: 'USD',
       estimatedDays: '2 business days',
       features: ['Tracking included', 'Insurance up to $100', 'Signature required'],
@@ -154,7 +155,7 @@ export async function getShippingRates(
       provider: 'ups',
       service: 'UPS Next Day Air',
       serviceCode: '1DA',
-      cost: baseRate * 4.0,
+      cost: baseRate * SHIPPING.SERVICE_MULTIPLIERS.UPS_NEXT_DAY,
       currency: 'USD',
       estimatedDays: '1 business day',
       guaranteedDelivery: getBusinessDaysFromNow(1),
@@ -169,7 +170,7 @@ export async function getShippingRates(
       provider: 'fedex',
       service: 'FedEx Ground',
       serviceCode: 'FDXG',
-      cost: baseRate * 0.85,
+      cost: baseRate * SHIPPING.SERVICE_MULTIPLIERS.FEDEX_GROUND,
       currency: 'USD',
       estimatedDays: '5-7 business days',
       features: ['Tracking included', 'Basic insurance'],
@@ -178,7 +179,7 @@ export async function getShippingRates(
       provider: 'fedex',
       service: 'FedEx Express Saver',
       serviceCode: 'FDXES',
-      cost: baseRate * 2.2,
+      cost: baseRate * SHIPPING.SERVICE_MULTIPLIERS.FEDEX_EXPRESS,
       currency: 'USD',
       estimatedDays: '3 business days',
       features: ['Tracking included', 'Insurance included', 'Signature required'],
@@ -187,7 +188,7 @@ export async function getShippingRates(
       provider: 'fedex',
       service: 'FedEx Priority Overnight',
       serviceCode: 'PRIORITY_OVERNIGHT',
-      cost: baseRate * 3.8,
+      cost: baseRate * SHIPPING.SERVICE_MULTIPLIERS.FEDEX_PRIORITY,
       currency: 'USD',
       estimatedDays: '1 business day',
       guaranteedDelivery: getBusinessDaysFromNow(1),
@@ -201,7 +202,7 @@ export async function getShippingRates(
   ]
 
   // Filter out rates that are too expensive or not available for the destination
-  return rates.filter(rate => rate.cost < 500) // Max $500 shipping
+  return rates.filter(rate => rate.cost < SHIPPING.MAX_COST)
 }
 
 // Calculate base shipping rate based on destination and weight
@@ -271,7 +272,10 @@ function calculateBaseShippingRate(state: string, weight: number): number {
 
   const zoneMultiplier = zones[state] || 1.5 // Default for unknown states
 
-  return Math.round((25 + weight * 1.2) * zoneMultiplier * 100) / 100
+  return (
+    Math.round((SHIPPING.BASE_FEE + weight * SHIPPING.WEIGHT_MULTIPLIER) * zoneMultiplier * 100) /
+    100
+  )
 }
 
 // Utility function to get business days from now

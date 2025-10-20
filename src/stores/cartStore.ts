@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware'
 import { CartItem, CartState, ShippingMethod, CouponCode, USA_TAX_RATES } from '@/types/cart'
 import { TwoPhaseCoolingProduct } from '@/types/product'
 import { toast } from 'react-hot-toast'
+import { SHIPPING } from '@/constants/defaults'
 
 interface CartActions {
   // Cart management
@@ -32,7 +33,7 @@ const SHIPPING_METHODS: ShippingMethod[] = [
   {
     id: 'standard',
     name: 'Standard Shipping',
-    description: 'Free shipping on orders over $500',
+    description: `Free shipping on orders over $${SHIPPING.FREE_SHIPPING_THRESHOLD}`,
     cost: 0, // Will be calculated based on order amount
     estimatedDays: '5-7 business days',
     carrier: 'UPS Ground',
@@ -42,7 +43,7 @@ const SHIPPING_METHODS: ShippingMethod[] = [
     id: 'expedited',
     name: 'Expedited Shipping',
     description: 'Faster delivery with tracking',
-    cost: 149.99,
+    cost: SHIPPING.EXPEDITED_2_3_DAY,
     estimatedDays: '2-3 business days',
     carrier: 'UPS 2nd Day Air',
     trackingAvailable: true,
@@ -51,7 +52,7 @@ const SHIPPING_METHODS: ShippingMethod[] = [
     id: 'overnight',
     name: 'Overnight Shipping',
     description: 'Next business day delivery',
-    cost: 299.99,
+    cost: SHIPPING.OVERNIGHT,
     estimatedDays: '1 business day',
     carrier: 'UPS Next Day Air',
     trackingAvailable: true,
@@ -284,21 +285,16 @@ export const useCartStore = create<CartStore>()(
           return method.cost
         }
 
-        // Free shipping over $500
-        if (subtotal >= 500) {
+        // Free shipping threshold
+        if (subtotal >= SHIPPING.FREE_SHIPPING_THRESHOLD) {
           return 0
         }
 
         // Standard shipping rates based on location
-        const shippingRates: Record<string, number> = {
-          CA: 49.99,
-          NY: 59.99,
-          TX: 54.99,
-          FL: 52.99,
-          WA: 51.99,
-        }
-
-        return shippingRates[state] || 59.99 // Default shipping rate
+        return (
+          SHIPPING.STANDARD_RATES[state as keyof typeof SHIPPING.STANDARD_RATES] ||
+          SHIPPING.STANDARD_RATES.DEFAULT
+        )
       },
     }),
     {
