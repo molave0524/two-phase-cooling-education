@@ -5,9 +5,9 @@
  * OAuth and email/password authentication with Google and GitHub
  */
 
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import styles from './signin.module.css'
 
@@ -20,6 +20,14 @@ function SignInContent() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [credentialsError, setCredentialsError] = useState('')
+  const { data: session, status } = useSession()
+
+  // Redirect if already signed in
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push(callbackUrl)
+    }
+  }, [status, session, router, callbackUrl])
 
   const handleOAuthSignIn = async (provider: 'google' | 'github') => {
     setIsLoading(provider)

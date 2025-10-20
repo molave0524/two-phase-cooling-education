@@ -123,6 +123,18 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
+    async signIn() {
+      // Allow all signins (both OAuth and credentials)
+      return true
+    },
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      // Default to base URL
+      return baseUrl
+    },
   },
 
   events: {
