@@ -84,28 +84,34 @@ export const PRICING = {
 
 // Technical specifications
 export const TECHNICAL_SPECS = {
-  GWP_RATING:
-    typeof process.env.PRODUCT_GWP_RATING !== 'undefined'
-      ? parseInt(process.env.PRODUCT_GWP_RATING)
-      : 20,
-  ODP_RATING:
-    typeof process.env.PRODUCT_ODP_RATING !== 'undefined'
-      ? parseInt(process.env.PRODUCT_ODP_RATING)
-      : 0,
-  COOLING_EFFICIENCY:
-    typeof process.env.PRODUCT_COOLING_EFFICIENCY !== 'undefined'
-      ? parseInt(process.env.PRODUCT_COOLING_EFFICIENCY)
-      : 97,
-  NOISE_LEVEL:
-    typeof process.env.PRODUCT_NOISE_LEVEL !== 'undefined'
-      ? parseInt(process.env.PRODUCT_NOISE_LEVEL)
-      : 18,
+  GWP_RATING: (() => {
+    const value = parseInt(process.env.PRODUCT_GWP_RATING || '')
+    return isNaN(value) ? 20 : value
+  })(),
+  ODP_RATING: (() => {
+    const value = parseInt(process.env.PRODUCT_ODP_RATING || '')
+    return isNaN(value) ? 0 : value
+  })(),
+  COOLING_EFFICIENCY: (() => {
+    const value = parseInt(process.env.PRODUCT_COOLING_EFFICIENCY || '')
+    return isNaN(value) ? 97 : value
+  })(),
+  NOISE_LEVEL: (() => {
+    const value = parseInt(process.env.PRODUCT_NOISE_LEVEL || '')
+    return isNaN(value) ? 18 : value
+  })(),
 } as const
 
 // Cart and shipping configuration
 export const CART_CONFIG = {
   FREE_SHIPPING_THRESHOLD: parseFloat(clientEnv.NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD),
   TAX_RATE: parseFloat(clientEnv.NEXT_PUBLIC_TAX_RATE),
-  MAX_QUANTITY_PER_ITEM: parseInt(clientEnv.NEXT_PUBLIC_MAX_QUANTITY_PER_ITEM),
-  LOW_STOCK_THRESHOLD: parseInt(clientEnv.NEXT_PUBLIC_LOW_STOCK_THRESHOLD),
+  MAX_QUANTITY_PER_ITEM: (() => {
+    const value = parseInt(clientEnv.NEXT_PUBLIC_MAX_QUANTITY_PER_ITEM)
+    return isNaN(value) ? 10 : value
+  })(),
+  LOW_STOCK_THRESHOLD: (() => {
+    const value = parseInt(clientEnv.NEXT_PUBLIC_LOW_STOCK_THRESHOLD)
+    return isNaN(value) ? 5 : value
+  })(),
 } as const

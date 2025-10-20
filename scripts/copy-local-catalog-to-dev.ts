@@ -71,7 +71,8 @@ async function copyCatalogToRDev() {
     // ========================================================================
     // Copy products
     // ========================================================================
-    if (parseInt(localProducts[0].count) > 0) {
+    const productCount = parseInt(localProducts[0].count, 10)
+    if (!isNaN(productCount) && productCount > 0) {
       console.log('Copying catalog.products...')
 
       const products = await localSql`
@@ -90,7 +91,8 @@ async function copyCatalogToRDev() {
     // ========================================================================
     // Copy product_components
     // ========================================================================
-    if (parseInt(localProductComponents[0].count) > 0) {
+    const componentCount = parseInt(localProductComponents[0].count, 10)
+    if (!isNaN(componentCount) && componentCount > 0) {
       console.log('Copying catalog.product_components...')
 
       const components = await localSql`

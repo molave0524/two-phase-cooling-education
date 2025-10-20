@@ -79,7 +79,8 @@ export async function wouldExceedDepth(
     WHERE pc1.parent_product_id = ${componentProductId}
   `)
 
-  return parseInt(result.rows[0].count as string) > 0
+  const count = parseInt(result.rows[0].count as string, 10)
+  return !isNaN(count) && count > 0
 }
 
 /**

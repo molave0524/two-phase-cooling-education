@@ -14,13 +14,19 @@ import { retry } from '@/lib/retry'
 
 /**
  * Safely parse JSON with error handling
- * @param value - String to parse or already parsed object
+ * @param value - String to parse, already parsed object, or unknown value from database
  * @param fallback - Fallback value if parsing fails
  * @param context - Context for error logging
  */
-function safeJSONParse<T>(value: string | T, fallback: T, context: string): T {
+function safeJSONParse<T>(value: unknown, fallback: T, context: string): T {
+  // If it's already an object (not null, not array, not string), return it
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    return value as T
+  }
+
+  // If it's not a string at this point, use fallback
   if (typeof value !== 'string') {
-    return value
+    return fallback
   }
 
   try {

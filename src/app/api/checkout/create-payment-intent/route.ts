@@ -229,9 +229,15 @@ async function handlePOST(request: Request | NextRequest) {
     })
 
     // Update order with payment intent ID in the database
+    const orderIdNum = parseInt(newOrder.id, 10)
+    if (isNaN(orderIdNum)) {
+      logger.error('Invalid order ID after creation', { orderId: newOrder.id })
+      return apiInternalError('Failed to process order')
+    }
+
     await (db.update as any)(orders)
       .set({ stripePaymentIntentId: paymentIntent.id })
-      .where(eq(orders.id, parseInt(newOrder.id, 10)))
+      .where(eq(orders.id, orderIdNum))
 
     logger.info('Payment intent created', {
       orderNumber: newOrder.orderNumber,

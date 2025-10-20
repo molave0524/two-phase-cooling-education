@@ -122,7 +122,10 @@ export default function ProductPurchase({ product }: ProductPurchaseProps) {
               id='quantity-input'
               type='number'
               value={quantity}
-              onChange={e => handleQuantityChange(parseInt(e.target.value) || 1)}
+              onChange={e => {
+                const value = parseInt(e.target.value, 10)
+                handleQuantityChange(isNaN(value) ? 1 : value)
+              }}
               min='1'
               max={product.stockQuantity}
               className='w-16 text-center border-none focus:ring-0 py-2'

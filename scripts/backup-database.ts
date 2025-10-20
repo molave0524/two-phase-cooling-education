@@ -153,9 +153,11 @@ async function backupDatabase(options: BackupOptions): Promise<string> {
         : `stat -f%z "${backupPath}" 2>/dev/null || stat -c%s "${backupPath}"`
     )
 
-    const sizeBytes = parseInt(sizeOutput.trim())
-    const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(2)
-    console.log(`📊 Size: ${sizeMB} MB`)
+    const sizeBytes = parseInt(sizeOutput.trim(), 10)
+    if (!isNaN(sizeBytes)) {
+      const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(2)
+      console.log(`📊 Size: ${sizeMB} MB`)
+    }
 
     return backupPath
   } catch (error) {
