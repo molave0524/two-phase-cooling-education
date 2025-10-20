@@ -468,6 +468,23 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
   return dbOrderToOrder(dbOrder, dbOrderItems)
 }
 
+export async function getOrderByPaymentIntentId(paymentIntentId: string): Promise<Order | null> {
+  // Type assertion needed due to dual-database union type incompatibility
+  const [dbOrder] = await (db.select as any)()
+    .from(ordersTable)
+    .where(eq(ordersTable.stripePaymentIntentId, paymentIntentId))
+    .limit(1)
+
+  if (!dbOrder) return null
+
+  // Type assertion needed due to dual-database union type incompatibility
+  const dbOrderItems = await (db.select as any)()
+    .from(orderItemsTable)
+    .where(eq(orderItemsTable.orderId, dbOrder.id))
+
+  return dbOrderToOrder(dbOrder, dbOrderItems)
+}
+
 export async function getOrdersByCustomer(customerEmail: string): Promise<Order[]> {
   // Query orders where customer JSON contains the email
   // Type assertion needed due to dual-database union type incompatibility

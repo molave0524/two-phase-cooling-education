@@ -6,10 +6,11 @@
 import { NextRequest } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
-import { updateOrderPaymentStatus } from '@/lib/orders'
+import { updateOrderPaymentStatus, getOrder, getOrderByPaymentIntentId } from '@/lib/orders'
 import { logger } from '@/lib/logger'
 import Stripe from 'stripe'
 import { apiSuccess, apiError, apiInternalError, ERROR_CODES } from '@/lib/api-response'
+import { sendOrderConfirmationEmail, sendPaymentFailedEmail, sendRefundEmail } from '@/lib/email'
 
 // Disable body parsing for webhook signature verification
 export const runtime = 'nodejs'
@@ -114,8 +115,15 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       paymentIntentId: paymentIntent.id,
     })
 
-    // TODO: Send confirmation email
-    // TODO: Trigger fulfillment process
+    // Send order confirmation email
+    const order = await getOrder(orderId)
+    if (order) {
+      await sendOrderConfirmationEmail(order).catch(emailError => {
+        logger.error('Failed to send order confirmation email', emailError, { orderId })
+      })
+    }
+
+    // TODO: Trigger fulfillment process (inventory allocation, shipping label generation)
   } catch (error) {
     logger.error('Failed to update order payment status', { orderId, error })
   }
@@ -145,8 +153,17 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       paymentIntentId: paymentIntent.id,
     })
 
-    // TODO: Send payment failed email
-    // TODO: Release inventory
+    // Send payment failed notification email
+    const order = await getOrder(orderId)
+    if (order) {
+      const failureReason =
+        paymentIntent.last_payment_error?.message || 'Payment could not be processed'
+      await sendPaymentFailedEmail(order, failureReason).catch(emailError => {
+        logger.error('Failed to send payment failed email', emailError, { orderId })
+      })
+    }
+
+    // TODO: Release inventory (restore stock quantities)
   } catch (error) {
     logger.error('Failed to update order payment status', { orderId, error })
   }
@@ -195,12 +212,33 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
 
   try {
     // Find order by payment intent ID
-    // TODO: Implement findOrderByPaymentIntentId
-    logger.info('Charge refunded', { paymentIntentId, chargeId: charge.id })
+    const order = await getOrderByPaymentIntentId(paymentIntentId)
 
-    // TODO: Update order status to refunded
-    // TODO: Restore inventory
-    // TODO: Send refund confirmation email
+    if (!order) {
+      logger.warn('Order not found for refunded payment intent', { paymentIntentId })
+      return
+    }
+
+    logger.info('Charge refunded', {
+      paymentIntentId,
+      chargeId: charge.id,
+      orderId: order.id,
+      refundAmount: charge.amount_refunded / 100, // Convert cents to dollars
+    })
+
+    // Update order status to refunded
+    await updateOrderPaymentStatus(order.id, {
+      status: 'cancelled', // Mark as cancelled since it was refunded
+      paymentIntentId,
+    })
+
+    // Send refund confirmation email
+    const refundAmount = charge.amount_refunded / 100 // Stripe amounts are in cents
+    await sendRefundEmail(order, refundAmount).catch(emailError => {
+      logger.error('Failed to send refund confirmation email', emailError, { orderId: order.id })
+    })
+
+    // TODO: Restore inventory (increase stock quantities for refunded items)
   } catch (error) {
     logger.error('Failed to handle refund', { paymentIntentId, error })
   }
