@@ -133,6 +133,37 @@ export const orderItems = storeSchema.table('order_items', {
 })
 
 // ============================================================================
+// INVENTORY RESERVATIONS TABLE
+// ============================================================================
+
+export const inventoryReservations = storeSchema.table('inventory_reservations', {
+  id: serial('id').primaryKey(),
+  productId: text('product_id')
+    .notNull()
+    .references(() => products.id, { onDelete: 'cascade' }),
+  quantity: integer('quantity').notNull(),
+
+  // Reservation metadata
+  reservedBy: text('reserved_by'), // User ID or session ID
+  reservationType: text('reservation_type').notNull().default('checkout'), // checkout, order, manual
+
+  // Payment intent tracking for checkout reservations
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
+
+  // Expiration
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+
+  // Status
+  status: text('status').notNull().default('active'), // active, expired, completed, cancelled
+
+  // Audit trail
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+  cancelledAt: timestamp('cancelled_at', { withTimezone: true }),
+})
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -147,3 +178,6 @@ export type NewOrder = typeof orders.$inferInsert
 
 export type OrderItem = typeof orderItems.$inferSelect
 export type NewOrderItem = typeof orderItems.$inferInsert
+
+export type InventoryReservation = typeof inventoryReservations.$inferSelect
+export type NewInventoryReservation = typeof inventoryReservations.$inferInsert

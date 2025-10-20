@@ -157,9 +157,6 @@ async function handlePOST(request: Request | NextRequest) {
       },
     })
 
-    // Reserve inventory
-    await reserveInventory(newOrder.items)
-
     // Save shipping address to user's addresses if logged in
     if (session?.user?.id) {
       try {
@@ -239,9 +236,25 @@ async function handlePOST(request: Request | NextRequest) {
       .set({ stripePaymentIntentId: paymentIntent.id })
       .where(eq(orders.id, orderIdNum))
 
-    logger.info('Payment intent created', {
+    // Reserve inventory with payment intent ID
+    const reservationResult = await reserveInventory(
+      newOrder.items,
+      paymentIntent.id,
+      session?.user?.id || undefined
+    )
+
+    if (!reservationResult.success) {
+      logger.warn('Inventory reservation had errors', {
+        errors: reservationResult.errors,
+        paymentIntentId: paymentIntent.id,
+      })
+      // Continue anyway as we allow backorders
+    }
+
+    logger.info('Payment intent created and inventory reserved', {
       orderNumber: newOrder.orderNumber,
       paymentIntentId: paymentIntent.id,
+      reservationIds: reservationResult.reservationIds,
     })
 
     return apiSuccess({

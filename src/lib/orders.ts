@@ -11,6 +11,7 @@ import { eq, and, gte, lte, like, or, desc, count, sum } from 'drizzle-orm'
 import { logger } from '@/lib/logger'
 import { createOrderItemSnapshots, validateProductsAvailable } from '@/services/order-snapshot'
 import { retry } from '@/lib/retry'
+import * as inventory from '@/lib/inventory'
 
 /**
  * Safely parse JSON with error handling
@@ -752,26 +753,51 @@ export async function validateOrderInventory(
   }
 }
 
-export async function reserveInventory(items: OrderItem[]): Promise<void> {
-  // In production, this would update database inventory
-  // For now, we'll just log the reservation
-  logger.debug('Inventory reserved', {
-    items: items.map(item => ({
+export async function reserveInventory(
+  items: OrderItem[],
+  paymentIntentId?: string,
+  reservedBy?: string
+): Promise<{ success: boolean; reservationIds: number[]; errors?: string[] }> {
+  const reservationIds: number[] = []
+  const errors: string[] = []
+
+  // Reserve inventory for each item
+  for (const item of items) {
+    const result = await inventory.reserveInventory({
       productId: item.productId,
       quantity: item.quantity,
-    })),
-  })
+      reservedBy: reservedBy || 'checkout',
+      stripePaymentIntentId: paymentIntentId,
+      reservationType: 'checkout',
+      expirationMinutes: 15, // 15 minute hold as per requirements
+    })
+
+    if (result.success && result.reservationId) {
+      reservationIds.push(result.reservationId)
+    } else {
+      errors.push(`Failed to reserve ${item.quantity}x ${item.productId}: ${result.message}`)
+    }
+  }
+
+  if (errors.length > 0) {
+    logger.warn('Some inventory reservations failed', { errors, reservationIds })
+  }
+
+  return {
+    success: errors.length === 0,
+    reservationIds,
+    ...(errors.length > 0 && { errors }),
+  }
 }
 
 export async function releaseInventory(items: OrderItem[]): Promise<void> {
-  // In production, this would restore database inventory
-  // For now, we'll just log the release
-  logger.debug('Inventory released', {
-    items: items.map(item => ({
-      productId: item.productId,
-      quantity: item.quantity,
-    })),
+  // Release reservations - this would typically be called if payment fails or is cancelled
+  logger.info('Releasing inventory reservations', {
+    itemCount: items.length,
   })
+
+  // Note: In practice, we'd need to track the reservation IDs with the order
+  // For now, expired reservations will be cleaned up automatically by the cleanup job
 }
 
 // Order analytics and reporting

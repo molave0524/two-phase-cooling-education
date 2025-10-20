@@ -48,6 +48,7 @@ export const products = catalogSchema.table(
     features: jsonb('features').notNull(),
     inStock: boolean('in_stock').notNull().default(true),
     stockQuantity: integer('stock_quantity').notNull().default(0),
+    lowStockThreshold: integer('low_stock_threshold').notNull().default(5),
     estimatedShipping: text('estimated_shipping'),
     specifications: jsonb('specifications').notNull(),
     images: jsonb('images').notNull(),

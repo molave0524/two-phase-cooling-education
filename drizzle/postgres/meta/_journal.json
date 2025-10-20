@@ -71,6 +71,13 @@
       "when": 1759559397000,
       "tag": "0016_fix_orders_user_id_type",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760998850631,
+      "tag": "0010_yummy_ares",
+      "breakpoints": true
     }
   ]
 }

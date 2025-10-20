@@ -13,6 +13,7 @@ import {
   apiValidationError,
   ERROR_CODES,
 } from '@/lib/api-response'
+import { getReservationByPaymentIntent, completeReservation } from '@/lib/inventory'
 
 const UpdatePaymentSchema = z.object({
   orderId: z.union([z.string(), z.number()]).transform(String),
@@ -68,11 +69,37 @@ export async function POST(request: NextRequest) {
     }
     const accessToken = generateOrderToken(updatedOrder.id, customerData.email)
 
-    // TODO: Send confirmation email when payment succeeds
+    // Handle payment success - complete reservation and decrement stock
     if (status === 'succeeded') {
-      logger.info('Payment confirmed - email notification should be sent', {
+      logger.info('Payment confirmed', {
         orderNumber: updatedOrder.orderNumber,
+        paymentIntentId,
       })
+
+      // Find and complete the inventory reservation
+      const reservationId = await getReservationByPaymentIntent(paymentIntentId)
+      if (reservationId) {
+        const result = await completeReservation(reservationId)
+        if (result.success) {
+          logger.info('Inventory reservation completed and stock decremented', {
+            orderNumber: updatedOrder.orderNumber,
+            reservationId,
+          })
+        } else {
+          logger.error('Failed to complete inventory reservation', {
+            orderNumber: updatedOrder.orderNumber,
+            reservationId,
+            error: result.message,
+          })
+        }
+      } else {
+        logger.warn('No reservation found for payment intent', {
+          orderNumber: updatedOrder.orderNumber,
+          paymentIntentId,
+        })
+      }
+
+      // TODO: Send confirmation email when payment succeeds
       // This would trigger email notification in a real implementation
     }
 
