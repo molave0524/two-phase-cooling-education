@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { OrderShippingAddress, OrderCustomer } from '@/lib/orders'
 import styles from './ShippingForm.module.css'
 
@@ -85,6 +86,8 @@ const US_STATES = [
 ]
 
 export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading = false }) => {
+  const { data: session } = useSession()
+
   const [formData, setFormData] = useState<FormData>({
     email: '',
     firstName: '',
@@ -103,6 +106,16 @@ export const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading 
   })
 
   const [errors, setErrors] = useState<Partial<FormData>>({})
+
+  // Prepopulate email with logged-in user's email
+  useEffect(() => {
+    if (session?.user?.email && !formData.email) {
+      setFormData(prev => ({
+        ...prev,
+        email: session.user.email || '',
+      }))
+    }
+  }, [session, formData.email])
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {}
