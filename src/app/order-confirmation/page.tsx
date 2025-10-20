@@ -146,7 +146,7 @@ function OrderConfirmationContent() {
               image:
                 typeof item.product.images === 'string'
                   ? item.product.images
-                  : item.product.images?.[0] || '/images/placeholder-product.jpg',
+                  : item.product.images?.[0]?.url || '/images/placeholder-product.jpg',
             })),
             subtotal: order.totals.subtotal,
             tax: order.totals.tax,
