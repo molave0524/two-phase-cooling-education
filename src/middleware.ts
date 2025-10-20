@@ -51,11 +51,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Block debug/devops routes in production
+  // Block debug/devops routes only in actual production environment
+  // Allow them in dev, uat, preview, and local environments
   const isDebugRoute = DEBUG_ROUTES.some(route => pathname.startsWith(route))
-  if (isDebugRoute && process.env.NODE_ENV === 'production') {
-    logger.warn('Attempted access to debug route in production', { pathname })
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  if (isDebugRoute) {
+    const isVercel = process.env.VERCEL === '1'
+    const vercelEnv = process.env.VERCEL_ENV
+
+    // Only block in Vercel production, not in preview/development
+    if (isVercel && vercelEnv === 'production') {
+      logger.warn('Attempted access to debug route in production', { pathname })
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
   }
 
   // Get authentication token with error handling
