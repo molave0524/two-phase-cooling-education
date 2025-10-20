@@ -33,6 +33,15 @@ export interface TwoPhaseCoolingProduct {
   productType?: string
   componentPrice?: number
 
+  // Inventory status (from API)
+  inventory?: {
+    status: 'in_stock' | 'low_stock' | 'out_of_stock' | 'backorder'
+    availableQuantity: number
+    stockQuantity: number
+    reservedQuantity: number
+    lowStockThreshold: number
+  }
+
   // Timestamps
   createdAt: Date
   updatedAt: Date

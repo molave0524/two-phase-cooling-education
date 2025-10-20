@@ -13,7 +13,7 @@ import {
   apiValidationError,
   ERROR_CODES,
 } from '@/lib/api-response'
-import { getReservationByPaymentIntent, completeReservation } from '@/lib/inventory'
+import { getReservationByPaymentIntent, completeReservation, incrementStock } from '@/lib/inventory'
 
 const UpdatePaymentSchema = z.object({
   orderId: z.union([z.string(), z.number()]).transform(String),
@@ -101,6 +101,32 @@ export async function POST(request: NextRequest) {
 
       // TODO: Send confirmation email when payment succeeds
       // This would trigger email notification in a real implementation
+    }
+
+    // Handle payment refunds/cancellations - restore stock
+    if (status === 'refunded' || status === 'failed') {
+      logger.info('Payment refunded or failed - restoring stock', {
+        orderNumber: updatedOrder.orderNumber,
+        status,
+      })
+
+      // Restore stock for all items in the order
+      for (const item of updatedOrder.items) {
+        const restored = await incrementStock(item.productId, item.quantity)
+        if (restored) {
+          logger.info('Stock restored for cancelled/refunded order', {
+            orderNumber: updatedOrder.orderNumber,
+            productId: item.productId,
+            quantity: item.quantity,
+          })
+        } else {
+          logger.error('Failed to restore stock for cancelled/refunded order', {
+            orderNumber: updatedOrder.orderNumber,
+            productId: item.productId,
+            quantity: item.quantity,
+          })
+        }
+      }
     }
 
     return apiSuccess({

@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon, StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import { toast } from 'react-hot-toast'
+import InventoryStatus from './InventoryStatus'
 
 // ============================================================================
 // TYPES AND INTERFACES
@@ -73,8 +74,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     : 0
 
   const isOnSale = discountPercentage > 0
-  const isOutOfStock = product.stockQuantity <= 0
-  const isLowStock = product.stockQuantity <= 5 && product.stockQuantity > 0
+
+  // Use inventory status from API if available, fallback to simple stock check
+  const inventoryStatus =
+    product.inventory?.status ||
+    (product.stockQuantity <= 0
+      ? 'out_of_stock'
+      : product.stockQuantity <= 5
+        ? 'low_stock'
+        : 'in_stock')
+
+  const isOutOfStock = inventoryStatus === 'out_of_stock'
+  const isLowStock = inventoryStatus === 'low_stock'
+  const isBackorder = inventoryStatus === 'backorder'
 
   // Extract key features from specifications
   const keyFeatures: ProductFeature[] = [
@@ -110,14 +122,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     e.preventDefault()
     e.stopPropagation()
 
-    if (isOutOfStock) {
-      toast.error('Product is out of stock')
-      return
-    }
-
+    // Allow backorders, only block if truly out of stock and backorders not allowed
+    // For now, we allow all additions since backorders are permitted
     try {
       addItem(product, 1)
-      // The cart store already shows success toast
+      if (isBackorder) {
+        toast.success('Added to cart (backorder)', { icon: '📦' })
+      }
+      // The cart store already shows success toast for normal items
     } catch (error) {
       toast.error('Failed to add to cart')
     }
@@ -189,12 +201,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   </div>
 
                   {showQuickAdd && (
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={isOutOfStock}
-                      className='btn-primary btn-sm'
-                    >
-                      {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                    <button onClick={handleAddToCart} className='btn-primary btn-sm'>
+                      {isBackorder ? 'Pre-Order' : 'Add to Cart'}
                     </button>
                   )}
                 </div>
@@ -229,7 +237,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               Featured
             </div>
           )}
-          {isLowStock && !isOutOfStock && (
+          {isLowStock && (
             <div className='bg-accent-500 text-white text-sm px-2 py-1 rounded-technical font-medium'>
               Low Stock
             </div>
@@ -237,6 +245,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {isOutOfStock && (
             <div className='bg-secondary-500 text-white text-sm px-2 py-1 rounded-technical font-medium'>
               Out of Stock
+            </div>
+          )}
+          {isBackorder && (
+            <div className='bg-info-500 text-white text-sm px-2 py-1 rounded-technical font-medium'>
+              Backorder
             </div>
           )}
         </div>
@@ -361,15 +374,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Stock Status */}
           <div className='mb-4'>
-            {isOutOfStock ? (
-              <div className='text-danger-600 text-sm font-medium'>Out of Stock</div>
-            ) : isLowStock ? (
-              <div className='text-accent-600 text-sm font-medium'>
-                Only {product.stockQuantity} left in stock
-              </div>
-            ) : (
-              <div className='text-success-600 text-sm font-medium'>In Stock</div>
-            )}
+            <InventoryStatus
+              status={inventoryStatus}
+              availableQuantity={product.inventory?.availableQuantity || product.stockQuantity}
+              showQuantity={isLowStock}
+            />
           </div>
 
           {/* Action Buttons */}
@@ -377,11 +386,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <div className='flex gap-2'>
               <button
                 onClick={handleAddToCart}
-                disabled={isOutOfStock}
-                className={`flex-1 btn ${isOutOfStock ? 'btn-secondary' : 'btn-primary'} flex items-center justify-center gap-2`}
+                className='flex-1 btn btn-primary flex items-center justify-center gap-2'
               >
                 <ShoppingCartIcon className='w-4 h-4' />
-                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                {isBackorder ? 'Pre-Order' : 'Add to Cart'}
               </button>
             </div>
           )}

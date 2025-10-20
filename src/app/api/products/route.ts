@@ -1,12 +1,13 @@
 /**
  * Products API Routes
- * GET - Fetch all products from database
+ * GET - Fetch all products from database with inventory status
  */
 
 import { db, products } from '@/db'
 import type { Product } from '@/db/schemas/catalog'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiInternalError } from '@/lib/api-response'
+import { getInventoryStatus } from '@/lib/inventory'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -20,7 +21,36 @@ export async function GET() {
       (product: Product) => product.status === 'active' && product.isAvailableForPurchase === true
     )
 
-    return apiSuccess(activeProducts, {
+    // Add inventory status to each product
+    const productsWithInventory = await Promise.all(
+      activeProducts.map(async product => {
+        try {
+          const inventoryStatus = await getInventoryStatus(product.id)
+          return {
+            ...product,
+            inventory: inventoryStatus,
+          }
+        } catch (error) {
+          logger.warn('Failed to get inventory status for product', {
+            productId: product.id,
+            error,
+          })
+          // Return product with default inventory status on error
+          return {
+            ...product,
+            inventory: {
+              status: 'in_stock',
+              availableQuantity: product.stockQuantity,
+              stockQuantity: product.stockQuantity,
+              reservedQuantity: 0,
+              lowStockThreshold: product.lowStockThreshold,
+            },
+          }
+        }
+      })
+    )
+
+    return apiSuccess(productsWithInventory, {
       meta: {
         count: activeProducts.length,
         total: allProducts.length,
