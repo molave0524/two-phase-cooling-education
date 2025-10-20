@@ -22,7 +22,8 @@ const CSRF_EXEMPT_ROUTES = [
 ]
 
 // Routes that require authentication
-const PROTECTED_ROUTES = ['/account']
+// Note: /account uses client-side protection via useSession in the page component
+const PROTECTED_ROUTES: string[] = []
 
 // Auth routes that should redirect to home if already authenticated
 const AUTH_ROUTES = ['/auth/signin', '/auth/signup']
@@ -68,15 +69,23 @@ export async function middleware(request: NextRequest) {
   // Get authentication token with error handling
   let token = null
   try {
-    token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET || '' })
+    token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+      secureCookie: process.env.NODE_ENV === 'production',
+    })
   } catch (error) {
-    logger.warn('Failed to get auth token in middleware', { error })
+    logger.error('Failed to get auth token in middleware', { error, pathname })
     // Continue without token - treat as unauthenticated
   }
 
   // Check if user is trying to access a protected route
   const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route))
   if (isProtectedRoute && !token) {
+    logger.info('Redirecting unauthenticated user from protected route', {
+      pathname,
+      hasToken: !!token,
+    })
     const signInUrl = new URL('/auth/signin', request.url)
     signInUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(signInUrl)
