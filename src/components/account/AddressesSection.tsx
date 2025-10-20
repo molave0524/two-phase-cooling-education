@@ -46,7 +46,7 @@ export default function AddressesSection() {
       const res = await fetch('/api/account/addresses')
       if (!res.ok) throw new Error('Failed to fetch addresses')
       const data = await res.json()
-      setAddresses(data)
+      setAddresses(data.data || [])
     } catch (error) {
       toast.error('Failed to load addresses')
     } finally {
