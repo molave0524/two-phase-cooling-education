@@ -51,7 +51,14 @@ export function HealthStatus() {
         </div>
         {isExpanded && (
           <div className={styles.sectionContent}>
-            <div className={styles.errorMessage}>Failed to load health data</div>
+            <div className={styles.errorMessage}>
+              Failed to load health data
+              {error instanceof Error && (
+                <div style={{ fontSize: '12px', marginTop: '4px', opacity: 0.7 }}>
+                  {error.message}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -84,28 +91,28 @@ export function HealthStatus() {
       </div>
       {isExpanded && (
         <div className={styles.sectionContent}>
-        <StatusItem
-          label='Database'
-          status={data.services.database.status}
-          {...(data.services.database.latency && {
-            detail: `${data.services.database.latency}ms`,
-          })}
-        />
-        <StatusItem
-          label={`AI (${data.services.ai.provider || 'Unknown'})`}
-          status={data.services.ai.status}
-          detail={data.services.ai.status === 'healthy' ? 'OK' : 'Not configured'}
-        />
-        <StatusItem
-          label='Stripe'
-          status={data.services.stripe.status}
-          detail={data.services.stripe.mode || 'Unknown'}
-        />
-        <StatusItem
-          label='Email'
-          status={data.services.email.status}
-          detail={data.services.email.provider || 'Unknown'}
-        />
+          <StatusItem
+            label='Database'
+            status={data.services.database.status}
+            {...(data.services.database.latency && {
+              detail: `${data.services.database.latency}ms`,
+            })}
+          />
+          <StatusItem
+            label={`AI (${data.services.ai.provider || 'Unknown'})`}
+            status={data.services.ai.status}
+            detail={data.services.ai.status === 'healthy' ? 'OK' : 'Not configured'}
+          />
+          <StatusItem
+            label='Stripe'
+            status={data.services.stripe.status}
+            detail={data.services.stripe.mode || 'Unknown'}
+          />
+          <StatusItem
+            label='Email'
+            status={data.services.email.status}
+            detail={data.services.email.provider || 'Unknown'}
+          />
         </div>
       )}
     </div>
