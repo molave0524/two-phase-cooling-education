@@ -54,11 +54,13 @@ async function applyMigrations(env: Environment): Promise<void> {
   } catch (error) {
     console.error('\n❌ Migration failed!\n')
     if (error instanceof Error) {
-      console.error('Error:', error.message)
+      console.error('Error Message:', error.message)
+      console.error('\nError Name:', error.name)
+      console.error('\nFull Error:', JSON.stringify(error, null, 2))
       console.error('\nStack trace:')
       console.error(error.stack)
     } else {
-      console.error('Error:', error)
+      console.error('Error (unknown type):', JSON.stringify(error, null, 2))
     }
     throw error
   } finally {
