@@ -21,7 +21,7 @@ export async function GET(_req: NextRequest) {
   const userOrders = await (db as any)
     .select()
     .from(orders)
-    .where(eq(orders.userId, parseInt(session.user.id)))
+    .where(eq(orders.userId, session.user.id))
     .orderBy(desc(orders.createdAt))
 
   // Fetch items for each order

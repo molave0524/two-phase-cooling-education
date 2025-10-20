@@ -20,7 +20,7 @@ export async function POST(_req: NextRequest) {
   // Find guest orders with matching email and link them to the user
   const linkedOrders = await (db as any)
     .update(orders)
-    .set({ userId: parseInt(session.user.id) })
+    .set({ userId: session.user.id })
     .where(
       sql`${orders.userId} IS NULL AND (${orders.customer}->>'email')::text = ${session.user.email.toLowerCase()}`
     )

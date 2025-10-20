@@ -38,7 +38,7 @@ export async function GET(_req: NextRequest) {
   const userAddresses = await (db as any)
     .select()
     .from(addresses)
-    .where(eq(addresses.userId, parseInt(session.user.id)))
+    .where(eq(addresses.userId, session.user.id))
     .orderBy(desc(addresses.isDefault), desc(addresses.createdAt))
 
   return NextResponse.json(userAddresses)
@@ -69,13 +69,13 @@ export async function POST(req: NextRequest) {
     await (db as any)
       .update(addresses)
       .set({ isDefault: false })
-      .where(and(eq(addresses.userId, parseInt(session.user.id)), eq(addresses.type, data.type)))
+      .where(and(eq(addresses.userId, session.user.id), eq(addresses.type, data.type)))
   }
 
   const [newAddress] = await (db as any)
     .insert(addresses)
     .values({
-      userId: parseInt(session.user.id),
+      userId: session.user.id,
       ...data,
       createdAt: new Date(),
       updatedAt: new Date(),

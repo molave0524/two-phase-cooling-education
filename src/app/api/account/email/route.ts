@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest) {
       emailVerificationExpires: expires,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, parseInt(session.user.id)))
+    .where(eq(users.id, session.user.id))
 
   // Send verification email to new address
   await sendEmailVerification(newEmail, token)

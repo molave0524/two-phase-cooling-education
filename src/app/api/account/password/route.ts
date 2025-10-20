@@ -46,7 +46,7 @@ export async function PATCH(req: NextRequest) {
   const [user] = await (db as any)
     .select()
     .from(users)
-    .where(eq(users.id, parseInt(session.user.id)))
+    .where(eq(users.id, session.user.id))
     .limit(1)
 
   if (!user) {
@@ -74,7 +74,7 @@ export async function PATCH(req: NextRequest) {
       hashedPassword,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, parseInt(session.user.id)))
+    .where(eq(users.id, session.user.id))
 
   return NextResponse.json({
     message: 'Password updated successfully',

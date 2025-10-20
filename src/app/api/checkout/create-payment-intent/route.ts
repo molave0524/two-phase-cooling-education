@@ -133,7 +133,7 @@ async function handlePOST(request: Request | NextRequest) {
 
     // Create order record
     const newOrder = await createOrder({
-      userId: session?.user?.id ? parseInt(session.user.id) : undefined,
+      userId: session?.user?.id || undefined,
       customer: {
         ...customer,
         phone: customer.phone || '',
@@ -169,7 +169,7 @@ async function handlePOST(request: Request | NextRequest) {
           .from(addresses)
           .where(
             and(
-              eq(addresses.userId, parseInt(session.user.id)),
+              eq(addresses.userId, session.user.id),
               eq(addresses.address1, shippingAddress.addressLine1),
               eq(addresses.city, shippingAddress.city),
               eq(addresses.state, shippingAddress.state),
@@ -180,7 +180,7 @@ async function handlePOST(request: Request | NextRequest) {
         // Only save if address doesn't already exist
         if (existingAddresses.length === 0) {
           await db.insert(addresses).values({
-            userId: parseInt(session.user.id),
+            userId: session.user.id,
             type: 'shipping',
             isDefault: false,
             firstName: shippingAddress.firstName,

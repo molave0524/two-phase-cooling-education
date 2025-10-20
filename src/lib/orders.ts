@@ -85,7 +85,7 @@ export interface Order {
   orderNumber: string
   status: OrderStatus
   paymentStatus: PaymentStatus
-  userId?: number | null
+  userId?: string | null
 
   // Customer information
   customer: OrderCustomer
@@ -118,7 +118,7 @@ export interface Order {
 
 // Order creation parameters
 export interface CreateOrderParams {
-  userId?: number | undefined
+  userId?: string | undefined
   customer: OrderCustomer
   shippingAddress: OrderShippingAddress
   billingAddress?: OrderShippingAddress
