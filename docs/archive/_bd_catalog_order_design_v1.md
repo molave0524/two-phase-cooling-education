@@ -30,6 +30,7 @@
 ### 1.1 Purpose
 
 The catalog and order system manages:
+
 - **Product catalog** with hierarchical component relationships
 - **Product versioning** to track evolution over time
 - **Order history** with immutable snapshots
@@ -97,6 +98,7 @@ The catalog and order system manages:
 **Principle:** Orders are immutable snapshots.
 
 **Implementation:**
+
 - Order items contain denormalized product + component data in JSONB
 - Product/component changes NEVER affect existing orders
 - Orders show exact product configuration at purchase time
@@ -108,6 +110,7 @@ The catalog and order system manages:
 **Principle:** Products with orders cannot be modified directly.
 
 **Implementation:**
+
 - Check if product exists in any order (root, depth 1, or depth 2)
 - If yes → Create new version with incremented SKU
 - If no → Safe to modify directly
@@ -119,6 +122,7 @@ The catalog and order system manages:
 **Principle:** Maximum 2-level hierarchy (Product → Component → Sub-component).
 
 **Implementation:**
+
 - Junction table stores ONLY direct relationships
 - Products can be both parents AND components (many-to-many)
 - Circular references prevented by database triggers + app validation
@@ -130,6 +134,7 @@ The catalog and order system manages:
 **Principle:** Fixed-length, parseable SKU format.
 
 **Implementation:**
+
 - Format: `XXX-XXXX-XXX-VXX` (16 chars)
 - Components: PREFIX-CATEGORY-PRODUCT_CODE-VERSION
 - Example: `TPC-PUMP-A01-V01`
@@ -454,6 +459,7 @@ CREATE INDEX idx_version_history_version ON product_version_history(product_id, 
 ### 4.1 Relationship Types
 
 **Many-to-Many Self-Referential:**
+
 - A product can have many components
 - A component can be in many products
 - Components can also be sold standalone
@@ -499,6 +505,7 @@ VALUES
 ### 4.4 Constraints & Rules
 
 **Database-Level:**
+
 - ✅ `UNIQUE(parent_product_id, component_product_id)` - No duplicate relationships
 - ✅ `CHECK(parent_product_id != component_product_id)` - No self-reference
 - ✅ Trigger: Prevent circular references (A→B blocks B→A)
@@ -506,6 +513,7 @@ VALUES
 - ✅ `ON DELETE RESTRICT` for child (prevent component deletion if used)
 
 **Application-Level:**
+
 - ✅ Depth limit enforcement (max 2 levels from root)
 - ✅ Product capability checks (`can_be_component`, `can_have_components`)
 - ✅ Version checking before modification
@@ -518,12 +526,12 @@ VALUES
 
 **Pattern:** `XXX-XXXX-XXX-VXX`
 
-| Component | Length | Example | Description |
-|-----------|--------|---------|-------------|
-| PREFIX | 3 chars | `TPC` | Company/Brand |
-| CATEGORY | 4 chars | `PUMP` | Product category |
-| PRODUCT_CODE | 3 chars | `A01` | Product identifier |
-| VERSION | 3 chars | `V01` | Version (01-99) |
+| Component    | Length  | Example | Description        |
+| ------------ | ------- | ------- | ------------------ |
+| PREFIX       | 3 chars | `TPC`   | Company/Brand      |
+| CATEGORY     | 4 chars | `PUMP`  | Product category   |
+| PRODUCT_CODE | 3 chars | `A01`   | Product identifier |
+| VERSION      | 3 chars | `V01`   | Version (01-99)    |
 
 **Total:** 16 characters (fixed length)
 
@@ -553,11 +561,13 @@ Fluids:         FLUD, CLNR, ADTV
 ### 5.4 Versioning Rules
 
 **When to increment version:**
+
 - V01 → V02: Price change, component update, minor spec change
 - V02 → V03: Further updates
 - V01 → V99: Maximum 99 versions per product code
 
 **When to create new product code:**
+
 - Major redesign
 - New model line
 - Different form factor
@@ -567,12 +577,22 @@ Fluids:         FLUD, CLNR, ADTV
 
 ```typescript
 // Generate SKU
-function generateSKU(prefix: string, category: string, productCode: string, version: number): string {
+function generateSKU(
+  prefix: string,
+  category: string,
+  productCode: string,
+  version: number
+): string {
   return `${prefix}-${category}-${productCode}-V${version.toString().padStart(2, '0')}`
 }
 
 // Parse SKU
-function parseSKU(sku: string): { prefix: string, category: string, productCode: string, version: number } {
+function parseSKU(sku: string): {
+  prefix: string
+  category: string
+  productCode: string
+  version: number
+} {
   const regex = /^([A-Z]{3})-([A-Z]{4})-([A-Z0-9]{3})-V(\d{2})$/
   const match = sku.match(regex)
   if (!match) throw new Error(`Invalid SKU: ${sku}`)
@@ -581,7 +601,7 @@ function parseSKU(sku: string): { prefix: string, category: string, productCode:
     prefix: match[1],
     category: match[2],
     productCode: match[3],
-    version: parseInt(match[4], 10)
+    version: parseInt(match[4], 10),
   }
 }
 
@@ -644,20 +664,23 @@ async function createProductVersion(productId: string, changes: ProductChanges) 
   const newVersion = current.version + 1
 
   // 1. Create new product record
-  const newProduct = await db.insert(products).values({
-    id: `${current.id.replace(/_v\d+$/, '')}_v${newVersion}`,
-    sku: newSKU,
-    skuPrefix: current.skuPrefix,
-    skuCategory: current.skuCategory,
-    skuProductCode: current.skuProductCode,
-    skuVersion: `V${newVersion.toString().padStart(2, '0')}`,
-    version: newVersion,
-    baseProductId: current.baseProductId || current.id,
-    previousVersionId: current.id,
-    ...changes,
-    status: 'active',
-    isAvailableForPurchase: true
-  }).returning()
+  const newProduct = await db
+    .insert(products)
+    .values({
+      id: `${current.id.replace(/_v\d+$/, '')}_v${newVersion}`,
+      sku: newSKU,
+      skuPrefix: current.skuPrefix,
+      skuCategory: current.skuCategory,
+      skuProductCode: current.skuProductCode,
+      skuVersion: `V${newVersion.toString().padStart(2, '0')}`,
+      version: newVersion,
+      baseProductId: current.baseProductId || current.id,
+      previousVersionId: current.id,
+      ...changes,
+      status: 'active',
+      isAvailableForPurchase: true,
+    })
+    .returning()
 
   // 2. Copy component relationships (if parent product)
   const components = await db
@@ -675,17 +698,18 @@ async function createProductVersion(productId: string, changes: ProductChanges) 
       priceOverride: comp.priceOverride,
       displayName: comp.displayName,
       sortOrder: comp.sortOrder,
-      category: comp.category
+      category: comp.category,
     })
   }
 
   // 3. Sunset old version
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'sunset',
       isAvailableForPurchase: false,
       sunsetDate: new Date(),
-      replacedBy: newProduct[0].id
+      replacedBy: newProduct[0].id,
     })
     .where(eq(products.id, productId))
 
@@ -697,7 +721,7 @@ async function createProductVersion(productId: string, changes: ProductChanges) 
     changeDescription: changes.versionNotes || 'Product updated',
     changedBy: changes.userId,
     beforeSnapshot: current,
-    afterSnapshot: newProduct[0]
+    afterSnapshot: newProduct[0],
   })
 
   return newProduct[0]
@@ -707,18 +731,20 @@ async function createProductVersion(productId: string, changes: ProductChanges) 
 ### 6.3 Sunsetting Products
 
 **Status Lifecycle:**
+
 - `active` → Currently available for purchase
 - `sunset` → Replaced by newer version, not purchasable
 - `discontinued` → Permanently removed from catalog
 
 ```typescript
 async function sunsetProduct(productId: string, replacementId?: string) {
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'sunset',
       isAvailableForPurchase: false,
       sunsetDate: new Date(),
-      replacedBy: replacementId
+      replacedBy: replacementId,
     })
     .where(eq(products.id, productId))
 }
@@ -729,12 +755,13 @@ async function discontinueProduct(productId: string, reason: string) {
 
   if (inOrders) {
     // Has orders → Can only sunset, not delete
-    await db.update(products)
+    await db
+      .update(products)
       .set({
         status: 'discontinued',
         isAvailableForPurchase: false,
         sunsetDate: new Date(),
-        versionNotes: reason
+        versionNotes: reason,
       })
       .where(eq(products.id, productId))
   } else {
@@ -751,6 +778,7 @@ async function discontinueProduct(productId: string, reason: string) {
 ### 7.1 Snapshot Principle
 
 **At checkout, capture complete product tree:**
+
 - Root product data (SKU, name, version, price)
 - All depth 1 components with their data
 - All depth 2 sub-components with their data
@@ -764,7 +792,7 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
   const depth1 = await db
     .select({
       rel: productComponents,
-      comp: products
+      comp: products,
     })
     .from(productComponents)
     .innerJoin(products, eq(productComponents.componentProductId, products.id))
@@ -773,11 +801,11 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
 
   // 2. For each depth 1, get depth 2 sub-components
   const componentTree = await Promise.all(
-    depth1.map(async (d1) => {
+    depth1.map(async d1 => {
       const depth2 = await db
         .select({
           rel: productComponents,
-          comp: products
+          comp: products,
         })
         .from(productComponents)
         .innerJoin(products, eq(productComponents.componentProductId, products.id))
@@ -805,8 +833,8 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
           quantity: d2.rel.quantity,
           price: d2.rel.priceOverride || d2.comp.componentPrice || d2.comp.price,
           isRequired: d2.rel.isRequired,
-          isIncluded: d2.rel.isIncluded
-        }))
+          isIncluded: d2.rel.isIncluded,
+        })),
       }
     })
   )
@@ -841,7 +869,7 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
     optionalComponentsPrice: optionalPrice,
     lineTotal: lineTotal,
 
-    currentProductId: product.id // Optional FK for reporting
+    currentProductId: product.id, // Optional FK for reporting
   }
 }
 ```
@@ -871,9 +899,9 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
         "componentName": "Brushless Motor M01",
         "componentVersion": 1,
         "quantity": 1,
-        "price": 45.00,
+        "price": 45.0,
         "isRequired": true,
-        "isIncluded": true
+        "isIncluded": true,
       },
       {
         "componentId": "prod_impl_i02_v01",
@@ -881,11 +909,11 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
         "componentName": "Impeller I02",
         "componentVersion": 1,
         "quantity": 1,
-        "price": 15.00,
+        "price": 15.0,
         "isRequired": true,
-        "isIncluded": true
-      }
-    ]
+        "isIncluded": true,
+      },
+    ],
   },
   {
     "componentId": "prod_radi_r02_v01",
@@ -898,8 +926,8 @@ async function createOrderItemSnapshot(product: Product, quantity: number) {
     "isRequired": true,
     "isIncluded": true,
     "category": "cooling",
-    "components": [] // No sub-components
-  }
+    "components": [], // No sub-components
+  },
 ]
 ```
 
@@ -931,26 +959,29 @@ async function createProduct(data: NewProductData) {
   await ensureUniqueSKU(sku)
 
   // 3. Create product
-  const product = await db.insert(products).values({
-    id: generateProductId(),
-    sku: sku,
-    skuPrefix: data.skuPrefix || 'TPC',
-    skuCategory: data.skuCategory,
-    skuProductCode: data.skuProductCode,
-    skuVersion: 'V01',
-    version: 1,
-    name: data.name,
-    productType: data.productType,
-    canBeComponent: data.canBeComponent ?? true,
-    canHaveComponents: data.canHaveComponents ?? true,
-    price: data.price,
-    componentPrice: data.componentPrice,
-    description: data.description,
-    specifications: data.specifications,
-    images: data.images,
-    status: 'active',
-    isAvailableForPurchase: true
-  }).returning()
+  const product = await db
+    .insert(products)
+    .values({
+      id: generateProductId(),
+      sku: sku,
+      skuPrefix: data.skuPrefix || 'TPC',
+      skuCategory: data.skuCategory,
+      skuProductCode: data.skuProductCode,
+      skuVersion: 'V01',
+      version: 1,
+      name: data.name,
+      productType: data.productType,
+      canBeComponent: data.canBeComponent ?? true,
+      canHaveComponents: data.canHaveComponents ?? true,
+      price: data.price,
+      componentPrice: data.componentPrice,
+      description: data.description,
+      specifications: data.specifications,
+      images: data.images,
+      status: 'active',
+      isAvailableForPurchase: true,
+    })
+    .returning()
 
   return product[0]
 }
@@ -967,7 +998,7 @@ async function addComponentToProduct(
   // 1. Validate products exist
   const [parent, component] = await Promise.all([
     getProduct(parentProductId),
-    getProduct(componentProductId)
+    getProduct(componentProductId),
   ])
 
   // 2. Validate capabilities
@@ -1037,7 +1068,7 @@ async function addComponentToProduct(
     displayName: config.displayName,
     sortOrder: config.sortOrder || 0,
     category: config.category,
-    notes: config.notes
+    notes: config.notes,
   })
 
   return { success: true }
@@ -1060,7 +1091,7 @@ async function updateProduct(productId: string, changes: ProductChanges) {
       .update(products)
       .set({
         ...changes,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
       .where(eq(products.id, productId))
       .returning()
@@ -1088,24 +1119,27 @@ async function createOrder(cartId: string, orderData: OrderData) {
   }
 
   // 3. Create order header
-  const order = await db.insert(orders).values({
-    orderNumber: generateOrderNumber(),
-    userId: orderData.userId,
-    customer: orderData.customer,
-    shippingAddress: orderData.shippingAddress,
-    billingAddress: orderData.billingAddress,
-    status: 'pending',
-    subtotal: orderData.subtotal,
-    tax: orderData.tax,
-    taxRate: orderData.taxRate,
-    shipping: orderData.shipping,
-    shippingMethod: orderData.shippingMethod,
-    discount: orderData.discount,
-    discountCode: orderData.discountCode,
-    total: orderData.total,
-    paymentMethod: orderData.paymentMethod,
-    paymentStatus: 'pending'
-  }).returning()
+  const order = await db
+    .insert(orders)
+    .values({
+      orderNumber: generateOrderNumber(),
+      userId: orderData.userId,
+      customer: orderData.customer,
+      shippingAddress: orderData.shippingAddress,
+      billingAddress: orderData.billingAddress,
+      status: 'pending',
+      subtotal: orderData.subtotal,
+      tax: orderData.tax,
+      taxRate: orderData.taxRate,
+      shipping: orderData.shipping,
+      shippingMethod: orderData.shippingMethod,
+      discount: orderData.discount,
+      discountCode: orderData.discountCode,
+      total: orderData.total,
+      paymentMethod: orderData.paymentMethod,
+      paymentStatus: 'pending',
+    })
+    .returning()
 
   // 4. Create order items with snapshots
   for (const item of cartItems) {
@@ -1113,7 +1147,7 @@ async function createOrder(cartId: string, orderData: OrderData) {
 
     await db.insert(orderItems).values({
       orderId: order[0].id,
-      ...snapshot
+      ...snapshot,
     })
   }
 
@@ -1122,7 +1156,7 @@ async function createOrder(cartId: string, orderData: OrderData) {
     await db
       .update(products)
       .set({
-        stockQuantity: sql`${products.stockQuantity} - ${item.quantity}`
+        stockQuantity: sql`${products.stockQuantity} - ${item.quantity}`,
       })
       .where(eq(products.id, item.product.id))
   }
@@ -1141,7 +1175,7 @@ async function getOrderDetails(orderNumber: string) {
   const orderWithItems = await db
     .select({
       order: orders,
-      items: orderItems
+      items: orderItems,
     })
     .from(orders)
     .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
@@ -1152,8 +1186,8 @@ async function getOrderDetails(orderNumber: string) {
     items: orderWithItems.map(row => ({
       ...row.items,
       // componentTree is already JSONB - no joins needed!
-      productTree: row.items.componentTree
-    }))
+      productTree: row.items.componentTree,
+    })),
   }
 }
 ```
@@ -1240,6 +1274,7 @@ ALTER TABLE orders
 ### 9.4 Triggers
 
 **Prevent Circular References:**
+
 ```sql
 CREATE OR REPLACE FUNCTION prevent_circular_component()
 RETURNS TRIGGER AS $$
@@ -1263,6 +1298,7 @@ CREATE TRIGGER check_circular_components
 ```
 
 **Auto-Update Timestamps:**
+
 ```sql
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
@@ -1290,6 +1326,7 @@ CREATE TRIGGER product_components_updated_at
 ### 10.1 Product Management API
 
 **Create Product:**
+
 ```typescript
 POST /api/admin/products
 {
@@ -1316,6 +1353,7 @@ Response:
 ```
 
 **Update Product (with auto-versioning):**
+
 ```typescript
 PATCH /api/admin/products/:id
 {
@@ -1338,6 +1376,7 @@ Response (if no orders):
 ```
 
 **Add Component:**
+
 ```typescript
 POST /api/admin/products/:parentId/components
 {
@@ -1361,6 +1400,7 @@ Response:
 ```
 
 **Get Product with Components:**
+
 ```typescript
 GET /api/products/:id?includeComponents=true
 
@@ -1399,6 +1439,7 @@ Response:
 ### 10.2 Order API
 
 **Create Order (Checkout):**
+
 ```typescript
 POST /api/orders
 {
@@ -1430,6 +1471,7 @@ Response:
 ```
 
 **Get Order Details:**
+
 ```typescript
 GET /api/orders/:orderNumber
 
@@ -1467,6 +1509,7 @@ Response:
 ### 10.3 Catalog Query API
 
 **Search Products:**
+
 ```typescript
 GET /api/products?category=PUMP&status=active&page=1&limit=20
 
@@ -1490,6 +1533,7 @@ Response:
 ```
 
 **Get Product Version History:**
+
 ```typescript
 GET /api/products/:productCode/versions
 
@@ -1525,9 +1569,9 @@ Response:
 ```typescript
 // 1. Add category code to standard
 const NEW_CATEGORIES = {
-  'CTRL': 'Controller',
-  'DSPY': 'Display',
-  'PWRS': 'Power Supply'
+  CTRL: 'Controller',
+  DSPY: 'Display',
+  PWRS: 'Power Supply',
 }
 
 // 2. Create products with new category
@@ -1556,8 +1600,8 @@ await db.insert(productComponents).values({
     installationDifficulty: 'medium',
     requiredTools: ['wrench', 'screwdriver'],
     estimatedInstallTime: 30, // minutes
-    compatibilityNotes: 'Requires mounting bracket B01'
-  })
+    compatibilityNotes: 'Requires mounting bracket B01',
+  }),
 })
 ```
 
@@ -1574,7 +1618,7 @@ async function calculateComponentPrice(
   let price = component.componentPrice || component.price
 
   // Quantity discounts
-  if (quantity >= 10) price *= 0.9  // 10% off
+  if (quantity >= 10) price *= 0.9 // 10% off
   if (quantity >= 50) price *= 0.85 // 15% off
 
   // Customer tier discounts
@@ -1602,13 +1646,13 @@ const bundle = await createProduct({
 await addComponentToProduct(bundle.id, 'prod_pump_a01', {
   quantity: 1,
   isIncluded: true,
-  priceOverride: 0 // Included in bundle price
+  priceOverride: 0, // Included in bundle price
 })
 
 await addComponentToProduct(bundle.id, 'prod_radiator_r02', {
   quantity: 1,
   isIncluded: true,
-  priceOverride: 0
+  priceOverride: 0,
 })
 ```
 
@@ -1619,24 +1663,21 @@ await addComponentToProduct(bundle.id, 'prod_radiator_r02', {
 async function checkCompatibility(
   parentId: string,
   componentId: string
-): Promise<{ compatible: boolean, reason?: string }> {
-  const [parent, component] = await Promise.all([
-    getProduct(parentId),
-    getProduct(componentId)
-  ])
+): Promise<{ compatible: boolean; reason?: string }> {
+  const [parent, component] = await Promise.all([getProduct(parentId), getProduct(componentId)])
 
   // Custom compatibility rules
   if (parent.specifications?.powerRequirement > component.specifications?.powerOutput) {
     return {
       compatible: false,
-      reason: 'Insufficient power output'
+      reason: 'Insufficient power output',
     }
   }
 
   if (parent.specifications?.mountingType !== component.specifications?.mountingType) {
     return {
       compatible: false,
-      reason: 'Incompatible mounting type'
+      reason: 'Incompatible mounting type',
     }
   }
 
@@ -1653,8 +1694,12 @@ async function checkCompatibility(
 ```typescript
 describe('Product Versioning', () => {
   test('should create new version when product has orders', async () => {
-    const product = await createProduct({ /* ... */ })
-    const order = await createOrder({ /* includes product */ })
+    const product = await createProduct({
+      /* ... */
+    })
+    const order = await createOrder({
+      /* includes product */
+    })
 
     const updated = await updateProduct(product.id, { price: 99.99 })
 
@@ -1667,7 +1712,9 @@ describe('Product Versioning', () => {
   })
 
   test('should update directly when product has no orders', async () => {
-    const product = await createProduct({ /* ... */ })
+    const product = await createProduct({
+      /* ... */
+    })
 
     const updated = await updateProduct(product.id, { price: 99.99 })
 
@@ -1679,31 +1726,41 @@ describe('Product Versioning', () => {
 
 describe('Component Relationships', () => {
   test('should prevent circular references', async () => {
-    const productA = await createProduct({ /* ... */ })
-    const productB = await createProduct({ /* ... */ })
+    const productA = await createProduct({
+      /* ... */
+    })
+    const productB = await createProduct({
+      /* ... */
+    })
 
     await addComponentToProduct(productA.id, productB.id, {})
 
-    await expect(
-      addComponentToProduct(productB.id, productA.id, {})
-    ).rejects.toThrow('Circular reference detected')
+    await expect(addComponentToProduct(productB.id, productA.id, {})).rejects.toThrow(
+      'Circular reference detected'
+    )
   })
 
   test('should prevent depth > 2', async () => {
-    const level0 = await createProduct({ /* ... */ })
-    const level1 = await createProduct({ /* ... */ })
-    const level2 = await createProduct({ /* ... */ })
+    const level0 = await createProduct({
+      /* ... */
+    })
+    const level1 = await createProduct({
+      /* ... */
+    })
+    const level2 = await createProduct({
+      /* ... */
+    })
 
     await addComponentToProduct(level1.id, level2.id, {})
     await addComponentToProduct(level0.id, level1.id, {})
 
     // level2 now at depth 2 from level0
     // Try to add level3 to level2 (would be depth 3)
-    const level3 = await createProduct({ /* ... */ })
+    const level3 = await createProduct({
+      /* ... */
+    })
 
-    await expect(
-      addComponentToProduct(level2.id, level3.id, {})
-    ).rejects.toThrow('Maximum depth')
+    await expect(addComponentToProduct(level2.id, level3.id, {})).rejects.toThrow('Maximum depth')
   })
 })
 
@@ -1713,7 +1770,9 @@ describe('Order Immutability', () => {
     const component = await createProduct({ price: 50 })
     await addComponentToProduct(product.id, component.id, {})
 
-    const order = await createOrder({ /* includes product */ })
+    const order = await createOrder({
+      /* includes product */
+    })
 
     // Update product price
     await updateProduct(product.id, { price: 200 })
@@ -1733,13 +1792,15 @@ describe('Complete Order Flow', () => {
   test('should create order with versioned products', async () => {
     // 1. Setup products
     const pump = await createProduct({ sku: 'TPC-PUMP-A01-V01', price: 89.99 })
-    const motor = await createProduct({ sku: 'TPC-MOTR-M01-V01', price: 45.00 })
+    const motor = await createProduct({ sku: 'TPC-MOTR-M01-V01', price: 45.0 })
     await addComponentToProduct(pump.id, motor.id, {})
 
     // 2. Add to cart and checkout
     const cart = await createCart(userId)
     await addToCart(cart.id, pump.id, 1)
-    const order1 = await createOrder(cart.id, { /* ... */ })
+    const order1 = await createOrder(cart.id, {
+      /* ... */
+    })
 
     // 3. Update pump (creates V02)
     const pumpV2 = await updateProduct(pump.id, { price: 99.99 })
@@ -1747,7 +1808,9 @@ describe('Complete Order Flow', () => {
     // 4. New order should use V02
     const cart2 = await createCart(userId)
     await addToCart(cart2.id, pumpV2.id, 1)
-    const order2 = await createOrder(cart2.id, { /* ... */ })
+    const order2 = await createOrder(cart2.id, {
+      /* ... */
+    })
 
     // Verify orders
     const details1 = await getOrderDetails(order1.orderNumber)
@@ -1790,6 +1853,7 @@ describe('SKU Validation', () => {
 ### 13.1 Database Indexes
 
 **Essential Indexes:**
+
 ```sql
 -- Products
 CREATE INDEX idx_products_sku ON products(sku);
@@ -1815,6 +1879,7 @@ CREATE INDEX idx_order_items_component_tree ON order_items USING GIN (component_
 ### 13.2 Query Optimization
 
 **Efficient Product Tree Query:**
+
 ```sql
 -- Get product with components in single query
 WITH RECURSIVE component_tree AS (
@@ -1848,6 +1913,7 @@ SELECT * FROM component_tree ORDER BY depth, path;
 ```
 
 **Efficient Order Query:**
+
 ```sql
 -- Orders with items (no joins needed for components!)
 SELECT
@@ -1906,10 +1972,12 @@ async function getProducts(page: number = 1, limit: number = 20, filters: any = 
     db
       .select()
       .from(products)
-      .where(and(
-        filters.category ? eq(products.skuCategory, filters.category) : undefined,
-        filters.status ? eq(products.status, filters.status) : undefined
-      ))
+      .where(
+        and(
+          filters.category ? eq(products.skuCategory, filters.category) : undefined,
+          filters.status ? eq(products.status, filters.status) : undefined
+        )
+      )
       .orderBy(products.createdAt)
       .limit(limit)
       .offset(offset),
@@ -1917,7 +1985,7 @@ async function getProducts(page: number = 1, limit: number = 20, filters: any = 
     db
       .select({ count: sql`COUNT(*)` })
       .from(products)
-      .where(/* same filters */)
+      .where(/* same filters */),
   ])
 
   return {
@@ -1926,8 +1994,8 @@ async function getProducts(page: number = 1, limit: number = 20, filters: any = 
       page,
       limit,
       total: totalCount[0].count,
-      pages: Math.ceil(totalCount[0].count / limit)
-    }
+      pages: Math.ceil(totalCount[0].count / limit),
+    },
   }
 }
 ```
@@ -1980,9 +2048,7 @@ async function getComponentDepth(productId: string, currentDepth: number = 0): P
 
   if (components.length === 0) return currentDepth
 
-  const depths = await Promise.all(
-    components.map(c => getComponentDepth(c.id, currentDepth + 1))
-  )
+  const depths = await Promise.all(components.map(c => getComponentDepth(c.id, currentDepth + 1)))
 
   return Math.max(...depths)
 }
@@ -1996,10 +2062,7 @@ async function getComponentDepth(productId: string, currentDepth: number = 0): P
 // Order shows updated price instead of purchase price
 
 // Diagnosis: Check if snapshot was created
-const orderItem = await db
-  .select()
-  .from(orderItems)
-  .where(eq(orderItems.id, itemId))
+const orderItem = await db.select().from(orderItems).where(eq(orderItems.id, itemId))
 
 console.log('Snapshot:', orderItem.componentTree)
 // If empty [] → snapshot failed
@@ -2013,7 +2076,7 @@ if (order.status === 'pending') {
     .update(orderItems)
     .set({
       componentTree: snapshot.componentTree,
-      basePrice: snapshot.basePrice
+      basePrice: snapshot.basePrice,
     })
     .where(eq(orderItems.id, itemId))
 }
@@ -2050,7 +2113,7 @@ const deletedProductData = await db
   .select({
     sku: orderItems.productSku,
     name: orderItems.productName,
-    version: orderItems.productVersion
+    version: orderItems.productVersion,
   })
   .from(orderItems)
   .where(eq(orderItems.productId, deletedProductId))
@@ -2063,7 +2126,7 @@ await db.insert(products).values({
   name: deletedProductData.name,
   version: deletedProductData.version,
   status: 'discontinued',
-  isAvailableForPurchase: false
+  isAvailableForPurchase: false,
   // ... other required fields
 })
 ```

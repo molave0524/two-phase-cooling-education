@@ -158,43 +158,48 @@ export const products = pgTable('products', {
 #### 1.2 Create Product Components Table
 
 ```typescript
-export const productComponents = pgTable('product_components', {
-  id: serial('id').primaryKey(),
+export const productComponents = pgTable(
+  'product_components',
+  {
+    id: serial('id').primaryKey(),
 
-  // Relationships
-  parentProductId: text('parent_product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
-  componentProductId: text('component_product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'restrict' }), // Prevent deletion if used
+    // Relationships
+    parentProductId: text('parent_product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    componentProductId: text('component_product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'restrict' }), // Prevent deletion if used
 
-  // Component configuration
-  quantity: integer('quantity').notNull().default(1),
-  isRequired: boolean('is_required').notNull().default(true),
-  isIncluded: boolean('is_included').notNull().default(true), // Included in price or optional add-on
+    // Component configuration
+    quantity: integer('quantity').notNull().default(1),
+    isRequired: boolean('is_required').notNull().default(true),
+    isIncluded: boolean('is_included').notNull().default(true), // Included in price or optional add-on
 
-  // Pricing override
-  priceOverride: real('price_override'), // Override component's default price
+    // Pricing override
+    priceOverride: real('price_override'), // Override component's default price
 
-  // Display configuration
-  displayName: text('display_name'), // Override component name in parent context
-  displayOrder: integer('display_order').notNull().default(0),
-  sortOrder: integer('sort_order').notNull().default(0),
+    // Display configuration
+    displayName: text('display_name'), // Override component name in parent context
+    displayOrder: integer('display_order').notNull().default(0),
+    sortOrder: integer('sort_order').notNull().default(0),
 
-  // Metadata
-  notes: text('notes'),
+    // Metadata
+    notes: text('notes'),
 
-  // Timestamps
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-}, (table) => ({
-  // Constraints
-  uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
-  noSelfReference: check('no_self_reference',
-    sql`${table.parentProductId} != ${table.componentProductId}`
-  ),
-}))
+    // Timestamps
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => ({
+    // Constraints
+    uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
+    noSelfReference: check(
+      'no_self_reference',
+      sql`${table.parentProductId} != ${table.componentProductId}`
+    ),
+  })
+)
 ```
 
 #### 1.3 Update Order Items Table
@@ -251,8 +256,7 @@ export const cartItems = pgTable('cart_items', {
 // Fix 2: orders → users (add SET NULL)
 export const orders = pgTable('orders', {
   // ... existing fields ...
-  userId: integer('user_id')
-    .references(() => users.id, { onDelete: 'set null' }), // CHANGED: add onDelete
+  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }), // CHANGED: add onDelete
 })
 ```
 
@@ -570,10 +574,10 @@ COMMIT;
  */
 
 export interface SKUComponents {
-  prefix: string      // 3 chars: TPC
-  category: string    // 4 chars: PUMP, MOTR, RADI, CLNT
+  prefix: string // 3 chars: TPC
+  category: string // 4 chars: PUMP, MOTR, RADI, CLNT
   productCode: string // 3 chars: A01, M01, R02
-  version: number     // 2 digits: 01, 02, etc.
+  version: number // 2 digits: 01, 02, etc.
 }
 
 export interface SKUGenerationOptions {
@@ -587,12 +591,7 @@ export interface SKUGenerationOptions {
  * Generate SKU from components
  */
 export function generateSKU(options: SKUGenerationOptions): string {
-  const {
-    prefix = 'TPC',
-    category,
-    productCode,
-    version = 1
-  } = options
+  const { prefix = 'TPC', category, productCode, version = 1 } = options
 
   // Validate lengths
   if (prefix.length !== 3) {
@@ -624,7 +623,7 @@ export function parseSKU(sku: string): SKUComponents {
     prefix: match[1],
     category: match[2],
     productCode: match[3],
-    version: parseInt(match[4], 10)
+    version: parseInt(match[4], 10),
   }
 }
 
@@ -637,7 +636,7 @@ export function incrementVersion(currentSKU: string): string {
     prefix: components.prefix,
     category: components.category,
     productCode: components.productCode,
-    version: components.version + 1
+    version: components.version + 1,
   })
 }
 
@@ -714,7 +713,7 @@ export async function createProductVersion(
   options: ProductVersionOptions = {}
 ): Promise<typeof products.$inferSelect> {
   const currentProduct = await db.query.products.findFirst({
-    where: eq(products.id, productId)
+    where: eq(products.id, productId),
   })
 
   if (!currentProduct) {
@@ -728,45 +727,46 @@ export async function createProductVersion(
   // Create new product record
   const newProductId = `${currentProduct.baseProductId || productId}_v${skuComponents.version}`
 
-  const [newProduct] = await db.insert(products).values({
-    id: newProductId,
-    sku: newSKU,
-    skuPrefix: skuComponents.prefix,
-    skuCategory: skuComponents.category,
-    skuProductCode: skuComponents.productCode,
-    skuVersion: `V${skuComponents.version.toString().padStart(2, '0')}`,
+  const [newProduct] = await db
+    .insert(products)
+    .values({
+      id: newProductId,
+      sku: newSKU,
+      skuPrefix: skuComponents.prefix,
+      skuCategory: skuComponents.category,
+      skuProductCode: skuComponents.productCode,
+      skuVersion: `V${skuComponents.version.toString().padStart(2, '0')}`,
 
-    // Copy existing fields
-    name: currentProduct.name,
-    slug: `${currentProduct.slug}-v${skuComponents.version}`,
-    price: options.priceChange ?? currentProduct.price,
-    componentPrice: options.componentPriceChange ?? currentProduct.componentPrice,
-    description: currentProduct.description,
-    shortDescription: currentProduct.shortDescription,
-    features: currentProduct.features,
-    specifications: currentProduct.specifications,
-    images: currentProduct.images,
-    categories: currentProduct.categories,
-    tags: currentProduct.tags,
-    productType: currentProduct.productType,
+      // Copy existing fields
+      name: currentProduct.name,
+      slug: `${currentProduct.slug}-v${skuComponents.version}`,
+      price: options.priceChange ?? currentProduct.price,
+      componentPrice: options.componentPriceChange ?? currentProduct.componentPrice,
+      description: currentProduct.description,
+      shortDescription: currentProduct.shortDescription,
+      features: currentProduct.features,
+      specifications: currentProduct.specifications,
+      images: currentProduct.images,
+      categories: currentProduct.categories,
+      tags: currentProduct.tags,
+      productType: currentProduct.productType,
 
-    // Versioning fields
-    version: skuComponents.version,
-    baseProductId: currentProduct.baseProductId || productId,
-    previousVersionId: productId,
+      // Versioning fields
+      version: skuComponents.version,
+      baseProductId: currentProduct.baseProductId || productId,
+      previousVersionId: productId,
 
-    // Lifecycle
-    status: 'active',
-    isAvailableForPurchase: true,
+      // Lifecycle
+      status: 'active',
+      isAvailableForPurchase: true,
 
-    // Apply updates
-    ...options.updateFields,
-  }).returning()
+      // Apply updates
+      ...options.updateFields,
+    })
+    .returning()
 
   // Update old product
-  await db.update(products)
-    .set({ replacedBy: newProductId })
-    .where(eq(products.id, productId))
+  await db.update(products).set({ replacedBy: newProductId }).where(eq(products.id, productId))
 
   return newProduct
 }
@@ -779,7 +779,8 @@ export async function sunsetProduct(
   reason: string,
   replacementProductId?: string
 ): Promise<void> {
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'sunset',
       isAvailableForPurchase: false,
@@ -793,17 +794,15 @@ export async function sunsetProduct(
 /**
  * Discontinue product (completely remove from system)
  */
-export async function discontinueProduct(
-  productId: string,
-  reason: string
-): Promise<void> {
+export async function discontinueProduct(productId: string, reason: string): Promise<void> {
   const inOrders = await isProductInOrders(productId)
 
   if (inOrders) {
     throw new Error('Cannot discontinue product that exists in orders. Use sunset instead.')
   }
 
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'discontinued',
       isAvailableForPurchase: false,
@@ -846,36 +845,36 @@ export async function POST(request: NextRequest) {
     const sku = generateSKU({
       category,
       productCode,
-      version: 1
+      version: 1,
     })
 
     const skuComponents = parseSKU(sku)
     const productId = `${category.toLowerCase()}_${productCode.toLowerCase()}_v1`
 
-    const [product] = await db.insert(products).values({
-      id: productId,
-      sku,
-      skuPrefix: skuComponents.prefix,
-      skuCategory: skuComponents.category,
-      skuProductCode: skuComponents.productCode,
-      skuVersion: skuComponents.version,
-      name,
-      slug: name.toLowerCase().replace(/\s+/g, '-'),
-      price,
-      description,
-      // ... other fields
-      version: 1,
-      status: 'active',
-      isAvailableForPurchase: true,
-    }).returning()
+    const [product] = await db
+      .insert(products)
+      .values({
+        id: productId,
+        sku,
+        skuPrefix: skuComponents.prefix,
+        skuCategory: skuComponents.category,
+        skuProductCode: skuComponents.productCode,
+        skuVersion: skuComponents.version,
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        price,
+        description,
+        // ... other fields
+        version: 1,
+        status: 'active',
+        isAvailableForPurchase: true,
+      })
+      .returning()
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {
     console.error('Product creation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 })
   }
 }
 
@@ -905,10 +904,7 @@ import { createProductVersion, isProductInOrders } from '@/services/product-vers
  * POST /api/admin/products/:id/version
  * Create new version of product
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
     const productId = params.id
@@ -927,10 +923,7 @@ export async function POST(
     return NextResponse.json(newProduct, { status: 201 })
   } catch (error) {
     console.error('Version creation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create product version' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create product version' }, { status: 500 })
   }
 }
 ```
@@ -1055,7 +1048,7 @@ export async function addComponent(
     isIncluded = true,
     priceOverride,
     displayName,
-    sortOrder = 0
+    sortOrder = 0,
   } = options
 
   // Validation 1: Check for circular reference
@@ -1069,22 +1062,23 @@ export async function addComponent(
   // Validation 2: Check depth limit
   const exceedsDepth = await wouldExceedDepth(parentProductId, componentProductId)
   if (exceedsDepth) {
-    throw new Error(
-      `Cannot add component: would exceed maximum depth of 2 levels`
-    )
+    throw new Error(`Cannot add component: would exceed maximum depth of 2 levels`)
   }
 
   // Insert component relationship
-  const [component] = await db.insert(productComponents).values({
-    parentProductId,
-    componentProductId,
-    quantity,
-    isRequired,
-    isIncluded,
-    priceOverride,
-    displayName,
-    sortOrder
-  }).returning()
+  const [component] = await db
+    .insert(productComponents)
+    .values({
+      parentProductId,
+      componentProductId,
+      quantity,
+      isRequired,
+      isIncluded,
+      priceOverride,
+      displayName,
+      sortOrder,
+    })
+    .returning()
 
   return component
 }
@@ -1096,7 +1090,8 @@ export async function removeComponent(
   parentProductId: string,
   componentProductId: string
 ): Promise<void> {
-  await db.delete(productComponents)
+  await db
+    .delete(productComponents)
     .where(
       and(
         eq(productComponents.parentProductId, parentProductId),
@@ -1122,7 +1117,7 @@ export async function getComponentTree(productId: string) {
 
   // Level 2: For each level 1, get sub-components
   const tree = await Promise.all(
-    level1.map(async (l1) => {
+    level1.map(async l1 => {
       const level2 = await db
         .select({
           rel: productComponents,
@@ -1138,8 +1133,8 @@ export async function getComponentTree(productId: string) {
         relationship: l1.rel,
         subComponents: level2.map(l2 => ({
           component: l2.comp,
-          relationship: l2.rel
-        }))
+          relationship: l2.rel,
+        })),
       }
     })
   )
@@ -1160,19 +1155,13 @@ import { addComponent, removeComponent, getComponentTree } from '@/services/comp
  * GET /api/admin/products/:id/components
  * Get product component tree
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tree = await getComponentTree(params.id)
     return NextResponse.json(tree)
   } catch (error) {
     console.error('Component tree fetch error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch component tree' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch component tree' }, { status: 500 })
   }
 }
 
@@ -1180,15 +1169,12 @@ export async function GET(
  * POST /api/admin/products/:id/components
  * Add component to product
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
     const component = await addComponent({
       parentProductId: params.id,
-      ...body
+      ...body,
     })
     return NextResponse.json(component, { status: 201 })
   } catch (error) {
@@ -1212,10 +1198,7 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Component remove error:', error)
-    return NextResponse.json(
-      { error: 'Failed to remove component' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to remove component' }, { status: 500 })
   }
 }
 ```
@@ -1307,7 +1290,7 @@ export async function createOrderItemSnapshot(
 ): Promise<OrderItemSnapshot> {
   // Get product
   const product = await db.query.products.findFirst({
-    where: eq(products.id, productId)
+    where: eq(products.id, productId),
   })
 
   if (!product) {
@@ -1327,7 +1310,7 @@ export async function createOrderItemSnapshot(
 
   // For each depth 1, get depth 2
   const componentTree: ComponentSnapshot[] = await Promise.all(
-    depth1Components.map(async (d1) => {
+    depth1Components.map(async d1 => {
       const depth2Components = await db
         .select({
           rel: productComponents,
@@ -1358,7 +1341,7 @@ export async function createOrderItemSnapshot(
           price: d2.rel.priceOverride ?? d2.comp.componentPrice ?? d2.comp.price,
           isIncluded: d2.rel.isIncluded,
           isRequired: d2.rel.isRequired,
-        }))
+        })),
       }
     })
   )
@@ -1410,15 +1393,16 @@ export async function createOrder(/* ... params ... */) {
 
   // For each cart item, create snapshot
   const snapshots = await Promise.all(
-    cartItems.map(item =>
-      createOrderItemSnapshot(item.productId, item.quantity)
-    )
+    cartItems.map(item => createOrderItemSnapshot(item.productId, item.quantity))
   )
 
   // Insert order
-  const [order] = await db.insert(orders).values({
-    // ... order fields ...
-  }).returning()
+  const [order] = await db
+    .insert(orders)
+    .values({
+      // ... order fields ...
+    })
+    .returning()
 
   // Insert order items with snapshots
   await db.insert(orderItems).values(
@@ -1435,7 +1419,8 @@ export async function createOrder(/* ... params ... */) {
       basePrice: snapshot.basePrice,
       includedComponentsPrice: snapshot.includedComponentsPrice,
       optionalComponentsPrice: snapshot.optionalComponentsPrice,
-      price: snapshot.basePrice + snapshot.includedComponentsPrice + snapshot.optionalComponentsPrice,
+      price:
+        snapshot.basePrice + snapshot.includedComponentsPrice + snapshot.optionalComponentsPrice,
       lineTotal: snapshot.lineTotal,
       currentProductId: snapshot.currentProductId,
     }))
@@ -1481,6 +1466,7 @@ export async function createOrder(/* ... params ... */) {
 #### 5.1 Product Management UI
 
 **Pages:**
+
 - [ ] Product list view (`/admin/products`)
 - [ ] Product create form (`/admin/products/new`)
 - [ ] Product edit form (`/admin/products/[id]/edit`)
@@ -1490,6 +1476,7 @@ export async function createOrder(/* ... params ... */) {
 #### 5.2 Component Builder UI
 
 **Features:**
+
 - [ ] Drag-and-drop component tree builder
 - [ ] Component search and selection
 - [ ] Validation error display (circular ref, depth)
@@ -1609,7 +1596,8 @@ async function migrateProducts() {
       // Try to parse existing SKU
       const components = parseSKU(product.sku)
 
-      await db.update(products)
+      await db
+        .update(products)
         .set({
           skuPrefix: components.prefix,
           skuCategory: components.category,
@@ -1618,7 +1606,7 @@ async function migrateProducts() {
           version: components.version,
           status: 'active',
           isAvailableForPurchase: true,
-          productType: 'standalone'
+          productType: 'standalone',
         })
         .where(eq(products.id, product.id))
 
@@ -1630,12 +1618,13 @@ async function migrateProducts() {
       const newSKU = generateSKU({
         category: 'PROD',
         productCode: product.id.substring(0, 3).toUpperCase(),
-        version: 1
+        version: 1,
       })
 
       const components = parseSKU(newSKU)
 
-      await db.update(products)
+      await db
+        .update(products)
         .set({
           sku: newSKU,
           skuPrefix: components.prefix,
@@ -1645,7 +1634,7 @@ async function migrateProducts() {
           version: 1,
           status: 'active',
           isAvailableForPurchase: true,
-          productType: 'standalone'
+          productType: 'standalone',
         })
         .where(eq(products.id, product.id))
 
@@ -1662,6 +1651,7 @@ migrateProducts().catch(console.error)
 #### 6.2 Deployment Checklist
 
 **UAT Deployment:**
+
 - [ ] Clone PRD database to UAT using Neon branching
 - [ ] Run migration `0003_catalog_versioning.sql` on UAT
 - [ ] Run data migration script on UAT
@@ -1672,6 +1662,7 @@ migrateProducts().catch(console.error)
 - [ ] UAT sign-off
 
 **PRD Deployment:**
+
 - [ ] Create database backup
 - [ ] Schedule maintenance window (if needed)
 - [ ] Run migration `0003_catalog_versioning.sql` on PRD
@@ -1686,12 +1677,14 @@ migrateProducts().catch(console.error)
 #### 6.3 Rollback Plan
 
 **If issues detected in UAT:**
+
 - [ ] Run rollback script `0003_catalog_versioning_rollback.sql`
 - [ ] Redeploy previous code version
 - [ ] Analyze issues and fix
 - [ ] Retry deployment
 
 **If issues detected in PRD:**
+
 - [ ] Assess severity (critical vs minor)
 - [ ] If critical: Execute rollback
   - [ ] Run rollback script on PRD
@@ -1753,6 +1746,7 @@ migrateProducts().catch(console.error)
 ### Performance Tests
 
 **Targets:**
+
 - Product page load: < 1s
 - Component tree query: < 500ms
 - Order creation: < 2s
@@ -1767,6 +1761,7 @@ migrateProducts().catch(console.error)
 **Trigger:** Migration fails or causes data corruption
 
 **Steps:**
+
 1. Run `0003_catalog_versioning_rollback.sql`
 2. Verify database state
 3. Analyze root cause
@@ -1778,6 +1773,7 @@ migrateProducts().catch(console.error)
 **Trigger:** Bugs in application logic
 
 **Steps:**
+
 1. Revert Git commit to previous stable version
 2. Redeploy previous code
 3. Verify functionality
@@ -1789,6 +1785,7 @@ migrateProducts().catch(console.error)
 **Trigger:** Critical issues in PRD
 
 **Steps:**
+
 1. Notify stakeholders
 2. Run database rollback script
 3. Redeploy previous code version
@@ -1802,32 +1799,38 @@ migrateProducts().catch(console.error)
 ## Success Criteria
 
 ### Phase 1 Success Criteria
+
 - [ ] Migration runs without errors
 - [ ] All tables created successfully
 - [ ] Triggers function correctly
 - [ ] Type exports compile
 
 ### Phase 2 Success Criteria
+
 - [ ] SKU generation works for all cases
 - [ ] Product versioning creates linked records
 - [ ] Sunset/discontinue workflows function
 
 ### Phase 3 Success Criteria
+
 - [ ] Circular references prevented
 - [ ] Depth limit enforced
 - [ ] Component tree queries return correct data
 
 ### Phase 4 Success Criteria
+
 - [ ] Order snapshots capture full tree
 - [ ] Orders immutable after product changes
 - [ ] Pricing calculations correct
 
 ### Phase 5 Success Criteria
+
 - [ ] Admin UI fully functional
 - [ ] Integration tests pass
 - [ ] UAT sign-off received
 
 ### Phase 6 Success Criteria
+
 - [ ] PRD deployment successful
 - [ ] Zero data loss
 - [ ] Existing orders intact
@@ -1838,29 +1841,34 @@ migrateProducts().catch(console.error)
 ## Team Responsibilities
 
 ### Backend Developer
+
 - [ ] Database schema implementation
 - [ ] API endpoints
 - [ ] Business logic services
 - [ ] Migration scripts
 
 ### Frontend Developer
+
 - [ ] Admin UI pages
 - [ ] Component builder
 - [ ] User documentation
 
 ### QA Engineer
+
 - [ ] Test plan creation
 - [ ] Integration tests
 - [ ] UAT coordination
 - [ ] Regression testing
 
 ### DevOps Engineer
+
 - [ ] Environment setup
 - [ ] Deployment automation
 - [ ] Monitoring setup
 - [ ] Backup verification
 
 ### Product Owner
+
 - [ ] Requirement validation
 - [ ] UAT sign-off
 - [ ] PRD deployment approval
@@ -1871,28 +1879,36 @@ migrateProducts().catch(console.error)
 ## Risk Mitigation
 
 ### Risk: Data Loss During Migration
+
 **Mitigation:**
+
 - Full database backup before migration
 - Test migration on UAT first
 - Rollback script ready
 - Dry-run migration multiple times
 
 ### Risk: Performance Degradation
+
 **Mitigation:**
+
 - Load testing before PRD
 - Database indexes on critical columns
 - JSONB GIN indexes for component tree
 - Query optimization
 
 ### Risk: Circular Reference Bugs
+
 **Mitigation:**
+
 - Database triggers (safety net)
 - Application-level validation (UX)
 - Integration tests
 - Manual testing
 
 ### Risk: Pricing Calculation Errors
+
 **Mitigation:**
+
 - Unit tests for all pricing logic
 - End-to-end tests
 - UAT validation with real data
@@ -1902,14 +1918,14 @@ migrateProducts().catch(console.error)
 
 ## Timeline Summary
 
-| Phase | Duration | Environment | Start Week |
-|-------|----------|-------------|------------|
-| Phase 1: Database Schema | 1 week | DEV | Week 1 |
-| Phase 2: Product Management | 1 week | DEV | Week 2 |
-| Phase 3: Component Relationships | 1-2 weeks | DEV | Week 2-3 |
-| Phase 4: Order Immutability | 1-2 weeks | DEV → UAT | Week 3-4 |
-| Phase 5: Admin UI & Testing | 1-2 weeks | DEV → UAT | Week 4-5 |
-| Phase 6: Migration & Deployment | 1-2 weeks | UAT → PRD | Week 5-6 |
+| Phase                            | Duration  | Environment | Start Week |
+| -------------------------------- | --------- | ----------- | ---------- |
+| Phase 1: Database Schema         | 1 week    | DEV         | Week 1     |
+| Phase 2: Product Management      | 1 week    | DEV         | Week 2     |
+| Phase 3: Component Relationships | 1-2 weeks | DEV         | Week 2-3   |
+| Phase 4: Order Immutability      | 1-2 weeks | DEV → UAT   | Week 3-4   |
+| Phase 5: Admin UI & Testing      | 1-2 weeks | DEV → UAT   | Week 4-5   |
+| Phase 6: Migration & Deployment  | 1-2 weeks | UAT → PRD   | Week 5-6   |
 
 **Total Estimated Time:** 4-6 weeks
 

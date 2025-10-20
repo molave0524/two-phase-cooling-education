@@ -8,14 +8,15 @@
 
 ## Format Specification
 
-| Component | Length | Format | Example | Description |
-|-----------|--------|--------|---------|-------------|
-| **PREFIX** | 3 chars | `XXX` | `TPC` | Company/Brand identifier |
-| **CATEGORY** | 4 chars | `XXXX` | `PUMP` | Product category (padded if needed) |
-| **PRODUCT_CODE** | 3 chars | `XXX` | `A01` | Alphanumeric product identifier |
-| **VERSION** | 3 chars | `VXX` | `V01` | Version number (01-99) |
+| Component        | Length  | Format | Example | Description                         |
+| ---------------- | ------- | ------ | ------- | ----------------------------------- |
+| **PREFIX**       | 3 chars | `XXX`  | `TPC`   | Company/Brand identifier            |
+| **CATEGORY**     | 4 chars | `XXXX` | `PUMP`  | Product category (padded if needed) |
+| **PRODUCT_CODE** | 3 chars | `XXX`  | `A01`   | Alphanumeric product identifier     |
+| **VERSION**      | 3 chars | `VXX`  | `V01`   | Version number (01-99)              |
 
 ### Complete Examples:
+
 ```
 TPC-PUMP-A01-V01    (Pump A01, Version 01)
 TPC-PUMP-A01-V02    (Pump A01, Version 02)
@@ -30,12 +31,14 @@ TPC-UPKG-RGB-V01    (RGB Upgrade Kit, Version 01)
 ## Category Codes (4 Characters)
 
 ### Systems
+
 ```
 CLNT - Coolant/Cooling System
 COMP - Complete System Package
 ```
 
 ### Major Components
+
 ```
 PUMP - Pump
 RADI - Radiator
@@ -45,6 +48,7 @@ EXCH - Heat Exchanger
 ```
 
 ### Parts & Sub-Components
+
 ```
 MOTR - Motor
 IMPL - Impeller
@@ -56,6 +60,7 @@ VLVE - Valve
 ```
 
 ### Electronics & Accessories
+
 ```
 RGBC - RGB Controller
 SNSR - Sensor
@@ -65,6 +70,7 @@ CONN - Connector
 ```
 
 ### Kits & Bundles
+
 ```
 UPKG - Upgrade Kit
 RPLC - Replacement Kit
@@ -73,6 +79,7 @@ ACCS - Accessory Kit
 ```
 
 ### Fluids & Consumables
+
 ```
 FLUD - Coolant Fluid
 CLNR - Cleaner
@@ -88,6 +95,7 @@ ADTV - Additive
 **Format:** `[A-Z][0-9][0-9]`
 
 **Examples:**
+
 ```
 A01, A02, A03, ... A99  (Series A)
 B01, B02, B03, ... B99  (Series B)
@@ -96,6 +104,7 @@ R01, R02, R03, ... R99  (Radiator series)
 ```
 
 **Special Codes:**
+
 ```
 PRO - Pro/Premium model
 CMP - Compact model
@@ -106,6 +115,7 @@ MAX - Maximum/Top model
 ```
 
 ### Series Designation:
+
 ```
 A-Series: Entry-level products (A01-A99)
 B-Series: Mid-range products (B01-B99)
@@ -124,6 +134,7 @@ P-Series: Pumps (P01-P99)
 **Range:** V01 to V99
 
 **Examples:**
+
 ```
 V01 - Initial version
 V02 - Second version (minor update)
@@ -133,6 +144,7 @@ V99 - 99th version (theoretical max)
 ```
 
 **Versioning Rules:**
+
 - Start at V01 (not V00)
 - Increment sequentially: V01 → V02 → V03
 - Zero-padded: V01, V09, V10
@@ -150,10 +162,10 @@ export const products = pgTable('products', {
   sku: text('sku').notNull().unique(), // 'TPC-PUMP-A01-V01'
 
   // SKU Components (for easy querying)
-  skuPrefix: text('sku_prefix').notNull(),      // 'TPC' (3 chars)
-  skuCategory: text('sku_category').notNull(),  // 'PUMP' (4 chars)
+  skuPrefix: text('sku_prefix').notNull(), // 'TPC' (3 chars)
+  skuCategory: text('sku_category').notNull(), // 'PUMP' (4 chars)
   skuProductCode: text('sku_product_code').notNull(), // 'A01' (3 chars)
-  skuVersion: text('sku_version').notNull(),    // 'V01' (3 chars)
+  skuVersion: text('sku_version').notNull(), // 'V01' (3 chars)
 
   // Human-readable
   name: text('name').notNull(),
@@ -189,8 +201,8 @@ function generateSKU(
 }
 
 // Examples:
-generateSKU('TPC', 'PUMP', 'A01', 1)  // 'TPC-PUMP-A01-V01'
-generateSKU('TPC', 'MOTR', 'M01', 2)  // 'TPC-MOTR-M01-V02'
+generateSKU('TPC', 'PUMP', 'A01', 1) // 'TPC-PUMP-A01-V01'
+generateSKU('TPC', 'MOTR', 'M01', 2) // 'TPC-MOTR-M01-V02'
 generateSKU('TPC', 'RADI', 'R02', 15) // 'TPC-RADI-R02-V15'
 ```
 
@@ -198,10 +210,10 @@ generateSKU('TPC', 'RADI', 'R02', 15) // 'TPC-RADI-R02-V15'
 
 ```typescript
 interface SKUComponents {
-  prefix: string       // 'TPC'
-  category: string     // 'PUMP'
-  productCode: string  // 'A01'
-  version: string      // 'V01'
+  prefix: string // 'TPC'
+  category: string // 'PUMP'
+  productCode: string // 'A01'
+  version: string // 'V01'
   versionNumber: number // 1
 }
 
@@ -215,11 +227,11 @@ function parseSKU(sku: string): SKUComponents {
   }
 
   return {
-    prefix: match[1],           // 'TPC'
-    category: match[2],          // 'PUMP'
-    productCode: match[3],       // 'A01'
-    version: `V${match[4]}`,     // 'V01'
-    versionNumber: parseInt(match[4], 10) // 1
+    prefix: match[1], // 'TPC'
+    category: match[2], // 'PUMP'
+    productCode: match[3], // 'A01'
+    version: `V${match[4]}`, // 'V01'
+    versionNumber: parseInt(match[4], 10), // 1
   }
 }
 
@@ -245,12 +257,7 @@ function incrementVersion(currentSKU: string): string {
     throw new Error('Version limit reached (V99). Create new product code.')
   }
 
-  return generateSKU(
-    parsed.prefix,
-    parsed.category,
-    parsed.productCode,
-    newVersion
-  )
+  return generateSKU(parsed.prefix, parsed.category, parsed.productCode, newVersion)
 }
 
 // Examples:
@@ -269,9 +276,9 @@ function validateSKU(sku: string): boolean {
 
 // Examples:
 validateSKU('TPC-PUMP-A01-V01') // true
-validateSKU('TPC-PMP-A01-V01')  // false (category not 4 chars)
-validateSKU('TPC-PUMP-A1-V01')  // false (product code not 3 chars)
-validateSKU('TPC-PUMP-A01-V1')  // false (version not 2 digits)
+validateSKU('TPC-PMP-A01-V01') // false (category not 4 chars)
+validateSKU('TPC-PUMP-A1-V01') // false (product code not 3 chars)
+validateSKU('TPC-PUMP-A01-V1') // false (version not 2 digits)
 ```
 
 ### Format Category Code
@@ -286,10 +293,10 @@ function formatCategory(category: string): string {
 }
 
 // Examples:
-formatCategory('PUMP')      // 'PUMP'
-formatCategory('RGB')       // 'RGB ' → 'RGB' (trimmed)
-formatCategory('MOTOR')     // 'MOTR' (truncated)
-formatCategory('PUMPS')     // 'PUMP' (truncated)
+formatCategory('PUMP') // 'PUMP'
+formatCategory('RGB') // 'RGB ' → 'RGB' (trimmed)
+formatCategory('MOTOR') // 'MOTR' (truncated)
+formatCategory('PUMPS') // 'PUMP' (truncated)
 ```
 
 ### Format Product Code
@@ -307,10 +314,10 @@ function formatProductCode(code: string): string {
 }
 
 // Examples:
-formatProductCode('A1')   // 'A01' (padded)
-formatProductCode('A01')  // 'A01'
-formatProductCode('PRO')  // 'PRO'
-formatProductCode('M5')   // 'M05' (padded)
+formatProductCode('A1') // 'A01' (padded)
+formatProductCode('A01') // 'A01'
+formatProductCode('PRO') // 'PRO'
+formatProductCode('M5') // 'M05' (padded)
 ```
 
 ---
@@ -318,6 +325,7 @@ formatProductCode('M5')   // 'M05' (padded)
 ## Example Product Catalog
 
 ### Cooling Systems
+
 ```
 TPC-CLNT-PRO-V01    Two-Phase Cooling System Pro (Version 1)
 TPC-CLNT-PRO-V02    Two-Phase Cooling System Pro (Version 2, price update)
@@ -326,6 +334,7 @@ TPC-CLNT-MAX-V01    Two-Phase Cooling System Max (Version 1)
 ```
 
 ### Pumps
+
 ```
 TPC-PUMP-A01-V01    Coolant Pump A01 (Entry-level, Version 1)
 TPC-PUMP-A01-V02    Coolant Pump A01 (Version 2, improved motor)
@@ -334,6 +343,7 @@ TPC-PUMP-C01-V01    Coolant Pump C01 (Professional, Version 1)
 ```
 
 ### Motors
+
 ```
 TPC-MOTR-M01-V01    Brushless Motor M01 (Version 1)
 TPC-MOTR-M01-V02    Brushless Motor M01 (Version 2, efficiency upgrade)
@@ -341,6 +351,7 @@ TPC-MOTR-M02-V01    Brushless Motor M02 (Higher power, Version 1)
 ```
 
 ### Radiators
+
 ```
 TPC-RADI-R01-V01    Aluminum Radiator R01 (240mm, Version 1)
 TPC-RADI-R02-V01    Aluminum Radiator R02 (360mm, Version 1)
@@ -348,6 +359,7 @@ TPC-RADI-R03-V01    Copper Radiator R03 (240mm, Version 1)
 ```
 
 ### Parts
+
 ```
 TPC-IMPL-I01-V01    Impeller I01 (Version 1)
 TPC-IMPL-I02-V01    Impeller I02 (High-flow, Version 1)
@@ -357,6 +369,7 @@ TPC-SEAL-S01-V01    O-Ring Seal Set S01 (Version 1)
 ```
 
 ### Electronics
+
 ```
 TPC-RGBC-RGB-V01    RGB Controller (Version 1)
 TPC-SNSR-T01-V01    Temperature Sensor T01 (Version 1)
@@ -365,6 +378,7 @@ TPC-MNTR-LCD-V01    LCD Monitor Display (Version 1)
 ```
 
 ### Kits
+
 ```
 TPC-UPKG-RGB-V01    RGB Upgrade Kit (Version 1)
 TPC-RPLC-PMP-V01    Pump Replacement Kit (Version 1)
@@ -373,6 +387,7 @@ TPC-ACCS-STR-V01    Starter Accessory Kit (Version 1)
 ```
 
 ### Fluids
+
 ```
 TPC-FLUD-STD-V01    Standard Coolant Fluid (1L, Version 1)
 TPC-FLUD-PRO-V01    Professional Coolant Fluid (1L, Version 1)
@@ -385,6 +400,7 @@ TPC-ADTV-COR-V01    Anti-Corrosion Additive (100ml, Version 1)
 ## Database Queries
 
 ### Find Product by SKU
+
 ```typescript
 const product = await db
   .select()
@@ -394,6 +410,7 @@ const product = await db
 ```
 
 ### Find All Versions of Product
+
 ```typescript
 const versions = await db
   .select()
@@ -415,6 +432,7 @@ const versions = await db
 ```
 
 ### Find Latest Version
+
 ```typescript
 const latest = await db
   .select()
@@ -434,16 +452,12 @@ const latest = await db
 ```
 
 ### Search by Category
+
 ```typescript
 const pumps = await db
   .select()
   .from(products)
-  .where(
-    and(
-      eq(products.skuCategory, 'PUMP'),
-      eq(products.status, 'active')
-    )
-  )
+  .where(and(eq(products.skuCategory, 'PUMP'), eq(products.status, 'active')))
   .orderBy(products.skuProductCode)
 
 // Returns all active pumps
@@ -454,6 +468,7 @@ const pumps = await db
 ## Migration to Standardized SKUs
 
 ### Update Existing Products
+
 ```sql
 -- Add new columns
 ALTER TABLE products
@@ -489,6 +504,7 @@ SET sku = CONCAT(sku_prefix, '-', sku_category, '-', sku_product_code, '-', sku_
 ## Validation Rules
 
 ### SKU Format Validation
+
 ```typescript
 const SKU_REGEX = /^[A-Z]{3}-[A-Z]{4}-[A-Z0-9]{3}-V\d{2}$/
 
@@ -508,13 +524,10 @@ function isValidSKU(sku: string): boolean {
 ```
 
 ### Uniqueness Check
+
 ```typescript
 async function ensureUniqueSKU(sku: string): Promise<void> {
-  const exists = await db
-    .select()
-    .from(products)
-    .where(eq(products.sku, sku))
-    .limit(1)
+  const exists = await db.select().from(products).where(eq(products.sku, sku)).limit(1)
 
   if (exists.length > 0) {
     throw new Error(`SKU already exists: ${sku}`)
@@ -527,9 +540,10 @@ async function ensureUniqueSKU(sku: string): Promise<void> {
 ## Display Guidelines
 
 ### Product Labels
+
 ```typescript
 // Full display
-`${product.name} (${product.sku})`
+;`${product.name} (${product.sku})`
 // "Coolant Pump A01 (TPC-PUMP-A01-V01)"
 
 // Short display
@@ -542,10 +556,10 @@ product.sku
 ```
 
 ### Order History
+
 ```typescript
 // Show exact SKU from order
-`Product: ${orderItem.productName}`
-`SKU: ${orderItem.productSku}`  // TPC-PUMP-A01-V01 (frozen)
+;`Product: ${orderItem.productName}``SKU: ${orderItem.productSku}` // TPC-PUMP-A01-V01 (frozen)
 `Ordered: ${orderItem.createdAt}`
 
 // With component tree
@@ -560,11 +574,13 @@ orderItem.componentTree.forEach(comp => {
 ## Summary
 
 **Standardized SKU Format:**
+
 - **Length:** 16 characters (fixed)
 - **Pattern:** `XXX-XXXX-XXX-VXX`
 - **Example:** `TPC-PUMP-A01-V01`
 
 **Components:**
+
 - PREFIX: 3 chars (e.g., `TPC`)
 - CATEGORY: 4 chars (e.g., `PUMP`)
 - PRODUCT_CODE: 3 chars (e.g., `A01`)

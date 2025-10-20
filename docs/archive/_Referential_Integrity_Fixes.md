@@ -7,16 +7,19 @@
 ## Issues Found
 
 ### 1. Cart Items → Products (CRITICAL)
+
 **Current:** `cartItems.productId` references `products.id` with NO onDelete behavior
 **Risk:** Deleting a product leaves orphaned cart items
 **Impact:** Cart breaks when loading deleted product
 
 ### 2. Orders → Users
+
 **Current:** `orders.userId` references `users.id` with NO onDelete behavior
 **Risk:** Deleting a user orphans their orders
 **Impact:** Lost order history, reporting breaks
 
 ### 3. Order Items → Products (INTENTIONAL?)
+
 **Current:** `orderItems.productId` has NO FK constraint
 **Status:** Appears intentional (denormalized design - stores productName, productSku, productImage)
 **Risk:** Low (historical data preserved)
@@ -47,11 +50,13 @@ export const cartItems = pgTable('cart_items', {
 ```
 
 **Alternative:** CASCADE (remove from carts when product deleted)
+
 ```typescript
 .references(() => products.id, { onDelete: 'cascade' })
 ```
 
 **Migration:**
+
 ```sql
 -- drizzle/postgres/000X_fix_cart_items_fk.sql
 ALTER TABLE cart_items
@@ -71,19 +76,20 @@ ALTER TABLE cart_items
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   orderNumber: text('order_number').notNull().unique(),
-  userId: integer('user_id')
-    .references(() => users.id, { onDelete: 'set null' }), // ← ADD THIS
+  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }), // ← ADD THIS
   status: text('status').notNull().default('pending'),
   // ... rest of fields
 })
 ```
 
 **Reasoning:**
+
 - Orders are business records (legal, accounting)
 - Must preserve even if user account deleted (GDPR compliance)
 - Customer info stored in JSONB `customer` field (denormalized)
 
 **Migration:**
+
 ```sql
 -- drizzle/postgres/000X_fix_orders_user_fk.sql
 ALTER TABLE orders
@@ -97,6 +103,7 @@ ALTER TABLE orders
 ### Fix 3: Order Items → Products (NO CHANGE NEEDED)
 
 **Current Design:** Denormalized (intentional)
+
 - `productId` stored but NO FK constraint
 - `productName`, `productSku`, `productImage` stored directly
 - **Reason:** Historical record preservation
@@ -134,8 +141,7 @@ export const cartItems = pgTable('cart_items', {
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   orderNumber: text('order_number').notNull().unique(),
-  userId: integer('user_id')
-    .references(() => users.id, { onDelete: 'set null' }), // ← FIXED
+  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }), // ← FIXED
   status: text('status').notNull().default('pending'),
   // ... rest unchanged
 })
@@ -222,12 +228,14 @@ psql $POSTGRES_URL_PRD -c "\d+ orders"
 ### Product Deletion Logic
 
 **Before (unsafe):**
+
 ```typescript
 // Directly delete product (orphans cart items)
 await db.delete(products).where(eq(products.id, productId))
 ```
 
 **After (safe with RESTRICT):**
+
 ```typescript
 // Check for cart references first
 const cartReferences = await db
@@ -248,12 +256,14 @@ await db.delete(products).where(eq(products.id, productId))
 ### User Deletion Logic
 
 **Before (unsafe):**
+
 ```typescript
 // Deletes user, orphans orders
 await db.delete(users).where(eq(users.id, userId))
 ```
 
 **After (safe with SET NULL):**
+
 ```typescript
 // User deletion cascades auth tables, sets orders.userId to NULL
 await db.delete(users).where(eq(users.id, userId))
@@ -265,23 +275,24 @@ await db.delete(users).where(eq(users.id, userId))
 
 ## Referential Integrity Matrix
 
-| Child Table | Parent Table | FK Field | onDelete | Prevents Orphans? | Business Rule |
-|------------|--------------|----------|----------|-------------------|---------------|
-| accounts | users | userId | CASCADE | ✅ Yes | Delete auth when user deleted |
-| sessions | users | userId | CASCADE | ✅ Yes | Delete sessions when user deleted |
-| carts | users | userId | CASCADE | ✅ Yes | Delete carts when user deleted |
-| cartItems | carts | cartId | CASCADE | ✅ Yes | Delete items when cart deleted |
-| **cartItems** | **products** | **productId** | **RESTRICT** | **✅ Yes** | **Prevent product deletion if in carts** |
-| **orders** | **users** | **userId** | **SET NULL** | **✅ Yes** | **Preserve orders when user deleted** |
-| orderItems | orders | orderId | CASCADE | ✅ Yes | Delete items when order deleted |
-| orderItems | products | productId | NO FK | N/A | Denormalized (intentional) |
-| addresses | users | userId | CASCADE | ✅ Yes | Delete addresses when user deleted |
+| Child Table   | Parent Table | FK Field      | onDelete     | Prevents Orphans? | Business Rule                            |
+| ------------- | ------------ | ------------- | ------------ | ----------------- | ---------------------------------------- |
+| accounts      | users        | userId        | CASCADE      | ✅ Yes            | Delete auth when user deleted            |
+| sessions      | users        | userId        | CASCADE      | ✅ Yes            | Delete sessions when user deleted        |
+| carts         | users        | userId        | CASCADE      | ✅ Yes            | Delete carts when user deleted           |
+| cartItems     | carts        | cartId        | CASCADE      | ✅ Yes            | Delete items when cart deleted           |
+| **cartItems** | **products** | **productId** | **RESTRICT** | **✅ Yes**        | **Prevent product deletion if in carts** |
+| **orders**    | **users**    | **userId**    | **SET NULL** | **✅ Yes**        | **Preserve orders when user deleted**    |
+| orderItems    | orders       | orderId       | CASCADE      | ✅ Yes            | Delete items when order deleted          |
+| orderItems    | products     | productId     | NO FK        | N/A               | Denormalized (intentional)               |
+| addresses     | users        | userId        | CASCADE      | ✅ Yes            | Delete addresses when user deleted       |
 
 ---
 
 ## Testing Checklist
 
 ### DEV Testing
+
 - [ ] Update schema with fixes
 - [ ] Generate migration files
 - [ ] Apply to DEV database
@@ -293,6 +304,7 @@ await db.delete(users).where(eq(users.id, userId))
 - [ ] Verify: Orders have SET NULL constraint
 
 ### UAT Testing (PRD Clone)
+
 - [ ] Clone PRD database to UAT
 - [ ] Apply migrations to UAT
 - [ ] Test with real production data patterns
@@ -301,6 +313,7 @@ await db.delete(users).where(eq(users.id, userId))
 - [ ] Performance test constraint checks
 
 ### PRD Deployment
+
 - [ ] Backup PRD database
 - [ ] Apply migrations
 - [ ] Verify constraints active
@@ -332,13 +345,11 @@ await db
 const activeProducts = await db
   .select()
   .from(products)
-  .where(and(
-    eq(products.isActive, true),
-    isNull(products.deletedAt)
-  ))
+  .where(and(eq(products.isActive, true), isNull(products.deletedAt)))
 ```
 
 **Benefits:**
+
 - No orphaned cart items
 - Can restore deleted products
 - Preserves product history
@@ -372,11 +383,13 @@ await db.delete(products).where(eq(products.id, productId))
 ## Recommended Approach
 
 **Implement:**
+
 1. ✅ **cartItems → products**: Use **soft deletes** (best UX)
 2. ✅ **orders → users**: Use **SET NULL** (preserve order history)
 3. ✅ **orderItems → products**: Keep NO FK (denormalized, intentional)
 
 **Migration Priority:**
+
 1. High: Fix orders → users (legal/compliance)
 2. High: Fix cartItems → products (data integrity)
 3. Low: Consider soft deletes for products (UX improvement)

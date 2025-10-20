@@ -43,46 +43,51 @@ export const products = pgTable('products', {
 // ============================================================================
 // PRODUCT_COMPONENTS TABLE (Many-to-Many Junction)
 // ============================================================================
-export const productComponents = pgTable('product_components', {
-  id: serial('id').primaryKey(),
+export const productComponents = pgTable(
+  'product_components',
+  {
+    id: serial('id').primaryKey(),
 
-  // Parent product (the product that HAS components)
-  parentProductId: text('parent_product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
+    // Parent product (the product that HAS components)
+    parentProductId: text('parent_product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
 
-  // Child product (the component product)
-  componentProductId: text('component_product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'restrict' }), // Don't delete if used as component
+    // Child product (the component product)
+    componentProductId: text('component_product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'restrict' }), // Don't delete if used as component
 
-  // Relationship details
-  quantity: integer('quantity').notNull().default(1), // How many of this component
-  isRequired: boolean('is_required').notNull().default(true), // Required or optional?
-  isIncluded: boolean('is_included').notNull().default(true), // Included in base price?
+    // Relationship details
+    quantity: integer('quantity').notNull().default(1), // How many of this component
+    isRequired: boolean('is_required').notNull().default(true), // Required or optional?
+    isIncluded: boolean('is_included').notNull().default(true), // Included in base price?
 
-  // Pricing override (if component price differs in this context)
-  priceOverride: real('price_override'), // If null, use product.componentPrice or product.price
+    // Pricing override (if component price differs in this context)
+    priceOverride: real('price_override'), // If null, use product.componentPrice or product.price
 
-  // Display & ordering
-  displayName: text('display_name'), // Optional override (e.g., "Primary Pump" instead of "Pump A1")
-  sortOrder: integer('sort_order').notNull().default(0),
-  category: text('category'), // Group components (e.g., "cooling", "power", "accessories")
+    // Display & ordering
+    displayName: text('display_name'), // Optional override (e.g., "Primary Pump" instead of "Pump A1")
+    sortOrder: integer('sort_order').notNull().default(0),
+    category: text('category'), // Group components (e.g., "cooling", "power", "accessories")
 
-  // Metadata
-  notes: text('notes'), // Internal notes about this relationship
+    // Metadata
+    notes: text('notes'), // Internal notes about this relationship
 
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-}, (table) => ({
-  // Unique constraint: Same component can't be added twice to same product
-  uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  table => ({
+    // Unique constraint: Same component can't be added twice to same product
+    uniqueParentComponent: unique().on(table.parentProductId, table.componentProductId),
 
-  // Check constraint: Prevent self-reference (product can't contain itself)
-  noSelfReference: check('no_self_reference',
-    sql`${table.parentProductId} != ${table.componentProductId}`
-  ),
-}))
+    // Check constraint: Prevent self-reference (product can't contain itself)
+    noSelfReference: check(
+      'no_self_reference',
+      sql`${table.parentProductId} != ${table.componentProductId}`
+    ),
+  })
+)
 
 // ============================================================================
 // INDEXES for Performance
@@ -158,8 +163,9 @@ export const orderItems = pgTable('order_items', {
   lineTotal: real('line_total').notNull(),
 
   // Optional: Reporting FK
-  currentProductId: text('current_product_id')
-    .references(() => products.id, { onDelete: 'set null' }),
+  currentProductId: text('current_product_id').references(() => products.id, {
+    onDelete: 'set null',
+  }),
 
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
@@ -243,9 +249,7 @@ async function addComponentToProduct(
     )
 
   if (circularCheck.length > 0) {
-    throw new Error(
-      `Circular reference: ${componentProductId} already contains ${parentProductId}`
-    )
+    throw new Error(`Circular reference: ${componentProductId} already contains ${parentProductId}`)
   }
 
   // 3. Check depth limit (component has components?)
@@ -268,9 +272,7 @@ async function addComponentToProduct(
     const hasNestedComponents = await db
       .select()
       .from(productComponents)
-      .where(
-        inArray(productComponents.parentProductId, complexComponentIds)
-      )
+      .where(inArray(productComponents.parentProductId, complexComponentIds))
       .limit(1)
 
     if (hasNestedComponents.length > 0) {
@@ -281,7 +283,7 @@ async function addComponentToProduct(
   // 4. Check product flags
   const [parent, component] = await Promise.all([
     db.select().from(products).where(eq(products.id, parentProductId)),
-    db.select().from(products).where(eq(products.id, componentProductId))
+    db.select().from(products).where(eq(products.id, componentProductId)),
   ])
 
   if (!parent[0].canHaveComponents) {
@@ -319,11 +321,7 @@ async function addComponentToProduct(
 ```typescript
 async function getProductWithComponents(productId: string) {
   // Get parent product
-  const product = await db
-    .select()
-    .from(products)
-    .where(eq(products.id, productId))
-    .limit(1)
+  const product = await db.select().from(products).where(eq(products.id, productId)).limit(1)
 
   if (!product[0]) throw new Error('Product not found')
 
@@ -334,26 +332,20 @@ async function getProductWithComponents(productId: string) {
       component: products,
     })
     .from(productComponents)
-    .innerJoin(
-      products,
-      eq(productComponents.componentProductId, products.id)
-    )
+    .innerJoin(products, eq(productComponents.componentProductId, products.id))
     .where(eq(productComponents.parentProductId, productId))
     .orderBy(productComponents.sortOrder)
 
   // Get sub-components for each component (depth=1)
   const componentsWithSubComponents = await Promise.all(
-    components.map(async (comp) => {
+    components.map(async comp => {
       const subComponents = await db
         .select({
           relationship: productComponents,
           component: products,
         })
         .from(productComponents)
-        .innerJoin(
-          products,
-          eq(productComponents.componentProductId, products.id)
-        )
+        .innerJoin(products, eq(productComponents.componentProductId, products.id))
         .where(eq(productComponents.parentProductId, comp.component.id))
         .orderBy(productComponents.sortOrder)
 
@@ -434,10 +426,7 @@ async function findProductUsage(componentProductId: string) {
       relationship: productComponents,
     })
     .from(productComponents)
-    .innerJoin(
-      products,
-      eq(productComponents.parentProductId, products.id)
-    )
+    .innerJoin(products, eq(productComponents.parentProductId, products.id))
     .where(eq(productComponents.componentProductId, componentProductId))
 
   return usage.map(u => ({
@@ -464,16 +453,13 @@ async function createOrderItemSnapshot(
       component: products,
     })
     .from(productComponents)
-    .innerJoin(
-      products,
-      eq(productComponents.componentProductId, products.id)
-    )
+    .innerJoin(products, eq(productComponents.componentProductId, products.id))
     .where(eq(productComponents.parentProductId, product.id))
     .orderBy(productComponents.sortOrder)
 
   // 2. Build component tree with sub-components (depth=1)
   const componentTree = await Promise.all(
-    directComponents.map(async (comp) => {
+    directComponents.map(async comp => {
       // Get sub-components
       const subComponents = await db
         .select({
@@ -481,16 +467,12 @@ async function createOrderItemSnapshot(
           component: products,
         })
         .from(productComponents)
-        .innerJoin(
-          products,
-          eq(productComponents.componentProductId, products.id)
-        )
+        .innerJoin(products, eq(productComponents.componentProductId, products.id))
         .where(eq(productComponents.parentProductId, comp.component.id))
         .orderBy(productComponents.sortOrder)
 
-      const price = comp.relationship.priceOverride
-        ?? comp.component.componentPrice
-        ?? comp.component.price
+      const price =
+        comp.relationship.priceOverride ?? comp.component.componentPrice ?? comp.component.price
 
       return {
         componentProductId: comp.component.id,
@@ -509,9 +491,8 @@ async function createOrderItemSnapshot(
           componentSku: sub.component.sku,
           componentName: sub.relationship.displayName ?? sub.component.name,
           quantity: sub.relationship.quantity,
-          price: sub.relationship.priceOverride
-            ?? sub.component.componentPrice
-            ?? sub.component.price,
+          price:
+            sub.relationship.priceOverride ?? sub.component.componentPrice ?? sub.component.price,
           isRequired: sub.relationship.isRequired,
           isIncluded: sub.relationship.isIncluded,
         })),
@@ -523,24 +504,17 @@ async function createOrderItemSnapshot(
   const calculateTotal = (components: any[]): number => {
     return components.reduce((sum, comp) => {
       const componentTotal = comp.isIncluded ? comp.price * comp.quantity : 0
-      const subTotal = comp.components
-        ? calculateTotal(comp.components)
-        : 0
+      const subTotal = comp.components ? calculateTotal(comp.components) : 0
       return sum + componentTotal + subTotal
     }, 0)
   }
 
-  const includedComponentsPrice = calculateTotal(
-    componentTree.filter(c => c.isIncluded)
-  )
+  const includedComponentsPrice = calculateTotal(componentTree.filter(c => c.isIncluded))
 
-  const optionalComponentsPrice = calculateTotal(
-    componentTree.filter(c => !c.isIncluded)
-  )
+  const optionalComponentsPrice = calculateTotal(componentTree.filter(c => !c.isIncluded))
 
-  const lineTotal = cartItem.quantity * (
-    product.price + includedComponentsPrice + optionalComponentsPrice
-  )
+  const lineTotal =
+    cartItem.quantity * (product.price + includedComponentsPrice + optionalComponentsPrice)
 
   // 4. Return snapshot
   return {
@@ -641,10 +615,7 @@ await db.delete(products).where(eq(products.id, 'prod_motor_m1'))
 
 ```typescript
 // Customer wants to buy just the pump (sold standalone)
-const pumpProduct = await db
-  .select()
-  .from(products)
-  .where(eq(products.id, 'prod_pump_a1'))
+const pumpProduct = await db.select().from(products).where(eq(products.id, 'prod_pump_a1'))
 
 // Can be purchased standalone
 if (pumpProduct[0].isAvailableForPurchase) {

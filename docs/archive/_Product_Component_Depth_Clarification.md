@@ -159,11 +159,13 @@ THEN RAISE EXCEPTION 'Circular reference detected'
 **The depth constraint is implicitly enforced by only storing direct relationships.**
 
 A component that has its own components CAN be added to any product, because:
+
 - The junction table only stores the direct relationship
 - Sub-components are queried separately
 - No single entry spans more than 1 depth
 
 **Example:**
+
 ```sql
 -- Pump A1 has components (Motor M1, Impeller I2)
 -- Cooling System Pro can still add Pump A1 as direct component ✅
@@ -233,7 +235,7 @@ async function snapshotProductTree(productId: string) {
 
   // Level 2: For each level 1 component, get its components
   const componentTree = await Promise.all(
-    level1Components.map(async (l1) => {
+    level1Components.map(async l1 => {
       const level2Components = await db
         .select({
           relationship: productComponents,
@@ -260,7 +262,7 @@ async function snapshotProductTree(productId: string) {
           quantity: l2.relationship.quantity,
           price: l2.relationship.priceOverride ?? l2.component.price,
           isIncluded: l2.relationship.isIncluded,
-        }))
+        })),
       }
     })
   )
@@ -269,7 +271,7 @@ async function snapshotProductTree(productId: string) {
 }
 
 // Result saved to order_items.component_tree:
-[
+;[
   {
     componentId: 'pump_a1',
     componentSku: 'TPC-PUMP-A1',
@@ -277,24 +279,25 @@ async function snapshotProductTree(productId: string) {
     quantity: 1,
     price: 89.99,
     isIncluded: true,
-    components: [  // ← Level 2 (sub-components of Pump A1)
+    components: [
+      // ← Level 2 (sub-components of Pump A1)
       {
         componentId: 'motor_m1',
         componentSku: 'TPC-MOTOR-M1',
         componentName: 'Motor M1',
         quantity: 1,
-        price: 45.00,
-        isIncluded: true
+        price: 45.0,
+        isIncluded: true,
       },
       {
         componentId: 'impeller_i2',
         componentSku: 'TPC-IMP-I2',
         componentName: 'Impeller I2',
         quantity: 1,
-        price: 15.00,
-        isIncluded: true
-      }
-    ]
+        price: 15.0,
+        isIncluded: true,
+      },
+    ],
   },
   {
     componentId: 'radiator_r2',
@@ -303,8 +306,8 @@ async function snapshotProductTree(productId: string) {
     quantity: 1,
     price: 129.99,
     isIncluded: true,
-    components: []  // ← No sub-components
-  }
+    components: [], // ← No sub-components
+  },
 ]
 ```
 
@@ -314,13 +317,13 @@ async function snapshotProductTree(productId: string) {
 
 ### **Corrected Understanding:**
 
-| Concept | Explanation |
-|---------|-------------|
-| **Depth 1** | Each product has **DIRECT** components only (1 level relationship) |
-| **Junction Table** | Stores **only direct** parent → component pairs |
+| Concept             | Explanation                                                          |
+| ------------------- | -------------------------------------------------------------------- |
+| **Depth 1**         | Each product has **DIRECT** components only (1 level relationship)   |
+| **Junction Table**  | Stores **only direct** parent → component pairs                      |
 | **Total Hierarchy** | Maximum **2 levels** from root (Product → Component → Sub-component) |
-| **Validation** | Prevent depth > 2 by checking if component's children have children |
-| **Snapshot** | Query 2 levels and denormalize to order JSONB |
+| **Validation**      | Prevent depth > 2 by checking if component's children have children  |
+| **Snapshot**        | Query 2 levels and denormalize to order JSONB                        |
 
 ### **Junction Table Contains:**
 

@@ -86,6 +86,7 @@ npm run db:studio
 ### 2.1 Database Architecture
 
 **Current Setup:**
+
 - **Local Development**: PostgreSQL via `postgres-js` driver
 - **Vercel Production**: PostgreSQL via `@neondatabase/serverless` driver
 - **Schema File**: `src/db/schema-pg.ts` (single source of truth)
@@ -94,6 +95,7 @@ npm run db:studio
 ### 2.2 Schema Management Rules
 
 **DO:**
+
 - ✅ Always modify `src/db/schema-pg.ts` only
 - ✅ Run `npm run db:generate` after schema changes
 - ✅ Commit generated migrations to git
@@ -101,6 +103,7 @@ npm run db:studio
 - ✅ Use `drizzle-kit push` for dev, `migrate` for production
 
 **DON'T:**
+
 - ❌ Never manually edit migration files
 - ❌ Don't use `schema.ts` (legacy SQLite schema)
 - ❌ Don't skip migration generation
@@ -173,6 +176,7 @@ VERCEL="1"
 ### 3.2 Environment Variable Validation
 
 **Before Development:**
+
 ```bash
 # Check local env file exists
 test -f .env.local && echo "✅ .env.local exists" || echo "❌ Missing .env.local"
@@ -189,6 +193,7 @@ required.forEach(key => {
 ```
 
 **Before Deployment:**
+
 ```bash
 # List Vercel environment variables
 vercel env ls
@@ -280,17 +285,20 @@ git branch --show-current
 ### 5.1 Pre-Deployment Steps
 
 1. **Create Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 2. **Develop & Test Locally**
+
    ```bash
    npm run dev                    # Start dev server
    # Test thoroughly at http://localhost:3000
    ```
 
 3. **Run Full Quality Check**
+
    ```bash
    npm run type-check && \
    npm run lint && \
@@ -299,6 +307,7 @@ git branch --show-current
    ```
 
 4. **Commit Changes**
+
    ```bash
    git add .
    git commit -m "feat: descriptive commit message"
@@ -314,10 +323,12 @@ git branch --show-current
 ### 5.2 Deployment to Vercel
 
 **Option A: Automatic Deployment**
+
 - Push to `main` branch triggers automatic Vercel deployment
 - Monitor deployment at https://vercel.com/dashboard
 
 **Option B: Manual Deployment**
+
 ```bash
 # Preview deployment
 vercel
@@ -342,6 +353,7 @@ vercel env pull
 ```
 
 **⚠️ Production Migration Safety:**
+
 - Always backup production database before migrations
 - Test migrations on staging environment first
 - Use transactions for reversible migrations
@@ -371,6 +383,7 @@ curl https://your-app.vercel.app/api/auth/providers
 ### 6.2 Functional Testing
 
 **Manual Checks:**
+
 - [ ] Homepage loads without errors
 - [ ] Authentication flow works (login/logout)
 - [ ] Database queries execute successfully
@@ -401,10 +414,12 @@ vercel logs --build
 #### **Issue: Database Connection Fails on Vercel**
 
 **Symptoms:**
+
 - `ECONNREFUSED` errors
 - `getaddrinfo ENOTFOUND` errors
 
 **Solution:**
+
 ```bash
 # Verify environment variable exists
 vercel env ls | grep DATABASE_URL
@@ -420,10 +435,12 @@ cat .env.production.local | grep POSTGRES_URL
 #### **Issue: Schema Mismatch Between Local & Production**
 
 **Symptoms:**
+
 - SQL errors about missing columns/tables
 - Type errors after deployment
 
 **Solution:**
+
 ```bash
 # Compare local and production schemas
 npm run db:generate
@@ -436,10 +453,12 @@ git diff drizzle/postgres/
 #### **Issue: Environment Variables Not Loading**
 
 **Symptoms:**
+
 - `undefined` values in runtime
 - Auth errors, API failures
 
 **Solution:**
+
 ```bash
 # Verify in Vercel dashboard
 vercel env ls
@@ -455,10 +474,12 @@ vercel env add MISSING_VAR
 #### **Issue: Build Fails on Vercel**
 
 **Symptoms:**
+
 - Deployment fails during build step
 - TypeScript or lint errors in logs
 
 **Solution:**
+
 ```bash
 # Reproduce locally
 rm -rf .next node_modules package-lock.json
@@ -548,6 +569,7 @@ psql $DATABASE_URL < drizzle/postgres/down.sql
 ```
 
 **Best Practice:** Always backup before migrations:
+
 ```bash
 pg_dump $DATABASE_URL > backup-$(date +%Y%m%d-%H%M%S).sql
 ```
@@ -629,9 +651,9 @@ git push origin main          # Push to main
 
 ## Changelog
 
-| Version | Date | Changes | Author |
-|---------|------|---------|--------|
-| V01 | 2025-10-04 | Initial guide creation | James (Dev Agent) |
+| Version | Date       | Changes                | Author            |
+| ------- | ---------- | ---------------------- | ----------------- |
+| V01     | 2025-10-04 | Initial guide creation | James (Dev Agent) |
 
 ---
 

@@ -18,18 +18,21 @@ The AI Assistant will passively analyze user behavior, shopping cart contents, a
 ## Current System Architecture
 
 ### Technology Stack
+
 - **Framework:** Next.js 14.2.33 with App Router
 - **Database:** PostgreSQL (Neon serverless on Vercel, postgres-js locally)
 - **ORM:** Drizzle ORM
 - **State Management:** React hooks + localStorage for client-side persistence
 
 ### Key Database Tables
+
 - `products` - Main product catalog with SKU-based versioning
 - `product_components` - Junction table for product-component relationships
 - `carts` & `cart_items` - Shopping cart persistence
 - `users` & `accounts` - Authentication via NextAuth.js
 
 ### Product System Features (Already Implemented)
+
 - SKU-based product versioning (V01, V02, etc.)
 - Product lifecycle states: `active`, `sunset`, `discontinued`
 - Product types: `standalone` (complete products) vs `component` (individual parts)
@@ -50,6 +53,7 @@ The AI Assistant will passively analyze user behavior, shopping cart contents, a
 **Location:** Product detail pages for standalone products
 
 **Requirements:**
+
 - Calculate total component price from `product_components` junction table
 - Display individual component prices
 - Show total component value
@@ -64,6 +68,7 @@ Product API already returns components with prices. No changes needed.
 
 **UI Implementation:**
 Add price summary section to `/src/app/products/[slug]/page.tsx`:
+
 ```
 Component Price Summary
 - Premium Pump Assembly A2: $129.99
@@ -76,6 +81,7 @@ YOU SAVE: $-700.02 (-70%)
 ```
 
 **Notes:**
+
 - Only display for standalone products with components
 - Handle cases where bundle might cost more than components (display differently)
 - Use inline styles (no Tailwind, no CSS modules)
@@ -88,17 +94,20 @@ YOU SAVE: $-700.02 (-70%)
 
 **Current State:**
 Products have a `categories` JSON field with flat array of category names:
+
 ```json
 "categories": ["cooling-systems", "complete-kits", "pro"]
 ```
 
 **Enhancement Requirements:**
+
 1. Create category hierarchy system
 2. Add category filtering to products page
 3. Display category breadcrumbs on product detail pages
 4. Create category landing pages
 
 **Category Hierarchy (Proposed):**
+
 ```
 Cooling Systems (cooling-systems)
 ├── Complete Kits (complete-kits)
@@ -123,6 +132,7 @@ Option A: Keep existing JSON field, add category metadata to app config
 Option B: Create new `categories` table with hierarchy (recommended for scalability)
 
 **Recommended Approach (Option B):**
+
 ```sql
 CREATE TABLE categories (
   id TEXT PRIMARY KEY,
@@ -147,17 +157,20 @@ CREATE TABLE product_categories (
 ```
 
 **API Endpoints:**
+
 - `GET /api/categories` - List all categories with hierarchy
 - `GET /api/categories/[slug]` - Get category with products
 - `GET /api/products?category=[slug]` - Filter products by category
 
 **UI Components:**
+
 1. Category navigation menu (header or sidebar)
 2. Category filter on products page
 3. Category breadcrumbs on product detail pages
 4. Category landing pages (`/categories/[slug]`)
 
 **Migration Strategy:**
+
 1. Create categories table and seed with existing category names
 2. Populate product_categories junction table from existing JSON data
 3. Keep JSON field for backward compatibility initially
@@ -170,6 +183,7 @@ CREATE TABLE product_categories (
 **Purpose:** Allow users to compare specifications, features, and pricing between two products from the same category.
 
 **Requirements:**
+
 - Compare exactly 2 products at a time
 - Products must be from the same category
 - Show side-by-side comparison of:
@@ -181,6 +195,7 @@ CREATE TABLE product_categories (
   - Shipping estimates
 
 **UI Flow:**
+
 1. User selects "Compare" button on product card or detail page
 2. Product added to comparison (stored in localStorage)
 3. When 2 products selected, show "View Comparison" button
@@ -189,6 +204,7 @@ CREATE TABLE product_categories (
 6. Allow swapping products or adding different ones
 
 **Comparison Page Layout:**
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  Product 1              vs.        Product 2        │
@@ -218,6 +234,7 @@ CREATE TABLE product_categories (
 ```
 
 **State Management:**
+
 ```typescript
 // localStorage structure
 {
@@ -230,16 +247,19 @@ CREATE TABLE product_categories (
 ```
 
 **API Requirements:**
+
 - `GET /api/products/compare?slugs=slug1,slug2` - Returns both products with normalized comparison data
 - Validate products are from same category
 - Return structured comparison data (aligned specifications, feature matrix)
 
 **Validation Rules:**
+
 - Maximum 2 products in comparison
 - Products must share at least one category
 - If products have different specification fields, show all fields (mark N/A for missing)
 
 **AI Assistant Integration:**
+
 - AI can suggest comparison when user views similar products
 - AI can explain key differences highlighted in comparison
 - AI can recommend which product better fits user's stated needs
@@ -251,10 +271,12 @@ CREATE TABLE product_categories (
 **Purpose:** Allow users to save products for later purchase and receive notifications about price changes or stock availability.
 
 **Storage Strategy:**
+
 - **Anonymous Users:** localStorage only
 - **Authenticated Users:** Database persistence with localStorage sync
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE wishlists (
   id SERIAL PRIMARY KEY,
@@ -275,6 +297,7 @@ CREATE TABLE wishlist_items (
 ```
 
 **localStorage Structure (Anonymous Users):**
+
 ```typescript
 {
   "wishlist": {
@@ -291,18 +314,21 @@ CREATE TABLE wishlist_items (
 ```
 
 **API Endpoints:**
+
 - `GET /api/wishlist` - Get user's wishlist (requires auth, falls back to localStorage)
 - `POST /api/wishlist/items` - Add item to wishlist
 - `DELETE /api/wishlist/items/[productId]` - Remove item
 - `PUT /api/wishlist/items/[productId]` - Update notes
 
 **UI Components:**
+
 1. **Wishlist Button** - Heart icon on product cards and detail pages
 2. **Wishlist Page** (`/wishlist`) - Display all saved items
 3. **Wishlist Badge** - Show count in header
 4. **Quick Add to Cart** - Convert wishlist items to cart items
 
 **Features:**
+
 - One-click add/remove from wishlist
 - Visual indicator when product is in wishlist (filled heart)
 - Optional notes per item
@@ -310,11 +336,13 @@ CREATE TABLE wishlist_items (
 - Share wishlist (future enhancement)
 
 **Sync Strategy (Authenticated Users):**
+
 1. On login: Merge localStorage wishlist with DB wishlist
 2. On logout: Keep localStorage copy for session continuity
 3. Real-time sync: Update both localStorage and DB on changes
 
 **AI Assistant Integration:**
+
 - AI can reference wishlist items in recommendations
 - AI can suggest when wishlist items go on sale
 - AI can notify when out-of-stock wishlist items are back
@@ -327,10 +355,12 @@ CREATE TABLE wishlist_items (
 **Purpose:** Track user browsing history to provide personalized recommendations and quick access to previously viewed items.
 
 **Storage Strategy:**
+
 - **All Users:** localStorage (immediate access, no auth required)
 - **Authenticated Users:** Optional DB persistence for cross-device history
 
 **localStorage Structure:**
+
 ```typescript
 {
   "recentlyViewed": {
@@ -348,6 +378,7 @@ CREATE TABLE wishlist_items (
 ```
 
 **Database Schema (Optional):**
+
 ```sql
 CREATE TABLE product_views (
   id SERIAL PRIMARY KEY,
@@ -363,17 +394,20 @@ CREATE TABLE product_views (
 ```
 
 **Implementation:**
+
 1. Track product views on detail page mount
 2. Store in localStorage (FIFO queue, max 10 items)
 3. Optionally send to analytics endpoint for DB persistence
 4. Display in sidebar or dedicated section
 
 **UI Display Locations:**
+
 1. **Product Detail Pages** - "Recently Viewed" carousel at bottom
 2. **Homepage** - "Continue Shopping" section
 3. **Empty Cart Page** - Suggest recently viewed items
 
 **Tracking Logic:**
+
 ```typescript
 // On product detail page mount
 useEffect(() => {
@@ -383,7 +417,7 @@ useEffect(() => {
   addToRecentlyViewed({
     productId: product.id,
     slug: product.slug,
-    viewedAt: new Date().toISOString()
+    viewedAt: new Date().toISOString(),
   })
 
   // Track view duration on unmount
@@ -395,6 +429,7 @@ useEffect(() => {
 ```
 
 **Features:**
+
 - Auto-remove when product is purchased
 - Show last 10 unique products
 - Exclude current product from carousel
@@ -402,12 +437,14 @@ useEffect(() => {
 - Click to navigate to product detail
 
 **Privacy Considerations:**
+
 - Clear recently viewed option
 - Respect "Do Not Track" browser setting
 - Anonymous session tracking uses temporary session ID
 - Authenticated tracking requires user consent
 
 **AI Assistant Integration:**
+
 - AI can understand user interests from browsing patterns
 - AI can suggest products based on viewing history
 - AI can identify when user is comparison shopping (multiple views in same category)
@@ -426,6 +463,7 @@ useEffect(() => {
 **Endpoint:** `GET /api/cart/analysis`
 
 **Response Structure:**
+
 ```json
 {
   "cart": {
@@ -433,7 +471,9 @@ useEffect(() => {
     "totalValue": 1599.97,
     "items": [
       {
-        "product": { /* full product details */ },
+        "product": {
+          /* full product details */
+        },
         "quantity": 1,
         "subtotal": 999.99
       }
@@ -448,9 +488,7 @@ useEffect(() => {
     "totalSavings": 100.02,
     "compatibility": {
       "issues": [],
-      "warnings": [
-        "Pump A2 is already included in Cooling System Pro"
-      ]
+      "warnings": ["Pump A2 is already included in Cooling System Pro"]
     },
     "recommendations": {
       "complements": ["TPC-FAN-F01-V01"], // Products that work well with cart items
@@ -462,12 +500,14 @@ useEffect(() => {
 ```
 
 **Analysis Logic:**
+
 1. **Compatibility Check** - Detect duplicate components or incompatible parts
 2. **Value Analysis** - Calculate if buying bundle would be cheaper
 3. **Completeness Check** - Identify missing required components
 4. **Upgrade Detection** - Find newer versions of products in cart
 
 **AI Use Cases:**
+
 - "I notice you have Pump A2 in your cart, but it's already included in the Cooling System Pro you added"
 - "You could save $200 by purchasing the Elite bundle instead of these individual components"
 - "This radiator requires 3x 120mm fans - would you like me to suggest compatible options?"
@@ -481,12 +521,15 @@ useEffect(() => {
 **Endpoint:** `GET /api/products/compare?slugs=slug1,slug2&format=ai`
 
 **Response Structure:**
+
 ```json
 {
-  "products": [ /* full product objects */ ],
+  "products": [
+    /* full product objects */
+  ],
   "comparison": {
     "pricesDiffer": true,
-    "priceDifference": 400.00,
+    "priceDifference": 400.0,
     "percentDifference": 40.0,
     "keyDifferences": [
       {
@@ -516,6 +559,7 @@ useEffect(() => {
 ```
 
 **AI Use Cases:**
+
 - "The Pro model has 75% higher cooling capacity, but costs $400 more. For your stated needs (gaming PC), the Standard model should be sufficient."
 - "The main difference is the radiator size - 360mm vs 240mm. The larger radiator provides better cooling but requires more case space."
 
@@ -526,6 +570,7 @@ useEffect(() => {
 **Purpose:** Enable administrators to manage products across environments (dev → staging → prod) using primary key-based promotion.
 
 **Requirements:**
+
 1. Bulk update product prices, status, availability
 2. Export product data with relationships
 3. Import product data preserving primary keys
@@ -533,6 +578,7 @@ useEffect(() => {
 5. Audit trail for all changes
 
 **Database Tables:**
+
 ```sql
 CREATE TABLE bulk_operations (
   id SERIAL PRIMARY KEY,
@@ -566,17 +612,20 @@ CREATE TABLE bulk_operation_items (
 **Admin UI Features:**
 
 **1. Bulk Price Update**
+
 - Select multiple products (checkbox selection or filter-based)
 - Apply percentage increase/decrease or flat amount
 - Preview changes before applying
 - Schedule changes for future date
 
 **2. Bulk Status Change**
+
 - Change multiple products from active → sunset
 - Set sunset date and reason
 - Optionally link to replacement products
 
 **3. Export/Import Operations**
+
 - Export products with all relationships (components, categories, images)
 - Export format: JSON with PK preservation
 - Import validates:
@@ -586,6 +635,7 @@ CREATE TABLE bulk_operation_items (
   - Business rules (e.g., no self-referencing components)
 
 **4. Environment Promotion**
+
 - Select products to promote from dev → staging → prod
 - Validates dependencies (all referenced components exist in target)
 - Creates promotion package with all related data
@@ -593,6 +643,7 @@ CREATE TABLE bulk_operation_items (
 - Rollback capability
 
 **Export Format (JSON):**
+
 ```json
 {
   "version": "1.0",
@@ -603,13 +654,19 @@ CREATE TABLE bulk_operation_items (
     "products": [
       {
         "id": "cool_pro_v1",
-        "name": "Cooling System Pro",
+        "name": "Cooling System Pro"
         // ... all product fields
       }
     ],
-    "categories": [ /* ... */ ],
-    "productCategories": [ /* junction table data */ ],
-    "productComponents": [ /* junction table data */ ]
+    "categories": [
+      /* ... */
+    ],
+    "productCategories": [
+      /* junction table data */
+    ],
+    "productComponents": [
+      /* junction table data */
+    ]
   },
   "dependencies": {
     "requiredProducts": ["pump_a02_v1", "radi_r02_v1"],
@@ -619,6 +676,7 @@ CREATE TABLE bulk_operation_items (
 ```
 
 **API Endpoints:**
+
 - `POST /api/admin/bulk/export` - Export selected products
 - `POST /api/admin/bulk/import` - Import product data
 - `POST /api/admin/bulk/validate` - Validate import data without applying
@@ -627,12 +685,14 @@ CREATE TABLE bulk_operation_items (
 - `GET /api/admin/bulk/operations/[id]` - Get operation details
 
 **Security:**
+
 - Require admin role
 - Log all operations with user ID
 - Email notifications for completed operations
 - Backup before destructive operations
 
 **CLI Tool (Optional):**
+
 ```bash
 # Export products
 npm run bulk export --products="cool_pro_v1,cool_std_v1" --output=export.json
@@ -653,6 +713,7 @@ npm run bulk promote --file=export.json --target=production --dry-run
 **Purpose:** Notify users when out-of-stock products they're interested in become available.
 
 **Database Schema:**
+
 ```sql
 CREATE TABLE stock_alerts (
   id SERIAL PRIMARY KEY,
@@ -667,12 +728,14 @@ CREATE TABLE stock_alerts (
 ```
 
 **Features:**
+
 1. **Alert Signup** - "Notify me when available" button on out-of-stock products
 2. **Email Notifications** - Send email when stock status changes to in-stock
 3. **Alert Management** - Users can view/cancel their alerts
 4. **One-time Notifications** - Alert auto-cancelled after notification sent
 
 **Workflow:**
+
 1. User clicks "Notify Me" on out-of-stock product
 2. Modal prompts for email (pre-filled if authenticated)
 3. Alert created in database
@@ -681,6 +744,7 @@ CREATE TABLE stock_alerts (
 6. Mark alerts as notified
 
 **Background Job (Cron):**
+
 ```typescript
 // Run every 5 minutes
 async function checkStockAlerts() {
@@ -689,16 +753,13 @@ async function checkStockAlerts() {
     where: and(
       eq(products.inStock, true),
       gt(products.updatedAt, sql`NOW() - INTERVAL '5 minutes'`)
-    )
+    ),
   })
 
   for (const product of restockedProducts) {
     // Find active alerts for this product
     const alerts = await db.query.stockAlerts.findMany({
-      where: and(
-        eq(stockAlerts.productId, product.id),
-        eq(stockAlerts.status, 'active')
-      )
+      where: and(eq(stockAlerts.productId, product.id), eq(stockAlerts.status, 'active')),
     })
 
     // Send notifications
@@ -711,6 +772,7 @@ async function checkStockAlerts() {
 ```
 
 **Email Template:**
+
 ```
 Subject: [Product Name] is Back in Stock!
 
@@ -732,11 +794,13 @@ TwoPhase Education Team
 ```
 
 **API Endpoints:**
+
 - `POST /api/stock-alerts` - Create alert
 - `GET /api/stock-alerts` - List user's alerts (requires auth)
 - `DELETE /api/stock-alerts/[id]` - Cancel alert
 
 **AI Assistant Integration:**
+
 - AI can suggest creating alerts for out-of-stock items
 - AI can remind user about active alerts
 - AI can suggest alternatives while waiting for restocking
@@ -746,12 +810,14 @@ TwoPhase Education Team
 ## Technical Implementation Notes
 
 ### Code Style Guidelines
+
 - **No Tailwind CSS** - Use inline styles or CSS modules
 - **No CSS Frameworks** - All styles written manually
 - **TypeScript** - Strict type checking enabled
 - **API Responses** - Use standardized response format from `@/lib/api-response`
 
 ### Data Migration Strategy
+
 1. Create new tables/columns
 2. Seed with existing data
 3. Update APIs to use new structure
@@ -760,12 +826,14 @@ TwoPhase Education Team
 6. Remove deprecated fields in future release
 
 ### Testing Requirements
+
 - Unit tests for business logic
 - API integration tests
 - E2E tests for critical user flows
 - Performance tests for bulk operations
 
 ### Performance Considerations
+
 - Cache category hierarchy (Redis or in-memory)
 - Index frequently queried fields
 - Paginate product lists
@@ -773,6 +841,7 @@ TwoPhase Education Team
 - Optimize database queries (avoid N+1)
 
 ### Accessibility
+
 - ARIA labels for interactive elements
 - Keyboard navigation support
 - Screen reader friendly
@@ -783,11 +852,13 @@ TwoPhase Education Team
 ## AI Assistant Design Principles
 
 ### Data Structure
+
 - All API responses should be structured and consistent
 - Include metadata for AI context (e.g., "significance" of differences)
 - Provide reasoning data, not just raw numbers
 
 ### Integration Points
+
 - Cart analysis for proactive suggestions
 - Product comparison for explaining differences
 - Wishlist for personalized recommendations
@@ -795,6 +866,7 @@ TwoPhase Education Team
 - Category data for contextual navigation
 
 ### Privacy & Control
+
 - Users can disable AI assistance
 - AI doesn't make purchases without user confirmation
 - Clear about when AI is analyzing user data
@@ -805,6 +877,7 @@ TwoPhase Education Team
 ## Success Metrics
 
 ### Phase 1
+
 - **Component Price Summary:** Increase in bundle purchases vs. individual components
 - **Product Categories:** Reduction in bounce rate on product pages
 - **Product Comparison:** Engagement with comparison tool (% of users who compare before buying)
@@ -812,11 +885,13 @@ TwoPhase Education Team
 - **Recently Viewed:** Return visit rate, re-engagement with previously viewed items
 
 ### Phase 2
+
 - **Cart Analysis:** Reduction in cart abandonment due to compatibility issues
 - **Bulk Operations:** Time saved on product management tasks
 - **AI Recommendations:** Click-through rate on AI suggestions
 
 ### Phase 3
+
 - **Stock Alerts:** Email open rate, conversion rate from alert to purchase
 - **Overall:** Customer satisfaction score, average order value, repeat purchase rate
 
@@ -825,23 +900,26 @@ TwoPhase Education Team
 ## Development Timeline (Estimates)
 
 ### Phase 1: Data Foundation
+
 - Component Price Summary: 2-3 days
 - Product Categories: 5-7 days (including migration)
 - Product Comparison: 5-7 days
 - Wishlist: 3-5 days
 - Recently Viewed: 2-3 days
-**Total: 3-4 weeks**
+  **Total: 3-4 weeks**
 
 ### Phase 2: AI Assistant Foundation
+
 - Shopping Cart Analysis: 3-5 days
 - Enhanced Comparison API: 2-3 days
 - Bulk Operations: 7-10 days
-**Total: 2-3 weeks**
+  **Total: 2-3 weeks**
 
 ### Phase 3: User Engagement
+
 - Stock Alerts: 3-5 days
 - Email notifications setup: 2-3 days
-**Total: 1 week**
+  **Total: 1 week**
 
 **Overall Timeline: 6-8 weeks for complete implementation**
 

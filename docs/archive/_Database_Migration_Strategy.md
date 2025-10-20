@@ -20,18 +20,21 @@ Database schema changes follow a **safe, tested approach** to prevent production
 ## Database Instances
 
 ### DEV Database
+
 - **Purpose:** Development testing, can be reset anytime
 - **Source:** Seed data or sanitized production subset
 - **Migrations:** Apply immediately with `npm run db:push`
 - **Connection:** `postgresql://user:pass@ep-dev-xxx.neon.tech/dbname`
 
 ### UAT Database
+
 - **Purpose:** Test migrations on production-like data
 - **Source:** **Cloned from PRD before each UAT deployment**
 - **Migrations:** Applied via migration scripts (`npm run db:migrate`)
 - **Connection:** `postgresql://user:pass@ep-uat-xxx.neon.tech/dbname`
 
 ### PRD Database
+
 - **Purpose:** Live production data
 - **Source:** Real user data
 - **Migrations:** Applied after UAT validation (with backup)
@@ -360,6 +363,7 @@ export async function POST(request: Request) {
 ```
 
 **Usage:**
+
 ```bash
 # After deployment, trigger migration
 curl -X POST "https://your-app-uat.vercel.app/api/admin/migrate?secret=YOUR_SECRET"
@@ -426,6 +430,7 @@ git push origin main
 **Copy this checklist for each schema change:**
 
 ### Pre-Migration
+
 - [ ] Schema changes developed and tested in DEV
 - [ ] Migration files generated and committed
 - [ ] UAT database cloned from PRD (fresh copy)
@@ -437,6 +442,7 @@ git push origin main
 - [ ] Team notified of deployment
 
 ### Migration
+
 - [ ] PR created: uat → main
 - [ ] PR approved by [approver name]
 - [ ] All CI/CD checks pass
@@ -446,6 +452,7 @@ git push origin main
 - [ ] PRD schema verified (matches UAT)
 
 ### Post-Migration
+
 - [ ] Data counts match pre-migration
 - [ ] Application functionality verified
 - [ ] No errors in Vercel logs
@@ -455,6 +462,7 @@ git push origin main
 - [ ] Documentation updated
 
 ### Rollback (If Needed)
+
 - [ ] Issue identified and documented
 - [ ] Rollback decision approved
 - [ ] Deployment rolled back

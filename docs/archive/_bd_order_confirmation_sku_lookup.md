@@ -52,7 +52,7 @@ WHERE product_slug = '';
 export interface OrderItemSnapshot {
   productId: string
   productSku: string
-  productSlug: string        // NEW: Slug captured at checkout
+  productSlug: string // NEW: Slug captured at checkout
   productName: string
   productVersion: number
   productType: string
@@ -79,6 +79,7 @@ export interface OrderItemSnapshot {
 **File:** `src/app/order-confirmation/page.tsx`
 
 **Link Structure:**
+
 ```typescript
 // Product image link
 <Link href={`/products/sku/${item.sku}`}>
@@ -100,6 +101,7 @@ export interface OrderItemSnapshot {
 ```
 
 **Example:**
+
 - Order contains: `TPC-COOL-BDG-V01` (Budget Cooling System, Version 1)
 - Link goes to: `/products/sku/TPC-COOL-BDG-V01`
 - Product may now be at V02, but customer sees V01 details
@@ -204,10 +206,7 @@ import { eq } from 'drizzle-orm'
 import { apiSuccess, apiNotFound } from '@/lib/api-response'
 import { convertDbProductToType } from '@/lib/product-converter'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { sku: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { sku: string } }) {
   const { sku } = params
 
   // Look up product by SKU
@@ -234,7 +233,7 @@ export async function GET(
 export interface OrderItemSnapshot {
   productId: string
   productSku: string
-  productSlug: string        // Added
+  productSlug: string // Added
   productName: string
   productVersion: number
   productType: string
@@ -247,13 +246,13 @@ export async function createOrderItemSnapshot(
   quantity: number
 ): Promise<OrderItemSnapshot> {
   const product = await db.query.products.findFirst({
-    where: eq(products.id, productId)
+    where: eq(products.id, productId),
   })
 
   return {
     productId: product.id,
     productSku: product.sku,
-    productSlug: product.slug,   // Capture slug
+    productSlug: product.slug, // Capture slug
     productName: product.name,
     productVersion: product.version,
     productType: product.productType,
@@ -295,6 +294,7 @@ function dbOrderToOrder(
 ### Scenario 1: Product Still Active
 
 **Flow:**
+
 1. Customer views order confirmation
 2. Clicks product image or title
 3. Navigates to: `/products/sku/TPC-COOL-BDG-V01`
@@ -309,6 +309,7 @@ function dbOrderToOrder(
 ### Scenario 2: Product Sunsetted
 
 **Flow:**
+
 1. Customer views order confirmation for old order
 2. Clicks product link
 3. Navigates to: `/products/sku/TPC-COOL-BDG-V01`
@@ -323,6 +324,7 @@ function dbOrderToOrder(
 ### Scenario 3: Product Updated to New Version
 
 **Flow:**
+
 1. Customer ordered V01 six months ago
 2. Product now at V02 (price changed, specs updated)
 3. Clicks product link from order confirmation
@@ -371,7 +373,9 @@ function dbOrderToOrder(
 ```typescript
 test('should show active product with enabled Add to Cart', async () => {
   // 1. Create order with product V01
-  const order = await createOrder({ /* product V01 */ })
+  const order = await createOrder({
+    /* product V01 */
+  })
 
   // 2. Navigate to SKU page
   const response = await fetch(`/api/products/by-sku/TPC-COOL-BDG-V01`)
@@ -389,7 +393,9 @@ test('should show active product with enabled Add to Cart', async () => {
 ```typescript
 test('should show sunsetted product with disabled Add to Cart', async () => {
   // 1. Create order with product V01
-  const order = await createOrder({ /* product V01 */ })
+  const order = await createOrder({
+    /* product V01 */
+  })
 
   // 2. Sunset product (create V02)
   await updateProduct(productId, { price: 999 }) // Creates V02, sunsets V01
@@ -409,7 +415,9 @@ test('should show sunsetted product with disabled Add to Cart', async () => {
 
 ```typescript
 test('should link to correct SKU from order confirmation', async () => {
-  const order = await createOrder({ /* product V01 */ })
+  const order = await createOrder({
+    /* product V01 */
+  })
   const orderDetails = await getOrderDetails(order.orderNumber)
 
   // Order item should have SKU for linking
@@ -430,10 +438,11 @@ test('should link to correct SKU from order confirmation', async () => {
 **Symptom:** `/products/sku/TPC-COOL-BDG-V01` returns 404
 
 **Diagnosis:**
+
 ```typescript
 // Check if product exists in database
 const product = await db.query.products.findFirst({
-  where: eq(products.sku, 'TPC-COOL-BDG-V01')
+  where: eq(products.sku, 'TPC-COOL-BDG-V01'),
 })
 
 console.log('Product found:', product)
@@ -441,6 +450,7 @@ console.log('Product found:', product)
 ```
 
 **Solution:**
+
 - Products in orders should never be deleted
 - Check product status: should be 'sunset' or 'discontinued', not deleted
 - Restore product from order snapshot if necessary
@@ -452,18 +462,17 @@ console.log('Product found:', product)
 **Symptom:** Order confirmation shows V02 when customer ordered V01
 
 **Diagnosis:**
+
 ```typescript
 // Check order item snapshot
-const orderItem = await db
-  .select()
-  .from(orderItems)
-  .where(eq(orderItems.id, itemId))
+const orderItem = await db.select().from(orderItems).where(eq(orderItems.id, itemId))
 
 console.log('Captured SKU:', orderItem.productSku)
 console.log('Captured slug:', orderItem.productSlug)
 ```
 
 **Solution:**
+
 - Verify snapshot was created correctly at checkout
 - Check `productSku` field in order_items table
 - Ensure links use `item.sku` not `item.product.slug`
@@ -475,11 +484,10 @@ console.log('Captured slug:', orderItem.productSlug)
 **Symptom:** Can add sunsetted product to cart from SKU page
 
 **Diagnosis:**
+
 ```typescript
 const isAvailableForPurchase =
-  product.isAvailableForPurchase &&
-  product.inStock &&
-  product.status === 'active'
+  product.isAvailableForPurchase && product.inStock && product.status === 'active'
 
 console.log('Available:', product.isAvailableForPurchase)
 console.log('In Stock:', product.inStock)
@@ -487,6 +495,7 @@ console.log('Status:', product.status)
 ```
 
 **Solution:**
+
 - Verify all three conditions are checked
 - Ensure product status was updated to 'sunset' when versioned
 - Check `isAvailableForPurchase` flag was set to false

@@ -132,8 +132,9 @@ export const orderItems = pgTable('order_items', {
   lineTotal: real('line_total').notNull(), // quantity * (unitPrice + componentsPrice)
 
   // Optional: Reporting FK (nullable, can be null if product deleted)
-  currentProductId: text('current_product_id')
-    .references(() => products.id, { onDelete: 'set null' }),
+  currentProductId: text('current_product_id').references(() => products.id, {
+    onDelete: 'set null',
+  }),
 
   createdAt: timestamp('created_at').notNull().defaultNow(),
 })
@@ -169,10 +170,7 @@ export const productVersionHistory = pgTable('product_version_history', {
 
 ```typescript
 // ❌ DON'T: Direct update (breaks order history)
-await db
-  .update(products)
-  .set({ price: 1399.99 })
-  .where(eq(products.id, 'prod_2phase_pro'))
+await db.update(products).set({ price: 1399.99 }).where(eq(products.id, 'prod_2phase_pro'))
 
 // ✅ DO: Check for orders first, then decide
 const hasOrders = await db
@@ -185,7 +183,7 @@ if (hasOrders[0].count > 0) {
   await createProductVersion('prod_2phase_pro', {
     price: 1399.99,
     versionNotes: 'Price update: $1299.99 → $1399.99',
-    changeType: 'minor' // Keeps same SKU base, increments version
+    changeType: 'minor', // Keeps same SKU base, increments version
   })
 } else {
   // No orders - safe to update directly
@@ -211,13 +209,13 @@ async function addOptionalComponent(productId: string, component: NewComponent) 
     await createProductVersion(productId, {
       components: [...existingComponents, component],
       versionNotes: `Added optional component: ${component.name}`,
-      changeType: 'component'
+      changeType: 'component',
     })
   } else {
     // No orders - safe to add component directly
     await db.insert(productComponents).values({
       productId,
-      ...component
+      ...component,
     })
   }
 }
@@ -233,28 +231,34 @@ async function createMajorRevision(oldProductId: string, newProductData: any) {
   const oldProduct = await db.select().from(products).where(eq(products.id, oldProductId))
   const newSku = incrementSKU(oldProduct.sku) // TPC-PRO-001-V2 → TPC-PRO-001-V3
 
-  const newProduct = await db.insert(products).values({
-    id: `${oldProductId}_v${oldProduct.version + 1}`,
-    sku: newSku,
-    name: newProductData.name,
-    version: oldProduct.version + 1,
-    previousVersionId: oldProductId,
-    versionNotes: newProductData.versionNotes,
-    ...newProductData
-  }).returning()
+  const newProduct = await db
+    .insert(products)
+    .values({
+      id: `${oldProductId}_v${oldProduct.version + 1}`,
+      sku: newSku,
+      name: newProductData.name,
+      version: oldProduct.version + 1,
+      previousVersionId: oldProductId,
+      versionNotes: newProductData.versionNotes,
+      ...newProductData,
+    })
+    .returning()
 
   // 2. Sunset old product
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'sunset',
       isAvailableForPurchase: false,
       sunsetDate: new Date(),
-      replacedBy: newProduct[0].id
+      replacedBy: newProduct[0].id,
     })
     .where(eq(products.id, oldProductId))
 
   // 3. Copy/update components for new version
-  const oldComponents = await db.select().from(productComponents)
+  const oldComponents = await db
+    .select()
+    .from(productComponents)
     .where(eq(productComponents.productId, oldProductId))
 
   for (const component of oldComponents) {
@@ -274,7 +278,7 @@ async function createMajorRevision(oldProductId: string, newProductData: any) {
     changeDescription: newProductData.versionNotes,
     changedBy: getCurrentUserId(),
     beforeSnapshot: oldProduct,
-    afterSnapshot: newProduct[0]
+    afterSnapshot: newProduct[0],
   })
 
   return newProduct[0]
@@ -310,7 +314,7 @@ async function createOrderFromCart(cartId: string, orderData: any) {
           ) FILTER (WHERE ${productComponents.id} IS NOT NULL),
           '[]'::json
         )
-      `
+      `,
     })
     .from(cartItems)
     .leftJoin(products, eq(cartItems.productId, products.id))
@@ -328,7 +332,7 @@ async function createOrderFromCart(cartId: string, orderData: any) {
     // Calculate pricing
     const includedComponents = componentsArray.filter(c => c.isIncluded)
     const optionalComponents = componentsArray.filter(c => !c.isIncluded)
-    const componentsPrice = optionalComponents.reduce((sum, c) => sum + (c.price * c.quantity), 0)
+    const componentsPrice = optionalComponents.reduce((sum, c) => sum + c.price * c.quantity, 0)
     const lineTotal = item.cartItem.quantity * (item.product.price + componentsPrice)
 
     await db.insert(orderItems).values({
@@ -378,12 +382,13 @@ async function canModifyProduct(productId: string): Promise<boolean> {
 
 // Rule: Sunset product when replaced
 async function sunsetProduct(productId: string, replacementId: string) {
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       status: 'sunset',
       isAvailableForPurchase: false,
       sunsetDate: new Date(),
-      replacedBy: replacementId
+      replacedBy: replacementId,
     })
     .where(eq(products.id, productId))
 }
@@ -463,7 +468,7 @@ const productWithComponents = await db
           'isOptional', ${productComponents.isOptional}
         )
       )
-    `
+    `,
   })
   .from(products)
   .leftJoin(productComponents, eq(products.id, productComponents.productId))
@@ -496,12 +501,7 @@ orderDetails.forEach(item => {
 const productVersions = await db
   .select()
   .from(products)
-  .where(
-    or(
-      eq(products.id, baseProductId),
-      eq(products.previousVersionId, baseProductId)
-    )
-  )
+  .where(or(eq(products.id, baseProductId), eq(products.previousVersionId, baseProductId)))
   .orderBy(products.version)
 
 // Get order count per version
@@ -511,7 +511,7 @@ const versionMetrics = await db
     productSku: orderItems.productSku,
     productVersion: orderItems.productVersion,
     orderCount: sql`COUNT(DISTINCT ${orderItems.orderId})`,
-    totalRevenue: sql`SUM(${orderItems.lineTotal})`
+    totalRevenue: sql`SUM(${orderItems.lineTotal})`,
   })
   .from(orderItems)
   .where(eq(orderItems.productId, productId))
@@ -638,6 +638,7 @@ CREATE INDEX idx_version_history_version ON product_version_history(product_id, 
 4. **For Reporting:** Optional FK (currentProductId) links to current product for analytics
 
 **Result:**
+
 - Orders are immutable ✅
 - Products can evolve ✅
 - Components are tracked ✅

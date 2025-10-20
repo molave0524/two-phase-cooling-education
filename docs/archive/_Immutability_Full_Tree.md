@@ -44,7 +44,7 @@ async function canModifyProduct(productId: string): Promise<boolean> {
     .where(
       or(
         eq(orderItems.productId, productId), // Root product
-        sql`${orderItems.componentTree}::jsonb @> ${JSON.stringify([{componentId: productId}])}` // As component
+        sql`${orderItems.componentTree}::jsonb @> ${JSON.stringify([{ componentId: productId }])}` // As component
       )
     )
 
@@ -72,7 +72,8 @@ if (pumpA1HasOrders) {
   })
 
   // Update junction: Remove old Motor M1, add Motor M2
-  await db.delete(productComponents)
+  await db
+    .delete(productComponents)
     .where(
       and(
         eq(productComponents.parentProductId, newPumpA1.id),
@@ -84,7 +85,7 @@ if (pumpA1HasOrders) {
     parentProductId: newPumpA1.id,
     componentProductId: 'motor_m2', // New motor
     quantity: 1,
-    isIncluded: true
+    isIncluded: true,
   })
 
   // Sunset old Pump A1
@@ -108,13 +109,13 @@ if (motorInOrders) {
   const motorM2 = await createProductVersion('motor_m1', {
     sku: 'TPC-MOTOR-M1-V2',
     versionNotes: 'Efficiency improvement',
-    price: 49.99 // Price increase
+    price: 49.99, // Price increase
   })
 
   // Update Pump A1 to use Motor M2
   // BUT Pump A1 also has orders, so create NEW Pump A1 version
   const pumpA1V2 = await createProductVersion('pump_a1', {
-    versionNotes: 'Uses improved Motor M2'
+    versionNotes: 'Uses improved Motor M2',
   })
 
   // Link new pump to new motor
@@ -122,7 +123,7 @@ if (motorInOrders) {
     parentProductId: pumpA1V2.id,
     componentProductId: motorM2.id,
     quantity: 1,
-    isIncluded: true
+    isIncluded: true,
   })
 
   // Sunset old versions
@@ -189,10 +190,7 @@ async function isComponentInOrders(productId: string): Promise<boolean> {
 ### **Ensure full tree is captured:**
 
 ```typescript
-async function createOrderItemSnapshot(
-  product: Product,
-  quantity: number
-): Promise<OrderItemData> {
+async function createOrderItemSnapshot(product: Product, quantity: number): Promise<OrderItemData> {
   // 1. Get depth 1 components
   const depth1Components = await db
     .select({
@@ -206,7 +204,7 @@ async function createOrderItemSnapshot(
 
   // 2. For each depth 1, get depth 2
   const fullTree = await Promise.all(
-    depth1Components.map(async (d1) => {
+    depth1Components.map(async d1 => {
       const depth2Components = await db
         .select({
           rel: productComponents,
@@ -238,7 +236,7 @@ async function createOrderItemSnapshot(
           price: d2.rel.priceOverride ?? d2.comp.componentPrice ?? d2.comp.price,
           isIncluded: d2.rel.isIncluded,
           isRequired: d2.rel.isRequired,
-        }))
+        })),
       }
     })
   )
@@ -345,10 +343,7 @@ async function shouldCreateVersion(productId: string): Promise<boolean> {
   return await isComponentInOrders(productId)
 }
 
-async function updateProductTree(
-  productId: string,
-  changes: ProductChanges
-): Promise<Product> {
+async function updateProductTree(productId: string, changes: ProductChanges): Promise<Product> {
   const needsVersion = await shouldCreateVersion(productId)
 
   if (needsVersion) {
@@ -412,6 +407,7 @@ async function updateProductTree(
 3. ✅ **Sub-components** (depth 2) - Snapshotted with version
 
 **Version management:**
+
 - Check if product/component at ANY depth is in orders
 - If yes → create new version instead of modifying
 - Snapshot captures entire tree with all versions

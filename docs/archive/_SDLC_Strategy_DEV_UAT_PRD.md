@@ -10,6 +10,7 @@
 ## Overview
 
 This document defines the Software Development Lifecycle (SDLC) strategy with three environments:
+
 - **DEV** (Development) - Active development & testing
 - **UAT** (User Acceptance Testing) - Staging for client review
 - **PRD** (Production) - Live production environment
@@ -66,12 +67,14 @@ release/*     - Release preparation (branch from: develop, merge to: uat then ma
 **Database:** Neon PostgreSQL (DEV instance)
 
 **Purpose:**
+
 - Developer testing
 - Feature integration testing
 - Automated CI/CD testing
 - Breaking changes allowed
 
 **Environment Variables:**
+
 ```env
 VERCEL_ENV=development
 NEXT_PUBLIC_APP_URL=https://your-app-dev.vercel.app
@@ -92,6 +95,7 @@ NODE_ENV=development
 **Database:** Neon PostgreSQL (UAT instance - production mirror)
 
 **Purpose:**
+
 - Client/stakeholder testing
 - User acceptance testing
 - Performance testing
@@ -99,6 +103,7 @@ NODE_ENV=development
 - Production-like environment
 
 **Environment Variables:**
+
 ```env
 VERCEL_ENV=preview
 NEXT_PUBLIC_APP_URL=https://your-app-uat.vercel.app
@@ -119,12 +124,14 @@ NODE_ENV=production
 **Database:** Neon PostgreSQL (PRD instance)
 
 **Purpose:**
+
 - Live production environment
 - Serving real users
 - Highest stability & security
 - No breaking changes
 
 **Environment Variables:**
+
 ```env
 VERCEL_ENV=production
 NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
@@ -312,6 +319,7 @@ vercel link
 ```
 
 **Vercel Settings:**
+
 - Production Branch: `main`
 - Preview Branches: `uat`, `develop`
 - Environment Variables: Set per environment (Production/Preview/Development)
@@ -328,6 +336,7 @@ vercel link --scope your-team --project your-app-prod     # PRD
 ### Vercel Environment Variables Setup
 
 #### Production (main branch)
+
 ```bash
 vercel env add POSTGRES_URL production
 vercel env add DATABASE_URL production
@@ -337,6 +346,7 @@ vercel env add NEXTAUTH_URL production
 ```
 
 #### Preview (uat branch)
+
 ```bash
 vercel env add POSTGRES_URL preview
 vercel env add DATABASE_URL preview
@@ -346,6 +356,7 @@ vercel env add NEXTAUTH_URL preview
 ```
 
 #### Development (develop branch)
+
 ```bash
 vercel env add POSTGRES_URL development
 vercel env add DATABASE_URL development
@@ -579,17 +590,18 @@ git push origin uat
 
 ## Quick Reference
 
-| Environment | Branch | URL | Database | Auto-Deploy | Approval Required |
-|------------|--------|-----|----------|-------------|-------------------|
-| DEV | `develop` | `*-dev.vercel.app` | Neon DEV | ✅ Yes | ❌ No |
-| UAT | `uat` | `*-uat.vercel.app` | Neon UAT | ✅ Yes | ⚠️ Optional |
-| PRD | `main` | `*.vercel.app` | Neon PRD | ✅ Yes | ✅ Required |
+| Environment | Branch    | URL                | Database | Auto-Deploy | Approval Required |
+| ----------- | --------- | ------------------ | -------- | ----------- | ----------------- |
+| DEV         | `develop` | `*-dev.vercel.app` | Neon DEV | ✅ Yes      | ❌ No             |
+| UAT         | `uat`     | `*-uat.vercel.app` | Neon UAT | ✅ Yes      | ⚠️ Optional       |
+| PRD         | `main`    | `*.vercel.app`     | Neon PRD | ✅ Yes      | ✅ Required       |
 
 ---
 
 ## Support & Questions
 
 For questions about this SDLC strategy, contact:
+
 - **Technical Lead:** [Name/Email]
 - **DevOps:** [Name/Email]
 - **Project Manager:** [Name/Email]

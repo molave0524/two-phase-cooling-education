@@ -63,12 +63,12 @@
 
 ### Environment Characteristics
 
-| Environment | Purpose | Data | Deployment | Rollback | Monitoring |
-|-------------|---------|------|------------|----------|------------|
-| **LOCAL** | Development & debugging | Synthetic/test data | Manual (`npm run dev`) | git reset | Console logs |
-| **DEV** | Integration testing | Synthetic data | Auto on push to `develop` | Vercel rollback | Basic logs |
-| **UAT** | User acceptance testing | Production-like data | Auto on push to `uat` | Vercel rollback | Full monitoring |
-| **PROD** | Live production | Real customer data | Auto on push to `main` | Immediate rollback | Full monitoring + alerts |
+| Environment | Purpose                 | Data                 | Deployment                | Rollback           | Monitoring               |
+| ----------- | ----------------------- | -------------------- | ------------------------- | ------------------ | ------------------------ |
+| **LOCAL**   | Development & debugging | Synthetic/test data  | Manual (`npm run dev`)    | git reset          | Console logs             |
+| **DEV**     | Integration testing     | Synthetic data       | Auto on push to `develop` | Vercel rollback    | Basic logs               |
+| **UAT**     | User acceptance testing | Production-like data | Auto on push to `uat`     | Vercel rollback    | Full monitoring          |
+| **PROD**    | Live production         | Real customer data   | Auto on push to `main`    | Immediate rollback | Full monitoring + alerts |
 
 ---
 
@@ -91,6 +91,7 @@ main (PROD)
 ### Branch Definitions
 
 #### **1. `main` - Production Branch**
+
 - **Purpose:** Production-ready code only
 - **Deploys to:** PROD (Vercel Production)
 - **Protected:** Yes (require PR reviews)
@@ -98,6 +99,7 @@ main (PROD)
 - **Lifetime:** Permanent
 
 **Rules:**
+
 - ❌ Never commit directly to `main`
 - ✅ Only merge from `uat` or `hotfix/*`
 - ✅ All merges require PR approval
@@ -105,6 +107,7 @@ main (PROD)
 - ✅ Tagged with version numbers (v1.0.0, v1.1.0, etc.)
 
 #### **2. `uat` - User Acceptance Testing Branch**
+
 - **Purpose:** Pre-production testing and validation
 - **Deploys to:** UAT (Vercel Preview)
 - **Protected:** Yes (require PR reviews)
@@ -112,12 +115,14 @@ main (PROD)
 - **Lifetime:** Permanent
 
 **Rules:**
+
 - ❌ Never commit directly to `uat`
 - ✅ Only merge from `develop` or `hotfix/*`
 - ✅ Must pass QA testing before promoting to `main`
 - ✅ Production-like configuration
 
 #### **3. `develop` - Development Integration Branch**
+
 - **Purpose:** Integration of all features
 - **Deploys to:** DEV (Vercel Preview)
 - **Protected:** Optional (recommended for teams)
@@ -125,12 +130,14 @@ main (PROD)
 - **Lifetime:** Permanent
 
 **Rules:**
+
 - ❌ Avoid direct commits (use feature branches)
 - ✅ Merge from `feature/*` branches
 - ✅ Must be stable (all tests pass)
 - ✅ Reset point if integration fails
 
 #### **4. `feature/*` - Feature Development Branches**
+
 - **Purpose:** Develop new features in isolation
 - **Deploys to:** LOCAL only (or optional preview)
 - **Protected:** No
@@ -138,6 +145,7 @@ main (PROD)
 - **Lifetime:** Temporary (delete after merge)
 
 **Naming Convention:**
+
 ```bash
 feature/product-categories
 feature/wishlist-functionality
@@ -146,12 +154,14 @@ feature/bulk-operations
 ```
 
 **Rules:**
+
 - ✅ Branch from `develop`
 - ✅ One feature per branch
 - ✅ Regularly sync with `develop` (rebase or merge)
 - ✅ Delete after merging to `develop`
 
 #### **5. `hotfix/*` - Critical Production Fixes**
+
 - **Purpose:** Emergency fixes for production issues
 - **Deploys to:** PROD (after merge to `main`)
 - **Protected:** No
@@ -159,18 +169,21 @@ feature/bulk-operations
 - **Lifetime:** Temporary (delete after merge)
 
 **Naming Convention:**
+
 ```bash
 hotfix/payment-gateway-timeout
 hotfix/authentication-loop
 ```
 
 **Rules:**
+
 - ✅ Branch from `main`
 - ✅ Merge to both `main` AND `uat`/`develop`
 - ✅ Increment patch version (v1.0.0 → v1.0.1)
 - ✅ Delete after merging
 
 #### **6. `release/*` - Release Preparation (Optional)**
+
 - **Purpose:** Prepare for production release
 - **Deploys to:** UAT
 - **Protected:** Optional
@@ -178,11 +191,13 @@ hotfix/authentication-loop
 - **Lifetime:** Temporary
 
 **Naming Convention:**
+
 ```bash
 release/v1.2.0
 ```
 
 **Rules:**
+
 - ✅ Branch from `develop`
 - ✅ Only bug fixes allowed (no new features)
 - ✅ Merge to both `main` and `develop`
@@ -294,12 +309,12 @@ neonctl connection-string main
 
 ### Environment Variable Mapping
 
-| Environment | Database Branch | Connection String Variable |
-|-------------|-----------------|---------------------------|
-| LOCAL | Docker PostgreSQL | `DATABASE_URL` (local) |
-| DEV | Neon `develop` | `POSTGRES_URL` (Vercel) |
-| UAT | Neon `uat` | `POSTGRES_URL` (Vercel) |
-| PROD | Neon `main` | `POSTGRES_URL` (Vercel) |
+| Environment | Database Branch   | Connection String Variable |
+| ----------- | ----------------- | -------------------------- |
+| LOCAL       | Docker PostgreSQL | `DATABASE_URL` (local)     |
+| DEV         | Neon `develop`    | `POSTGRES_URL` (Vercel)    |
+| UAT         | Neon `uat`        | `POSTGRES_URL` (Vercel)    |
+| PROD        | Neon `main`       | `POSTGRES_URL` (Vercel)    |
 
 ### Database Promotion Strategy
 
@@ -475,13 +490,13 @@ Each Vercel environment (DEV/UAT/PROD) needs separate variables:
 
 **Environment-Specific Variables:**
 
-| Variable | LOCAL | DEV (develop) | UAT (uat) | PROD (main) |
-|----------|-------|---------------|-----------|-------------|
-| `NODE_ENV` | development | development | production | production |
-| `NEXTAUTH_URL` | http://localhost:3000 | https://...-git-develop.vercel.app | https://...-git-uat.vercel.app | https://simple-todo.vercel.app |
-| `POSTGRES_URL` | postgresql://postgres:postgres@localhost:5432/twophase_education_dev | postgresql://...@...neon.tech/dev | postgresql://...@...neon.tech/uat | postgresql://...@...neon.tech/prod |
-| `GEMINI_API_KEY` | dev_key | dev_key | prod_key | prod_key |
-| `STRIPE_SECRET_KEY` | sk_test_... | sk_test_... | sk_test_... | sk_live_... |
+| Variable            | LOCAL                                                                | DEV (develop)                      | UAT (uat)                         | PROD (main)                        |
+| ------------------- | -------------------------------------------------------------------- | ---------------------------------- | --------------------------------- | ---------------------------------- |
+| `NODE_ENV`          | development                                                          | development                        | production                        | production                         |
+| `NEXTAUTH_URL`      | http://localhost:3000                                                | https://...-git-develop.vercel.app | https://...-git-uat.vercel.app    | https://simple-todo.vercel.app     |
+| `POSTGRES_URL`      | postgresql://postgres:postgres@localhost:5432/twophase_education_dev | postgresql://...@...neon.tech/dev  | postgresql://...@...neon.tech/uat | postgresql://...@...neon.tech/prod |
+| `GEMINI_API_KEY`    | dev_key                                                              | dev_key                            | prod_key                          | prod_key                           |
+| `STRIPE_SECRET_KEY` | sk*test*...                                                          | sk*test*...                        | sk*test*...                       | sk*live*...                        |
 
 ### Setting Environment Variables via Vercel CLI
 
@@ -544,6 +559,7 @@ esac
 ### Data Promotion Strategy
 
 **Schema Promotion (Code-based):**
+
 ```bash
 # 1. Develop schema changes locally
 npm run db:generate
@@ -592,6 +608,7 @@ config/
 ```
 
 Load config based on environment:
+
 ```typescript
 // src/config/index.ts
 const env = process.env.NODE_ENV || 'development'
@@ -609,6 +626,7 @@ export default config
 **GitHub Settings → Branches → Branch protection rules:**
 
 #### **For `main` (PROD):**
+
 - [x] Require pull request reviews before merging (2 approvals)
 - [x] Require status checks to pass before merging
   - [x] build
@@ -621,6 +639,7 @@ export default config
 - [x] Do not allow bypassing the above settings
 
 #### **For `uat`:**
+
 - [x] Require pull request reviews before merging (1 approval)
 - [x] Require status checks to pass before merging
   - [x] build
@@ -630,6 +649,7 @@ export default config
 - [x] Require branches to be up to date before merging
 
 #### **For `develop`:**
+
 - [x] Require status checks to pass before merging
   - [x] build
   - [x] type-check
@@ -728,6 +748,7 @@ fi
 ### Rollback Procedures
 
 **Immediate Rollback (Vercel):**
+
 ```bash
 # List recent deployments
 vercel ls
@@ -740,6 +761,7 @@ vercel rollback [deployment-url]
 ```
 
 **Code Rollback (Git):**
+
 ```bash
 # Revert last commit
 git revert HEAD
@@ -751,6 +773,7 @@ git push origin main --force
 ```
 
 **Database Rollback:**
+
 ```bash
 # Neon time travel (restore to point in time)
 neonctl branches restore --branch main --timestamp "2025-10-04T12:00:00Z"
@@ -762,11 +785,13 @@ pg_restore -d $POSTGRES_URL backup-20251004.dump
 ### Monitoring & Alerts
 
 **Vercel Monitoring:**
+
 - Enable Vercel Analytics
 - Set up log drains to external service
 - Configure deployment notifications (Slack/email)
 
 **Application Monitoring:**
+
 ```typescript
 // src/middleware.ts
 export function middleware(request: NextRequest) {
@@ -790,6 +815,7 @@ export function middleware(request: NextRequest) {
 ## Quick Command Reference
 
 ### Branch Operations
+
 ```bash
 # Create feature branch
 git checkout -b feature/my-feature develop
@@ -805,6 +831,7 @@ git push origin develop
 ```
 
 ### Environment Promotion
+
 ```bash
 # Promote develop → UAT
 gh pr create --base uat --head develop --title "Promote to UAT"
@@ -814,6 +841,7 @@ gh pr create --base main --head uat --title "Release to Production"
 ```
 
 ### Vercel Deployments
+
 ```bash
 # Check deployment status
 vercel ls
@@ -826,6 +854,7 @@ vercel rollback [deployment-url]
 ```
 
 ### Database Operations
+
 ```bash
 # Create Neon branch
 neonctl branches create --name [branch-name]
@@ -844,6 +873,7 @@ neonctl connection-string [branch-name]
 ### Step-by-Step Migration
 
 **Phase 1: Create Branches**
+
 ```bash
 # 1. Ensure main is clean
 git checkout main
@@ -863,6 +893,7 @@ git checkout main
 ```
 
 **Phase 2: Configure Vercel**
+
 ```bash
 # 1. Update Vercel project settings
 vercel
@@ -874,6 +905,7 @@ vercel
 ```
 
 **Phase 3: Create Database Branches**
+
 ```bash
 # 1. Create Neon branches
 neonctl branches create --name develop --parent main
@@ -889,6 +921,7 @@ vercel env add POSTGRES_URL preview
 ```
 
 **Phase 4: Update Documentation**
+
 ```bash
 # 1. Update README with new workflow
 # 2. Update deployment guide
@@ -899,6 +932,7 @@ git push origin main
 ```
 
 **Phase 5: Enable Branch Protection**
+
 ```bash
 # Go to GitHub → Settings → Branches
 # Add protection rules for main, uat, develop
@@ -910,8 +944,10 @@ git push origin main
 ## Troubleshooting
 
 ### Issue: Wrong Environment Variables
+
 **Symptom:** App uses wrong database
 **Solution:**
+
 ```bash
 # Check current env vars
 vercel env ls
@@ -925,8 +961,10 @@ vercel env pull .env.production
 ```
 
 ### Issue: Migration Conflicts
+
 **Symptom:** Database migration fails in UAT/PROD
 **Solution:**
+
 ```bash
 # Test migration locally first
 npm run db:generate
@@ -940,8 +978,10 @@ cat drizzle/postgres/[latest].sql
 ```
 
 ### Issue: Deployment Stuck
+
 **Symptom:** Vercel deployment doesn't trigger
 **Solution:**
+
 ```bash
 # Check Vercel Git integration
 vercel git ls
@@ -958,11 +998,13 @@ vercel --force
 ## Summary
 
 ### Environment Flow
+
 ```
 LOCAL → feature/* → develop (DEV) → uat (UAT) → main (PROD)
 ```
 
 ### Key Principles
+
 1. ✅ **Never commit directly to main, uat, or develop**
 2. ✅ **Always use feature branches for development**
 3. ✅ **Test in DEV before promoting to UAT**
