@@ -4,13 +4,21 @@
  * POST - Create new address
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/db'
 import { addresses } from '@/db/schema-pg'
 import { eq, and, desc } from 'drizzle-orm'
 import { z } from 'zod'
+import {
+  apiSuccess,
+  apiUnauthorized,
+  apiValidationError,
+  apiInternalError,
+  HTTP_STATUS,
+} from '@/lib/api-response'
+import { logger } from '@/lib/logger'
 
 const addressSchema = z.object({
   type: z.enum(['shipping', 'billing', 'both']),
@@ -29,58 +37,65 @@ const addressSchema = z.object({
 
 // GET - Fetch all addresses
 export async function GET(_req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session?.user?.id) {
+      return apiUnauthorized()
+    }
+
+    const userAddresses = await (db as any)
+      .select()
+      .from(addresses)
+      .where(eq(addresses.userId, session.user.id))
+      .orderBy(desc(addresses.isDefault), desc(addresses.createdAt))
+
+    return apiSuccess(userAddresses)
+  } catch (error) {
+    logger.error('Failed to fetch addresses', { error, userId: _req.headers.get('user-id') })
+    return apiInternalError('Failed to load addresses')
   }
-
-  const userAddresses = await (db as any)
-    .select()
-    .from(addresses)
-    .where(eq(addresses.userId, session.user.id))
-    .orderBy(desc(addresses.isDefault), desc(addresses.createdAt))
-
-  return NextResponse.json(userAddresses)
 }
 
 // POST - Create new address
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!session?.user?.id) {
+      return apiUnauthorized()
+    }
+
+    const body = await req.json()
+    const validation = addressSchema.safeParse(body)
+
+    if (!validation.success) {
+      return apiValidationError(validation.error)
+    }
+
+    const data = validation.data
+
+    // If setting as default, unset other defaults of the same type
+    if (data.isDefault) {
+      await (db as any)
+        .update(addresses)
+        .set({ isDefault: false })
+        .where(and(eq(addresses.userId, session.user.id), eq(addresses.type, data.type)))
+    }
+
+    const [newAddress] = await (db as any)
+      .insert(addresses)
+      .values({
+        userId: session.user.id,
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning()
+
+    return apiSuccess(newAddress, { status: HTTP_STATUS.CREATED })
+  } catch (error) {
+    logger.error('Failed to create address', { error, userId: req.headers.get('user-id') })
+    return apiInternalError('Failed to create address')
   }
-
-  const body = await req.json()
-  const validation = addressSchema.safeParse(body)
-
-  if (!validation.success) {
-    return NextResponse.json(
-      { error: 'Invalid input', details: validation.error.issues },
-      { status: 400 }
-    )
-  }
-
-  const data = validation.data
-
-  // If setting as default, unset other defaults of the same type
-  if (data.isDefault) {
-    await (db as any)
-      .update(addresses)
-      .set({ isDefault: false })
-      .where(and(eq(addresses.userId, session.user.id), eq(addresses.type, data.type)))
-  }
-
-  const [newAddress] = await (db as any)
-    .insert(addresses)
-    .values({
-      userId: session.user.id,
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .returning()
-
-  return NextResponse.json(newAddress, { status: 201 })
 }
