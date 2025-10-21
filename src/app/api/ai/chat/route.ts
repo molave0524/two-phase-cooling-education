@@ -59,7 +59,7 @@ async function fetchUserOrders(userId: string) {
 
     // Fetch items for each order
     const ordersWithItems = await Promise.all(
-      userOrders.map(async order => {
+      userOrders.map(async (order: any) => {
         const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id))
 
         return {
@@ -69,7 +69,7 @@ async function fetchUserOrders(userId: string) {
           paymentStatus: order.paymentStatus,
           total: order.total,
           createdAt: order.createdAt,
-          items: items.map(item => ({
+          items: items.map((item: any) => ({
             productId: item.productId,
             productSnapshot: item.productSnapshot,
             quantity: item.quantity,
