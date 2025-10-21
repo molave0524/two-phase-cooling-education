@@ -65,11 +65,6 @@ async function getReservationStats() {
 
     const [totalResult] = await db.select({ count: count() }).from(inventoryReservations)
 
-    const [activeResult] = await db
-      .select({ count: count() })
-      .from(inventoryReservations)
-      .where(eq(inventoryReservations.status, 'active'))
-
     const allActive = await db
       .select()
       .from(inventoryReservations)
