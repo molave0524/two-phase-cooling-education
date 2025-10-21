@@ -23,7 +23,7 @@ export async function GET() {
 
     // Add inventory status to each product
     const productsWithInventory = await Promise.all(
-      activeProducts.map(async product => {
+      activeProducts.map(async (product: any) => {
         try {
           const inventoryStatus = await getInventoryStatus(product.id)
           return {
