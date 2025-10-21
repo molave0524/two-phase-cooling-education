@@ -80,7 +80,6 @@ export default async function OrderManagementPage({
   const pendingCount = ordersData.filter((o: any) => o.status === 'pending').length
   const processingCount = ordersData.filter((o: any) => o.status === 'processing').length
   const shippedCount = ordersData.filter((o: any) => o.status === 'shipped').length
-  const cancelledCount = ordersData.filter((o: any) => o.status === 'cancelled').length
 
   return (
     <div className={styles.container}>
