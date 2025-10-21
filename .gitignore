@@ -131,3 +131,9 @@ migrate-orders-schema.js
 /backups/
 *.sql.gz
 .env.vercel-staging
+
+# Playwright MCP browser automation
+.playwright-mcp/
+
+# Temporary documentation and data files
+scraped-cart-data.md
