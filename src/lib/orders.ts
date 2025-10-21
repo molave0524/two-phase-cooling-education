@@ -767,7 +767,7 @@ export async function reserveInventory(
       productId: item.productId,
       quantity: item.quantity,
       reservedBy: reservedBy || 'checkout',
-      stripePaymentIntentId: paymentIntentId,
+      ...(paymentIntentId && { stripePaymentIntentId: paymentIntentId }),
       reservationType: 'checkout',
       expirationMinutes: 15, // 15 minute hold as per requirements
     })

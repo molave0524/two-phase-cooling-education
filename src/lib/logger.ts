@@ -103,7 +103,7 @@ class Logger {
             logger: 'true',
           },
           extra: {
-            error: String(error),
+            errorMessage: String(error),
             ...errorData,
           },
         })
