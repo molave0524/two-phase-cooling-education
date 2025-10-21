@@ -1,0 +1,188 @@
+/* Admin Navigation Styles */
+
+.nav {
+  background-color: white;
+  border-bottom: 1px solid var(--color-secondary-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--section-padding-x);
+}
+
+.navContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoLink {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+  text-decoration: none;
+}
+
+.adminBadge {
+  display: none;
+  padding: 4px 12px;
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+}
+
+@media (min-width: 640px) {
+  .adminBadge {
+    display: block;
+  }
+}
+
+.navLinks {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (min-width: 1024px) {
+  .navLinks {
+    display: flex;
+  }
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: var(--transition-colors);
+  color: var(--color-secondary-600);
+}
+
+.navLink:hover {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-900);
+}
+
+.navLink.active {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.navLink svg {
+  width: 20px;
+  height: 20px;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userName {
+  display: none;
+  font-size: var(--text-sm);
+  color: var(--color-secondary-600);
+}
+
+@media (min-width: 640px) {
+  .userName {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.signOutButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: var(--text-sm);
+  color: var(--color-secondary-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.signOutButton:hover {
+  color: var(--color-danger-600);
+}
+
+.signOutButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.signOutText {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .signOutText {
+    display: inline;
+  }
+}
+
+/* Mobile Navigation */
+.mobileNav {
+  display: block;
+  border-top: 1px solid var(--color-secondary-200);
+  padding: 12px 0;
+  overflow-x: auto;
+}
+
+@media (min-width: 1024px) {
+  .mobileNav {
+    display: none;
+  }
+}
+
+.mobileNavLinks {
+  display: flex;
+  gap: 8px;
+}
+
+.mobileNavLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: var(--transition-colors);
+  color: var(--color-secondary-600);
+}
+
+.mobileNavLink:hover {
+  background-color: var(--color-secondary-100);
+}
+
+.mobileNavLink.active {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.mobileNavLink svg {
+  width: 16px;
+  height: 16px;
+}

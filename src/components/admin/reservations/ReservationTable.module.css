@@ -1,0 +1,179 @@
+/* Reservation Table Component Styles */
+
+.tableSection {
+  background-color: white;
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.tableHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-secondary-200);
+}
+
+.tableHeader h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-900);
+  margin: 0 0 1rem 0;
+}
+
+.filterControls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .filterControls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.filterButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-secondary-300);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  background-color: white;
+  color: var(--color-secondary-700);
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.filterButton:hover {
+  background-color: var(--color-secondary-50);
+  border-color: var(--color-secondary-400);
+}
+
+.filterButton.active {
+  background-color: var(--color-primary-600);
+  color: white;
+  border-color: var(--color-primary-600);
+}
+
+.tableContent {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background-color: var(--color-secondary-50);
+  border-bottom: 1px solid var(--color-secondary-200);
+}
+
+.table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--color-secondary-200);
+  transition: var(--transition-colors);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-secondary-50);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table td {
+  padding: 1rem;
+  font-size: var(--text-sm);
+  color: var(--color-secondary-900);
+}
+
+.productId {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--color-secondary-600);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid;
+}
+
+.statusActive {
+  background-color: var(--color-success-100);
+  color: var(--color-success-700);
+  border-color: var(--color-success-200);
+}
+
+.statusExpired {
+  background-color: var(--color-error-100);
+  color: var(--color-error-700);
+  border-color: var(--color-error-200);
+}
+
+.statusCompleted {
+  background-color: var(--color-info-100);
+  color: var(--color-info-700);
+  border-color: var(--color-info-200);
+}
+
+.statusCancelled {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-700);
+  border-color: var(--color-secondary-200);
+}
+
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  background-color: var(--color-info-100);
+  color: var(--color-info-700);
+  border: 1px solid var(--color-info-200);
+}
+
+.emptyState {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--color-secondary-500);
+}
+
+.emptyState p {
+  font-size: var(--text-base);
+  margin: 0;
+}
+
+.expiresSoon {
+  color: var(--color-warning-600);
+  font-weight: var(--font-weight-medium);
+}
+
+.expired {
+  color: var(--color-error-600);
+  font-weight: var(--font-weight-medium);
+}

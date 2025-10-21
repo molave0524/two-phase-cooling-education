@@ -1,0 +1,127 @@
+/* Reservations Management Page Styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  margin-bottom: 0.5rem;
+}
+
+.header h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-900);
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  font-size: var(--text-base);
+  color: var(--color-secondary-600);
+  margin: 0;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.statCard {
+  background-color: white;
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  transition: var(--transition-shadow);
+}
+
+.statCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-600);
+  margin: 0 0 0.5rem 0;
+}
+
+.statValue {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-900);
+  margin: 0;
+}
+
+.statValueDefault {
+  color: var(--color-secondary-900);
+}
+
+.statValueActive {
+  color: var(--color-success-600);
+}
+
+.statValueExpired {
+  color: var(--color-error-600);
+}
+
+.statValueCompleted {
+  color: var(--color-info-600);
+}
+
+/* Actions Bar */
+.actionsBar {
+  background-color: white;
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cleanupButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-error-600);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-colors);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cleanupButton:hover {
+  background-color: var(--color-error-700);
+}
+
+.cleanupButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cleanupButton svg {
+  width: 16px;
+  height: 16px;
+}

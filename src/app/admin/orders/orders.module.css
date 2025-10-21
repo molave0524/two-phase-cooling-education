@@ -1,0 +1,87 @@
+/* Order Management Styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  margin-bottom: 0.5rem;
+}
+
+.header h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary-900);
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  font-size: var(--text-base);
+  color: var(--color-secondary-600);
+  margin: 0;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.statCard {
+  background-color: white;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-secondary-200);
+  padding: 1.5rem;
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-600);
+  margin: 0 0 0.5rem 0;
+}
+
+.statValue {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+.statValueDefault {
+  color: var(--color-secondary-900);
+}
+
+.statValuePending {
+  color: var(--color-warning-600);
+}
+
+.statValueProcessing {
+  color: var(--color-info-600);
+}
+
+.statValueShipped {
+  color: var(--color-primary-600);
+}
+
+.statValueDelivered {
+  color: var(--color-success-600);
+}
+
+.statValueCancelled {
+  color: var(--color-danger-600);
+}
