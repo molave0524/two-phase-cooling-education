@@ -3,7 +3,6 @@
  * Run this once by visiting /api/admin/migrate-sku
  */
 
-import { NextResponse } from 'next/server'
 import { products } from '@/db'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
