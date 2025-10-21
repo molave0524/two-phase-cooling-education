@@ -9,7 +9,7 @@ import { orderItems } from '@/db/schema-pg'
 import { eq } from 'drizzle-orm'
 import { requireAdmin } from '@/lib/admin'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
     // Verify admin access
     await requireAdmin()
