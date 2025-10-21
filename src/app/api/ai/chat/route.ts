@@ -89,7 +89,7 @@ async function fetchUserOrders(userId: string) {
 /**
  * Get maintenance information for a product
  */
-function getProductMaintenance(productName: string) {
+function _getProductMaintenance(productName: string) {
   const maintenanceData: Record<
     string,
     {
@@ -395,10 +395,10 @@ Total Value: $${context.cartItems.reduce((sum: number, item: { productName: stri
       if (userOrders.length > 0) {
         orderContext = `\n\nUser Order History (${userEmail}):
 ${userOrders
-  .map((order, index) => {
+  .map((order: any, index: number) => {
     const orderDate = new Date(order.createdAt).toLocaleDateString()
     const products = order.items
-      .map(item => {
+      .map((item: any) => {
         try {
           const snapshot =
             typeof item.productSnapshot === 'string'
