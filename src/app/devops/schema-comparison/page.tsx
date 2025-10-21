@@ -144,7 +144,8 @@ export default function SchemaComparisonPage() {
       }
 
       const data = await response.json()
-      setResult(data)
+      // API wraps response in { success: true, data: {...} }
+      setResult(data.data || data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred')
     } finally {
@@ -153,15 +154,15 @@ export default function SchemaComparisonPage() {
   }
 
   const handleCopy = async () => {
-    if (!result) return
+    if (!result || !result.comparison) return
 
     try {
       // Format the comparison results as a side-by-side table
       const allTables = Array.from(
         new Set([
-          ...result.comparison.tablesInBoth,
-          ...result.comparison.tablesOnlyInSource,
-          ...result.comparison.tablesOnlyInTarget,
+          ...(result.comparison.tablesInBoth || []),
+          ...(result.comparison.tablesOnlyInSource || []),
+          ...(result.comparison.tablesOnlyInTarget || []),
         ])
       ).sort()
 
@@ -181,12 +182,12 @@ export default function SchemaComparisonPage() {
       // Tables and columns in side-by-side format
       for (const tableName of allTables) {
         const inSource =
-          result.comparison.tablesInBoth.includes(tableName) ||
-          result.comparison.tablesOnlyInSource.includes(tableName)
+          (result.comparison.tablesInBoth || []).includes(tableName) ||
+          (result.comparison.tablesOnlyInSource || []).includes(tableName)
         const inTarget =
-          result.comparison.tablesInBoth.includes(tableName) ||
-          result.comparison.tablesOnlyInTarget.includes(tableName)
-        const inBoth = result.comparison.tablesInBoth.includes(tableName)
+          (result.comparison.tablesInBoth || []).includes(tableName) ||
+          (result.comparison.tablesOnlyInTarget || []).includes(tableName)
+        const inBoth = (result.comparison.tablesInBoth || []).includes(tableName)
 
         // Table row with schema names
         const sourceTableText = inSource ? tableName : ''
@@ -194,7 +195,7 @@ export default function SchemaComparisonPage() {
         copyText += `${sourceTableText.padEnd(colWidth)} | ${targetTableText.padEnd(colWidth)}\n`
 
         // Get columns for this table
-        const tableColumns = result.comparison.columnDifferences.filter(
+        const tableColumns = (result.comparison.columnDifferences || []).filter(
           diff => diff.table === tableName
         )
 
@@ -248,10 +249,10 @@ export default function SchemaComparisonPage() {
       }
 
       // Breaking changes
-      if (result.comparison.breakingChanges.length > 0) {
+      if ((result.comparison.breakingChanges || []).length > 0) {
         copyText += `\n${'='.repeat(100)}\n`
         copyText += `BREAKING CHANGES:\n`
-        result.comparison.breakingChanges.forEach(change => {
+        ;(result.comparison.breakingChanges || []).forEach(change => {
           copyText += `  ⚠ ${change}\n`
         })
       }
@@ -320,22 +321,22 @@ export default function SchemaComparisonPage() {
       {error && (
         <div className={styles.error}>
           <div className={styles.errorHeader}>
-            <strong>⚠️ Comparison Failed</strong>
+            <strong>Comparison Failed</strong>
           </div>
           <p className={styles.errorMessage}>{error}</p>
           <div className={styles.errorActions}>
             {error.includes('Missing environment variable') && (
               <p className={styles.errorHint}>
-                💡 Add the missing environment variable to your .env.local file
+                Hint: Add the missing environment variable to your .env.local file
               </p>
             )}
             {error.includes('same database') && (
               <p className={styles.errorHint}>
-                💡 Choose different environments to compare different databases
+                Hint: Choose different environments to compare different databases
               </p>
             )}
             <button onClick={handleCompare} className={styles.retryBtn}>
-              ↻ Retry
+              Retry
             </button>
           </div>
         </div>
@@ -360,7 +361,7 @@ export default function SchemaComparisonPage() {
         </div>
       )}
 
-      {result && !isComparing && (
+      {result && result.comparison && !isComparing && (
         <motion.div
           className={styles.results}
           initial={{ opacity: 0, y: 20 }}
@@ -370,9 +371,9 @@ export default function SchemaComparisonPage() {
           {/* Side-by-Side Table Comparison */}
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>📊 Table & Column Comparison</h2>
+              <h2 className={styles.sectionTitle}>Table & Column Comparison</h2>
               <button onClick={handleCopy} className={styles.copyButton} title='Copy to clipboard'>
-                📋 Copy
+                Copy
               </button>
             </div>
             <div className={styles.sideBySide}>
@@ -383,23 +384,23 @@ export default function SchemaComparisonPage() {
 
               {Array.from(
                 new Set([
-                  ...result.comparison.tablesInBoth,
-                  ...result.comparison.tablesOnlyInSource,
-                  ...result.comparison.tablesOnlyInTarget,
+                  ...(result.comparison.tablesInBoth || []),
+                  ...(result.comparison.tablesOnlyInSource || []),
+                  ...(result.comparison.tablesOnlyInTarget || []),
                 ])
               )
                 .sort()
                 .map(tableName => {
                   const inSource =
-                    result.comparison.tablesInBoth.includes(tableName) ||
-                    result.comparison.tablesOnlyInSource.includes(tableName)
+                    (result.comparison.tablesInBoth || []).includes(tableName) ||
+                    (result.comparison.tablesOnlyInSource || []).includes(tableName)
                   const inTarget =
-                    result.comparison.tablesInBoth.includes(tableName) ||
-                    result.comparison.tablesOnlyInTarget.includes(tableName)
-                  const inBoth = result.comparison.tablesInBoth.includes(tableName)
+                    (result.comparison.tablesInBoth || []).includes(tableName) ||
+                    (result.comparison.tablesOnlyInTarget || []).includes(tableName)
+                  const inBoth = (result.comparison.tablesInBoth || []).includes(tableName)
 
                   // Get column differences for this table
-                  const tableColumnDiffs = result.comparison.columnDifferences.filter(
+                  const tableColumnDiffs = (result.comparison.columnDifferences || []).filter(
                     diff => diff.table === tableName
                   )
 

@@ -129,8 +129,18 @@ export async function createOrderItemSnapshot(
   const pricePerUnit = product.price + includedPrice + optionalPrice
 
   // Get first image or empty string
-  const images = product.images as string[] | null
-  const productImage: string = images && images.length > 0 ? images[0]! : ''
+  // Handle both string[] and object[] formats
+  const images = product.images as any[] | null
+  let productImage: string = ''
+
+  if (images && images.length > 0) {
+    const firstImage = images[0]
+    if (typeof firstImage === 'string') {
+      productImage = firstImage
+    } else if (typeof firstImage === 'object' && firstImage?.url) {
+      productImage = firstImage.url
+    }
+  }
 
   return {
     productId: product.id,

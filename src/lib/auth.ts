@@ -96,6 +96,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           image: user.image,
+          role: user.role || 'customer',
         }
       },
     }),
@@ -120,6 +121,8 @@ export const authOptions: NextAuthOptions = {
         session.user.email = user.email
         session.user.name = user.name ?? null
         session.user.image = user.image ?? null
+        // Add role from database user
+        session.user.role = (user as any).role || 'customer'
       }
       return session
     },

@@ -21,6 +21,7 @@ export const users = authSchema.table('users', {
   name: text('name'),
   image: text('image'), // Profile picture URL
   hashedPassword: text('hashed_password'),
+  role: text('role').notNull().default('customer'), // customer, admin
   emailVerified: timestamp('email_verified', { withTimezone: true }), // NextAuth compatibility
   emailVerificationToken: text('email_verification_token'),
   emailVerificationExpires: timestamp('email_verification_expires', { withTimezone: true }),

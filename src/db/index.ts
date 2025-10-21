@@ -50,6 +50,10 @@ logger.info('Using postgres-js')
 const client = postgres(connectionString, {
   prepare: false,
   onnotice: () => {},
+  // Connection pool configuration
+  max: 20, // Maximum number of connections in the pool (default is 10)
+  idle_timeout: 20, // Close idle connections after 20 seconds
+  connect_timeout: 10, // Timeout for establishing connections (10 seconds)
 })
 const db = drizzle(client, { schema })
 
