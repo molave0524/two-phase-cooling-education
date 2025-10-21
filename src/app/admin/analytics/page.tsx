@@ -14,8 +14,38 @@ import {
   ChartBarIcon,
 } from '@heroicons/react/24/outline'
 import styles from './analytics.module.css'
+import RevenueChart from '@/components/admin/analytics/RevenueChart'
 
 export const dynamic = 'force-dynamic'
+
+async function getRevenueOverTime() {
+  try {
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    // Get revenue and order count for each day
+    const dailyStats = await db
+      .select({
+        date: sql<string>`DATE(${orders.createdAt})`,
+        revenue: sql<number>`cast(coalesce(sum(${orders.total}), 0) as decimal(10,2))`,
+        orderCount: count(),
+      })
+      .from(orders)
+      .where(and(eq(orders.paymentStatus, 'paid'), gte(orders.createdAt, thirtyDaysAgo)))
+      .groupBy(sql`DATE(${orders.createdAt})`)
+      .orderBy(sql`DATE(${orders.createdAt})`)
+
+    return dailyStats.map(stat => ({
+      date: stat.date,
+      revenue: Number(stat.revenue) || 0,
+      orders: stat.orderCount || 0,
+    }))
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching revenue over time:', error)
+    return []
+  }
+}
 
 async function getAnalyticsData() {
   try {
@@ -98,6 +128,7 @@ async function getAnalyticsData() {
 
 export default async function AnalyticsPage() {
   const data = await getAnalyticsData()
+  const revenueData = await getRevenueOverTime()
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -163,8 +194,12 @@ export default async function AnalyticsPage() {
       <div className={styles.chartsSection}>
         {/* Revenue Chart */}
         <div className={styles.chartCard}>
-          <h3>Revenue Overview</h3>
-          <div className={styles.chartPlaceholder}>Chart visualization coming soon</div>
+          <h3>Revenue Overview (Last 30 Days)</h3>
+          {revenueData.length === 0 ? (
+            <div className={styles.chartPlaceholder}>No revenue data yet</div>
+          ) : (
+            <RevenueChart data={revenueData} />
+          )}
         </div>
 
         {/* Top Products */}
