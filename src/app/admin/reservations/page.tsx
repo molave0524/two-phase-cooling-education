@@ -5,7 +5,7 @@
 
 import { db } from '@/db'
 import { inventoryReservations } from '@/db/schema-pg'
-import { sql, eq, count, lt, desc } from 'drizzle-orm'
+import { eq, count, lt, desc } from 'drizzle-orm'
 import ReservationTable from '@/components/admin/reservations/ReservationTable'
 import CleanupButton from '@/components/admin/reservations/CleanupButton'
 import styles from './reservations.module.css'
