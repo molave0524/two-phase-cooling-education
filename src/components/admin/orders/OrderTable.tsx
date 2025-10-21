@@ -58,28 +58,30 @@ export default function OrderTable({ initialData, initialFilter, initialSearch }
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; className: string }> = {
-      pending: { label: 'Pending', className: styles.statusPending },
-      processing: { label: 'Processing', className: styles.statusProcessing },
-      shipped: { label: 'Shipped', className: styles.statusShipped },
-      delivered: { label: 'Delivered', className: styles.statusDelivered },
-      cancelled: { label: 'Cancelled', className: styles.statusCancelled },
+      pending: { label: 'Pending', className: styles.statusPending || '' },
+      processing: { label: 'Processing', className: styles.statusProcessing || '' },
+      shipped: { label: 'Shipped', className: styles.statusShipped || '' },
+      delivered: { label: 'Delivered', className: styles.statusDelivered || '' },
+      cancelled: { label: 'Cancelled', className: styles.statusCancelled || '' },
     }
 
-    const config = statusConfig[status] || statusConfig.pending
-    return <span className={`${styles.statusBadge} ${config.className}`}>{config.label}</span>
+    const config = statusConfig[status] ?? statusConfig.pending!
+    return <span className={`${styles.statusBadge || ''} ${config.className}`}>{config.label}</span>
   }
 
   const getPaymentStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; className: string }> = {
-      pending: { label: 'Pending', className: styles.paymentPending },
-      paid: { label: 'Paid', className: styles.paymentPaid },
-      failed: { label: 'Failed', className: styles.paymentFailed },
-      refunded: { label: 'Refunded', className: styles.paymentRefunded },
+      pending: { label: 'Pending', className: styles.paymentPending || '' },
+      paid: { label: 'Paid', className: styles.paymentPaid || '' },
+      failed: { label: 'Failed', className: styles.paymentFailed || '' },
+      refunded: { label: 'Refunded', className: styles.paymentRefunded || '' },
     }
 
-    const config = statusConfig[status] || statusConfig.pending
+    const config = statusConfig[status] ?? statusConfig.pending!
     return (
-      <span className={`${styles.paymentStatusBadge} ${config.className}`}>{config.label}</span>
+      <span className={`${styles.paymentStatusBadge || ''} ${config.className}`}>
+        {config.label}
+      </span>
     )
   }
 

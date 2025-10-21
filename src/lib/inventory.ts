@@ -79,7 +79,7 @@ export async function getInventoryStatus(productId: string): Promise<{
       throw new Error(`Product ${productId} not found`)
     }
 
-    const { stockQuantity, lowStockThreshold, inStock } = product[0]
+    const { stockQuantity, lowStockThreshold } = product[0]
     const availableQuantity = await getAvailableQuantity(productId)
     const reservedQuantity = stockQuantity - availableQuantity
 

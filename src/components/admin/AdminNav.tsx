@@ -22,7 +22,7 @@ import styles from './AdminNav.module.css'
 interface NavItem {
   name: string
   href: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
 }
 
 const navItems: NavItem[] = [

@@ -5,9 +5,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import type { User } from '@/db/schemas/auth'
 import styles from './CustomerTable.module.css'
 

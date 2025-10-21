@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { InventoryReservation } from '@/db/schemas/store'
 import styles from './ReservationTable.module.css'
@@ -19,7 +19,7 @@ interface ReservationTableProps {
 export default function ReservationTable({
   initialData,
   initialFilter,
-  initialSearch,
+  initialSearch: _initialSearch,
 }: ReservationTableProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
