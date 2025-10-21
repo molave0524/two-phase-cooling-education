@@ -6,7 +6,7 @@
 import { db } from '@/db'
 import { users } from '@/db/schemas/auth'
 import { orders } from '@/db/schema-pg'
-import { sql, eq, count, desc } from 'drizzle-orm'
+import { sql, eq, desc } from 'drizzle-orm'
 import CustomerTable from '@/components/admin/customers/CustomerTable'
 import styles from './customers.module.css'
 
@@ -42,7 +42,7 @@ async function getCustomersData(params: SearchParams) {
     // Search filter (applied in memory for simplicity)
     if (params.search) {
       const searchLower = params.search.toLowerCase()
-      allCustomers = allCustomers.filter(item => {
+      allCustomers = allCustomers.filter((item: any) => {
         return (
           item.user.name?.toLowerCase().includes(searchLower) ||
           item.user.email?.toLowerCase().includes(searchLower)
@@ -51,7 +51,7 @@ async function getCustomersData(params: SearchParams) {
     }
 
     // Transform data to include order count
-    const customersWithDetails = allCustomers.map(item => ({
+    const customersWithDetails = allCustomers.map((item: any) => ({
       ...item.user,
       orderCount: item.orderCount || 0,
     }))
@@ -76,9 +76,9 @@ export default async function CustomerManagementPage({
 
   // Calculate stats
   const totalCustomers = customersData.length
-  const customerCount = customersData.filter(c => c.role === 'customer').length
-  const adminCount = customersData.filter(c => c.role === 'admin').length
-  const totalOrders = customersData.reduce((sum, c) => sum + c.orderCount, 0)
+  const customerCount = customersData.filter((c: any) => c.role === 'customer').length
+  const adminCount = customersData.filter((c: any) => c.role === 'admin').length
+  const totalOrders = customersData.reduce((sum: number, c: any) => sum + c.orderCount, 0)
 
   return (
     <div className={styles.container}>

@@ -39,7 +39,7 @@ async function getInventoryData(params: SearchParams) {
     if (params.search) {
       const searchLower = params.search.toLowerCase()
       allProducts = allProducts.filter(
-        product =>
+        (product: any) =>
           product.name.toLowerCase().includes(searchLower) ||
           product.sku.toLowerCase().includes(searchLower) ||
           product.slug.toLowerCase().includes(searchLower)
@@ -48,7 +48,7 @@ async function getInventoryData(params: SearchParams) {
 
     // Get inventory status for each product
     const productsWithInventory = await Promise.all(
-      allProducts.map(async product => {
+      allProducts.map(async (product: any) => {
         try {
           const inventoryStatus = await getInventoryStatus(product.id)
           return {

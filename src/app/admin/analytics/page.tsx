@@ -4,15 +4,10 @@
  */
 
 import { db } from '@/db'
-import { products, orders, orderItems } from '@/db/schema-pg'
+import { orders, orderItems } from '@/db/schema-pg'
 import { users } from '@/db/schemas/auth'
-import { sql, count, eq, and, gte, desc, sum } from 'drizzle-orm'
-import {
-  ShoppingBagIcon,
-  UsersIcon,
-  CurrencyDollarIcon,
-  ChartBarIcon,
-} from '@heroicons/react/24/outline'
+import { sql, count, eq, and, gte, desc } from 'drizzle-orm'
+import { ShoppingBagIcon } from '@heroicons/react/24/outline'
 import styles from './analytics.module.css'
 import RevenueChart from '@/components/admin/analytics/RevenueChart'
 
@@ -35,7 +30,7 @@ async function getRevenueOverTime() {
       .groupBy(sql`DATE(${orders.createdAt})`)
       .orderBy(sql`DATE(${orders.createdAt})`)
 
-    return dailyStats.map(stat => ({
+    return dailyStats.map((stat: any) => ({
       date: stat.date,
       revenue: Number(stat.revenue) || 0,
       orders: stat.orderCount || 0,
@@ -217,7 +212,7 @@ export default async function AnalyticsPage() {
                 </tr>
               </thead>
               <tbody>
-                {data.topProducts.map((product, index) => (
+                {data.topProducts.map((product: any, index: number) => (
                   <tr key={product.productId || index}>
                     <td>
                       <div className={styles.productName}>{product.productName}</div>
@@ -242,7 +237,7 @@ export default async function AnalyticsPage() {
           <div className={styles.chartPlaceholder}>No recent orders</div>
         ) : (
           <div className={styles.activityList}>
-            {data.recentOrders.map(order => {
+            {data.recentOrders.map((order: any) => {
               const customer = order.customer as any
               return (
                 <div key={order.id} className={styles.activityItem}>

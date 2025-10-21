@@ -5,7 +5,7 @@
 
 import { db } from '@/db'
 import { orders, orderItems } from '@/db/schema-pg'
-import { sql, eq, and, desc, or, ilike } from 'drizzle-orm'
+import { sql, eq, and, desc } from 'drizzle-orm'
 import OrderTable from '@/components/admin/orders/OrderTable'
 import styles from './orders.module.css'
 
