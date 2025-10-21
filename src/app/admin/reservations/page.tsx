@@ -43,7 +43,7 @@ async function getReservationsData(params: SearchParams) {
 
     // For non-expired filters, exclude truly expired ones
     if (params.filter !== 'expired' && params.filter !== 'all') {
-      reservationResults = reservationResults.filter(r => {
+      reservationResults = reservationResults.filter((r: any) => {
         if (r.status === 'active') {
           return new Date(r.expiresAt) > now
         }
@@ -75,8 +75,8 @@ async function getReservationStats() {
       .from(inventoryReservations)
       .where(eq(inventoryReservations.status, 'active'))
 
-    const expiredCount = allActive.filter(r => new Date(r.expiresAt) < now).length
-    const trueActiveCount = allActive.filter(r => new Date(r.expiresAt) >= now).length
+    const expiredCount = allActive.filter((r: any) => new Date(r.expiresAt) < now).length
+    const trueActiveCount = allActive.filter((r: any) => new Date(r.expiresAt) >= now).length
 
     const [completedResult] = await db
       .select({ count: count() })
