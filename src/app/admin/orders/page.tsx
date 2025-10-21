@@ -41,7 +41,7 @@ async function getOrdersData(params: SearchParams) {
     // Search filter (applied in memory for simplicity)
     if (params.search) {
       const searchLower = params.search.toLowerCase()
-      allOrders = allOrders.filter(item => {
+      allOrders = allOrders.filter((item: any) => {
         const customer = item.order.customer as any
         return (
           item.order.orderNumber.toLowerCase().includes(searchLower) ||
@@ -52,7 +52,7 @@ async function getOrdersData(params: SearchParams) {
     }
 
     // Transform data to include item count
-    const ordersWithDetails = allOrders.map(item => ({
+    const ordersWithDetails = allOrders.map((item: any) => ({
       ...item.order,
       itemCount: item.itemCount || 0,
     }))
@@ -77,11 +77,11 @@ export default async function OrderManagementPage({
 
   // Calculate stats
   const totalOrders = ordersData.length
-  const pendingCount = ordersData.filter(o => o.status === 'pending').length
-  const processingCount = ordersData.filter(o => o.status === 'processing').length
-  const shippedCount = ordersData.filter(o => o.status === 'shipped').length
-  const deliveredCount = ordersData.filter(o => o.status === 'delivered').length
-  const cancelledCount = ordersData.filter(o => o.status === 'cancelled').length
+  const pendingCount = ordersData.filter((o: any) => o.status === 'pending').length
+  const processingCount = ordersData.filter((o: any) => o.status === 'processing').length
+  const shippedCount = ordersData.filter((o: any) => o.status === 'shipped').length
+  const deliveredCount = ordersData.filter((o: any) => o.status === 'delivered').length
+  const cancelledCount = ordersData.filter((o: any) => o.status === 'cancelled').length
 
   return (
     <div className={styles.container}>
