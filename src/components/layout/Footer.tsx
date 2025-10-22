@@ -2,39 +2,18 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { EnvelopeIcon, PhoneIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline'
 import { COMPANY_INFO, SOCIAL_MEDIA } from '@/constants'
-import styles from './Footer.module.css'
 
 // ============================================================================
-// TYPES AND INTERFACES
+// FOOTER DATA
 // ============================================================================
-
-interface FooterSection {
-  title: string
-  links: FooterLink[]
-}
-
-interface FooterLink {
-  label: string
-  href: string
-  icon?: React.ReactNode
-  external?: boolean
-  description?: string
-}
 
 interface SocialLink {
   platform: string
   href: string
   icon: string
 }
-
-// ============================================================================
-// FOOTER DATA
-// ============================================================================
-
-// Navigation links moved to header - keeping footer minimal
-const FOOTER_SECTIONS: FooterSection[] = []
 
 const SOCIAL_LINKS: SocialLink[] = [
   {
@@ -57,139 +36,69 @@ export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className='bg-secondary-900 text-white'>
-      {/* Main Footer Content */}
-      <div className='container-max py-12'>
-        <div className='grid lg:grid-cols-5 gap-8'>
-          {/* Footer Sections */}
-          <div className='lg:col-span-3 grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
-            {FOOTER_SECTIONS.map(section => (
-              <div key={section.title} className='space-y-4'>
-                <h3 className='font-semibold text-white'>{section.title}</h3>
-                <ul className='space-y-3'>
-                  {section.links.map(link => (
-                    <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className='group flex items-center gap-2 text-sm text-secondary-300 hover:text-primary-400 transition-colors'
-                        {...(link.external && { target: '_blank', rel: 'noopener noreferrer' })}
-                      >
-                        {link.icon}
-                        <span className='group-hover:underline'>{link.label}</span>
-                        {link.external && <ArrowTopRightOnSquareIcon className='w-3 h-3' />}
-                      </Link>
-                      {link.description && (
-                        <p className='text-xs text-secondary-500 mt-1 ml-6'>{link.description}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+    <footer className='bg-secondary-50 text-secondary-600 border-t border-secondary-200'>
+      {/* Main Footer Content - Compact */}
+      <div className='container-max py-6'>
+        <div className='flex flex-col md:flex-row items-center justify-between gap-4 text-sm'>
+          {/* Contact Information - Minimal */}
+          <div className='flex items-center gap-6'>
+            <Link
+              href={`mailto:${COMPANY_INFO.EMAIL}`}
+              className='flex items-center gap-2 text-secondary-600 hover:text-primary-600 transition-colors'
+            >
+              <EnvelopeIcon style={{ width: '16px', height: '16px' }} />
+              <span>{COMPANY_INFO.EMAIL}</span>
+            </Link>
+            <Link
+              href={`tel:${COMPANY_INFO.PHONE}`}
+              className='flex items-center gap-2 text-secondary-600 hover:text-primary-600 transition-colors'
+            >
+              <PhoneIcon style={{ width: '16px', height: '16px' }} />
+              <span>{COMPANY_INFO.PHONE}</span>
+            </Link>
+          </div>
+
+          {/* Social Links - Minimal */}
+          <div className='flex items-center gap-3'>
+            {SOCIAL_LINKS.map(social => (
+              <Link
+                key={social.platform}
+                href={social.href}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-secondary-600 hover:text-primary-600 transition-colors text-lg'
+                title={social.platform}
+              >
+                {social.icon}
+              </Link>
             ))}
           </div>
-
-          {/* Contact & Social */}
-          <div className='lg:col-span-1 space-y-6'>
-            {/* Contact Information */}
-            <div className='space-y-4'>
-              <h3 className='font-semibold text-white'>Contact</h3>
-              <div className='space-y-3 text-sm'>
-                <div className='flex items-start gap-2'>
-                  <EnvelopeIcon className={styles.contactIcon} />
-                  <Link
-                    href={`mailto:${COMPANY_INFO.EMAIL}`}
-                    className='text-secondary-300 hover:text-primary-400 transition-colors'
-                  >
-                    {COMPANY_INFO.EMAIL}
-                  </Link>
-                </div>
-                <div className='flex items-start gap-2'>
-                  <PhoneIcon className={styles.contactIcon} />
-                  <Link
-                    href={`tel:${COMPANY_INFO.PHONE}`}
-                    className='text-secondary-300 hover:text-primary-400 transition-colors'
-                  >
-                    {COMPANY_INFO.PHONE}
-                  </Link>
-                </div>
-                {/* Address section removed for simplicity */}
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className='space-y-4'>
-              <h3 className='font-semibold text-white'>Follow Us</h3>
-              <div className='flex gap-3'>
-                {SOCIAL_LINKS.map(social => (
-                  <Link
-                    key={social.platform}
-                    href={social.href}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className={styles.socialContainer}
-                    title={social.platform}
-                  >
-                    <span className='text-lg group-hover:scale-110 transition-transform'>
-                      {social.icon}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Newsletter Signup */}
-            <div className='space-y-3'>
-              <h3 className='font-semibold text-white'>Stay Updated</h3>
-              <Link href='#newsletter' className='btn-primary btn-sm w-full justify-center'>
-                Subscribe to Newsletter
-              </Link>
-            </div>
-          </div>
         </div>
-
-        {/* Certifications section removed for simplicity */}
       </div>
 
-      {/* Bottom Bar */}
-      <div className='border-t border-secondary-800'>
-        <div className='container-max py-6'>
-          <div className='flex flex-col md:flex-row items-center justify-between gap-4'>
+      {/* Bottom Bar - Very Compact */}
+      <div className='border-t border-secondary-200 bg-secondary-100/50'>
+        <div className='container-max py-3'>
+          <div className='flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-secondary-500'>
             {/* Copyright */}
-            <div className='text-sm text-secondary-400'>
+            <div>
               © {currentYear} {COMPANY_INFO.NAME}. All rights reserved.
             </div>
 
-            {/* Legal Links */}
-            <div className='flex items-center gap-6 text-sm'>
-              <Link
-                href='#privacy'
-                className='text-secondary-400 hover:text-primary-400 transition-colors'
-              >
+            {/* Legal Links - Inline */}
+            <div className='flex items-center gap-4'>
+              <Link href='#privacy' className='hover:text-secondary-700 transition-colors'>
                 Privacy Policy
               </Link>
-              <Link
-                href='#terms'
-                className='text-secondary-400 hover:text-primary-400 transition-colors'
-              >
+              <Link href='#terms' className='hover:text-secondary-700 transition-colors'>
                 Terms of Service
               </Link>
-              <Link
-                href='#cookies'
-                className='text-secondary-400 hover:text-primary-400 transition-colors'
-              >
+              <Link href='#cookies' className='hover:text-secondary-700 transition-colors'>
                 Cookie Policy
               </Link>
-              <Link
-                href='#accessibility'
-                className='text-secondary-400 hover:text-primary-400 transition-colors'
-              >
+              <Link href='#accessibility' className='hover:text-secondary-700 transition-colors'>
                 Accessibility
               </Link>
-            </div>
-
-            {/* Additional Info */}
-            <div className='text-xs text-secondary-500'>
-              Built with Next.js • Powered by Two-Phase Innovation
             </div>
           </div>
         </div>

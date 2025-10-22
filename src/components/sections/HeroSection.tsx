@@ -11,8 +11,8 @@ export const HeroSection: React.FC = () => {
         <div className={styles.contentWrapper}>
           {/* Text */}
           <div className={styles.textSection}>
-            <h1 className={styles.title}>2-Phase</h1>
-            <p className={styles.subtitle}>AI cooling.</p>
+            <h1 className={styles.title}>AI Server Pro</h1>
+            <p className={styles.subtitle}>Cooled by direct liquid contact.</p>
           </div>
 
           {/* Visual */}

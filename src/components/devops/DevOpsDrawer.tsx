@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import styles from './DevOpsDrawer.module.css'
 import { HealthStatus } from './sections/HealthStatus'
 import { EnvironmentInfo } from './sections/EnvironmentInfo'
-import { DatabaseInspector } from './sections/DatabaseInspector'
 import { ConfigStatus } from './sections/ConfigStatus'
 
 interface DevOpsDrawerProps {
@@ -104,7 +103,6 @@ export function DevOpsDrawer({ isOpen, onClose }: DevOpsDrawerProps) {
             <div className={styles.drawerContent}>
               <HealthStatus />
               <EnvironmentInfo />
-              <DatabaseInspector />
               <ConfigStatus />
             </div>
 

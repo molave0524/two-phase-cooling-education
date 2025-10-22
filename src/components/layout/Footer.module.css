@@ -1,14 +1,21 @@
 /* Footer Component CSS Module */
 
-/* Logo container */
+/* Logo container with enhanced gradient */
 .logoContainer {
   width: 2.5rem;
   height: 2.5rem;
-  background: linear-gradient(to bottom right, var(--color-primary-500), var(--color-primary-700));
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700));
   border-radius: var(--radius-equipment);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logoContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 /* Logo icon */
@@ -18,27 +25,60 @@
   color: white;
 }
 
-/* Contact icons */
+/* Contact icons with enhanced styling */
 .contactIcon {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 1rem;
+  height: 1rem;
   color: var(--color-primary-400);
-  margin-top: 0.125rem;
   flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
-/* Social media container */
+/* Social media container with modern design */
 .socialContainer {
-  width: 2.5rem;
-  height: 2.5rem;
-  background: var(--color-secondary-800);
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-equipment);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--transition-colors);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.socialContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
 .socialContainer:hover {
-  background: var(--color-primary-600);
+  transform: translateY(-4px);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25);
+}
+
+.socialContainer:hover::before {
+  opacity: 1;
+}
+
+.socialContainer svg {
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.socialContainer:hover svg {
+  color: white !important;
+  transform: scale(1.1);
 }

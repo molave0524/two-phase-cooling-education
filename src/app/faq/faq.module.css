@@ -44,8 +44,8 @@
 
 /* Full-width container for FAQ content */
 .faqContentContainer {
-  width: 100%;
-  margin: 0;
+  max-width: 896px; /* max-w-4xl for better readability */
+  margin: 0 auto;
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -291,7 +291,7 @@
 }
 
 .categoryButtonInactive {
-  background-color: var(--color-secondary-100);
+  background-color: var(--color-secondary-50);
   color: var(--color-secondary-700);
 }
 
