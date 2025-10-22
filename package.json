@@ -10,7 +10,7 @@
     "computer-case",
     "thermal-dynamics"
   ],
-  "packageManager": "npm@>=8.0.0",
+  "packageManager": "npm@10.9.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -90,9 +90,7 @@
     "tsx": "^4.20.6"
   },
   "engines": {
-    "node": ">=22.x",
-    "npm": ">=8.0.0",
-    "pnpm": ">=8.0.0"
+    "node": "22.x"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
