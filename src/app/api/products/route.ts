@@ -4,7 +4,6 @@
  * Falls back to sample data if NEXT_PUBLIC_USE_SAMPLE_DATA is true
  */
 
-import { db, products } from '@/db'
 import type { Product } from '@/db/schemas/catalog'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiInternalError } from '@/lib/api-response'
@@ -26,6 +25,8 @@ export async function GET() {
       allProducts = PRODUCTS
     } else {
       logger.info('Fetching products from database')
+      // Lazy load database connection only when needed
+      const { db, products } = await import('@/db')
       allProducts = await db.select().from(products)
     }
 
