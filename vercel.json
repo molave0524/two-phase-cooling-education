@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run db:auto-migrate && npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
@@ -7,7 +7,13 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "develop": true
+      "develop": true,
+      "uat": true
+    }
+  },
+  "build": {
+    "env": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1"
     }
   },
   "headers": [
