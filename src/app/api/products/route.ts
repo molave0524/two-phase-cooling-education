@@ -1,6 +1,7 @@
 /**
  * Products API Routes
  * GET - Fetch all products from database with inventory status
+ * Falls back to sample data if NEXT_PUBLIC_USE_SAMPLE_DATA is true
  */
 
 import { db, products } from '@/db'
@@ -8,13 +9,25 @@ import type { Product } from '@/db/schemas/catalog'
 import { logger } from '@/lib/logger'
 import { apiSuccess, apiInternalError } from '@/lib/api-response'
 import { getInventoryStatus } from '@/lib/inventory'
+import { PRODUCTS } from '@/data/products'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 export async function GET() {
   try {
-    const allProducts = await db.select().from(products)
+    // Use sample data if configured
+    const useSampleData = process.env.NEXT_PUBLIC_USE_SAMPLE_DATA === 'true'
+
+    let allProducts: any[]
+
+    if (useSampleData) {
+      logger.info('Using sample product data')
+      allProducts = PRODUCTS
+    } else {
+      logger.info('Fetching products from database')
+      allProducts = await db.select().from(products)
+    }
 
     // Filter out sunsetted and discontinued products (only show active products)
     const activeProducts = allProducts.filter(
